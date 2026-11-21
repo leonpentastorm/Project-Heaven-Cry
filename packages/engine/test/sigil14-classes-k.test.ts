@@ -4,6 +4,7 @@
 // Line of half-glyphs and its backlash as Touch on the victim, Fusion delivering an Outburst by the 1.4 area (Reach,
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
+import { scaled } from './helpers/scale';
 import { amountBlock } from '../src/effects/amounts';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
@@ -77,7 +78,7 @@ describe('Stroke Gambler under 1.4', () => {
     };
     const mid = run(10), hi = run(18);
     expect(logHas(mid.f.cb, /STITCH d20 10/)).toBe(true); expect(mid.dmg).toBe(18);
-    expect(hi.dmg).toBe(36 /* rules 1.95 (the scale): was 36 */); expect(mid.f.pc.mg!.charge).toBe(8); expect(glyphsAt(mid.f, '3,2').length).toBe(0);
+    expect(hi.dmg).toBe(36 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(mid.f.pc.mg!.charge).toBe(8); expect(glyphsAt(mid.f, '3,2').length).toBe(0);
   });
   it('Stitch on a walked Line of half-glyphs fires back the way you came (the facing rule)', () => {
     const f = fightWith([adv('stroke_gambler', MIND)], [{}]);

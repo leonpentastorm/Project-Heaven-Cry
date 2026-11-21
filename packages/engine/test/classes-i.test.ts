@@ -1,6 +1,7 @@
 // Lane I: the 13 base classes, every move in play. Player actions go through the reducer (apply: combat/perk,
 // combat/attack, combat/move, combat/draw, combat/outburst, story/perk, check/roll); what enemies do goes through the
 // same engine functions their turns use (resolveAttack, moveUnit, applyDamage, harm, applyCond), with the game bound.
+import { scaled } from './helpers/scale';
 import { quiversOf } from '../src/character';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
@@ -276,7 +277,7 @@ describe('Warden', () => {
     const u = f.turn(w), ch = u.mg!.charge;
     act(f, u, { type: 'combat/perk', id: 'class:warden.ward', actionId: 'ward2', targetId: ally.id });
     const mult = healingMult(f.g.characters[w.charId!]);
-    expect(f.unit(ally.id).shield).toBe(15 /* rules 1.95 (the scale): was Math.floor(Math.floor(20 * mult) * (f.unit(ally.id).healRecv || 1)) */);
+    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(scaled(20) * mult) * (f.unit(ally.id).healRecv || 1)) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     expect(f.unit(w.id).mg!.charge).toBe(ch - 2); expect(f.unit(w.id).mg!.flux).toBe(2);
   });
   it('Seal: a 3×3 zone where an enemy caster pays double charge', () => {

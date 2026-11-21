@@ -1,3 +1,4 @@
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { scaleOf,
@@ -209,7 +210,7 @@ describe('weapons v2', () => {
     expect(fitMod(c, packOf(c).findIndex((x) => x.id === 'mod_quick_release'))).toBeNull();
     const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
-    expect(u.armour).toBe(8 /* rules 1.95 (the scale): was 10 + 2 */); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
+    expect(u.armour).toBe(scaled(10) + 2 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
     u.ap = 9; u.ammo = 0; u.mags = [7]; expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(8); // quick-release: 1 AP
     const d1 = u.dur!; u.ap = 9; resolveAttack(cb, { state: 3 }, u, e, 'shot', c); expect(u.dur).toBeLessThan(d1);
     u.held = { ...(u.held || { perks: [], traits: [] }), perks: [...(u.held?.perks || []), { id: 'field_repair', tier: 'I' }] } as any; // rules 1.82 item 7008: Field Repair is a perk
@@ -307,7 +308,7 @@ describe('combat', () => {
     u.injuries = [{ loc: 'arm', side: 'right' }];
     expect(armPenalty(u, WEAPON.service_pistol)).toBe(-2);
     u.bleed = 3; const hp = u.hp; cb.order = [u.id]; cb.turn = 0; beginTurn(cb, { state: 1 });
-    expect(u.hp).toBe(121 /* rules 1.95 (the scale): was hp - 5 */); expect(u.bleed).toBe(2);
+    expect(u.hp).toBe(hp - scaled(5) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(u.bleed).toBe(2);
     expect(movement({ ...c, injuries: [{ loc: 'leg', side: 'left' }] })).toBe(movement(c) / 2);
     expect(packOf(c).map((x) => x.id)).toContain('field_kit');
     const heavy = { ...c, pack: [...packOf(c), { id: 'rocks', name: 'Rocks', qty: 6, kind: 'weapon' as const, weapon: 'blackpoint_700' }] }; // +90 kg

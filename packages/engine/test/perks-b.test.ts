@@ -285,7 +285,7 @@ describe('Last Charge', () => {
     const pc = at(f.pc, '0,7'); const u = f.turn(pc); u.movement = 3;
     f.act({ type: 'combat/move', unitId: u.id, to: '6,7' });
     const ac = f.g.characters[f.pc.charId!].armourClass;
-    expect(f.pc.shield).toBe(16 /* rules 1.95 (the scale): was Math.round(Math.max(15, 3 * ARMOUR_CLASSES[ac].value) * (f.pc.healRecv || 1)) || f.pc.shield */);
+    expect(f.pc.shield).toBe(Math.round(Math.max(scaled(15), scaled(3) * ARMOUR_CLASSES[ac].value) * (f.pc.healRecv || 1)) || f.pc.shield /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     expect(f.pc.shield).toBeGreaterThanOrEqual(15);
     withGame(f.g, () => expect(attackDamage(f.cb, f.pc, f.foe, 'melee', null).mults.some((m) => m.label === 'Last Charge')).toBe(true));
     expect(f.turn(f.pc).shield || 0).toBe(0);

@@ -14871,3 +14871,21 @@ the bible's; this spec states the rules as played. Everything is PROVISIONAL unt
       Crawler blood: steps 2d, 2c and 5; until then they are their old number x the deal column); the restated moves
       (Launch, Triage, Inspire's love, the Oil traits: their owners' steps); the grade's mod slot and properties, the
       foci's and the off hand's grade (step 5); the migration of a live character onto the new numbers (step 6).
+
+#### Rules 1.95 continued (step 1 finished), 0.34 (21 Nov 2026)
+
+The lead's rulings 63 to 68 (`docs/design/growth/00-rulings.md` section K) close step 1. As played after this revision:
+
+8313. **Every card's text reads its row.** The Sky Answers deals its row's lightning damage (it said 150 while the row
+      deals 90); Judgement's and Lightning Rod's cards read their rows (they said 56 and 23); each now shows the number
+      the engine deals. Supersedes the typed numbers in those three texts.
+8314. **Pain Threshold on the sheet** is a share of the whole bar a point (rules 1.95 item 8303's `hp_pct`): the sheet's
+      line reads "+N% max HP", in place of rules 1.36's "HP per level" from Pain Threshold, which item 8303 retired.
+8315. **A door's cash-out compounds by its own step** (ruling 63, the bible: each door's `cash_grow`, ONE Bite on its
+      ladder; Shadow's worth counts the fresh ambush, ruling 64). This is the design of step 2's cash-out; nothing in
+      play changes until step 2 builds the cash-out source (`rules.json output.cash_out.step` and each door's step).
+8316. **Still not in this step**, in addition to item 8312: the grade as the instance's effects (the rarity rows' `acc`
+      and `dmg` are still read where the hit is built, and a focus's grade by its own reading: moved with step 5's
+      foci and off hand, so no second copy stands between); the MP prices and Syphon on the mp column with their
+      restate (step 2d, `soul.json`); the lag factor of Survival's budget (step 4: until then `survival-encounter`'s
+      reading of it is skipped).

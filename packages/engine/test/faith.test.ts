@@ -2,6 +2,7 @@
 // and knowledge pieces, conversion (Open and Jealous), apostasy, Witnessed, tags, vows, interventions, rites, voice lines,
 // story prayers, old saves and the Proving Ground's faith tool. Every rule goes through apply() (the reducer), the same
 // path a player's click takes; interventions on an enemy's blow call the damage chokepoint with the game bound.
+import { scaled } from './helpers/scale';
 import { PATRONS } from '../src/tactics';
 import { condTurnEnd } from '../src/magic';
 import { describe, expect, it } from 'vitest';
@@ -106,14 +107,14 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
   it('a Whisper by standing: 1 AP, the mana meter −5, once a turn', () => {
     const h = holy({ patron: 'mother_ember' }); h.ally.hp = 50; const mana = h.cb.mana!, ap = h.me.ap;
     h.pray('whisper', 'health', { targetId: h.ally.id });
-    expect(h.ally.hp).toBe(62 /* rules 1.95 (the scale): was 50 + gated(h.ally, h.me, 'whisper', Math.round(8.5 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)), true) */); expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(Math.max(0, mana - 5));
+    expect(h.ally.hp).toBe(50 + gated(h.ally, h.me, 'whisper', Math.round(scaled(8.5) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)), true) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(Math.max(0, mana - 5));
     expect(fx(h.cb, FAITH_FX.prayer).length).toBe(1);
     expect(() => h.pray('whisper', 'luck')).toThrow(/One Whisper a turn/);
   });
   it('a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; then the cooldown', () => {
     const h = holy({ devotion: 3, faith: 5 });
     h.pray('hymn', 'saints_shield', { targetId: h.ally.id });
-    expect(h.ally.shield).toBe(32 /* rules 1.95 (the scale): was Math.floor(gated(h.ally, h.me, 'hymn', HV('saints_shield', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) */); expect(h.me.ap).toBe(3); // 34: rules 1.36 (16 in rules 1.22); the shield sink floors
+    expect(h.ally.shield).toBe(Math.floor(gated(h.ally, h.me, 'hymn', HV('saints_shield', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(h.me.ap).toBe(3); // 34: rules 1.36 (16 in rules 1.22); the shield sink floors
     expect(condOn(h.me, 'witnessed')).toBe(true); expect(fx(h.cb, FAITH_FX.witnessed).length).toBe(1);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'answered')).toBe(true);
     expect(() => h.pray('hymn', 'saints_shield', { targetId: h.ally.id })).toThrow(/wait/);
@@ -188,7 +189,7 @@ describe('the Whispers (six, and Rebuke since rules 1.21)', () => {
     const pv = h.bound(() => previewAttack(h.cb, h.me, h.foe, 'shot')); expect((pv.terms || []).some((t: any) => /Luck/.test(t.label))).toBe(true);
     h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe.id, mode: 'shot' }); expect(h.me.faith?.luck).toBeUndefined();
   });
-  it('Protection: a 10 × power shield (rules 1.36), through the Whisper\'s gate', () => { const h = holy(); h.pray('whisper', 'protection', { targetId: h.ally.id }); expect(h.ally.shield).toBe(12 /* rules 1.95 (the scale): was Math.floor(gated(h.ally, h.me, 'whisper', 10 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) */); });
+  it('Protection: a 10 × power shield (rules 1.36), through the Whisper\'s gate', () => { const h = holy(); h.pray('whisper', 'protection', { targetId: h.ally.id }); expect(h.ally.shield).toBe(Math.floor(gated(h.ally, h.me, 'whisper', scaled(10) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); });
   it('Courage: ends Fear and Shaken', () => { const h = holy(); h.ally.conds = { shaken: 2, fear: 2 } as any; h.pray('whisper', 'courage', { targetId: h.ally.id }); expect(condOn(h.ally, 'shaken') || condOn(h.ally, 'fear')).toBe(false); });
   it('Guidance: reveals Hidden enemies within 6 and gives +2 on the next spotting roll', () => {
     const h = holy(); h.foe.hidden = true; h.pray('whisper', 'guidance'); expect(h.foe.hidden).toBe(false); expect(h.me.faith?.guidance).toBe(true);
@@ -513,7 +514,7 @@ describe('prayer in the story', () => {
   it('a Whisper heals a squad member, costs story AP and the mana meter, once a round', () => {
     const { s, c, ally } = faithful(); ally().hp = 40; const mana = s.g.story.mana ?? 15;
     s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'health', targetId: ally().id });
-    expect(ally().hp).toBe(48 /* rules 1.95 (the scale): was 40 + Math.round(8.5 * blessingPower(c()) * prayerMendDial() * mendFactor(c().level)) */); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5)); // rules 1.36: 8.5 (story: no gate)
+    expect(ally().hp).toBe(40 + Math.round(scaled(8.5) * blessingPower(c()) * prayerMendDial() * mendFactor(c().level)) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5)); // rules 1.36: 8.5 (story: no gate)
     expect(said(s.g, /BY STANDING · ✓ ANSWERED/)).toBe(true);
     expect(() => s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'luck' })).toThrow(/One Whisper a round/);
   });

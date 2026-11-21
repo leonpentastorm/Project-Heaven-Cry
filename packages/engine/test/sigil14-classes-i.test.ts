@@ -1,6 +1,7 @@
 // Lane classes-i under Sigil rules 1.4 (spec: "the old classes under the new Sigil rules"; items 430, 437, 448;
 // docs/design/sigil-1.4-impact.md, base classes): the Mage's Barrage, Overcharge and Payload, the Warden's Raise Cover
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
@@ -221,7 +222,7 @@ describe('Scribe Stored Spell under 1.4', () => {
     s.act({ type: 'combat/perk', unitId: u.id, id: 'class:scribe.stored_spell', actionId: 'trigger', tile: '2,2' });
     const cb2: Combat = s.g.combat!, me = cb2.units.find((x) => x.id === u.id)!;
     expect(cb2.log.some((l) => /triggers a stored spell \(SPARK · SEEK\)/.test(l))).toBe(true);
-    expect(cb2.units.find((x) => x.id === foe.id)!.hp).toBe(990 /* rules 1.95 (the scale): was 999 - 15 */); // west of the Scribe: no facing
+    expect(cb2.units.find((x) => x.id === foe.id)!.hp).toBe(999 - scaled(15) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // west of the Scribe: no facing
     expect(me.ap).toBe(5); expect(me.mg!.charge).toBe(ch);
     expect(cb2.glyphs!.map((g) => g.id)).toEqual(['gl90']);
     expect(fxOf(cb2, 'evoke').pop()!.shape).toBe('stack');

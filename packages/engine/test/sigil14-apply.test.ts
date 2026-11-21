@@ -2,6 +2,7 @@
 // patterns with no test, the Delivery and Burst mixes, the previews the screen reads (LEECH, NULL, LIGHT, turret reach,
 // Boon notes, COMMAND's move tiles), QUICKEN's log and KIN's refused aims. Every spell is drawn and Evoked with
 // apply() (combat/draw, combat/evoke with aim, aims, dest, order and orderTo), the same path a player's click takes.
+import { scaled } from './helpers/scale';
 import { SIGIL } from '../src/data';
 import { amountBlock } from '../src/effects/amounts';
 import { MEND_GATE } from '../src/effects/output';
@@ -77,7 +78,7 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
   });
   it('Boons: WARD (rules 1.36: 4.3, gated at 20% of the ally) shield on an ally; CLEANSE · SEEK ends the newest condition (the preview names it)', () => {
     const f = rig(['ward', 'seek', 'cleanse'], ['14,9'], ['8,5']); line(f, ['ward', 'seek'], L2);
-    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 145) */); // the percent gate: 20% of the bar, counted to 145
+    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(Math.ceil(0.2 * MEND_GATE.hp!) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // the percent gate: 20% of the bar, counted to 145
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, null, f.pcs[1], 'slowed', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, null, f.pcs[1], 'pinned', 2, undefined, { skipSave: true }); });
     line(f, ['cleanse', 'seek'], L2);
     const pv = plan(f, '3,5', '8,5'); expect(pv.affected[0].notes).toEqual(['ends Pinned']);
@@ -126,7 +127,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const row = withGame(f.g, () => placedMagic(f.cb, 'pc')).find((z) => z.kind === 'turret')!;
     expect(row.reach).toContain('10,5'); expect(row.next).toEqual([f.pcs[1].id]);
     f.turn(f.pc);
-    expect(500 - f.pcs[1].hp).toBe(9); expect(500 - f.foes[0].hp).toBe(7 /* rules 1.95 (the scale): was 7 */); expect(f.foes[1].hp).toBe(500);
+    expect(500 - f.pcs[1].hp).toBe(9); expect(500 - f.foes[0].hp).toBe(7 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(f.foes[1].hp).toBe(500);
   });
   it('Safe Tesla post, SHOCK · WATCH · CHAIN · KIN: zaps the enemy next to it 15, chains forward 11, never your side', () => {
     const f = rig(['shock', 'watch', 'chain', 'kin'], ['8,5', '10,5'], ['7,6']); line(f, ['shock', 'watch', 'chain', 'kin'], L4);

@@ -68,7 +68,7 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
   it('damage only: the Line multiplier does not touch a heal (MEND 15 since rules 1.36, under the gate)', () => {
     const s = sigil(['mend', 'seek'], [{ at: '15,5' }], '9,5'); s.ally!.hp = 100;
     draw(s.cb, s.rng, s.u, ['mend', 'seek'], ['5,5', '4,5']); expect(evoke(s.cb, s.rng, s.u, '4,5', '9,5')).toBeNull();
-    expect(s.ally!.hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, 145))) */); // rules 1.36: the gate (20% of the bar, counted to 145)
+    expect(s.ally!.hp).toBe(100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, MEND_GATE.hp!))) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // rules 1.36: the gate (20% of the bar, counted to 145)
   });
   it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
     const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
@@ -85,7 +85,7 @@ describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 
   it('a critical is ×1.5 (the caster\'s own critical multiplier, never past ×2.0), not ×2', () => {
     const s = sigil(['fire', 'seek']); const cm = spellCritMult(s.cb, s.u, s.e);
     expect(cm).toBeGreaterThanOrEqual(CRIT_BASE); expect(cm).toBeLessThanOrEqual(CRIT_MAX); expect(cm).toBeLessThan(2);
-    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(50 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2] * cm) */);
+    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(scaled(30) * LINE_MULT[2] * cm) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const half = sigil(['fire', 'seek']); half.e.critTaken = 0.5; // the target's Critical damage taken cuts the part above ×1
     expect(spellCritMult(half.cb, half.u, half.e)).toBeCloseTo(1 + (cm - 1) / 2);
     s.u.critTaken = 0; expect(spellCritMult(s.cb, s.e, s.u)).toBe(CRIT_BASE); // an enemy's

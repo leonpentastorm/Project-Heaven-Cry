@@ -1,6 +1,7 @@
 // STAY, as Leon ruled it (item 422, 8 Nov 2026): the spell strikes once when Evoked (or when its trap springs), then
 // stays as a field; the field takes whoever it has not affected yet at full, and whoever it has (its placing strike or an
 // earlier bite) at ×0.5; at most once per creature per round.
+import { scaled } from './helpers/scale';
 import { SIGIL } from '../src/data';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
@@ -50,7 +51,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     expect(pv.ok).toBe(true); expect(pv.targets).toEqual([e.id]); expect(pv.missiles[0].placed).toBe('field'); expect(pv.missiles[0].burst.tiles).toEqual(['9,5']);
     const a = pv.affected.find((x) => x.unit === e.id)!; expect(a.mult).toBe(1); expect(a.dmgAfterArmour).toBe(18);
     const hp = e.hp; expect(evoke(cb, rng, u, '2,5', '9,5')).toBeNull();
-    expect(hp - e.hp).toBe(18 /* rules 1.95 (the scale): was 18 */);
+    expect(hp - e.hp).toBe(18 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const z: any = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles).toEqual(['9,5']); expect(z.ever[e.id]).toBe(true);
   });
   it('a creature the field has not affected walking in takes full; one it struck takes half; once per round', () => {
@@ -85,6 +86,6 @@ describe('STAY (item 422): one strike, then the field', () => {
     expect(hp - a.hp).toBe(11); expect(cb.zones!.some((z) => z.kind === 'trap')).toBe(false);
     const z: any = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.ever[a.id]).toBe(true);
     cb.round++; const h2 = a.hp; magicTurnStart(cb, rng, a); expect(h2 - a.hp).toBe(5 /* rules 1.95 (the scale): was 5 */);
-    const hb = b.hp; b.pos = '8,6'; b.ap = 9; moveUnit(cb, b, '7,6', rng); expect(hb - b.hp).toBe(11 /* rules 1.95 (the scale): was 11 */);
+    const hb = b.hp; b.pos = '8,6'; b.ap = 9; moveUnit(cb, b, '7,6', rng); expect(hb - b.hp).toBe(11 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
 });

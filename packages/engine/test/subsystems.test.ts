@@ -2,6 +2,7 @@
 // the damage chain (types, special ammo, the target bucket, pierce), Recoil, combat Hidden and ambush, surrender and
 // parley, the tile-by-tile walk with reactions, throwing, weapon swaps, companions, prayer, and the story side
 // (conditions, Karma, rest, tutors and advanced classes, voices per character, start items).
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
@@ -209,7 +210,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   it('the drone (item 370): 30 HP; move and a plain shot only; its service pistol never runs dry, never heats or jams', () => {
     const f = fightWith([{ traits: ['drone_handler'] }], [{ at: 'H6', tier: 'boss' }]);
     const d0 = f.cb.units.find((u) => u.companion === 'drone')!;
-    expect(COMPANION_KINDS.drone.hp).toBe(18); expect(d0.hp).toBe(18); expect(d0.maxHp).toBe(18 /* rules 1.95 (the scale): was 18 */); expect(d0.weapon).toBe('service_pistol');
+    expect(COMPANION_KINDS.drone.hp).toBe(18); expect(d0.hp).toBe(18); expect(d0.maxHp).toBe(18 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(d0.weapon).toBe('service_pistol');
     expect(d0.allowedActions).toEqual(['move', 'shot']); expect(d0.infiniteAmmo).toBe(true);
     const offered = weaponActions(d0).map((x) => x.id);
     for (const x of ['reload', 'load', 'clear', 'overwatch', 'burst', 'auto', 'skill', 'brace']) expect(offered, x).not.toContain(x);
@@ -233,7 +234,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   it('the beast (item 370): 60 HP, as the trait says', () => {
     const f = fightWith([{ traits: ['beast_handler'] }], [{ at: 'H6' }]);
     const b = f.cb.units.find((u) => u.companion === 'beast')!;
-    expect(COMPANION_KINDS.beast.hp).toBe(36); expect(b.hp).toBe(36); expect(b.maxHp).toBe(36 /* rules 1.95 (the scale): was 36 */);
+    expect(COMPANION_KINDS.beast.hp).toBe(36); expect(b.hp).toBe(36); expect(b.maxHp).toBe(36 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     expect(b.allowedActions).toBeUndefined(); expect(b.infiniteAmmo).toBeUndefined();
   });
   it('prayer: Faith 3 and a patron, 3 AP, a Blessing × Blessing power, then the cooldown', () => {

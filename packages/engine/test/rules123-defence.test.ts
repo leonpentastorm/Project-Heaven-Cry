@@ -188,7 +188,7 @@ describe('rules 1.23: the Boss, and the enemy\'s Burst', () => {
     for (const L of [6, 20]) expect(enemyStats('boss', L).hp).toBe(Math.max(1, Math.round(ENEMY.boss.hp * enemyLevelRow(L).hp_mult)));
     expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([scaled(240), scaled(140), scaled(70)]);
     const x = 1.28, d2 = (v: number) => Math.round(v * x * 1000) / 1000; // tools/balance/bible/world.json tiers_rule.damage_x
-    expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage].map((v) => Math.round(v * 1000) / 1000)).toEqual([d2(0.78), d2(1.05), d2(1.2)]);
+    expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage].map((v) => Math.round((v ?? 1) * 1000) / 1000)).toEqual([d2(0.78), d2(1.05), d2(1.2)]);
   });
   // Rules 1.61 (the opening volley): the switch is on (item 1079's refit). OLD expectation (rules 1.23 to 1.56): an
   // enemy kept its own three-roll Burst and `enemy_same` was unset.

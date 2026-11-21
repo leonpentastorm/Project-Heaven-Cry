@@ -2,6 +2,8 @@
 // word, the grammar and repeats, drawing on your own tile, the Line and the facing rule, Reach, Delivery, Burst, KIN and
 // fizzle, what stays (fields, traps, turrets, walls), the previews the screen reads, the fx events, enemy casters,
 // the area map and old saves.
+import { MEND_GATE } from '../src/effects/output';
+import { scaled } from './helpers/scale';
 import { SIGIL } from '../src/data';
 import { F } from './helpers/scale';
 const WD = (w: string): number => (SIGIL as any)[w].damage;
@@ -237,7 +239,7 @@ describe('Reach (spec: Reach)', () => {
     void allies;
     const s = setup(['fire', 'sense'], [{ at: '8,5' }]); s.cb.map = { ...s.cb.map, solid: ['6,4', '6,5', '6,6'] }; draw(s.cb, s.rng, s.u, ['fire', 'sense'], ['4,5', '3,5']);
     expect(lineOfSight(s.cb, '3,5', s.e.pos)).toBe(false);
-    const sv = previewEvoke(s.cb, s.u, '3,5', s.e.pos); expect(sv.ok).toBe(true); expect(sv.affected[0].dmg).toBe(11 /* rules 1.95 (the scale): was 11 */);
+    const sv = previewEvoke(s.cb, s.u, '3,5', s.e.pos); expect(sv.ok).toBe(true); expect(sv.affected[0].dmg).toBe(11 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const b = setup(['fire', 'seek'], [{ at: '8,5' }]); b.cb.map = { ...b.cb.map, solid: ['6,4', '6,5', '6,6'] }; draw(b.cb, b.rng, b.u, ['fire', 'seek'], ['4,5', '3,5']);
     expect(previewEvoke(b.cb, b.u, '3,5', b.e.pos).why).toMatch(/sight/);
   });
@@ -260,7 +262,7 @@ describe('Delivery (spec: Delivery)', () => {
     expect(u.mg!.flux).toBe(4);
     const pv = previewEvoke(cb, u, '3,5', es[0].pos); expect(pv.missiles.length).toBe(2); expect(new Set(pv.targets)).toEqual(new Set([es[0].id, es[1].id]));
     const hp = es.map((e) => e.hp); expect(evoke(cb, rng, u, '3,5', es[0].pos, { aims: [es[1].pos] })).toBeNull();
-    expect(es[0].hp).toBe(482 /* rules 1.95 (the scale): was hp[0] - 30 */); expect(es[1].hp).toBe(482 /* rules 1.95 (the scale): was hp[1] - 30 */);
+    expect(es[0].hp).toBe(hp[0] - scaled(30) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(es[1].hp).toBe(hp[1] - scaled(30) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
   it('PULL drags each one it affected 3 tiles toward you (+3 a copy); the preview shows where they land', () => {
     const { cb, u, e, rng } = setup(['bind', 'seek', 'pull'], [{ at: '10,5' }]);
@@ -308,7 +310,7 @@ describe('Burst (spec: Burst)', () => {
     const hit = pv.affected.filter((a) => !a.kinSpared).map((a) => a.unit); expect(hit).toContain(es[0].id); expect(hit).toContain(es[1].id); expect(hit).not.toContain(es[3].id);
     expect(pv.affected.find((a) => a.unit === es[0].id)!.dmg).toBe(13);
     const t = setup(['fire', 'push', 'spread'], [{ at: '6,5' }]); draw(t.cb, t.rng, t.u, ['fire', 'spread', 'push'], ['5,5', '4,5', '3,5']);
-    const tv = previewEvoke(t.cb, t.u, '3,5', '6,5'); expect(tv.affected.find((a) => a.unit === t.e.id)!.dmg).toBe(13 /* rules 1.95 (the scale): was 13 */); // 0.7 beats 0.6
+    const tv = previewEvoke(t.cb, t.u, '3,5', '6,5'); expect(tv.affected.find((a) => a.unit === t.e.id)!.dmg).toBe(13 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // 0.7 beats 0.6
   });
 });
 
@@ -332,7 +334,7 @@ describe('Subjects (spec: the words)', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
     const def = e.def, hp = e.hp; evoke(cb, rng, u, '3,5', e.pos);
     expect(hp - e.hp).toBe(Math.round(WD('acid') * 1.5)); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
-    const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(3 /* rules 1.95 (the scale): was 3 */);
+    const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(3 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     e.sv = { body: 99, brain: 0, heart: 0 }; e.condFresh = []; condTurnEnd(cb, e, seed()); expect(condOn(e, 'corroded')).toBe(false); expect(e.def).toBe(def);
   });
   it('Afflictions: no hit roll, a save against 12 + debuff strength; BIND, BLIND, SLOW, MUDDLE, DREAD, SILENCE', () => {
@@ -363,8 +365,8 @@ describe('Subjects (spec: the words)', () => {
   });
   it('WARD and MEND (rules 1.36: 4.3 and 15, the Sigil boon\'s Stat), each through the gate', () => {
     const { cb, u, allies, rng } = setup(['ward', 'mend', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
-    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 145) */);
-    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */);
+    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(Math.ceil(0.2 * MEND_GATE.hp!) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
+    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(100 + Math.ceil(0.2 * MEND_GATE.hp!) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     expect(fx(cb, 'boon').map((x) => x.word)).toEqual(['ward', 'mend']);
   });
   it('QUICKEN: +2 AP on the target\'s next turn (to 9 at most), once per target per round, never on yourself', () => {
@@ -384,8 +386,8 @@ describe('Subjects (spec: the words)', () => {
     draw(cb, rng, u, ['sharpen', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos);
     const a = allies[0]; expect(condOn(a, 'sharpened')).toBe(true);
     draw(cb, rng, a, ['fire', 'condense'], ['11,5', '10,5']);
-    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(34 /* rules 1.95 (the scale): was Math.round(45 * 1.25) */);
-    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(34 /* rules 1.95 (the scale): was 34 */); expect(condOn(a, 'sharpened')).toBe(false);
+    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(Math.round(scaled(45) * 1.25) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
+    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(34 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(condOn(a, 'sharpened')).toBe(false);
   });
   it('CLEANSE ends one condition, the newest first', () => {
     const { cb, u, allies, rng } = setup(['cleanse', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
@@ -453,7 +455,7 @@ describe('KIN, friendly fire and fizzle (spec: Filter; Friendly fire; Grammar 8â
     pv = previewEvoke(t.cb, t.u, '2,5', t.u.pos); expect(pv.targets).toEqual([t.e.id]);
     expect(pv.affected.filter((a) => a.kinSpared).map((a) => a.unit).sort()).toEqual([t.u.id, t.allies[0].id].sort());
     const hp = [t.u.hp, t.allies[0].hp, t.e.hp]; evoke(t.cb, t.rng, t.u, '2,5', t.u.pos);
-    expect([t.u.hp, t.allies[0].hp]).toEqual(hp.slice(0, 2)); expect(t.e.hp).toBe(489 /* rules 1.95 (the scale): was hp[2] - 18 */); expect(lastLog(t.cb)).toMatch(/KIN spares/);
+    expect([t.u.hp, t.allies[0].hp]).toEqual(hp.slice(0, 2)); expect(t.e.hp).toBe(hp[2] - scaled(18) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(lastLog(t.cb)).toMatch(/KIN spares/);
   });
   it('KIN backfires on Boons; a spell with nothing to affect fizzles: charge, AP and Flux spent, the glyphs fade, the log says so', () => {
     const { cb, u, allies, rng } = setup(['mend', 'seek', 'kin'], [{ at: '15,15' }], { allies: ['7,5'] }); u.mg!.flux = 0;
@@ -485,7 +487,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     const z = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.left).toBe(2); expect(e.hp).toBe(hp);
     e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(11);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(e.hp).toBe(hp2); // once a round
-    cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(5 /* rules 1.95 (the scale): was 5 */);
+    cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(5 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const ah = allies[0].hp; allies[0].ap = 9; moveUnit(cb, allies[0], '1,6', rng); expect(allies[0].hp).toBe(ah); // KIN
     expect(fx(cb, 'field').length).toBe(1); expect(fx(cb, 'field_tick').length).toBe(2);
   });
@@ -525,7 +527,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   it('WATCH: a turret casts at the nearest creature it can reach at the start of your turns, Ã—0.5 (Tesla tower 15 then 11); scuff or a hit destroys it; 1 per caster', () => {
     const { cb, u, es, rng } = setup(['shock', 'seek', 'watch', 'chain'], [{ at: '12,5' }, { at: '14,5' }]);
     draw(cb, rng, u, ['shock', 'watch', 'chain', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(cb, rng, u, '2,5', '10,5');
-    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(10 /* rules 1.95 (the scale): was 10 */); expect(z.left).toBe(2);
+    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(10 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(z.left).toBe(2);
     const hp = es.map((e) => e.hp); magicTurnStart(cb, rng, u);
     expect(es.map((e, i) => hp[i] - e.hp)).toEqual([9, 7]); expect(fx(cb, 'turret_shot').length).toBe(1); // rules 1.95 (the scale): was [15, 11]
     es[0].pos = '10,5'; es[0].ap = 9; expect(scuff(cb, es[0])).toBeNull(); expect(cb.zones!.some((x) => x.kind === 'turret')).toBe(false); expect(fx(cb, 'turret_destroyed').length).toBe(1);
@@ -569,7 +571,7 @@ describe('previews (spec: What the player must see)', () => {
     expect(pv.ok).toBe(true); expect(pv.area.length).toBe(4 * 8); expect(pv.pickable).toContain('12,5'); expect(pv.pickable).toContain(u.pos);
     expect(pv.missiles[0].kind).toBe('bolt'); expect(pv.missiles[0].path).toEqual(['7,5', '8,5', '9,5']);
     const ally = pv.affected.find((a) => a.unit === allies[0].id)!; expect(ally.ally).toBe(true); expect(ally.enemy).toBe(false);
-    const foe = pv.affected.find((a) => a.unit === es[0].id)!; expect(foe.enemy).toBe(true); expect(foe.dmg).toBe(11 /* rules 1.95 (the scale): was Math.round(30 * 0.6) */); expect(foe.roll!.need).toBe(es[0].def); expect(foe.saves[0]).toMatchObject({ cond: 'pinned', fam: 'body' });
+    const foe = pv.affected.find((a) => a.unit === es[0].id)!; expect(foe.enemy).toBe(true); expect(foe.dmg).toBe(Math.round(scaled(30) * 0.6) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(foe.roll!.need).toBe(es[0].def); expect(foe.saves[0]).toMatchObject({ cond: 'pinned', fam: 'body' });
     expect(pv.value!.own).toBeGreaterThan(0);
     expect(planEvoke(cb, u, '3,5').why).toMatch(/Pick a target/); expect(planEvoke(cb, u, '3,5').area.length).toBe(32);
   });

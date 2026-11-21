@@ -104,9 +104,9 @@ describe('shieldsView: a rank III Bulwark\'s plates are the door\'s (the Reactiv
   }
   it('the view: no plate of its own, Reforge held; the Guard line is the door\'s, met after the shields, as the plan says', () => {
     const { f, u } = bulwark(); expect(f.bound(() => phys.holds(u(), PLATE))).toBe(false); expect(f.bound(() => phys.holds(u(), 'class:defender.reforge'))).toBe(true);
-    const v = shieldsView(f.cb, u(), null, String), plan = f.bound(() => guardSoakOf(u()));
+    const v = f.bound(() => shieldsView(f.cb, u(), null, String)), plan = f.bound(() => guardSoakOf(u())); // rules 1.95: both read on the holder's sheet (the game bound)
     expect(v.guard).toMatchObject({ plates: 3, first: false }); expect(v.guard!.how.startsWith(L.guard.after)).toBe(true);
-    expect(plan!.phase).not.toBe('before'); expect(v.guard!.soak).toBe(30 /* rules 1.95 (the scale): was plan!.per */);
+    expect(plan!.phase).not.toBe('before'); expect(v.guard!.soak).toBe(plan!.per);
   });
   it('a 40-damage blow meets the shield first, and no plate line of the Reactive Plate is said', () => {
     const { f, u } = bulwark();

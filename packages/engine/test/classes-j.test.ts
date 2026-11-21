@@ -1,6 +1,7 @@
 // Lane J: advanced classes (src/classes/j.ts). Every move is shown working in play: through the reducer (apply) where it
 // is an action or rides on one, else with the game bound and the engine's own functions (moveUnit, resolveAttack,
 // applyDamage, emit), the same calls the reducer and the enemy AI make.
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
@@ -445,7 +446,7 @@ describe('Adamantile Knight', () => {
     const [k, a] = f.pcs; at(k, '2,5'); at(a, '2,6'); k.res = { ...(k.res || {}), guard: 2 }; const hp = k.hp, foe = f.foe;
     withGame(f.g, () => applyDamage(f.cb, k, 25, { by: foe, type: 'weapon', shield: true, credit: 'all' }));
     expect(f.pcs[0].hp).toBe(hp - 5); expect(f.pcs[0].res!.guard).toBe(0);
-    expect(f.pcs[1].shield).toBe(12 /* rules 1.95 (the scale): was Math.floor(20 * (f.pcs[1].healRecv || 1)) */);
+    expect(f.pcs[1].shield).toBe(Math.floor(scaled(20) * (f.pcs[1].healRecv || 1)) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
   it('Interpose (granted): an adjacent ally\'s hit is taken by the Knight for 1 Guard and the reaction', () => {
     const f = fightWith([cls('adamantile_knight'), {}], [{ at: 'O10' }]);

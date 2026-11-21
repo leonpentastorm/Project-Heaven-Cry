@@ -113,20 +113,20 @@ describe('Rebuke, the seventh Whisper (item 1260)', () => {
   it('an Atheist prays it by dice against 12, like every Whisper: a miss spends the AP and does nothing', () => {
     const a = holy({ atheist: true }); expect(previewPrayer(a.g, a.me.id, 'whisper', 'rebuke', { targetId: a.foe.id }).roll!.tn).toBe(ATHEIST_TN.whisper);
     a.g.rng.state = rngFor(2); const ap = a.me.ap; a.pray('whisper', 'rebuke', { targetId: a.foe.id }); expect(a.foe.hp).toBe(2000); expect(a.me.ap).toBe(ap - 1);
-    const b = holy({ atheist: true }); b.g.rng.state = rngFor(19); b.pray('whisper', 'rebuke', { targetId: b.foe.id }); expect(b.foe.hp).toBe(1986 /* rules 1.95 (the scale): was 2000 - Math.round(20 * b.me.blessPower!) */);
+    const b = holy({ atheist: true }); b.g.rng.state = rngFor(19); b.pray('whisper', 'rebuke', { targetId: b.foe.id }); expect(b.foe.hp).toBe(2000 - Math.round(scaled(20) * b.me.blessPower!) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
   it('praying needs Faith 1 (rules 1.31): below it there is no Rebuke; at Faith 1 there is', () => {
     const h = holy({ faith: WHISPER_FAITH - 1 }); expect(() => h.pray('whisper', 'rebuke', { targetId: h.foe.id })).toThrow(/Praying needs Faith/);
-    const one = holy({ faith: WHISPER_FAITH }); one.pray('whisper', 'rebuke', { targetId: one.foe.id }); expect(one.foe.hp).toBe(1989 /* rules 1.95 (the scale): was 2000 - Math.round(20 * one.me.blessPower!) */);
+    const one = holy({ faith: WHISPER_FAITH }); one.pray('whisper', 'rebuke', { targetId: one.foe.id }); expect(one.foe.hp).toBe(2000 - Math.round(scaled(20) * one.me.blessPower!) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
 });
 
 describe('the damage Hymns (items 1261 to 1263)', () => {
   it('Judgement: 56 Soul × Blessing power (12 Nov 2026); 30% more against one that harmed the helpless', () => {
     const h = holy({ patron: 'nerukhan' }); const pw = h.me.blessPower!; h.pray('hymn', 'judgement', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(1960 /* rules 1.95 (the scale): was 2000 - Math.round(56 * pw) */);
+    expect(h.foe.hp).toBe(2000 - Math.round(scaled(56) * pw) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const k = holy({ patron: 'nerukhan' }); k.foe.faith = { harmedHelpless: true }; k.pray('hymn', 'judgement', { targetId: k.foe.id });
-    expect(k.foe.hp).toBe(1948 /* rules 1.95 (the scale): was 2000 - Math.round(56 * pw * 1.3) */); expect(logHas(k.cb, /×1\.3: it harmed the helpless/)).toBe(true);
+    expect(k.foe.hp).toBe(2000 - Math.round(scaled(56) * pw * 1.3) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(logHas(k.cb, /×1\.3: it harmed the helpless/)).toBe(true);
   });
   it('Lightning Rod: 56 lightning × Blessing power, then 23 × Blessing power to one more within 2 (12 Nov 2026) (armour takes half its number off lightning)', () => {
     const h = holy({ patron: 'old_overcast' }); const pw = h.me.blessPower!; h.pray('hymn', 'lightning_rod', { targetId: h.foe.id });
@@ -151,7 +151,7 @@ describe('The Saints\' Verdict (item 1264)', () => {
   it('130 Soul × Blessing power to every enemy in sight; double for one that harmed the helpless', () => {
     const h = holy({ patron: 'nerukhan', devotion: 10 }); const pw = h.me.blessPower!; h.foe2.faith = { harmedHelpless: true };
     h.pray('miracle', 'saints_verdict');
-    expect(h.foe.hp).toBe(1908 /* rules 1.95 (the scale): was 2000 - Math.round(130 * pw) */); expect(h.foe2.hp).toBe(1817 /* rules 1.95 (the scale): was 2000 - Math.round(260 * pw) */);
+    expect(h.foe.hp).toBe(2000 - Math.round(scaled(130) * pw) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(h.foe2.hp).toBe(2000 - Math.round(scaled(260) * pw) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
   });
 });
 

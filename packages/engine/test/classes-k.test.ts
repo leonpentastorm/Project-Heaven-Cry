@@ -2,6 +2,7 @@
 // Grand Sigilist (and its Grand forms), Heartfed, Heartbinder, Vessel, Twinbound. Every move is shown working in play:
 // through the reducer (apply) where it is an action or rides on one, else with the game bound and the engine's own
 // functions (resolveAttack, applyDamage, emit), the same calls enemy turns make.
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
@@ -452,7 +453,7 @@ describe('Lane K: more forms and story parts', () => {
     withGame(b.g, () => moveUnit(b.cb, b.unit(foe.id), '5,2', b.g.rng)); expect(condOn(b.unit(foe.id), 'pinned')).toBe(true); expect(b.unit(foe.id).pos).not.toBe('5,2');
     const v = grand('veil', '5,2'); expect(v.unit(v.foe.id).hidden).toBe(true); expect((v.cb.zones || []).some((z) => z.kind === 'veil')).toBe(true);
     const fg = grand('blind', '5,2'); fg.turn(fg.foe.id); expect(fg.unit(fg.foe.id).vision).toBe(1);
-    const c = grand('condense', '5,2'); c.unit(c.foe.id).armour = 0; at(c, c.pcs[1], '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).hp).toBe(993 /* rules 1.95 (the scale): was c.unit(c.foe.id).maxHp - 10 */);
+    const c = grand('condense', '5,2'); c.unit(c.foe.id).armour = 0; at(c, c.pcs[1], '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).hp).toBe(c.unit(c.foe.id).maxHp - scaled(10) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     const lone = grand('condense', '6,0'); at(lone, lone.pcs[1], '2,4'); lone.turn(lone.foe.id); expect(lone.unit(lone.foe.id).hp).toBe(lone.unit(lone.foe.id).maxHp);
     const p = grand('pull', '8,2'); p.turn(p.foe.id); expect(p.unit(p.foe.id).pos).toBe('7,2');
   });

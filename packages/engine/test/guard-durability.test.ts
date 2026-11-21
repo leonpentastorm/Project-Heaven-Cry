@@ -145,7 +145,7 @@ describe('3. Guard soaks', () => {
     const f = fight([{ dur: 5 }]); guard(f, f.pc, 3);
     f.bound(() => applyDamage(f.cb, f.pc, 5, { type: 'bleed', shield: false })); expect(guard(f)).toBe(3); expect(f.pc.maxHp - f.pc.hp).toBe(5);
     f.bound(() => applyDamage(f.cb, f.pc, 8, { type: 'soul', by: f.pc })); expect(guard(f)).toBe(3);
-    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(17 /* rules 1.95 (the scale): was 25 - 2 * G.soak */); // 2 points soak, 1 kept
+    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(25 - 2 * f.bound(() => phys.guardSoak(f.unit(f.pc.id)))); // 2 points soak, 1 kept (rules 1.95: each the plate's soak on the sheet)
   });
   it('a rank III Bulwark holds no Reactive Plate any more (rules 1.73 item 5837): its Guard soaks as anyone\'s, and still takes less than none', () => {
     const base = hit(fight([{ dur: 0 }]), undefined, 'melee');

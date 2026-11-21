@@ -1,6 +1,8 @@
 // Step a6 of the damage-formula migration: the generic `deal` and `mend` ops (data/effect_ops.json; effects/core.ts).
 // An effect that names an AMOUNT (a block written in the effect, or the name of a block in its item's `amounts`) deals
 // damage, heals or shields on the one formula (effects/output.ts), with no code of its own.
+import { MEND_GATE } from '../src/effects/output';
+import { scaled } from './helpers/scale';
 import { describe, it, expect } from 'vitest';
 import { scaleOf, healingMult, physicalMult, mendFactor, levelFactor, type Unit } from '../src';
 import { genericOf } from '../src/effects/hooks';
@@ -32,7 +34,7 @@ describe('the generic deal and mend ops', () => {
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * levelFactor('deal', 6))); // rules 1.26: the flat profile reads the deal column
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'healing' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(161 /* rules 1.95 (the scale): was 100 + Math.floor(10 * hg * scaleOf(6)) */); // rules 1.36: the healing profile takes the scale
       // the `mend` profile reads the Level term too (the level factor of rules 1.20, at the giver's level)
-      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'mend' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(161 /* rules 1.95 (the scale): was 100 + Math.max(Math.floor(10 * hg * mendFactor(me.level)), Math.ceil(0.2 * Math.min(ally.maxHp, 145 * scaleOf(me.level)))) */); // rules 1.36: the percent gate of a 2-AP heal profile (20% of the target, counted to 145 × scale)
+      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'mend' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.max(Math.floor(10 * hg * mendFactor(me.level)), Math.ceil(0.2 * Math.min(ally.maxHp, MEND_GATE.hp! * scaleOf(me.level)))) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // rules 1.36: the percent gate of a 2-AP heal profile (20% of the target, counted to 145 × scale)
       ally.shield = 0; op.run!(h, { op: 'mend', amount: { kind: 'shield', base: 12, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * levelFactor('deal', 6)));
     });
   });
