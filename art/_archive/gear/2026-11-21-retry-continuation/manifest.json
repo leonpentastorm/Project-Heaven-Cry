@@ -3271,6 +3271,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-service_pistol--fine",
+      "path": "art/icons/gear/weapon-service_pistol--fine.png",
+      "sha256": "0278aa7951e7a5b4bb3e8f01bffa4fe2dca41f3a45e47d960ff4523e7e1ebf95",
+      "label": "Service pistol repaint — Fine",
+      "family": "weapon-service_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--fine.png",
+        "sha256": "1aacde1d5e32a7a2c71bdcb6ce19c0f12da9e0e0d7dbcd521aabe90b26aa4eb6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-service_pistol--fine.png",
+        "sha256": "0278aa7951e7a5b4bb3e8f01bffa4fe2dca41f3a45e47d960ff4523e7e1ebf95"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-service_pistol--fine.txt",
+        "sha256": "6afc66c77932e1a54f657a527bb2f128be1b4526299c10b00748e002ae0b819c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--fine.png"
+      },
+      "export_hashes": {
+        "256": "6eeaa7853d7d0ce258bde4c9657027b8e7765e7056d65e507a0f2e4af883a5bd",
+        "128": "711cf1fd1e162a0ab1d1fa58a839691ab30357c9520c385c5b604ffc8370751e",
+        "64": "209c4162bee1973a5eb92f07ea9427c01d033e449589f6c91d0c30ff4c89cc77",
+        "32": "5189bb2769c06ad149e825f41b84e5868c8f4d2f008e284001e37b5136c23e9a"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-service_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.9831467141848906,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

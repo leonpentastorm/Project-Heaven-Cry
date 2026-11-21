@@ -35102,6 +35102,42 @@
       "collection": "2026-11-21-retry-uniques",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-service_pistol--fine": {
+      "label": "Service pistol repaint — Fine",
+      "path": "art/icons/gear/weapon-service_pistol--fine.png",
+      "sha256": "0278aa7951e7a5b4bb3e8f01bffa4fe2dca41f3a45e47d960ff4523e7e1ebf95",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-service_pistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9831467141848906,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 10
+      }
     }
   },
   "survival_art": {

@@ -1,12 +1,12 @@
 # Current sole-artist production
 
-**569/871 (65.3%) selected review candidates.** Last delivery: `weapon-encore`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
+**570/871 (65.4%) selected review candidates.** Last delivery: `weapon-service_pistol--fine`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
 
 | Requested work | Selected | Total |
 | --- | ---: | ---: |
 | icons_tiles | 88 | 88 |
 | new_repaint_standards | 53 | 104 |
-| grades | 409 | 656 |
+| grades | 410 | 656 |
 | uniques | 19 | 23 |
 
 Active run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Shared live ledger: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. Unique retry lane: art/_archive/gear/2026-11-21-retry-uniques/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.
@@ -16,6 +16,3 @@ Leon expressly replaced the earlier no-retry restriction: "Try until approve, un
 RunningScript was completed by placing the actual imagegen-drawn rune, with all158252 existing drawn RGBA pixels unchanged and only328 added-alpha pixels. RimCorner half-tile geometry passes; painted join variation remains disclosed. Exact remaining destinations: REMAINING-WORK.json.
 
 Each image is shown, inspected, exported to its mode-specific master and UI sizes, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. Develop stays untouched. Targeted delivery checks cover actual materialized files; whole historical-library validation remains limited by this sparse checkout.
-
-
-21November service-block checkpoint:569/871 selected. Current continuation43 actual requests,1 selectedEncore,42 actualmoderationerrors acrossall28 independentreadyjobs. Noactualusage_limit_reached/reset. Exacthandoff: art/_archive/gear/2026-11-21-retry-continuation/SERVICE-BLOCK-HANDOFF-2026-11-21.md.60pendingexactreservations retained;242unclaimeddependentdestinations listed in coordination/FREE-UNCLAIMED-WORK.json.

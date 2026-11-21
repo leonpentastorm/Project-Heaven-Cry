@@ -1,0 +1,9 @@
+{
+  "id": "weapon-service_pistol--fine",
+  "selected_for_delivery": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "visual_review": "Native inspected against current Standard: same right-facing level pistol, broad bevelled upper body, three rear diagonal cuts, upper-side dark port, dark muzzle, same lower frame/guard opening and attached curved trigger, muted steel-blue grip inset with two round pins. Cleaner even dark metal and cleaned grip, one narrow engraved contour along upper side. No new part, coloured inlay, ornament or repair. Minor registration/contour drift must be measured; no exact-outline or artistic approval claimed. Native edge debris is preserved in source; technical alpha normalization applies only to delivered master/exports.",
+  "source_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-service_pistol--fine/002/native.png"
+}

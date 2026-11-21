@@ -1,0 +1,71 @@
+{
+  "head": "3636a00800dca3ba16a888984e468fd73cece415",
+  "job": {
+    "id": "weapon-service_pistol--fine",
+    "standard_id": "weapon-service_pistol",
+    "grade": "fine",
+    "label": "Service pistol repaint — Fine",
+    "path": "art/icons/gear/weapon-service_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Create the Fine-finish cosmetic variant of the attached fictional RPG pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment is the exact Standard geometry and registration reference: preserve the complete visible pistol outline, all part positions, existing openings, camera, right-facing level pose, scale and margins. SECOND attachment supplies Heavenprint ink and gouache brushwork only; no person or scene.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nApply those surface changes only to the first reference. Retain the original muted steel-blue grip inset, its two round pins and the three visible rear diagonal cuts. Keep all existing dark openings dark. Do not add, remove or relocate any part or opening. No coloured inlay, ornament or repair at this grade. Hand-painted opaque gouache and ink with broken directional strokes and selective dry-brush; charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logos, labels, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, with no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-service_pistol--fine--1795161248045.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-service_pistol--fine--1795161248045.json",
+      "request_id": "8d74c1c1-f648-4bbd-a386-8b841dca346e"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "4aebd0f1e2ea5e73dac926ebb81e711f017b919cf8d63945e3172306595ad7cc",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-service_pistol--fine--1795161248045.json",
+      "response": {
+        "id": "weapon-service_pistol--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 8d74c1c1-f648-4bbd-a386-8b841dca346e. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+        "previous_sha256": "4aebd0f1e2ea5e73dac926ebb81e711f017b919cf8d63945e3172306595ad7cc",
+        "reason": "Reference-first cosmetic edit appropriate to this grade-only task: preserves explicit pistol identity and exact Fine block, removes redundant geometry prose, all required visible details remain in the reference and request. Full earlier request preserved.",
+        "changed_utc": "2026-11-21T15:53:41.362896+00:00"
+      }
+    ],
+    "active_prompt_sha256": "3e3edd6ebc9a2f240993c3b8d7288f38673da8ccd7c93a7e45b8f41ca939ec5f"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-service_pistol.png": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 15:53:49 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7065154530,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

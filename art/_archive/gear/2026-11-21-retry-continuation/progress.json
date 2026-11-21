@@ -53,7 +53,8 @@
     "weapon-coach_gun--masterwork",
     "weapon-coach_gun--relic",
     "weapon-coach_gun--celestial",
-    "weapon-legion_bullpup--fine"
+    "weapon-legion_bullpup--fine",
+    "weapon-service_pistol--fine"
   ],
   "remaining": [
     "weapon-short_bow--fine",
@@ -86,7 +87,6 @@
     "weapon-whisper_carbine--masterwork",
     "weapon-whisper_carbine--relic",
     "weapon-whisper_carbine--celestial",
-    "weapon-service_pistol--fine",
     "weapon-service_pistol--masterwork",
     "weapon-service_pistol--relic",
     "weapon-service_pistol--celestial",
@@ -527,8 +527,8 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T15:48:20.789469+00:00",
-  "project_distinct_count": 569,
+  "updated_utc": "2026-11-21T15:54:56.692742+00:00",
+  "project_distinct_count": 570,
   "total": 94,
   "service_block": {
     "returned_code": "moderation_blocked",
