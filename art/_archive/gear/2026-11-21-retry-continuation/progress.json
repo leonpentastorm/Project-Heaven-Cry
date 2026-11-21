@@ -4,10 +4,10 @@
   "status": "drawing",
   "delivered": [
     "weapon-legion_spear--masterwork",
-    "weapon-legion_spear--relic"
+    "weapon-legion_spear--relic",
+    "weapon-legion_spear--celestial"
   ],
   "remaining": [
-    "weapon-legion_spear--celestial",
     "weapon-short_draw--fine",
     "weapon-long_draw--fine",
     "weapon-purifier_flamer--masterwork",
@@ -36,6 +36,6 @@
   "project_total": 871,
   "image_quota": null,
   "attempts": [],
-  "updated_utc": "2026-11-21T01:28:50.408162+00:00",
-  "project_distinct_count": 514
+  "updated_utc": "2026-11-21T01:33:06.205983+00:00",
+  "project_distinct_count": 515
 }

@@ -1,0 +1,61 @@
+{
+  "head": "4d775100d7859b96aa06ed1b508f130fddac6d35",
+  "job": {
+    "id": "weapon-legion_spear--celestial",
+    "standard_id": "weapon-legion_spear",
+    "grade": "celestial",
+    "label": "Legion Spear — Celestial",
+    "path": "art/icons/gear/weapon-legion_spear--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/native.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.\n\nQUALITY CORRECTION: the FOURTH attached image is the previous Celestial draft. Keep its pale ivory finish and existing shape. It accidentally omitted BOTH thin flush rectangular metal inlay strips on the exposed upper shaft immediately below the socket. Restore BOTH at their exact lengths and positions from the SECOND image (Relic), but render the strips as pale PEARL-IVORY METAL with two subtle straight crevice-shadow seams so the two insets remain visible against ivory wood. They are inlaid flush within the existing shaft, never raised rails or attached bars. Do not erase them into an undivided wood shaft. Keep all other Celestial changes, original stop-bar rivets, socket ornament and existing repair. This correction changes surface details only; no outline or camera changes.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-21-retry-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ],
+    "depends_on": "weapon-legion_spear--relic",
+    "prior_lane": "art/_archive/gear/2026-11-20-reset-continuation",
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "d42b589c87796486e79ad01e1bd68378a58cc6bfb33ebc1c9238827446fc88ba",
+    "run": "sole-20261121-0109",
+    "standard_sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+    "prompt_revisions": [
+      {
+        "attempt": 1,
+        "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.",
+        "sha256": "d42b589c87796486e79ad01e1bd68378a58cc6bfb33ebc1c9238827446fc88ba",
+        "reason": "accepted render but missing both flush shaft inlays"
+      }
+    ],
+    "active_prompt_sha256": "ea408ba41ce8f39634112492f07ec359c5b5a7c865f2862dacfa072855c6fc4d"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-legion_spear.png": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+    "art/icons/gear/weapon-legion_spear--relic.png": "2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/native.png": "514fce8ebc67edbd9707e67539724c98e56c189a6815126aef6df0192575eb9c"
+  },
+  "attempt": 2,
+  "clock": {
+    "current_time": "2026-11-21 01:32:09 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055037202,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "6f401b26ccadedbce887e00a911c04d5082b9bd5"
+}

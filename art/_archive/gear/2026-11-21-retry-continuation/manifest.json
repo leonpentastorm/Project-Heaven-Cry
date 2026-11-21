@@ -133,6 +133,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_spear--celestial",
+      "path": "art/icons/gear/weapon-legion_spear--celestial.png",
+      "sha256": "64ef15318061cf4b0fb3909d0f2c190c981ffe0406f1007771fed96dc16c446a",
+      "label": "Legion Spear — Celestial",
+      "family": "weapon-legion_spear",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-legion_spear--celestial.png",
+        "sha256": "957f2e40be0e18e921749f10b1069ce1b5f46854fd18e0e5c1337b1e21cc1279"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_spear--celestial.png",
+        "sha256": "64ef15318061cf4b0fb3909d0f2c190c981ffe0406f1007771fed96dc16c446a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--celestial.txt",
+        "sha256": "307693f6bb671a6f81490764f792132812fa25b7ab80526fb70a644c64e0391e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_spear.png",
+          "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_spear--relic.png",
+          "sha256": "2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/native.png",
+          "sha256": "514fce8ebc67edbd9707e67539724c98e56c189a6815126aef6df0192575eb9c"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png",
+          "sha256": "7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_spear--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_spear--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_spear--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_spear--celestial.png"
+      },
+      "export_hashes": {
+        "256": "90e0e42114e776e18d9e7fc7cde658505f716b4de3aea117616dcd9da816387a",
+        "128": "24642c32e638078405d1c64b68ae9209cbe20db9d303321ea8fa4712f65c0bde",
+        "64": "e4231f9207f61af6e7f222c49436cbc25d6e3c8980a5c7681e1da611d1231fc3",
+        "32": "f20e71b93bd28b8cac29352e0fcc026bad1856310dddd722c34523413501df7f"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-legion_spear",
+      "outline": {
+        "solid_alpha_iou": 0.8222483112994062,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 31
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
