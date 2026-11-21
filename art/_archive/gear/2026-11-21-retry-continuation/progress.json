@@ -6,10 +6,10 @@
     "weapon-legion_spear--masterwork",
     "weapon-legion_spear--relic",
     "weapon-legion_spear--celestial",
-    "weapon-short_draw--fine"
+    "weapon-short_draw--fine",
+    "weapon-long_draw--fine"
   ],
   "remaining": [
-    "weapon-long_draw--fine",
     "weapon-purifier_flamer--masterwork",
     "weapon-dock_cutter--masterwork",
     "weapon-short_draw--masterwork",
@@ -45,6 +45,6 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T01:35:03.373418+00:00",
-  "project_distinct_count": 516
+  "updated_utc": "2026-11-21T01:38:08.677230+00:00",
+  "project_distinct_count": 517
 }

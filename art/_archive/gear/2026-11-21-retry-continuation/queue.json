@@ -3,7 +3,7 @@
     "id": "weapon-legion_spear--masterwork",
     "standard_id": "weapon-legion_spear",
     "grade": "masterwork",
-    "label": "Legion Spear \u2014 Masterwork",
+    "label": "Legion Spear — Masterwork",
     "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -42,7 +42,7 @@
     "id": "weapon-legion_spear--relic",
     "standard_id": "weapon-legion_spear",
     "grade": "relic",
-    "label": "Legion Spear \u2014 Relic",
+    "label": "Legion Spear — Relic",
     "path": "art/icons/gear/weapon-legion_spear--relic.png",
     "kind": "weapon",
     "references": [
@@ -76,7 +76,7 @@
     "id": "weapon-legion_spear--celestial",
     "standard_id": "weapon-legion_spear",
     "grade": "celestial",
-    "label": "Legion Spear \u2014 Celestial",
+    "label": "Legion Spear — Celestial",
     "path": "art/icons/gear/weapon-legion_spear--celestial.png",
     "kind": "weapon",
     "references": [
@@ -120,7 +120,7 @@
     "id": "weapon-short_draw--fine",
     "standard_id": "weapon-short_draw",
     "grade": "fine",
-    "label": "Short Draw \u2014 Fine",
+    "label": "Short Draw — Fine",
     "path": "art/icons/gear/weapon-short_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -156,7 +156,7 @@
     "id": "weapon-long_draw--fine",
     "standard_id": "weapon-long_draw",
     "grade": "fine",
-    "label": "Long Draw \u2014 Fine",
+    "label": "Long Draw — Fine",
     "path": "art/icons/gear/weapon-long_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -171,7 +171,7 @@
     "brief_number": "A3.1",
     "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms.",
     "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
-    "status": "pending",
+    "status": "delivered",
     "production_approved": false,
     "collection": "2026-11-21-retry-continuation",
     "reference_sources": [
@@ -192,7 +192,7 @@
     "id": "weapon-purifier_flamer--masterwork",
     "standard_id": "weapon-purifier_flamer",
     "grade": "masterwork",
-    "label": "Purifier Flamer \u2014 Masterwork",
+    "label": "Purifier Flamer — Masterwork",
     "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -227,7 +227,7 @@
     "id": "weapon-dock_cutter--masterwork",
     "standard_id": "weapon-dock_cutter",
     "grade": "masterwork",
-    "label": "Dock Cutter \u2014 Masterwork",
+    "label": "Dock Cutter — Masterwork",
     "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -265,7 +265,7 @@
     "id": "weapon-short_draw--masterwork",
     "standard_id": "weapon-short_draw",
     "grade": "masterwork",
-    "label": "Short Draw \u2014 Masterwork",
+    "label": "Short Draw — Masterwork",
     "path": "art/icons/gear/weapon-short_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -310,7 +310,7 @@
     "id": "weapon-long_draw--masterwork",
     "standard_id": "weapon-long_draw",
     "grade": "masterwork",
-    "label": "Long Draw \u2014 Masterwork",
+    "label": "Long Draw — Masterwork",
     "path": "art/icons/gear/weapon-long_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -343,7 +343,7 @@
     "id": "weapon-kemizuchi_side_sword--masterwork",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "masterwork",
-    "label": "Kemizuchi Side Sword \u2014 Masterwork",
+    "label": "Kemizuchi Side Sword — Masterwork",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -381,7 +381,7 @@
     "id": "weapon-ork_cleaver_glaive--masterwork",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "masterwork",
-    "label": "Ork Cleaver Glaive \u2014 Masterwork",
+    "label": "Ork Cleaver Glaive — Masterwork",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -419,7 +419,7 @@
     "id": "weapon-purifier_flamer--relic",
     "standard_id": "weapon-purifier_flamer",
     "grade": "relic",
-    "label": "Purifier Flamer \u2014 Relic",
+    "label": "Purifier Flamer — Relic",
     "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
     "kind": "weapon",
     "references": [
@@ -450,7 +450,7 @@
     "id": "weapon-dock_cutter--relic",
     "standard_id": "weapon-dock_cutter",
     "grade": "relic",
-    "label": "Dock Cutter \u2014 Relic",
+    "label": "Dock Cutter — Relic",
     "path": "art/icons/gear/weapon-dock_cutter--relic.png",
     "kind": "weapon",
     "references": [
@@ -484,7 +484,7 @@
     "id": "weapon-broadback_sabre--relic",
     "standard_id": "weapon-broadback_sabre",
     "grade": "relic",
-    "label": "Broadback Sabre \u2014 Relic",
+    "label": "Broadback Sabre — Relic",
     "path": "art/icons/gear/weapon-broadback_sabre--relic.png",
     "kind": "weapon",
     "references": [
@@ -523,7 +523,7 @@
     "id": "weapon-short_draw--relic",
     "standard_id": "weapon-short_draw",
     "grade": "relic",
-    "label": "Short Draw \u2014 Relic",
+    "label": "Short Draw — Relic",
     "path": "art/icons/gear/weapon-short_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -556,7 +556,7 @@
     "id": "weapon-long_draw--relic",
     "standard_id": "weapon-long_draw",
     "grade": "relic",
-    "label": "Long Draw \u2014 Relic",
+    "label": "Long Draw — Relic",
     "path": "art/icons/gear/weapon-long_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -589,7 +589,7 @@
     "id": "weapon-kemizuchi_side_sword--relic",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "relic",
-    "label": "Kemizuchi Side Sword \u2014 Relic",
+    "label": "Kemizuchi Side Sword — Relic",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
     "kind": "weapon",
     "references": [
@@ -623,7 +623,7 @@
     "id": "weapon-ork_cleaver_glaive--relic",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "relic",
-    "label": "Ork Cleaver Glaive \u2014 Relic",
+    "label": "Ork Cleaver Glaive — Relic",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
     "kind": "weapon",
     "references": [
@@ -657,7 +657,7 @@
     "id": "weapon-hellraiser_rotary--celestial",
     "standard_id": "weapon-hellraiser_rotary",
     "grade": "celestial",
-    "label": "Hellraiser Rotary \u2014 Celestial",
+    "label": "Hellraiser Rotary — Celestial",
     "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
     "kind": "weapon",
     "references": [
@@ -694,7 +694,7 @@
     "id": "weapon-purifier_flamer--celestial",
     "standard_id": "weapon-purifier_flamer",
     "grade": "celestial",
-    "label": "Purifier Flamer \u2014 Celestial",
+    "label": "Purifier Flamer — Celestial",
     "path": "art/icons/gear/weapon-purifier_flamer--celestial.png",
     "kind": "weapon",
     "references": [
@@ -725,7 +725,7 @@
     "id": "weapon-dock_cutter--celestial",
     "standard_id": "weapon-dock_cutter",
     "grade": "celestial",
-    "label": "Dock Cutter \u2014 Celestial",
+    "label": "Dock Cutter — Celestial",
     "path": "art/icons/gear/weapon-dock_cutter--celestial.png",
     "kind": "weapon",
     "references": [
@@ -759,7 +759,7 @@
     "id": "weapon-broadback_sabre--celestial",
     "standard_id": "weapon-broadback_sabre",
     "grade": "celestial",
-    "label": "Broadback Sabre \u2014 Celestial",
+    "label": "Broadback Sabre — Celestial",
     "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
     "kind": "weapon",
     "references": [
@@ -794,7 +794,7 @@
     "id": "weapon-short_draw--celestial",
     "standard_id": "weapon-short_draw",
     "grade": "celestial",
-    "label": "Short Draw \u2014 Celestial",
+    "label": "Short Draw — Celestial",
     "path": "art/icons/gear/weapon-short_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -827,7 +827,7 @@
     "id": "weapon-long_draw--celestial",
     "standard_id": "weapon-long_draw",
     "grade": "celestial",
-    "label": "Long Draw \u2014 Celestial",
+    "label": "Long Draw — Celestial",
     "path": "art/icons/gear/weapon-long_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -860,7 +860,7 @@
     "id": "weapon-kemizuchi_side_sword--celestial",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "celestial",
-    "label": "Kemizuchi Side Sword \u2014 Celestial",
+    "label": "Kemizuchi Side Sword — Celestial",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
     "kind": "weapon",
     "references": [
@@ -894,7 +894,7 @@
     "id": "weapon-ork_cleaver_glaive--celestial",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "celestial",
-    "label": "Ork Cleaver Glaive \u2014 Celestial",
+    "label": "Ork Cleaver Glaive — Celestial",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
     "kind": "weapon",
     "references": [

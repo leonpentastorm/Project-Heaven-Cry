@@ -267,6 +267,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-long_draw--fine",
+      "path": "art/icons/gear/weapon-long_draw--fine.png",
+      "sha256": "b75552c237291bdafcc06d704530ca92869359c75a3c3a76c62d46a63f116b79",
+      "label": "Long Draw — Fine",
+      "family": "weapon-long_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-long_draw--fine.png",
+        "sha256": "6a0832f58a7d6f63691b996cc766f4161b473b6b5798065b4b679fd87fbef836"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-long_draw--fine.png",
+        "sha256": "b75552c237291bdafcc06d704530ca92869359c75a3c3a76c62d46a63f116b79"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-long_draw--fine.txt",
+        "sha256": "7170df64ba26cbb5fe0b6cc3ad825c73b6ac6686b8c0a791166522172e254891"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-long_draw.png",
+          "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png",
+          "sha256": "c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-long_draw--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-long_draw--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-long_draw--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-long_draw--fine.png"
+      },
+      "export_hashes": {
+        "256": "65bba99fd159916a41291ef7e4e458e15942f87807209d4822026995c47f81fc",
+        "128": "29bb2b76bb25f83b482d15a0048f4b7d1367499af02f3fb7ac6555f60fd24f80",
+        "64": "6dae73aa75789a9ed7720506557a715acaa17e70a15f79a6bd9dcf9e4169a312",
+        "32": "335375a81b86d009ace54edcc3d12064f77283baadb78bad17d319b1e77e7330"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-long_draw",
+      "outline": {
+        "solid_alpha_iou": 0.9707088329092263,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 13
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
