@@ -1,32 +1,45 @@
-# The doors of Soul: Bonds, Outbursts, Prayer (0.34 rebalance, design draft 04)
+# The doors of Soul: Bonds, Outbursts, Prayer (0.34 rebalance, design draft 04, second draft)
 
-Drafter's file for the lead. **Nothing here is built.** Written to `docs/design/proposals/2026-11-21-the-curve.md` (the six laws, the Momentum pattern in section 16, the debate rounds and the charter in section 18) and to the checked maps of 21 Nov. Facts about today carry `file:line` and were read by me in `E:/phc-wt/rel030` (`release/0.34-final`) on 21 Nov 2026. Every proposed number is **PROVISIONAL** and carries a reason a player would recognise.
+Drafter's file for the lead. **Nothing here is built.** Written to `docs/design/proposals/2026-11-21-the-curve.md` (the six laws, the Momentum pattern of section 16, Leon's rulings in sections 10 to 17, the charter in section 18), to **the lead's rulings `00-rulings.md`** (binding; this draft applies A4, A6, A8, A9, A10, B11 to B15, C16 to C21 and D22) and to **`01-scale.md`, which owns every shared number** (the factor, the columns, the cards, HP, MP and the cost rule, the grade ladder, Margins, the stack rule). Facts about today carry `file:line` and were read in `E:/phc-wt/rel030` (`release/0.34-final`) on 21 Nov 2026. Every proposed number is **PROVISIONAL** and carries a reason a player would recognise; nothing is fitted to a percentage or a line.
 
-## 0. What this file shares with the other drafts
+## 0. What this file reads from the others
 
-This file uses the shared pieces that `02-body.md` section 0 already asks for, and the rates `05-pacing.md` section 4 proposes. It does not ask for them again; where it needs one more form of a shared piece it says so.
+### 0.1 Numbers: all from 01 (quoted by name, none restated)
 
-1. **The door ladder** (02-body, "Needs" row 1): Reach and Bite as rows `{points, reach}` and `{points, bite}` on the door's row, one reader `doorLadder`.
-2. **The cash-out sum** (02-body, row 2): `S(n) = 1 + 1.2 + 1.44 + ...` (S(1) 1, S(2) 2.2, S(3) 3.64, S(4) 5.37, S(5) 7.44). A damage or heal payoff is `x(1 + Bite x S(n))` or, where the unit is a whole blow (a Snap), `Bite x S(n)`. A cash-out spends all of its counter. **One more form this file needs:** a cash-out that lands on several units (Snap All) gives each one an even share, `Bite x S(n) / n`.
-3. **The keyed practice track** (02-body, row 3) carries every door's Marks; **the wear guard** (02-body, row 4) carries "keeps Grace" (section 3(f)).
-4. **Worthy foes** are within two levels (`enemies.json levels.gap`). **Marks** count units spent in cash-outs on worthy foes; each door's thresholds are `[2, 11, 17, 23] hours x a specialist's units an hour` (05-pacing section 4), at 05-pacing's 3.2 worthy fights an hour.
-5. **Module practice, feeling marks and the Devotion curve** are 05-pacing's numbers (section 4, rows "Outburst modules", "Feelings", "Devotion"); this file states what they give and checks the 80%.
+| What | 01's name for it | Used here for |
+| --- | --- | --- |
+| x0.6 on every flat number | 01 section 2, T2b | every base below: Mend 2.25, Shield 2.7, Snap 1.8, the Damage school 22.2, every prayer's value |
+| the damage column | `deal` (01 T4: x5.74 at 10, x40 at 20) | every amount a character deals: a Snap on a foe, a Release, a damage prayer, Smite |
+| the heal column | `mend` (01 T4: x6.31 at 10, x48.4 at 20; the normal bar's growth) | every heal, shield and Bond share: Tending, Triage, the Ledger, Rally, Love, a Snap on a friend, a Soul Buff, heal and shield prayers |
+| an amount's column by kind and dealer | 01 section 3.1 ("a Snap's damage on the `tend` profile reads `deal`") | Snap's damage reads `deal` on the `tend` profile; **no new profile row** (the first draft's `tend_harm` is dropped) |
+| the MP column and the pool | `mp` (01 T4), Max MP (01 T7a) | every MP price and pool below |
+| the cost rule | 01 section 6 items 1 to 6, T7b | which price is a count, a design, `mp`, a share |
+| Strain's burn, Mana Shock | 01 T7b (6% of max HP a point over; 25% kept) | section 2(c) |
+| the cards | 01 section 4.2, T5, T5b (A4) | sections 1(h), 2(h), 3(h) quote them |
+| the grade ladder | 01 T9 (A9) | the Attuner grades Bonds and Tending, the Emanator Outbursts, Devotion prayer |
+| Margins | 01 section 9, T10 (A7) | an Outburst Bolt or Lance that rolls; nothing else here rolls |
+| the stack rule | 01 section 10.1 (A8) | each door's cash-out factor is `C`; its other bonuses go into the one sum `Σ` |
+| the top of the scale | 01 T11, section 10.3 | Bonds' Bite at 9 (section 1(b)); the Release and the Hymn hold five digits |
+| the normal bar | 01 T6 (Endurance 4, Pain Threshold 4: 112 / 705 / 5,406 at levels 1 / 10 / 20); the frail 60 / 396 / 3,160 | what a heal's share is read against |
 
-**Units used for every number below.** The scale file (not yet written) owns the columns. Until it lands I read the charter's numbers:
+**The specialist** in every table is 01's stated attacker on its door (01 section 3.2): door attribute and alpha 7 / 7 at level 1, 9 / 9 at level 10, 10 / 10 at level 20, at Standard grade. Its focus's grade (01 T9) multiplies every number; at level 20 the Celestial row is 01 T11's. The numbers are printed by a read-only script over 01's functions (`tools/balance/scale.py`: `stat`, `deal`, `mend`, `mp_pool`); each is base x Stat x column.
 
-| Column (name I read) | What it is | Level 1 | Level 10 | Level 20 |
-| --- | --- | --- | --- | --- |
-| `deal` | the damage level column, about x1.214 a level | 1 | 5.7 | 40 |
-| **P** (on `deal`) | a specialist's plain 2-AP shot, build and grade included (charter: 18 and 1,400) | 18 | 140 | 1,400 |
-| `hp_ref` (the `mend` column is `hp_ref(L) / hp_ref(1)`) | max HP of an Endurance-4 character (charter: 60 and 120 at level 1, about 3,000 and above 8,000 at level 20) | 90 | 600 | 5,000 |
-| **H** (on `mend`) | a specialist's Mend (2 AP): 25% of `hp_ref` at level 1, growing with the healer's own points | 22 | 175 | 1,540 |
-| `mp` (NEW, section 2(c)) | the MP column, `1 + 0.06 x (level - 1)` | 1 | 1.54 | 2.14 |
+### 0.2 Rates: all from 05 (ruling D22)
 
-Every damage below is a multiple of P, every heal and shield a multiple of H. If the scale file names its columns differently, its names win; the multiples are what this file decides. A "plain action" (PA) is one 2-AP action at P (or H for a heal).
+The XP table and its hours (05 section 2: level 2 at hour 0.5, 3 at 1.25, 4 at 2.5, 5 at 4, 6 at 6.4, then 2.4 hours a level: 10 at 16, 15 at 28, 20 at 40); door Marks by `[2, 11, 17, 23] hours x the door's units an hour` (05 section 4); module practice, feeling marks and Devotion (05 section 4). This file names each door's unit and what a mark gives.
 
-**Points.** By the rule given (10 Skill points at creation, odd levels 2, even levels 1 Skill and 1 Attribute), a character has **38 Skill points** at level 20, not 48 (10 + 9 x 2 + 10 x 1). 30 of them fill one attribute's three skills; 8 are left. The tables in (j) use 38.
+### 0.3 Points and gates (rulings B11 to B13)
 
-**One rule for all three Soul attributes (section h): the attribute is the engine's size, +10% a point; the alpha skill +5% a point.** Today the cards disagree with each other and with the engine (3(a), 2(a), 1(a)); this is the Momentum pattern (Strength +10%, Raw Power +5%) applied to Soul.
+- **38 Skill and 20 Attribute points in a career** (B11; creation's 10 and 10 included).
+- **Gains a level** (B12): odd levels 2 Skill points, even levels 1 Skill and 1 Attribute point, **except levels 4 and 14 (2 Skill) and 5 and 15 (1 Skill and 1 Attribute)**. Ceiling 7 to level 4, 8 at 5, 9 at 10, 10 at 15. Class at 3, rank II at 5 (its attribute 5), rank III at 15 (its attribute 8). Every spend table below is redrawn on these and is legal at every level (skill <= attribute <= ceiling).
+- **The specialist's edge** (B13): a door's Reach step at 7 needs its beta at 4; the step at 10 needs its beta at 7 and its gamma at 4. For the Soul doors: Bonds 3 at Empathy 7 needs Camaraderie 4, Bonds 4 at Empathy 10 needs Camaraderie 7 and Insinuation 4; stage 4 at Will Power 7 needs Composure 4, stage 5 at 10 needs Composure 7 and Lore Master 4; Grace 4 at Faith 7 needs Conscience 4, Grace 5 at 10 needs Conscience 7 and Authority 4. PROVISIONAL (flagged for Leon by B13).
+- **Every beta point counts from the first** (B20): a beta's feed gains a flat term, `1 + (flat + feed x alpha) x beta` (section 5, extension E1).
+
+### 0.4 The shared pieces (critic-consistency section 4's merged names)
+
+**S2** the door ladder (Reach and Bite rows by points; B13's second and third `points` keys); **S3** the cash-out source `cash:<resource>` returning `S(n)` of the units spent, with `cash_share:<resource>` = `S(n) / n`; the step 1.2 in `rules.json output.cash_out.step`; each door's row carries its own constant (`1 +`, `0.8 +`, none); **S4** keyed Marks; **S5** `res_max:<resource>` (generalised `ties_max:`), which every Reach writes and every Push raises by 1 for the use (one shape, critic M8); **S6** `wear:<resource>`. `S(n) = 1 + 1.2 + 1.44 + ...`: S(1) 1, S(2) 2.2, S(3) 3.64, S(4) 5.37, S(5) 7.44, S(6) 9.93.
+
+**The stack, for these doors** (A8, 01 10.1): `C` is the door's cash-out factor (a Snap All's `Bite x S(n)`, the Release's multiplier, Grace's multiplier); Margins add to `C` where a roll exists (a Bolt or a Lance); **everything else adds into `Σ`**: the Threads' +5% a Bond held, Taut Thread, Bitter Balm's share, Name the Sinner's +40% on a Judged or Marked foe, Sinner's Due, Witnessed, Clenched Heart, Resonance, a Bonded foe's +3 to hit (a roll term, not damage), boons, mods.
 
 ---
 
@@ -34,217 +47,214 @@ Every damage below is a multiple of P, every heal and shield a multiple of H. If
 
 ### 1(a) Today
 
-**The counter: Bonds held** (ties of kind `bond`). Empathy 1 gives one (`tending.json` `tend.threads`, `stat_mod ties_max:bond +1`), Empathy 5 a second (`tending.json:317 tend.bonds_5`), Empathy 8 a third (`:339 tend.bonds_8`), the Mender one more (`:1057 tend.mender_bonds`). Allies and enemies share the count.
+**The counter: Bonds held** (ties of kind `bond`). Empathy 1 gives one (`tending.json:31` `tend.threads`, `stat_mod ties_max:bond +1`), Empathy 5 a second (`tending.json:317 tend.bonds_5`), Empathy 8 a third (`:339 tend.bonds_8`), the Mender one more (`:1057 tend.mender_bonds`). Allies and enemies share the count.
 
-**What builds it.** Bond (`tending.json` `tend.bond`): 1 AP, an Attuner in hand, a unit in sight within 6 tiles (+3 at Empathy 6, +3 Long Thread); an enemy makes a Heart save against Empathy (Elite +2, Boss +5; `tending.json:21-26 bond`); machines refuse. The Mender's free Bond (`:941 tend.bond_free`): 0 AP, no range, once a turn.
+**What builds it.** Bond (`tending.json:361` `tend.bond`): 1 AP, an Attuner in hand, a unit in sight within 6 tiles (+3 at Empathy 6, +3 Long Thread); an enemy makes a Heart save against Empathy (Elite +2, Boss +5); machines refuse. The Mender's free Bond (`:941 tend.bond_free`): 0 AP, no range, once a turn.
 
 **What holding pays** (`tend.threads`, all while the Attuner is in hand): 20% of damage you take goes to Bonded enemies, split; +3 to hit a Bonded enemy; 20% of every heal you give to yourself or a Bonded ally reaches each Bonded enemy as Soul damage at its next turn; +5% damage a Bond held; Tending a Bonded ally x1.2; a Bonded ally going Down costs 10 MP; you read a Bonded ally's attackers' intent. While you hold any Bond you are Traced.
 
-**What spends it.** Snap (`tending.json:529 tend.snap`, Empathy 2): 1 AP, once a turn, breaks **one** Bond: an enemy takes `3.0 x Healing given` Soul damage (`:667`, profile `tend`) and is Dazed (it saves); an ally heals `3.0 x` (`:676`). The Mender's Ledger empties into it first.
+**What spends it.** Snap (`tending.json:529 tend.snap`, **requires Empathy 2**, `:534-539`): 1 AP, once a turn, breaks **one** Bond: an enemy takes `3.0 x` Soul damage on profile `tend` (`:668`) and is Dazed (it saves); an ally heals `3.0 x` (`:677`). The Mender's Ledger empties into it first.
 
-**Tending verbs.** Mend (`:707`): 2 AP, 24 MP (`:727`, -6 at Empathy 9), heals `3.75 x` (`:781`); Mend Yourself once a turn, same; Shield (`:856`, Empathy 5): 2 AP, 30 MP (`:876`), a Bonded ally only, `4.5 x` (`:930`). The profile `tend` (`rules.json:1970`): k 3.74 x (1 + 0.06 x (Insight - 1) + 0.06 x Empathy) x the `mend` level column (`rules.json:1768`, x11.97 at level 20).
+**Tending verbs.** Mend (`:707`): 2 AP, 24 MP, heals `3.75 x` (`:782`); Mend Yourself once a turn, same; Shield (`:856`, Empathy 5): 2 AP, 30 MP, a Bonded ally only, `4.5 x` (`:931`). Profile `tend`: k 3.74 x (1 + 0.06 x (Insight - 1) + 0.06 x Empathy) on the `mend` column (01 T1).
 
-**Empathy's ladder** (`skills.json:3991`; alpha schedule `skills.json` `ladder.alpha`: perk steps 3, 6, 7, 9, forks 4, 8, Mastered 10): 1 Bond and Mend; 2 Snap; 3 perk step; 4 fork Keep the Thread or Short Thread (`forks.json` `fork.tend.*`); 5 Shield; 6 perk step and +3 Bond reach; 7 perk step; 8 fork Shared Pulse or Long Thread, third Bond; 9 perk step, Mend and Shield -6 MP; 10 Mastered, Threads That Hold (Tending a Bonded friend x1.5 in place of x1.2, through a `mend_mult` of 1.25; ally Bonds hold while you are Down). Perks: Taut Thread (+6% / +12% hits on a Bonded foe; II rolls with Empathy), Bitter Balm (10% / more of a heal as Soul damage to Bonded foes).
-- Card per point (`skills.json:4018 per_point`): +6% Healing given (**true**: profiles `healing`, `mend`, `tend` skill 0.06); Bonds at 1, 5, 8 (true); +3 reach at 6 (true); -6 MP at 9 (true). **Reach never moves past 3 and Bite never moves**: an Empathy-10 Snap is the Empathy-2 Snap with a bigger Healing given.
+**Empathy's ladder** (`skills.json:3991`): 1 Bond and Mend; 2 Snap; 3 perk step; 4 fork Keep the Thread or Short Thread; 5 Shield; 6 perk step and +3 Bond reach; 7 perk step; 8 fork Shared Pulse or Long Thread, third Bond; 9 perk step, Mend and Shield -6 MP; 10 Mastered, Threads That Hold. Card (`skills.json` empathy `per_point`): +6% Healing given (true), Bonds at 1, 5, 8, +3 reach at 6, -6 MP at 9. **Reach never moves past 3 and Bite never moves.**
 
-**Camaraderie** (beta, `skills.json:4217`): Share a Hit (reaction: take 25% + 5% a point, at most 50%, of a hit on an ally beside you; from 5 a Bonded ally in sight); heal back (`feed`: 1% x Empathy x Camaraderie of Bond healing heals you, to 30%; `effects/feed.ts doorFeed`); +10% healing received a point (**typed in code**, `character.ts:1247 healReceivedMult`, not read from the row's `numbers.heal`). Perk steps 3, 5, 7, 9; Mastered Many Hands. Points 2, 4, 6, 8 move only the per-point numbers, and from 6 the Share a Hit share is already at its 50% cap.
+**Camaraderie** (beta, `skills.json:4217`): Share a Hit (reaction: 25% + 5% a point of a hit on an ally beside you, at most 50%; from 5 a Bonded ally in sight); the feed `heal_back` (1% x Empathy x Camaraderie of Bond healing heals you, to 30%; `effects/feed.ts doorFeed`); +10% healing received a point (**typed in code**, `character.ts:1247 healReceivedMult`, beside the row's `numbers.heal` 0.1). **Insinuation** (gamma, `skills.json:4458`): the Call Taunt (steps 1, 4, 8; price 3 AP, 2 from 5, 1 from 9); modules Anchor, Lure, Linger at 2. **Insight's card** (`attributes.json:198`): +6% healing given; -5% Soul MP (**typed**, `character.ts:901 soulCostSaving`); +25 max MP (**typed**, `character.ts:860`).
 
-**Insinuation** (gamma, `skills.json:4458`): the Call Taunt (`calls.json` `call.taunt`: steps at 1, 4, 8: the Taunted foe's attack costs it +0 / +1 / +2 AP); its price by points 3 AP, 2 from 5, 1 from 9, twice a turn and on the reaction at 10 (`calls.json` `rules.price`); reach 4 + 1 a point; Outburst modules Anchor, Lure, Linger at 2 (`soul_modules.json` `gates`); as a gamma it adds its full points to checks and Asks. Perk steps 3, 5, 7, 9; Mastered Their Own Idea.
-
-**Insight's card** (`attributes.json:198`): +6% healing given (true, the profiles' attr 0.06), -5% Soul magic MP cost (true, **typed in code**, `character.ts:901 soulCostSaving`), +25 max MP (true, **typed**, `character.ts:860 MP_PER_INSIGHT`).
-
-**The Mender** (`classes.json:2302`): rank I Triage (`classes.json:4505`, from `medic`: 2 AP, 18 MP, heal `4.3 x` a friend beside you or a Bonded friend in sight, stop Bleeding, once an ally a turn), The Ledger (`:2337`: heals and shields you give fill it to a cap of `6.5 x`; your next damaging blow adds 70% of it), and the tend items gated on rank I: the free Bond, One More Bond, Field Surgery (out of a fight, 45 MP: treat a limb injury). Rank II (attribute 5 and level 6, `classes.json:12-21`): Inspire (`:5393`: 1 AP, 30 MP, give a Bonded unit a feeling you have felt), Take the Weight (`:2452`: reaction, a Bonded ally about to go Down stays on 1 HP and you lose 15% max HP, or you take its Stun, Daze or Fear). Rank III (attribute 8 and level 12): Brimming (`:5605`: overheal leaves 50% as a shield), Rally (`:2555`: 2 AP, 60 MP, once a scene, heal `3.1 x` every Bonded ally and every ally within 4, end Fear and Shaken).
+**The Mender** (`classes.json:2302`): rank I Triage (`classes.json` `move_pool` triage: 2 AP, 18 MP, heal `4.3 x`), The Ledger (heals and shields given fill it to a cap of `6.5 x`; the next damaging blow adds 70% of it), the free Bond, One More Bond, Field Surgery; rank II (attribute 5, level 6 today) Inspire (1 AP, 30 MP, Love heals `1.9 x`), Take the Weight; rank III (attribute 8, level 12 today) Brimming, Rally (2 AP, 60 MP, once a scene, `3.1 x`).
 
 ### 1(b) Empathy's ladder, points 1 to 10
 
-**Reach is Bonds held. Bite is what one Bond is worth when it is Snapped** (the unit: a lone Snap, 0.6 P of Soul damage on a foe or 0.4 H of healing on a friend, at the specialist's build; the Daze stays). The Momentum rhythm fits: Bonds held moves from 1 / 5 / 8 to 1 / 4 / 7 / 10.
+**Reach is Bonds held. Bite is what one Bond is worth when it is Snapped** (the unit: **a lone Snap**, `1.8 x Stat(tend)` on `deal` against a foe and on `mend` for a friend; the Daze stays).
 
 | Empathy | What exists (kept where it is) | Reach (Bonds held) | Bite (a Bond, Snapped) | New |
 | --- | --- | --- | --- | --- |
-| 1 | the door: Bond, Mend, Mend Yourself, Threads | 1 | x1.0 | **Tending ties:** your Mend, Shield or Triage on a friend you are not Bonded to Bonds it, free, if you have room. **Snap All** opens with Snap at 2 |
-| 2 | Snap | | | Snap may break one Bond or **all of them** (the cash-out) |
+| 1 | the door: Bond, Mend, Mend Yourself, Threads | 1 | x1.0 | **Snap moves here from 2** (C18: the cash-out from point 1), and may break one Bond or all of them (Snap All) |
+| 2 | (Snap moved to 1) | | | **Tending ties:** your Mend, Shield or Triage on a friend you are not Bonded to Bonds it, free, if you have room |
 | 3 | perk step | | | |
 | 4 | fork: Keep the Thread or Short Thread | **2** (was at 5) | | |
 | 5 | Shield | | | |
-| 6 | perk step; +3 Bond reach | | **x1.2** | |
-| 7 | perk step | **3** (was at 8) | | |
+| 6 | perk step; +3 Bond reach | | **x1.3** | |
+| 7 | perk step | **3** (was at 8; needs Camaraderie 4, B13) | | |
 | 8 | fork: Shared Pulse or Long Thread | | | **the Push: Overbind** (1(d)) |
-| 9 | perk step; Mend and Shield cost a quarter less (was -6 MP, so it holds on the new MP column) | | **x1.4** | |
-| 10 | Mastered: Threads That Hold | **4** | | |
+| 9 | perk step; Mend and Shield cost a quarter less (01 T7b) | | **x1.6** | |
+| 10 | Mastered: Threads That Hold | **4** (needs Camaraderie 7 and Insinuation 4, B13) | | |
 
 PROVISIONAL, with reasons a player sees:
-- **Tending ties.** The medic who keeps you up is tied to you without spending a turn on it; the build of the door becomes the healer's own work, the way Momentum is built by hits.
-- **Bite x1.2 at 6 and x1.4 at 9.** Each step makes a full Snap All visibly a fifth bigger.
-- **Reach at 4, 7, 10.** The second Bond arrives with the first fork, the fourth only at Mastery: a 10 holds a different web from a 5.
-- Per point: Healing given +5% (was 6%: the attribute carries the size now, section h).
+- **Snap at 1.** Every door spends from its first point (C18): the one-Bond medic can still pull the thread it tied.
+- **Tending ties at 2.** The medic who keeps you up is tied to you without spending a turn on it (C19 accepts it): the web is built by the healer's own work, as Momentum is built by hits.
+- **Bite x1.3 at 6 and x1.6 at 9** (the first draft's x1.2 and x1.4 raised). Reason: 01 T11 shows Snap All of four at level 20 is four digits in total at x1.4 (9,187 at Celestial); A8 asks every door's full cash-out to reach five, and 01 10.3 item 2 needs x1.52. At x1.6 it is **10,500 in total** at Celestial (four Bonds; 9,000 at Relic), about 2,600 a Bond. Each Bite step makes a full Snap All a quarter bigger, which a player sees on the number.
+- **Reach at 4, 7, 10**, the top two behind the beta and gamma (B13): the fourth Bond is the Insight specialist's, which a medic who also shoots cannot afford.
+- Per point: Healing given +5% (01's card, A4).
 
-### 1(c) The cash-out: Snap, and what everything costs
+### 1(c) The cash-out: Snap All, and what everything costs
 
-**The spending moment** is Snap (1 AP, once a turn). Snap All breaks every Bond you hold; it pays `Bite x S(n)` units, shared evenly (`Bite x S(n) / n` to each Bond): a foe takes its share as Soul damage and is Dazed (it saves), a friend heals its share. The Ledger still empties into it first. Then you build again.
+**The spending moment** is Snap (1 AP, once a turn). **Snap All** breaks every Bond you hold and pays `C = Bite x S(n)` lone Snaps, shared evenly (`cash_share:bond`, `Bite x S(n) / n` to each Bond): a foe takes its share as Soul damage (no armour, as today) and is Dazed (it saves), a friend heals its share. The Ledger still empties into it first. Then you build again. A Snap lands (no roll, no Margins; the foe's save is the Daze's).
 
-**Costs, one by one** (MP on the new `mp` column of 2(c), so a cost is the same share of the pool at every level). PROVISIONAL:
+**Costs** (01 T7b; MP on the `mp` column at the payer's level):
 
 | Verb | AP | MP (x `mp`) | Level 1 / 10 / 20 | Reason |
 | --- | --- | --- | --- | --- |
 | Bond | 1 | 0 | 0 | a Bond's price is the AP and, on a foe, its save |
 | Let Go | 0 | 0 | 0 | unchanged |
 | Snap (one or all) | 1 | 0 | 0 | the cash-out is paid by what you built |
-| Mend, Mend Yourself | 2 | 12 (was 24) | 12 / 18 / 26 | about 8 to 12 Mends a pool at every level: a healer counts them |
-| Shield | 2 | 15 (was 30) | 15 / 23 / 32 | a shield is 1.2 heals for 1.25 the price |
-| Triage (Mender) | 2 | 10 (was 18) | 10 / 15 / 21 | the class heals better for less (1(i)) |
-| Inspire (Mender) | 1 | 12 (was 30) | 12 / 18 / 26 | it must be worth pressing (1(i)) |
-| Rally (Mender) | 2 | 35 (was 60) | 35 / 54 / 75 | once a scene, a quarter of a pool |
-| Field Surgery (Mender) | 0 | 30 (was 45) | 30 / 46 / 64 | out of a fight |
-| A Bonded ally goes Down | | 8 (was 10) | 8 / 12 / 17 | the thread hurts, on the same scale |
+| Mend, Mend Yourself | 2 | 12 | 12 / 18 / 26 | about eight to twelve Mends a pool at every level: a healer counts them |
+| Shield | 2 | 15 | 15 / 23 / 32 | a shield is 1.2 Mends for 1.25 the price |
+| Triage (Mender) | 2 | 10 | 10 / 15 / 21 | the class heals better for less (1(i)) |
+| Inspire (Mender) | 1 | 12 | 12 / 18 / 26 | it must be worth pressing (1(i)) |
+| Rally (Mender) | 2 | 35 | 35 / 54 / 75 | once a scene, about a third of a pool |
+| Field Surgery (Mender) | 0 | 30 | 30 / 46 / 64 | out of a fight |
+| A Bonded ally goes Down | | 8 | 8 / 12 / 17 | the thread hurts, on the same scale |
 
-A Mender's pool (2(c) formula; the Mender of 1(j)): Insight 7 and Determination 2 at level 1, 100 MP; Insight 9 and Determination 3 at level 10, 197; Insight 10 and Determination 4 at level 20, 317. Syphon (1 AP, 2(c)) refills it; `survival.json ammo_pack` gives MP back after no fight (Leon, 17 Nov), so Syphon's AP is the real price.
+A Mender's pool (01 T7a's formula): Insight 7 and Determination 2 at level 1, **100 MP**; Insight 9 and Determination 3 at level 10, **197**; Insight 10 and Determination 4 at level 20, **317**. Syphon (1 AP, 2(c)) refills it.
 
-**The compounding rule, in plain actions.** A lone Snap is 0.6 PA of damage (or 0.4 H of heal), for 1 AP, plus a Daze.
+**The compounding rule, in lone Snaps** (a lone Snap is 1 AP plus a Daze; the Bonds were bought with 1 AP each, or free through Tending ties):
 
-| Who | Bonds held | One Snap All is worth | The cycle against plain play, and how often |
-| --- | --- | --- | --- |
-| Empathy 1 | 1 | 1.0 lone Snap: 0.6 PA | Bond (1 AP) and Snap (1 AP) is a plain action plus a Daze: at par, any turn |
-| Empathy 4, a mixed character | 2 | 2.2 lone Snaps: 1.3 PA | a Bond on a foe and a Mend that ties the friend, then Snap: about a fifth over plain, every turn |
-| Empathy 7 | 3 | 4.4 lone Snaps: 2.6 PA | about a third over plain, every two turns |
-| Empathy 10, a specialist | 4 | 7.5 lone Snaps: 4.5 PA | four Bonds built over a turn (two of them by Mends that were full-value anyway), Snapped the next: about half again over two turns of plain play, every two turns, if no Bond is lost first |
+| Who | Bonds held, Bite | One Snap All is worth | Each Bond's share | How often |
+| --- | --- | --- | --- | --- |
+| Empathy 1 | 1, x1.0 | 1.0 lone Snap | 1.0 | Bond and Snap, any turn: par |
+| Empathy 4, a mixed character | 2, x1.0 | 2.2 | 1.1 | a Bond on a foe and a Mend that ties the friend, then Snap: every turn |
+| Empathy 7 (Camaraderie 4) | 3, x1.3 | 4.7 | 1.6 | every second turn |
+| Empathy 10, a specialist | 4, x1.6 | 8.6 | 2.15 | four Bonds over a turn (two of them laid by Mends that were full value anyway), Snapped the next, if no Bond is lost first |
 
 The consequence that makes the web a thing to protect: a foe that saves wastes the AP, a Bonded friend going Down costs MP, every Bond keeps you Traced, and a Snap ends the Bond's passives (the share, the echo, +5% a Bond).
 
 ### 1(d) The Push at Empathy 8: Overbind
 
-Once a turn, 0 AP: hold **one Bond past your Reach** until it is Snapped (a condition on you, `ties_max:bond +1`; data). Snap All counts it like any other (`S(n+1)`). **Price:** when that Bond breaks, you take half of its share as Soul damage at the start of your next turn (nothing soaks it). PROVISIONAL. Reason: "you feel half of it" (the curve's own words for Bonds), landing on your next turn as the law asks; the price grows with the Snap, so a greedy web costs more.
+Once a turn, 0 AP: your Reach in Bonds is one higher until your next Snap (`res_max:bond` +1 by a one-use condition, S5; the Push's one shape). Snap All counts it like any other (`S(n + 1)`). **Price:** when that Bond breaks you lose **10% of your max HP** at the start of your next turn (nothing soaks it; 01 section 6 item 5: HP you pay is a share of your bar). PROVISIONAL. Reason: the curve's "you feel half of it", landing on your next turn as Law 5 asks; a torn thread costs more than a point of Strain (6%) because it is a whole Bond. With Overbind a specialist's Snap All of five is about 14,600 at level 20, Celestial, before the sum.
 
-Snap All as the normal cash-out and Overbind as the Push differs from the curve's table (which named "Snap every Bond at once" the Push). Why: the cash-out law needs several units spent in one go, and for Bonds those units are the Bonds; snapping one at a time can never compound.
+Snap All is the normal cash-out and Overbind the Push (the curve's table named "Snap every Bond at once" the Push): the cash-out law needs several units spent in one go, and for Bonds those units are the Bonds.
 
 ### 1(e) Marks on the door
 
-Earned by **Bonds broken by a Snap** while the fight has a worthy foe (a friend's Bond counts when a worthy foe is in the fight). A specialist breaks about 4.5 a fight, 14 an hour. **Thresholds, PROVISIONAL: Mark I 30, Mark II 160, the middle milestone 245, Mark III 330.**
+**The unit: Bonds broken by a Snap** while the fight has a worthy foe (a friend's Bond counts then too). **Thresholds: 05's formula** (`[2, 11, 17, 23] hours x the units an hour`); at this drafter's reading of a specialist's 14 Bonds an hour that is about 28 / 154 / 238 / 322, set from the simulator's count (a reading, not a fit).
 
 | Mark | About | Gives | Reason |
 | --- | --- | --- | --- |
-| I | hour 2 | your first Bond each fight costs 0 AP and has no range limit (a Mender: the second Bond of its first turn is free too) | the door starts primed with 1 |
+| I | hour 2 | your first Bond each fight costs 0 AP and has no range limit. **It stacks with the Mender's free Bond:** a Mender lays two free Bonds in its first turn | the door starts primed with 1 |
 | II | hour 11 | a foe saves against your Bond at -2 | fewer wasted AP on the web |
 | middle | hour 17 | Tending through a Bond is x1.3, not x1.2 | the threads you rely on carry more |
-| III | hour 23 | Overbind costs nothing once a fight | the Push made safe once |
+| III | hour 23 | Overbind costs no HP once a fight | the Push made safe once |
 
 ### 1(f) Tags for mixed characters
 
-- **This door keeps others'**: Bond, Let Go and Snap are quiet acts at a distance: they carry "keeps the chain" and "keeps plates" (a Bond is not walking away from Momentum; holding Guard while you Bond keeps the plates). Mend, Shield and Triage count as **tending** for the Outburst heart's calming (exists: `soul_modules.json strain.calming` row `tend`) and as the patron tag **heal / protect** (exists, `patrons.json tags`): they lay Grace for a Faithful (3(c)).
-- **Others keep this door's**: nothing in another door breaks a Bond today, so no "keeps Bonds" tag is needed. The cross-door relations a mixed character feels are the shares already written: Share a Hit with plates (Guard), a Bonded foe's +3 to hit for any weapon, and the echo of any heal (a prayer's or a stim's) reaching Bonded foes.
+- **This door keeps others'** (`wear:<resource>`, S6): Bond, Let Go and Snap are quiet acts at a distance: they carry "keeps the chain" and "keeps plates". Mend, Shield and Triage count as **tending** for the Outburst heart's calming (exists: `soul_modules.json:77 strain.calming` row `tend`) and as the patron tag **heal / protect** (exists, `patrons.json tags`): they lay Grace for a Faithful (3(c)).
+- **Others keep this door's**: nothing in another door breaks a Bond today, so no "keeps Bonds" tag is needed. The cross-door relations are the shares already written: Share a Hit with plates, a Bonded foe's +3 to hit for any weapon, and the echo of any heal (a prayer's or a stim's) reaching Bonded foes.
 
 ### 1(g) Camaraderie (beta) and Insinuation (gamma), points 1 to 10
 
-**Camaraderie: how the door keeps you up.** Every point keeps today's rows (+10% healing received, read from the row's `numbers.heal` in place of `character.ts:1247`; heal back by the feed). PROVISIONAL additions where a point moved nothing a player sees:
+**Camaraderie: how the door keeps you up.** Every point: +10% healing received (read from the row's `numbers.heal`, in place of `character.ts:1247`); Share a Hit +5%; **the feed with a flat term (B20):** `(2% + 1% x Empathy) x Camaraderie` of what you heal down a Bond comes back to you, to 30% (`feed_flat` 0.02, PROVISIONAL; reason: a first point of Camaraderie gives a one-Bond medic 3% back, not 1%).
 
 | Points | Today (kept) | New |
 | --- | --- | --- |
 | 1 | Share a Hit 30% | |
 | 2 | share 35% | |
 | 3 | perk step; share 40% | |
-| 4 | share 45% | |
+| 4 | share 45% | **opens Bonds' third** (B13, with Empathy 7) |
 | 5 | perk step; share 50%; Share a Hit reaches a Bonded ally in sight | |
-| 6 | (only +10% received) | **Hold Together:** your first Share a Hit each round for a Bonded friend uses no reaction. Reason: the friend you are tied to never waits for your reflexes |
-| 7 | perk step | |
-| 8 | (only +10% received) | **Both Ways:** heals a Bonded friend gives you are +25%. Reason: the Bond carries care back as well |
+| 6 | (only the per-point lines) | **Hold Together:** your first Share a Hit each round for a Bonded friend uses no reaction. Reason: the friend you are tied to never waits for your reflexes |
+| 7 | perk step | **opens Bonds' fourth** (B13, with Empathy 10 and Insinuation 4) |
+| 8 | (only the per-point lines) | **Both Ways:** heals a Bonded friend gives you are +25%. Reason: the Bond carries care back |
 | 9 | perk step | |
 | 10 | Mastered: Many Hands | |
 
-**Insinuation: the door outside a fight, its Call and its voice.** Every point adds its full points to checks and Asks (the gamma rule) and +1 tile of Taunt reach. Kept: Taunt's steps at 1, 4, 8; the Call price at 1, 5, 9, 10; modules at 2; perk steps 3, 5, 7, 9; Mastered at 10. **New at 6, PROVISIONAL: a foe that fails your Taunt's save may be Bonded to you at once for no AP, if you have room** (the barb that hooks the heart). Reason: point 6 moved only a tile of reach; this is a verb, and it joins Insight's gamma to its door.
+**Insinuation: the door outside a fight, its Call and its voice.** Every point adds its full points to checks and Asks (the gamma rule) and +1 tile of Taunt reach. Kept: Taunt's steps at 1, 4, 8; the Call price at 1, 5, 9, 10; modules at 2; perk steps 3, 5, 7, 9; Mastered at 10. **New at 6, PROVISIONAL: a foe that fails your Taunt's save may be Bonded to you at once for no AP, if you have room** (the barb that hooks the heart). Reason: point 6 moved only a tile; this is a verb, and it joins Insight's gamma to its door. At 4 it also opens Bonds' fourth (B13).
 
-### 1(h) Insight's card, made true
+### 1(h) Insight's card (01 section 4.2, A4)
 
-| Per point above 1 | Today | Proposed (PROVISIONAL) | Reason |
+| Per point above 1 | Today | 01's card | Note |
 | --- | --- | --- | --- |
-| Healing given | +6% (true) | **+10%**, on every heal you give: Tending, stims, kits, a Soul Buff's heal through `healing` | the attribute is the engine's size; and every character carries stims, so a point of Insight is never dead |
+| Healing and shields given | +6% (true) | **+10%**, on every heal and shield you give (`healing`, `mend`, `tend`) | stims and kits included: every character carries stims, so a point of Insight is never dead |
+| Max MP | +25 (true, typed in code) | **+8 x `mp`** | 01 T7a |
 | Soul MP cost | -5% (true, typed in code) | -5%, read from `attributes.json derived` | kept |
-| Max MP | +25 (true, typed in code) | **+8 x `mp`** (2(c)) | on the new pool, about a Mend a point |
 
 ### 1(i) The Mender (`bard`): what only it has
 
-Ranks: **I at level 3, II at level 5 (attribute 5), III at level 15 (attribute 8)** (charter; `classes.json:17 rank_levels` 3 / 6 / 12 today).
+Ranks at levels **3 / 5 / 15** (B12; `classes.json:17 rank_levels` 3 / 6 / 12 today).
 
-**Only the Mender:** **the Ledger** (a second counter fed by its own healing and cashed by its blows), **Triage** (a heal nobody else has, cheaper and stronger), and **the free Bond** each turn. One More Bond **retires**: its Bond becomes everyone's at Empathy 10 (as the Breaker's chain of 5 went to Raw Power).
+**Only the Mender:** **the Ledger** (a second counter fed by its own healing and cashed by its blows), **Triage** (a heal nobody else has, cheaper and stronger), and **the free Bond** each turn. **One More Bond retires** (C16: the bigger counter goes to the ladder: the fourth Bond is now everyone's at Empathy 10 with its family); the Ledger is the counter only the class can use.
 
 | Rank | Move | Today, set-up met | Worth pressing? | Becomes (PROVISIONAL) |
 | --- | --- | --- | --- | --- |
-| I | Triage | 1.15 Mends for the same 2 AP | **no** | heal **1.5 H** (was 4.3 x, about 1.15 H), 10 MP: the class's own Mend, one and a half of anyone else's |
-| I | The Ledger | +70% of up to `6.5 x` banked on the next blow: about 1.5 PA added to one hit | yes | cap **1.75 H**; factor 0.7 kept |
+| I | Triage | `4.3 x` against Mend's `3.75 x`: 1.15 Mends for the same 2 AP | **no** | base **3.4** (1.5 x Mend's 2.25, in place of 01's x0.6 value 2.58), 10 MP: one and a half of anyone's Mend. Reason: a class heal must be worth its slot |
+| I | The Ledger | +70% of up to its cap banked on the next blow | yes | cap 3.9 (01 T2b), factor 0.7 kept; the banked add is a flat add to the blow's base |
 | I | Bond (free) | 1 AP saved a turn, no range | yes | kept |
 | I | Field Surgery | out of a fight | (not a fight move) | MP on the column |
-| II | Inspire | a felt feeling to a Bonded unit; Love heals `1.9 x` (0.5 H) for 1 AP and 30 MP | **no** | Love heals **0.75 H**, 12 MP; the other feelings' boons kept |
-| II | Take the Weight | a Down prevented | yes | kept |
-| III | Brimming | passive | (passive) | kept |
-| III | Rally | 0.8 H to every Bonded ally and every ally within 4: about 3 H with four friends | yes | heal **0.8 H** each, 35 MP |
+| II | Inspire | a felt feeling to a Bonded unit; Love heals 0.5 Mend for 1 AP and 30 MP | **no** | Love's base **1.69** (0.75 x Mend's 2.25, in place of 01's 1.14), 12 MP; the other feelings' boons kept |
+| II | Take the Weight | a Down prevented | yes | kept (its price, 15% of max HP, is already a share) |
+| III | Brimming | passive | (passive) | kept; with the half-bar heal cap gone (A10) an overheal is common, so Brimming's 50% shield is felt |
+| III | Rally | about 0.8 Mend to every Bonded ally and every ally within 4 | yes | base 1.86 kept (01 T2b), 35 MP |
 
 ### 1(j) How a player spends: the Insight specialist and a mixed medic
 
-**The Mender** (Insight 7, Endurance 3, Agility 2, Determination 2 at creation; Empathy 7, Camaraderie 2, Insinuation 1). Hours from the beat sheet (curve section 12).
+**The Mender** (creation: Insight 7, Endurance 3, Determination 2, Agility 2; Empathy 7, Camaraderie 3). Hours from 05 section 2. Every row is legal (skill <= attribute <= ceiling) and spends exactly the level's gains (0.3).
 
 | Level (hour) | Buys | What the player gets |
 | --- | --- | --- |
-| 1 (0) | creation | 3 Bonds, Bite x1.2, Snap All, Shield, fork a, three perk steps; Share a Hit 35% |
-| 2 (1) | Camaraderie 3; Endurance 4 | a Camaraderie perk; +HP |
-| 3 (2) | Mender rank I; Camaraderie 4, Insinuation 2 | Triage, the Ledger, the free Bond; share 45% |
-| 4 (3) | Camaraderie 5; Determination 3 | Share a Hit for a Bonded ally, a perk; +MP |
-| 5 (4) | rank II; Camaraderie 6, Insinuation 3 | Inspire, Take the Weight; Hold Together; a perk |
-| 6 (6) | Insight 8; Empathy 8 | fork b and **Overbind** (the Push); +10% heals |
-| 7 (8) | Camaraderie 7, Insinuation 4 | a perk; Taunt costs a foe +1 AP |
-| 8 (11) | Insinuation 5; Endurance 5 | a perk; Taunt for 2 AP |
-| 9 (13) | Camaraderie 8, Insinuation 6 | Both Ways; Taunt Bonds |
-| 10 (16) | Insight 9; Empathy 9 | **Bite x1.4**, a perk, cheaper Mends |
-| 11 (18) | Camaraderie 9, Insinuation 7 | two perks |
-| 12 (21) | Insinuation 8; Determination 4 | Taunt +2 AP; +MP |
-| 13 (23) | Insinuation 9; 1 point elsewhere (Pain Threshold 1) | a perk; Taunt for 1 AP |
-| 14 (26) | 1 point elsewhere; Endurance 6 | **flag: no purchase in the door until Insight 10**; HP |
-| 15 (28) | rank III; 2 points elsewhere | Brimming, Rally (felt); **flag: the Skill points are not felt in the door** |
-| 16 (31) | Insight 10; Empathy 10 | **Reach 4**, Mastered Threads That Hold |
-| 17 (33) | Camaraderie 10, Insinuation 10 | Many Hands, Their Own Idea |
-| 18 to 20 (36 to 40) | 4 Skill and 2 Attribute points elsewhere | breadth: Composure, Faith 1 to 2 for Whispers |
+| 1 (0) | creation | **2 Bonds** (the third waits on Camaraderie 4), Bite x1.3, Snap All, Tending ties, Shield, fork a, three perk steps; Share a Hit 40%, a Camaraderie perk |
+| 2 (0.5) | Camaraderie 4; Endurance 4 | **Bonds 3** (B13 met); +HP |
+| 3 (1.25) | Mender rank I; Insinuation 1, 2 | Triage, the Ledger, the free Bond; Taunt; three modules |
+| 4 (2.5) | Camaraderie 5, Insinuation 3 | Share a Hit for a Bonded ally, two perks |
+| 5 (4) | rank II; Insight 8; Empathy 8 | Inspire, Take the Weight; fork b and **Overbind** (the Push); +10% heals |
+| 6 (6.4) | Camaraderie 6; Determination 3 | Hold Together; +MP |
+| 7 (8.8) | Camaraderie 7, Insinuation 4 | a perk; Taunt costs a foe +1 AP; the fourth Bond's beta and gamma gates both met |
+| 8 (11.2) | Camaraderie 8; Endurance 5 | Both Ways; HP |
+| 9 (13.6) | Insinuation 5, 6 | a perk, Taunt for 2 AP; Taunt Bonds |
+| 10 (16) | Insight 9; Empathy 9 | **Bite x1.6**, a perk, Mends a quarter cheaper |
+| 11 (18.4) | Camaraderie 9, Insinuation 7 | two perks |
+| 12 (20.8) | Insinuation 8; Determination 4 | Taunt +2 AP; +MP |
+| 13 (23.2) | Insinuation 9, Pain Threshold 1 | a perk, Taunt for 1 AP; +6% max HP |
+| 14 (25.6) | Pain Threshold 2, 3 | +12% max HP; **the door waits one level for Insight 10** (no longer two: the swap at 14 and 15, B12) |
+| 15 (28) | rank III; Insight 10; Empathy 10 | **Bonds 4**, Mastered Threads That Hold, Brimming, Rally: the biggest level of the walk |
+| 16 (30.4) | Camaraderie 10; Endurance 6 | Many Hands; HP |
+| 17 (32.8) | Insinuation 10, Pain Threshold 4 | Their Own Idea; HP |
+| 18 (35.2) | Pain Threshold 5; Endurance 7 | HP |
+| 19 (37.6) | Pain Threshold 6, 7 | HP; a perk step |
+| 20 (40) | Faith 1; Virtue 2 | Whispers: breadth |
 
-The two flags are the gates on fives: the Insight skills wait on Insight 10 (level 16). They are felt elsewhere if the player has a second interest; I recommend the level-up screen says so ("Insight 10 at level 16 opens your last points here").
-
-**A mixed medic** (the rifleman who keeps the squad up: Agility 7, Insight 4, Endurance 2; Dexterity 6, Empathy 4; class at 3 is the Skirmisher).
+**A mixed medic** (the shooter who keeps the squad up: Agility 7, Insight 4, Endurance 2; Dexterity 6, Empathy 4; the Skirmisher at 3). **Hands:** a revolver in one hand and the Attuner in the other, as Survival's Recommended row gives a caster (`survival.json:52`): no hand swap (ruling E's count is 0 AP here). Pressure's steps are 02's; only their names are written here.
 
 | Level | Buys | What the player gets |
 | --- | --- | --- |
-| 1 | creation | 2 Bonds, Snap All, fork a, a perk step; the rifle |
+| 1 | creation | 2 Bonds, Snap All, Tending ties, fork a, a perk step; Pressure at Dexterity 6 |
 | 2 | Camaraderie 1; Insight 5 | Share a Hit; +10% heals |
-| 3 | Dexterity 7, Empathy 5 | the Skirmisher; Shield |
-| 4 | Camaraderie 2; Endurance 3 | share 35%; HP |
-| 5 | rank II; Athletics 1, 2 | the Agility door's beta |
-| 6 | Agility 8; Dexterity 8 | Dexterity's Push |
-| 7 | Camaraderie 3, Athletics 3 | a perk |
-| 8 | Insight 6; Empathy 6 | Bite x1.2, +3 Bond reach |
-| 9 | Camaraderie 4, Athletics 4 | share 45% |
-| 10 | Agility 9; Dexterity 9 | Dexterity's Bite |
-| 11 | Camaraderie 5, Athletics 5 | Share a Hit through the Bond; a perk |
-| 12 | Insight 7; Empathy 7 | **Reach 3** |
-| 13 | Athletics 6, Reaction Speed 1 | Cue |
-| 14 | Camaraderie 6; Endurance 4 | Hold Together |
-| 15 | rank III; Athletics 7, Reaction Speed 2 | the class's rank III |
-| 16 | Agility 10; Dexterity 10 | Dexterity Mastered |
-| 17 | Athletics 8, Reaction Speed 3 | |
-| 18 | Insight 8; Empathy 8 | **Overbind**, fork b |
-| 19 | Athletics 9, Camaraderie 7 | two perks |
-| 20 | Athletics 10; Endurance 5 | Athletics Mastered |
+| 3 | Dexterity 7, Empathy 5 | the Skirmisher; Shield (Pressure's step at 7 waits on Athletics 4) |
+| 4 | Athletics 1, 2 | Defense from the first point (B20) |
+| 5 | rank II; Dexterity 8; Agility 8 | Dexterity's Push |
+| 6 | Athletics 3; Insight 6 | +10% heals |
+| 7 | Athletics 4, Empathy 6 | Pressure's step at 7; Bonds Bite x1.3, +3 Bond reach |
+| 8 | Camaraderie 2; Insight 7 | share 35% |
+| 9 | Empathy 7, Camaraderie 3 | a perk |
+| 10 | Dexterity 9; Agility 9 | Dexterity's Bite |
+| 11 | Camaraderie 4, Athletics 5 | **Bonds 3** |
+| 12 | Empathy 8; Insight 8 | **Overbind**, fork b |
+| 13 | Athletics 6, 7 | Pressure's top gate, half met |
+| 14 | Reaction Speed 1, 2 | Cue |
+| 15 | rank III; Dexterity 10; Agility 10 | Dexterity Mastered (its top Reach waits on Reaction Speed 4) |
+| 16 | Reaction Speed 3; Endurance 3 | a perk |
+| 17 | Reaction Speed 4, Camaraderie 5 | Pressure's top Reach; Share a Hit through the Bond |
+| 18 | Camaraderie 6; Endurance 4 | Hold Together |
+| 19 | Athletics 8, Insinuation 1 | Taunt |
+| 20 | Athletics 9; Endurance 5 | a perk |
 
-Every level buys something felt. Insight's skills wait on Insight (every second even level goes to it), so Empathy rises every four levels. The mixed medic cashes two Bonds every turn, holds three from level 12, has the Push at 18 and never reaches Bite x1.4: a different machine, two bars filling.
+Every level buys something felt. The mixed medic cashes two Bonds every turn and three from level 11, has the Push at 12 and never holds the fourth Bond or Bite x1.6 (B13's edge: its points went to its first door's top): a different machine, two bars filling.
 
-### 1(k) Heals, shields and shares on the new scale (specialist, before the focus's grade)
+### 1(k) Heals, shields and shares on 01's columns (the specialist, Standard; x the Attuner's grade, 01 T9)
 
-| Amount | Multiple | Level 1 | Level 10 | Level 20 |
-| --- | --- | --- | --- | --- |
-| Mend, Mend Yourself | 1.0 H | 22 | 175 | 1,540 |
-| Shield | 1.2 H | 26 | 210 | 1,850 |
-| Triage (Mender) | 1.5 H | 33 | 260 | 2,310 |
-| A lone Snap on a friend / a foe | 0.4 H / 0.6 P | 9 / 11 | 70 / 84 | 615 / 840 |
-| Snap All of 4 at Bite x1.4, each of four | 1.9 x the lone Snap | 17 / 21 | 130 / 160 | 1,150 / 1,580 |
-| Ledger cap (Mender) | 1.75 H | 38 | 305 | 2,700 |
-| Rally, each friend (Mender) | 0.8 H | 18 | 140 | 1,230 |
-| Inspire's Love (Mender) | 0.75 H | 17 | 130 | 1,150 |
-| Bond share, echo, Share a Hit, Take the Weight | shares (20%, 20%, 30 to 50%, 15% max HP) | ride the HP they move | | |
+| Amount | Base (01 T2b, or 1(i)) | Level 1 (7/7) | Level 10 (9/9) | Level 20 (10/10) | Share of the normal bar (01 T6) |
+| --- | --- | --- | --- | --- | --- |
+| Mend, Mend Yourself | 2.25 | 16.5 | 126 | 1,058 | 15% / 18% / 20% |
+| Shield | 2.7 | 19.9 | 152 | 1,269 | |
+| Triage (Mender) | 3.4 | 25.0 | 191 | 1,598 | 22% / 27% / 30% |
+| A lone Snap on a friend | 1.8, `mend` | 13.2 | 101 | 846 | |
+| A lone Snap on a foe | 1.8, `deal` | 13.2 | 92 | 699 | |
+| Snap All of 4 at x1.6, each Bond's share (2.15 lone Snaps) | | 28 / 28 | 217 / 197 | 1,817 / 1,501 | (friend / foe) |
+| Ledger cap (Mender) | 3.9 | 28.7 | 219 | 1,833 | |
+| Rally, each friend (Mender) | 1.86 | 13.7 | 104 | 874 | |
+| Inspire's Love (Mender) | 1.69 | 12.4 | 95 | 794 | |
+| Bond share, echo, Share a Hit, Take the Weight | shares (20%, 20%, 30 to 50%, 15% max HP) | ride the HP they move | | | |
 
-The heal reads the `mend` column (`hp_ref`); **Snap's damage reads `deal`** through a new profile row `tend_harm` (Insight and Empathy, level `deal`; data), because a blow should grow with the blows it meets, not with HP (today Snap's damage rides the heal column, `tending.json:667` profile `tend`).
+A reading, not a target: a specialist's Mend closes about a sixth of a normal friend's bar at level 1 and a fifth at level 20 (its points grow faster than the normal share's); the `mend` column keeps the rest of the share level by level (01 3.1). The half-bar cap is gone (A10); the per-round brake (`mending.brake`) still prices a stream of heals on one friend.
 
 ---
 
@@ -252,186 +262,181 @@ The heal reads the `mend` column (`hp_ref`); **Snap's damage reads `deal`** thro
 
 ### 2(a) Today
 
-**The counters: the stage** (0 to 4 for everyone, `soul_modules.json:13 max_stage`; `magic.ts:729 MAX_STAGE`) **and Strain** (limit 3, +1 at Composure 1, 2, 4, 6, 8: `soul_modules.json:63`; burn 8 HP a point over, `:65`; 3 over is a Mana Short; Mana Shock 25% max HP a turn).
+**The counters: the stage** (0 to 4 for everyone, `soul_modules.json:13 max_stage`; `magic.ts:729 MAX_STAGE`) **and Strain** (limit 3, +1 at Composure 1, 2, 4, 6, 8; burn 8 HP a point over, `soul_modules.json:65`; 3 over is a Mana Short; Mana Shock 25% max HP a turn).
 
-**What builds the stage.** Begin (2 AP, the design's MP, +1 Strain; `soul_modules.json` `cycle`); Pump (1 AP, MP 10% of the Begin's a stage reached, `:56 pump_mp`); one free Pump a turn at most: the fight's first, and one a round from Will Power 3 (`:27`); a swell (+1 stage, +1 Strain, at your turn's start while held; no Strain from Composure 6); Feed (a glyph); Overdraw (Will Power 2, `skills.json:4688`: once a turn a Pump adds 2 stages, +1 Strain after the fight's first).
+**What builds the stage.** Begin (2 AP, the design's MP, +1 Strain); Pump (1 AP, MP 10% of the Begin's for each stage reached, `soul_modules.json:56 pump_mp`); one free Pump a turn at most (the fight's first, and one a round from Will Power 3); a swell (+1 stage, +1 Strain, at your turn's start while held; no Strain from Composure 6); Feed (a glyph); Overdraw (Will Power 2, `skills.json:4688`: once a turn a Pump adds 2 stages).
 
-**What spends it.** Release (1 AP) at `stage_mult` x0.8 / 1.0 / 1.2 / 1.4 / 1.6 (`soul_modules.json:14`; `magic.ts:728`); a feeling Pump steps its own number (rage +0.5, calm -0.4 ...; `feelings.json`), each feeling once an Outburst, four at most. Damage base 37 (`soul_modules.json:112`, read at `magic.ts:752`; the school row's `damage 40` at `:187` is a dead copy). The Soul multiplier is `statOf('soul')` (`character.ts:878`), profile `soul` k 1.55, **attr 0, skill 0** (`rules.json:1866`): a constant.
+**What spends it.** Release (1 AP) at `stage_mult` x0.8 / 1.0 / 1.2 / 1.4 / 1.6 (`soul_modules.json:14`); a feeling Pump steps its own number (`feelings.json`), each feeling once an Outburst, four at most. Damage base 37 (`soul_modules.json damage.base`, read at `magic.ts:752`; the school row's `damage 40` is a dead copy, 01 defect 1). Profile `soul` has **attr 0, skill 0** (01 T1): Determination and Will Power add nothing.
 
-**MP.** `100 + 75 x (Determination - 1) + 25 x (Insight - 1)` (`character.ts:860-861`, typed): 550 at Determination 7, flat across levels; a Heart Bolt costs 25. No node gives MP back (`survival.json ammo_pack mp_about`); Syphon (1 AP) gives the air's band (30 / 60 / 90 / 120, `rules.json:1335-1362`) x `1 + 0.1 x (Det - 1) + 0.1 x WP` (`character.ts:903`, typed): 138 MP at 7/7 in normal air. **MP is not a choice today**: a specialist holds nine full cash-outs.
+**MP.** `100 + 75 x (Det - 1) + 25 x (Ins - 1)` (`character.ts:860-861`, typed), flat across levels; Syphon gives the air's band (30 / 60 / 90 / 120) x `1 + 0.1 x (Det - 1) + 0.1 x WP` (`character.ts:903`, typed). **MP is not a choice today**: a specialist holds nine full cash-outs.
 
-**Will Power's ladder** (`skills.json:4611`): 1 the door (an Emanator in hand); 2 Overdraw, modules Size and Quiet; 3 perk step, a free Pump a round; 4 fork Ride the Edge or Slow Burn; modules Bloom and Volley; 5 Two Schools (a second school at half, +10 MP); 6 perk step, a module slot; 7 perk step; 8 fork Blood Price or Clean Break; 9 perk step, a slot; 10 Mastered The Twin Pays. Every 2 points +1 tile of reach (`character.ts:902`, typed 0.5); a module slot every 3 (`character.ts:907`, typed, beside the data string `soul_modules.json:174`). Perks: Clenched Heart (+5% at stage 3; II also at 2), Resonance (+4% a Release, to 8 / 12%).
-- Card per point: **+10% Soul power: false** (the profile's skill slope is 0); +10% syphoned (true, typed); harder to save against (true, `saveTn`). **Reach and Bite never move.**
+**Will Power's ladder** (`skills.json:4611`): 1 the door; 2 Overdraw, modules Size and Quiet; 3 perk step, a free Pump a round; 4 fork Ride the Edge or Slow Burn, modules Bloom and Volley; 5 Two Schools; 6 perk step, a module slot; 7 perk step; 8 fork Blood Price or Clean Break; 9 perk step, a slot; 10 Mastered The Twin Pays. Card: **+10% Soul power: false**; +10% syphoned (true, typed). **Reach and Bite never move.** **Composure** (beta, `skills.json:4853`): +1 on Heart saves a point; the Strain limit; modules at 2; no-Strain swells at 6. **Lore Master** (gamma, `skills.json:5014`): Name It; the first tone at 1; forms and modules at 2 and 4; a ready design at 4, 6, 8, 10. **Determination's card** (`attributes.json:227`): **+5% Soul power: false**; +75 max MP (typed); +10% syphoned (typed).
 
-**Composure** (beta, `skills.json:4853`): +1 on Heart saves a point (true: the Heart save rolls Composure, `character.ts:972`); the Strain limit; modules Homing, Swift, Left, Right, Silent at 2; a held Outburst swells with no Strain from 6. Perk steps 3, 5, 7, 9; Mastered Still Water. Every point already moves a number.
-
-**Lore Master** (gamma, `skills.json:5014`): the Call Name It (+2 / +3 / +4 on saves at 1 / 4 / 8, a fresh save from 4, Fear ends at 8); +1 tile of its reach a point; the first tone at 1; forms Wave, Burst, Aura, Lance and modules Time, Ether, Phantom at 2; Ricochet, Fuse, Return at 4; a ready design +1 at 4, 6, 8, 10 (`soul_modules.json:177`). Perk steps 3, 5, 7, 9; Mastered True Name.
-
-**Determination's card** (`attributes.json:227`): **+5% Soul power: false** (profile attr 0); +75 max MP (true, typed); +10% syphoned (true, typed).
-
-**The Channeler** (`classes.json:2639`): rank I Shape (`:5160`: the free Pump steps +0.12 more on a Damage design; a bespoke handler `classes/i.ts:1147`), Iron Heart (`:2676`: once a fight, on Mana Shock, -2 Strain); rank II Storm Front (`:5190`: once a turn, +10 MP, a Bolt or Lance arcs to 2 more foes within 2 tiles; **the 10, the 2 and the 2 are typed in code**, `classes/i.ts:1173-1199`), Occult Library (`:2716`: a free Syphon once a turn, one more tone); rank III Heart Surge (`:5223`: once a turn a Release one stage higher, never past 4; double Strain), Eye of the Storm (`:2784`: once a scene, the next Release adds no Strain, rider +1 stage). A class dial of value 1 (no effect).
+**The Channeler** (`classes.json:2639`): rank I Shape (a bespoke handler, `classes/i.ts:1147`), Iron Heart (once a fight, on Mana Shock, -2 Strain); rank II Storm Front (+10 MP, a Bolt or Lance arcs to 2 more foes within 2 tiles; **the 10, the 2 and the 2 are typed in code**, `classes/i.ts:1173-1199`), Occult Library; rank III Heart Surge (a Release one stage higher, never past 4; double Strain), Eye of the Storm.
 
 ### 2(b) Will Power's ladder, points 1 to 10
 
-**Reach is the highest stage you may hold. Bite is the plain Pump's step.** With the cash-out law the Release multiplier becomes `0.8 + sum over Pumps of (step x 1.2^i)` (i counts the Pumps of this Outburst from 0): a plain Pump steps Bite; a feeling steps its own number plus (Bite - 0.2); a negative step (Calm, Relief) is not multiplied. Swells, Feed and Overdraw's second stage count as plain Pumps.
+**Reach is the highest stage you may hold** (`res_max:stage`, S5, in place of `MAX_STAGE`; C16: everyone's stage 4 moves onto the ladder). **Bite is the plain Pump's step.** The Release multiplier is `C = 0.8 + sum over Pumps of (step x 1.2^i)` (i counts this Outburst's Pumps from 0; the ratio from S3's data key): a plain Pump steps Bite; a feeling steps its own number plus (Bite - 0.2); a negative step (Calm, Relief) is not multiplied. Swells, Feed and Overdraw's second stage count as plain Pumps.
 
 | Will Power | What exists (kept) | Reach (stage) | Bite (plain step) | New |
 | --- | --- | --- | --- | --- |
-| 1 | the door | **2** | **0.25** | Soul power +5% a point (was a false +10%) |
+| 1 | the door | **2** | **0.25** | Soul power +5% a point (01's card) |
 | 2 | Overdraw; modules Size, Quiet | | | |
 | 3 | perk step; a free Pump a round | | | |
 | 4 | fork: Ride the Edge or Slow Burn; modules Bloom, Volley | **3** | | |
 | 5 | Two Schools | | | |
 | 6 | perk step; a module slot | | **0.30** | |
-| 7 | perk step | **4** | | |
+| 7 | perk step | **4** (needs Composure 4, B13) | | |
 | 8 | fork: Blood Price or Clean Break | | | **the Push: Overdraw past the top** (2(d)) |
 | 9 | perk step; a slot | | **0.35** | |
-| 10 | Mastered: The Twin Pays | **5** (the stage rules 1.60 item 4634 kept "reserved for the door's peak") | | |
+| 10 | Mastered: The Twin Pays | **5** (needs Composure 7 and Lore Master 4, B13) | | |
 
-The Release multiplier by Reach (plain Pumps): Will Power 1 x1.35 at stage 2; 4 x1.71 at 3; 7 x2.41 at 4; 9 x2.68 at 4; 10 **x3.40 at 5** (today x1.6 at 4 for everyone). PROVISIONAL. Reason: a heart worked to its top pays more than twice a quick one, and the tenth point is a stage nobody else can hold.
+The Release multiplier at each Reach on plain Pumps: Will Power 1 **x1.35** (stage 2); 4 **x1.71** (3); 7 **x2.41** (4); 9 **x2.68** (4); 10 **x3.40** (5) (today x1.6 at stage 4 for everyone). PROVISIONAL. Reason: a heart worked to its top pays more than twice a quick one, and the tenth point is a stage nobody else can hold. With Will Power 1 to 3 the card says so plainly: "the door, a taste: stage 2" (critic-player 8).
 
-**Taken away:** Will Power 1 to 6 can no longer reach stage 4 (today anyone can). This is the one place the ladder removes something a low-point character has (question 4).
+**Taken away by C16:** Will Power 1 to 6 no longer reach stage 4. A held Outburst in a saved fight clamps to the new Reach (section 7).
 
 ### 2(c) The cash-out: the Release, and what everything costs
 
-**AP stays** (Begin 2, Pump 1, Release 1, Steady 1, Feed 1). **MP becomes a choice** (PROVISIONAL):
-- **Max MP = (40 + 12 x (Determination - 1) + 8 x (Insight - 1)) x `mp`**, `mp = 1 + 0.06 x (level - 1)` (x2.14 at 20). The Channeler of 2(j): Determination 7, Insight 2 at level 1: 120; 9 and 3 at level 10: 234; 10 and 4 at level 20: 368. A mixed Determination 4: 76 at level 1.
-- **A Pump costs 10% of the Begin's MP each** (flat; today 10% for each stage reached, which makes a fifth stage cost 50%). A full cash-out at Reach R costs `Begin x (1 + 0.1 x R)`.
-- **Outburst costs grow by the design, not by the level** (a school 20, modules 5 to 20, a tone 5, a second school 10: `soul_modules.json schools`, `items`, `tones`); Tending costs ride `mp` (1(c)), since a Mend never grows richer.
-- **Syphon** (1 AP, unchanged): the air's band **10 / 20 / 30 / 40** (was 30 / 60 / 90 / 120) x `(1 + 0.05 x (Determination - 1))` x `mp`. Will Power no longer adds to it.
+**AP stays** (Begin 2, Pump 1, Release 1, Steady 1, Feed 1). **MP is a choice** (A6; every number is 01 T7a and T7b):
+- **Max MP = (40 + 12 x (Determination - 1) + 8 x (Insight - 1)) x `mp`.** The Channeler of 2(j): **120** at level 1 (Determination 7, Insight 2), **234** at 10 (9, 3), **368** at 20 (10, 4). A mixed Determination 4, Insight 1: 76 at level 1.
+- **A Pump costs a tenth of the Begin's MP each** (today a tenth for each stage reached). A full cash-out at Reach R costs `Begin x (1 + 0.1 x R)`.
+- **Outburst costs grow by the design, not by the level** (a school 20 to 25, modules 5 to 20, a tone 5, a second school 10); Tending's ride `mp` (1(c)).
+- **Syphon** (1 AP): the air's band **10 / 20 / 30 / 40** x `(1 + 0.05 x (Determination - 1))` x `mp`; Will Power leaves it. In normal air: 26 / 43 / 62 for the Channeler at levels 1 / 10 / 20.
 
-| | Level 1 (Det 7, WP 7, Ins 2) | Level 10 (Det 9, WP 9, Ins 3) | Level 20 (Det 10, WP 10, Ins 4) |
+What the pool buys (01 section 6's table, quoted): a typical design's Begin 25 / 45 / 75 at levels 1 / 10 / 20, a full cash-out 35 / 63 / 112.5, **3.4 / 3.7 / 3.3 full cash-outs a pool**; a Syphon is about two thirds of one. Reason: the MP left, the Syphon's AP and the air it drains are a real choice at level 1, 10 and 20, and a bigger design costs a bigger share.
+
+**Strain** (01 T7b): the burn is **6% of max HP a point over the limit**; Mana Shock 25% kept. Reason: Strain hurts the same share of your bar at every level and for every build. The text at `rules.json:1486` ("8 true damage per point over the limit") reads its row (01 defect 3).
+
+**The Damage school.** Base **22.2** (01: today's 37 x0.6), x Stat(soul) x `deal` x the Emanator's grade. Raw ignores armour, an element counts armour half (kept). A Bolt and a Lance roll (`classes/soul.ts:36-39`): their Margins add to `C` (01 section 9: a quarter of the plain hit, plus a point a Perception point).
+
+| | Level 1 (7/7) | Level 10 (9/9) | Level 20 (10/10) |
 | --- | --- | --- | --- |
-| Pool | 120 | 234 | 368 |
-| A typical design's Begin (after Insight's saving) | 24 (Heart Bolt, 25) | 41 (two modules, a tone: 45) | 64 (three modules, two schools, a tone: 75) |
-| A full cash-out to Reach | 33 (Reach 4) | 57 (Reach 4) | 96 (Reach 5) |
-| Full cash-outs a pool | 3.6 | 4.1 | 3.8 |
-| One Syphon in normal air | 26 | 43 | 62 |
+| The Damage design at x1.0 (Standard) | 48 | 330 | 2,515 |
+| The specialist's full Release (Reach, Bite) | 90 (stage 3, x1.89: Composure 4 comes at level 2) | 885 (stage 4, x2.68) | 8,560 (stage 5, x3.40) |
+| The same in the stated grade (01 3.2: Standard, Masterwork, Relic) | 90 | 1,150 | 12,840 |
+| At Celestial | | | **14,982** (01 T11) |
 
-Reason: about four full Releases a pool at every level, and a Syphon is about half to three quarters of one; so a Syphon's AP, the air it drains and the MP left are a real choice at level 1, 10 and 20, and a bigger design costs a bigger share.
+**The compounding rule, in plain Releases** (a plain Release is the design at x1.0; Overdraw once a turn; one free Pump a turn from Will Power 3):
 
-**Strain on the new scale:** the burn is **6% of max HP a point over the limit** (was 8 HP flat, `soul_modules.json:65`; 8 of 145 was 5.5%); Mana Shock 25% kept. Reason: Strain must hurt the same at level 20 as at level 1.
+| Who | Reach, Bite | One full Release | AP, and how often |
+| --- | --- | --- | --- |
+| Will Power 1 | 2, 0.25 | x1.35 | 4 to 5 AP (Begin, Pumps, Release): a taste of the door |
+| Will Power 4, a mixed character | 3, 0.25 | x1.71 | 4 AP (Begin, the free Pump, Overdraw, Release), every turn, while Strain lasts (+1 net a turn) |
+| Will Power 7 (Composure 4) | 4, 0.30 | x2.41 | 5 AP, every turn |
+| Will Power 10, a specialist | 5, 0.35 | x3.40 | one turn of 6 AP; or held: 3 AP, then the swell, the free Pump and 1 AP next turn: every two turns, the heart glowing where everyone sees it |
 
-**The Damage school.** At x1.0 a specialist's Damage design deals **D = 1.4 P** (level 1 25, level 10 200, level 20 1,960; PROVISIONAL, set so the wait in the table below is paid about as Momentum's is). Raw ignores armour, an element counts armour half (kept).
-
-**The compounding rule, in plain actions** (D = 1.4 PA; Overdraw once a turn; one free Pump a turn from Will Power 3):
-
-| Who | Reach, Bite | One full Release | AP, and how often | Against plain play |
-| --- | --- | --- | --- | --- |
-| Will Power 1 | 2, 0.25 | x1.35: 1.9 PA | 4 to 5 AP (Begin, Pumps, Release) | par at best: a taste of the door |
-| Will Power 4, a mixed character | 3, 0.25 | x1.71: 2.4 PA | 4 AP (Begin, the free Pump, Overdraw), every turn | about a fifth over plain, every turn, while Strain lasts (+1 net a turn) |
-| Will Power 7 | 4, 0.30 | x2.41: 3.4 PA | 5 AP, every turn | about a third over plain |
-| Will Power 10, a specialist | 5, 0.35 | x3.40: 4.8 PA | one turn: 6 AP; held: 3 AP, then the swell, the free Pump and 1 AP next turn | held over two turns, about 45% over two turns of plain play, every two turns, the heart glowing where everyone sees it |
-
-With feelings the top grows: four strong feelings on a Reach-5 heart reach about x5 to x6, and with a Celestial Emanator and Heart Surge a level-20 Release passes 10,000: the "something super" five digits, paid for in Strain.
+With feelings the top grows: four strong feelings on a Reach-5 heart reach about x6 (01 T11's source), and Heart Surge and the Push go past it: the "something super" five digits, paid for in Strain. Its sources' sum is 07's to trim to 01's budget (+127%, 01 10.3 item 5).
 
 ### 2(d) The Push at Will Power 8: Overdraw past the top
 
-Once a turn, an Overdraw (or a Pump) may take the Outburst **one stage past your Reach** (stage 6 for a 10). **Price:** +2 Strain at once, and your Strain does not fall at the start of your next turn. PROVISIONAL. Reason: the curve's "Overdraw, price Strain", landing on the next turn; a heart pushed past its top stays hot. The Overdraw verb at Will Power 2 stays as it is (two stages in one Pump, within Reach). Heart Surge (the Channeler's) may stack with it (2(i)).
+Once a turn, an Overdraw (or a Pump) may take the Outburst **one stage past your Reach** (`res_max:stage` +1 for the use, S5; stage 6 for a 10). **Price:** +2 Strain at once, and your Strain does not fall at the start of your next turn. PROVISIONAL. Reason: the curve's "Overdraw, price Strain", landing on the next turn; a heart pushed past its top stays hot. The Overdraw verb at Will Power 2 stays as it is (two stages in one Pump, within Reach). Heart Surge (the Channeler's) may stack with it (2(i)).
 
 ### 2(e) Marks on the door, and the practice tracks
 
-**Door Marks:** earned by **stages Released** on worthy foes (a specialist about 7 a fight, 22 an hour). **Thresholds, PROVISIONAL: 45, 245, 380, 515.**
+**The unit: stages Released** on worthy foes. **Thresholds: 05's formula**; at this drafter's reading of 22 stages an hour for a specialist, about 44 / 242 / 374 / 506, set from the simulator.
 
 | Mark | About | Gives |
 | --- | --- | --- |
-| I | hour 2 | your first Begin each fight starts at stage 1 (primed with 1) |
+| I | hour 2 | **your first Begin each fight** starts at stage 1 (`begin_stage`, S11). It never overlaps Afterglow (2(i)), which starts every later Begin after a Release: the two are one stat, added |
 | II | hour 11 | Strain falls by 2 at the start of your turn, not 1 |
 | middle | hour 17 | once a fight, a Mana Short Dazes you instead of Stunning you |
 | III | hour 23 | Overdraw past the top costs no Strain once a fight |
 
-**Modules** (05-pacing's rates, adopted): practice as today (`soul_modules.json:1327`: 1 a Release, +1 a stage past 1, +1 a feeling), picks at 10, then every 80; a Mastery level in a gating skill +40. At about 38 practice an hour: a module every 2.1 hours, **23 of the 28 learnable modules by hour 45 (82%)**. A Determination specialist's gates cover 19 of them (Will Power 4, Composure 5, Lore Master 10); two points each in Empathy, Camaraderie and Insinuation (6 of the 8 spare Skill points, 1(j)'s table shows the same spare) open the other 9: **the 80% needs those points**, and I recommend the level-up screen names the module a point opens.
+**Modules** (05 section 4, quoted): `thresholds` [10], `then_every` 80, `mastery_bonus` 40; about 38 practice an hour, **a module every 2.1 hours, 23 of the 28 learnable by hour 45**. A Determination specialist's gates cover 19 of them (Will Power 4, Composure 5, Lore Master 10); two points each in Empathy, Camaraderie and Insinuation open the other 9 (the Channeler of 2(j) buys them at levels 13 to 19): **the 80% needs those points**, and the level-up screen should name the module a point opens.
 
-**Feelings** (05-pacing's marks per feeling, adopted): Mark I unlocked (its trigger in a worthy fight, `[2, 6, 12]` for a common trigger, `[1, 3, 6]` for a rare one); II its step +0.1; III **it can be chosen a second time in one Outburst** (the one feeling exempt from "once each"; my reading of "chosen, not only suffered", for the lead). 20 of 25 by hour 45.
+**Feelings** (05 section 4, quoted): each row's `marks` [2, 6, 12] for a common trigger, [1, 3, 6] for a rare one: I unlocked, II its step +0.1, III it can be chosen. What "chosen" gives here, PROVISIONAL: **it may be poured a second time in one Outburst** (the one feeling exempt from "once each"). 20 of 25 by hour 45.
 
 **Tones:** the first at Lore Master 1; more from tutors, plates and Occult Library (kept); seven in all. **Ready designs:** Lore Master's (kept).
 
 ### 2(f) Tags for mixed characters
 
-- **This door keeps others'**: Begin, Pump and Steady are still acts: they carry "keeps plates" (a held heart behind a Brace) and "keeps the chain". A held Outburst never keeps Hidden (the heart glows, today's rule).
-- **Others keep this door's** (the calming rows exist, `soul_modules.json strain.calming`): a weapon attack (the first each turn, -1 Strain: the monk who fights it out), a heal, stim, shield or cleanse given (-1), a Call with Recitation (-1). **New, PROVISIONAL:** a Whisper you say calms 1 Strain once a turn (prayer stills the heart), and holding Guard counts as a still turn for the "still" row. These are the base layer of the Sigil-Outburst, Guard-Outburst and Prayer-Outburst Crossings.
+- **This door keeps others'** (S6): Begin, Pump and Steady are still acts: they carry "keeps plates" and "keeps the chain". A held Outburst never keeps Hidden (the heart glows, today's rule).
+- **Others keep this door's** (the calming rows exist, `soul_modules.json:77 strain.calming`): a weapon attack (the first each turn, -1 Strain), a heal, stim, shield or cleanse given (-1), a Call with Recitation (-1). **New, PROVISIONAL:** a Whisper you say calms 1 Strain once a turn (prayer stills the heart), and holding Guard counts as a still turn for the "still" row. These are the base layer of the Sigil-Outburst, Guard-Outburst and Prayer-Outburst Crossings.
 
 ### 2(g) Composure (beta) and Lore Master (gamma), points 1 to 10
 
-**Composure** keeps every row: +1 Heart save a point; the Strain limit +1 at 1, 2, 4, 6, 8 (to 8); modules at 2; no-Strain swells at 6; perk steps 3, 5, 7, 9; Mastered at 10. No point is dead: each moves a save or the limit or opens something. **One change, PROVISIONAL: at 10, besides Still Water, the burn of Strain is 4% of max HP a point over, not 6%.** Reason: Mastered Composure should be felt in the door it guards.
+**Composure** keeps every row: +1 Heart save a point (counts from the first, B20); the Strain limit +1 at 1, 2, 4, 6, 8 (to 8); modules at 2; no-Strain swells at 6; perk steps 3, 5, 7, 9; Mastered at 10. New: **4 opens stage 4 and 7 opens stage 5** (B13). **At 10, besides Still Water, the burn of Strain is 4% of max HP a point over, not 6%** (PROVISIONAL; reason: Mastered Composure is felt in the door it guards).
 
-**Lore Master** keeps every row (the tone at 1; forms and modules at 2; modules at 4; designs at 4, 6, 8, 10; Name It's steps 1, 4, 8; the Call price at 1, 5, 9, 10; perk steps 3, 5, 7, 9; Mastered True Name); every point adds its full points to checks and Asks and +1 tile of Name It reach. Point 2 opens 4 forms and 3 modules; point 3 is a perk; 5, 7 and 9 are perks with the Call's price; 6, 8 and 10 a ready design. No point is dead; no change.
+**Lore Master** keeps every row (the tone at 1; forms and modules at 2; modules at 4; designs at 4, 6, 8, 10; Name It's steps 1, 4, 8; the Call price at 1, 5, 9, 10; perk steps 3, 5, 7, 9; Mastered True Name); every point adds its full points to checks and Asks and +1 tile of Name It reach. New: **4 opens stage 5** with Composure 7 (B13). No point is dead.
 
-### 2(h) Determination's card, made true
+### 2(h) Determination's card (01 section 4.2, A4)
 
-| Per point above 1 | Today | Proposed (PROVISIONAL) | Reason |
-| --- | --- | --- | --- |
-| Soul power | +5%: **false** (profile attr 0) | **+10%**, on every Outburst's damage, heal and shield (profiles `soul`, `soul_mend` attr 0.10 on Determination; Will Power 0.05) | the attribute is the engine's size |
-| Max MP | +75 (true, typed) | **+12 x `mp`** | the new pool (2(c)) |
-| Mana syphoned | +10% (true, typed) | **+5%**, read from the card | Syphon's band came down; the slope with it |
-| (new) Heart saves | | **+1 on Heart saves every 2 points** | everyone meets Fear, Taunt and a Bond's save: a point of Determination outside a caster is never dead |
+| Per point above 1 | Today | 01's card |
+| --- | --- | --- |
+| Soul power | +5%: **false** (profile attr 0) | **+10%** on every Outburst's damage, heal and shield (`soul`, `soul_mend`; Will Power +5%, multiplied) |
+| Max MP | +75 (true, typed) | **+12 x `mp`** (01 T7a) |
+| Mana syphoned | +10% (true, typed) | **+5%**, read from the card |
+
+(The first draft's "+1 Heart save every 2 points" is withdrawn: the card is 01's.)
 
 ### 2(i) The Channeler: what only it has
 
-**Only the Channeler: Afterglow** (new, rank I, in place of Shape): after a Release at stage 2 or higher, your next Begin this fight starts at stage 1 (stage 2 from rank III). PROVISIONAL. Reason: the Channeler's heart never goes cold between Outbursts; it cashes out and rebuilds faster, which no Will Power point gives. Shape **retires** (+0.12 on one Pump is about +7% on a full Release: a number, not a thing; the Bite ladder does its job now).
+**Only the Channeler: Afterglow** (new, rank I, in place of Shape): after a Release at stage 2 or higher, your next Begin this fight starts at stage 1 (stage 2 from rank III) (`begin_stage`, S11). PROVISIONAL. Reason: the Channeler's heart never goes cold between Outbursts; it cashes out and rebuilds faster, which no Will Power point gives. Shape **retires** (+0.12 on one Pump is about +7% on a full Release: a number, not a thing), and its bespoke handler goes (`classes/i.ts:1147`; the lint count falls by one).
 
 | Rank | Move | Today | Worth pressing? | Becomes (PROVISIONAL) |
 | --- | --- | --- | --- | --- |
 | I | Afterglow (new) | | (passive) | as above |
 | I | Iron Heart | -2 Strain once a fight on Mana Shock | (reactive) | **your Strain falls to your limit** (the shock ends at once), once a fight |
-| II | Storm Front | +2 foes for 10 MP | yes (three targets) | kept; its 10 MP, 2 foes and 2 tiles move into the row's `numbers` (they are typed in `classes/i.ts`) |
+| II | Storm Front | +2 foes for 10 MP | yes (three targets) | kept; its 10 MP (x `mp`, a price on 01's rule 4), 2 foes and 2 tiles move into the row's `numbers` |
 | II | Occult Library | a free Syphon once a turn, a tone | yes | kept |
-| III | Heart Surge | a Release one stage higher, not past 4 | yes | one stage higher **and may pass your Reach by one** (two with the Push): the Channeler's own peak; double Strain kept |
+| III | Heart Surge | a Release one stage higher, not past 4 | yes | one stage higher **and may pass your Reach by one** (`res_max:stage`, not a typed 4): the Channeler's own peak; double Strain kept |
 | III | Eye of the Storm | once a scene | yes | kept |
 
 The class dial (value 1) is left at 1: a class is defined by what only it has, not by a percentage.
 
 ### 2(j) How a player spends: the Determination specialist and a mixed fighter
 
-**The Channeler** (Determination 7, Endurance 3, Insight 2, Agility 2; Will Power 7, Composure 2, Lore Master 1).
+**The Channeler** (creation: Determination 7, Endurance 3, Insight 2, Agility 2; Will Power 7, Composure 3).
 
 | Level (hour) | Buys | What the player gets |
 | --- | --- | --- |
-| 1 (0) | creation | Reach 4, Bite 0.30, Overdraw, Two Schools, a free Pump a round, fork a, three perk steps, 3 slots; Strain limit 5; a tone |
-| 2 (1) | Lore Master 2; Endurance 4 | four forms, three modules; HP |
-| 3 (2) | Channeler rank I; Composure 3, Lore Master 3 | Afterglow, Iron Heart; two perks |
-| 4 (3) | Composure 4; Insight 3 | Strain limit 6; MP, cheaper designs |
-| 5 (4) | rank II; Lore Master 4, Composure 5 | Storm Front, Occult Library; three modules, a design; a perk |
-| 6 (6) | Determination 8; Will Power 8 | fork b, **the Push**; +10% Soul power |
-| 7 (8) | Composure 6, Lore Master 5 | no-Strain swells, limit 7; a perk |
-| 8 (11) | Lore Master 6; Endurance 5 | a design; HP |
-| 9 (13) | Composure 7, Lore Master 7 | two perks |
+| 1 (0) | creation | **stage 3** (stage 4 waits on Composure 4), Bite 0.30, Overdraw, Two Schools, a free Pump a round, fork a, three perk steps, 3 slots; Strain limit 5; five modules (Composure 2) |
+| 2 (0.5) | Composure 4; Endurance 4 | **stage 4**; Strain limit 6; HP |
+| 3 (1.25) | Channeler rank I; Lore Master 1, 2 | Afterglow, Iron Heart; a tone, four forms, three modules |
+| 4 (2.5) | Composure 5, Lore Master 3 | two perks |
+| 5 (4) | rank II; Determination 8; Will Power 8 | Storm Front, Occult Library; fork b, **the Push**; +10% Soul power |
+| 6 (6.4) | Lore Master 4; Insight 3 | three modules, a design; MP, cheaper designs |
+| 7 (8.8) | Composure 6, 7 | no-Strain swells, limit 7, a perk; stage 5's beta gate met |
+| 8 (11.2) | Lore Master 5; Endurance 5 | a perk; HP |
+| 9 (13.6) | Composure 8, Lore Master 6 | limit 8; a design |
 | 10 (16) | Determination 9; Will Power 9 | **Bite 0.35**, a perk, a slot |
-| 11 (18) | Composure 8, Lore Master 8 | limit 8; a design, Name It's top step |
-| 12 (21) | Composure 9; Insight 4 | a perk; MP |
-| 13 (23) | Lore Master 9, Empathy 1 | a perk |
-| 14 (26) | Empathy 2; Endurance 6 | four modules open |
-| 15 (28) | rank III; Camaraderie 1, 2 | Heart Surge, Eye of the Storm; three modules open; **flag: the door's own skills wait on Determination 10** |
-| 16 (31) | Determination 10; Will Power 10 | **Reach 5**, Mastered The Twin Pays |
-| 17 (33) | Composure 10, Lore Master 10 | Still Water and the lighter burn; True Name; a design |
-| 18 to 20 (36 to 40) | Insinuation 2; 2 Skill and 2 Attribute points | the last three modules open; breadth |
+| 11 (18.4) | Composure 9, Lore Master 7 | two perks |
+| 12 (20.8) | Lore Master 8; Insight 4 | a design, Name It's top step; MP |
+| 13 (23.2) | Lore Master 9, Empathy 1 | a perk |
+| 14 (25.6) | Empathy 2, Insinuation 1 | modules open (Empathy's) |
+| 15 (28) | rank III; Determination 10; Will Power 10 | **stage 5**, Mastered The Twin Pays, Heart Surge, Eye of the Storm |
+| 16 (30.4) | Composure 10; Endurance 6 | Still Water and the lighter burn |
+| 17 (32.8) | Lore Master 10, Insinuation 2 | True Name, a design; three modules open |
+| 18 (35.2) | Camaraderie 1; Endurance 7 | Share a Hit |
+| 19 (37.6) | Camaraderie 2, Pain Threshold 1 | the last modules open; HP |
+| 20 (40) | Pain Threshold 2; Agility 3 | HP; movement |
 
-**A mixed fighter-channeler** (Strength 7, Determination 4; Raw Power 6, Will Power 4: the monk who fights it out and calms the heart with every blow; class at 3 the Breaker).
+**A mixed fighter-channeler** (Strength 7, Determination 4, Endurance 2; Raw Power 6, Will Power 4: the monk who fights it out and calms the heart with every blow; the Breaker at 3). **Hands** (ruling E): the Emanator is a hand focus. Either the character fights with the **Emanator gauntlet** itself (one-handed, Strength x Raw Power, `weapons.json`; 11 a blow, 01 T3), so the focus is the weapon and no swap is paid, at a third of a maul's blow (27); or it carries the maul and **pays the hand swap** (1 AP a hand, rules `:689`) on every Outburst turn, which makes the Outburst turn below 5 AP, not 4. The Momentum steps are 02's; only their names are written here.
 
 | Level | Buys | What the player gets |
 | --- | --- | --- |
-| 1 | creation | Reach 3, Overdraw, a free Pump, fork a; the chain |
+| 1 | creation | stage 3, Overdraw, a free Pump a round, fork a; Momentum at Raw Power 6 |
 | 2 | Composure 1; Determination 5 | Strain limit 4; +10% Soul power |
-| 3 | Raw Power 7, Composure 2 | the Breaker; limit 5, five modules |
-| 4 | Will Power 5; Endurance 3 | Two Schools |
-| 5 | rank II; Guts 1, 2 | Strength's beta |
-| 6 | Strength 8; Raw Power 8 | Overswing (Raw Power's Push) |
-| 7 | Lore Master 1, 2 | a tone, the four forms |
-| 8 | Determination 6; Will Power 6 | Bite 0.30, a slot |
-| 9 | Guts 3, 4 | a perk |
-| 10 | Strength 9; Raw Power 9 | Raw Power's Bite |
-| 11 | Composure 3, 4 | a perk; limit 6 |
-| 12 | Determination 7; Will Power 7 | **Reach 4** |
+| 3 | Raw Power 7, Composure 2 | the Breaker; limit 5, five modules (Momentum's step at 7 waits on Guts 4) |
+| 4 | Will Power 5, Guts 1 | Two Schools; Guts |
+| 5 | rank II; Raw Power 8; Strength 8 | Overswing (Raw Power's Push) |
+| 6 | Guts 2; Determination 6 | +10% Soul power |
+| 7 | Will Power 6, Guts 3 | Bite 0.30, a slot |
+| 8 | Guts 4; Endurance 3 | Momentum's step at 7 |
+| 9 | Composure 3, 4 | a perk; limit 6; stage 4's beta gate met |
+| 10 | Raw Power 9; Strength 9 | Raw Power's Bite |
+| 11 | Lore Master 1, 2 | a tone, the four forms |
+| 12 | Will Power 7; Determination 7 | **stage 4** |
 | 13 | Guts 5, 6 | a perk |
-| 14 | Lore Master 3; Endurance 4 | a perk |
-| 15 | rank III; Guts 7, Composure 5 | two perks |
-| 16 | Strength 10; Raw Power 10 | the chain of x7, Mastered |
-| 17 | Guts 8, Composure 6 | no-Strain swells, limit 7 |
-| 18 | Determination 8; Will Power 8 | **the Push**, fork b |
-| 19 | Guts 9, 10 | Guts Mastered |
-| 20 | Lore Master 4; Endurance 5 | three modules, a design |
+| 14 | Guts 7, Intimidation 1 | a perk |
+| 15 | rank III; Raw Power 10; Strength 10 | Mastered (Momentum's top waits on Intimidation 4) |
+| 16 | Intimidation 2; Determination 8 | +10% Soul power |
+| 17 | Intimidation 3, 4 | Momentum's top Reach |
+| 18 | Will Power 8; Endurance 4 | **the Push**, fork b |
+| 19 | Composure 5, 6 | no-Strain swells, limit 7 |
+| 20 | Lore Master 3; Endurance 5 | a perk |
 
-Every level buys something felt. Each blow calms the heart (the `fight` calming row), so the fighter Begins, Overdraws and Releases a stage-3 heart every turn between Finishers: two doors cashing out often, neither at the top.
+Every level buys something felt. Each blow calms the heart (the `fight` calming row), so the fighter Begins, Overdraws and Releases a stage-3 heart every turn between Finishers, stage 4 from level 12: two doors cashing out often, neither at the other's top.
 
 ---
 
@@ -439,272 +444,303 @@ Every level buys something felt. Each blow calms the heart (the `fight` calming 
 
 ### 3(a) Today
 
-**The run's counter: Devotion** (0 to 10, standing with your patron; `patrons.json:5 devotion`): **start 3** (`:8`); the XP curve `[0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450]` (`:17`); gates Whisper 0, Hymn I 3, II 5, III 7, the Miracle 10. Gains: a liked tag +1 (capped 2 a fight, 2 a scene, 6 a session, `:48 tag_caps`; `faith.ts:95`), a vow +3, a rite +4, a Narrator deed +2 to +5 (10 a session). Losses: a taboo -3 (-6 Witnessed), a broken vow -5, a missed prayer above your standing -3.
+**The run's counter: Devotion** (0 to 10, standing with your patron; `patrons.json devotion`): **start 3** (`patrons.json:8`); the XP curve `[0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450]` (`:17`); gates Whisper 0, Hymn I 3, II 5, III 7, the Miracle 10. Gains: a liked tag +1 (capped 2 a fight, 2 a scene, 6 a session, `:48 tag_caps`; `faith.ts:95`), a vow +3, a rite +4, a Narrator deed +2 to +5. Losses: a taboo -3 (-6 Witnessed), a broken vow -5, a missed prayer above your standing -3.
 
-**The prayers** (`patrons.json:82 prayer`): a Whisper 1 AP, once a turn (Faith 1); a Hymn 3 AP, then a wait of `9 - 0.75 x Faith - 0.25 x Virtue`, rounded up, at least 3 (`character.ts:1266-1270`); the Miracle 3 AP, once a session, Faith 7 and Devotion 10, costs 5 Devotion levels. Seven Whispers (`patrons.json:205`: Luck +2, Health 8.5, Protection 10, Courage, Guidance, Safe Passage, Rebuke 20 Soul damage); three Hymns and a Miracle a patron; Witnessed (Faith 5, an answered Hymn) and the intervention (20 + 4 x Devotion, x Blessing power). Praying above your standing (`:100 overreach`): any Faithful, TN 12 + 2 a tier. An Atheist prays every tier by dice (TN 12 to 18).
+**The prayers** (`patrons.json prayer`): a Whisper 1 AP, once a turn (Faith 1); a Hymn 3 AP, then a wait of `9 - 0.75 x Faith - 0.25 x Virtue`, rounded up, at least 3 (`character.ts:1266-1270`); the Miracle 3 AP, once a session, Faith 7 and Devotion 10, costs 5 Devotion levels. Seven Whispers; three Hymns and a Miracle a patron; Witnessed (Faith 5) and the intervention (`20 + 4 x Devotion`, x Blessing power; `faith.ts:116`). Praying above your standing (`patrons.json:100 overreach`): any Faithful, TN 12 + 2 a tier. An Atheist prays every tier by dice.
 
-**Blessing power** is profile `blessing` (`rules.json:1874`): 0.956 x (1 + 0.06 x (Virtue - 1) + 0.06 x Faith) x the `scale` column; heals and shields `blessing_mend` (`:1921`) on `mend`.
+**Blessing power** is profile `blessing` (01 T1: 0.956 x (1 + 0.06 x (Virtue - 1) + 0.06 x Faith), on the `scale` column); heals and shields `blessing_mend` on `mend`. **There is no in-fight counter**: the Hymn's wait is a clock.
 
-**There is no in-fight counter**: nothing is built and spent inside a fight; the Hymn's wait is a clock.
+**Faith's ladder** (`skills.json:5180`): 1 Whispers; 2 Name the Sinner; 3 perk step, Hymns open; 4 fork Steadfast or Round of Blessings; 5 Witnessed; 6 perk step; 7 perk step; 8 fork Swift Psalm or Benediction; 9 perk step; 10 Mastered Judgement Day. Card: **+10% Blessing power: false** (the profile reads 6%); Hymns 0.75 round sooner (points past the floor move nothing). **Conscience** (beta, `skills.json:5435`): prayer shields +1% x Faith a point (the feed); +10% shields received a point (**typed**, `character.ts:1249`). **Authority** (gamma, `skills.json:5620`): the Call Order; +1 tile and Karma +1 a point. **Virtue's card** (`attributes.json:256`): "Hymns return sooner" (0.25 a point); it also gives +6% Blessing power that the card does not say.
 
-**Faith's ladder** (`skills.json:5180`): 1 Whispers; 2 Name the Sinner (a Whisper: Judged 2 rounds; prayers +40% on a Judged or Marked foe); 3 perk step, Hymns open; 4 fork Steadfast or Round of Blessings; 5 Witnessed; 6 perk step; 7 perk step; 8 fork Swift Psalm or Benediction; 9 perk step; 10 Mastered Judgement Day. Perks: Unbroken Litany (the first Hymn a fight -1 AP; II two), Sinner's Due (+8% / +12% on a foe at half HP).
-- Card per point (`skills.json:5205`): **+10% Blessing power: false** (the profile reads 6%); Hymns 0.75 round sooner (true, but with Virtue the floor of 3 is reached at Faith 7 and Virtue 7: points 8 to 10 move nothing); harder to save against (true).
-
-**Conscience** (beta, `skills.json:5435`): prayer shields +1% x Faith a point (the feed, true); +10% shields received a point (**typed**, `character.ts:1249`); perk steps 3, 5, 7, 9; Mastered Foreseen. Points 2, 4, 6, 8 only move those two numbers.
-
-**Authority** (gamma, `skills.json:5620`): the Call Order (steps 1, 4, 8; price 1, 5, 9, 10); +1 tile of its reach and Karma +1 a point (Karma is the Narrator's); perk steps 3, 5, 7, 9; Mastered On My Mark.
-
-**Virtue's card** (`attributes.json:256`): "Hymns return sooner": 0.25 round a point, rounded up, so about one point in four is felt; it also gives +6% Blessing power that **the card does not say** (profile attr 0.06).
-
-**The Chaplain** (`classes.json:2836`): its pool is Devotion and no move costs MP; `gain` The Patron at Your Side (while Witnessed, the first intervention keeps Witnessed). Rank I Ward (`:2865`: a Whisper, 1 AP, a fight-long shield of `10 x` on an ally, four at once), Smite (`:2922`: once a turn, a weapon hit adds 20 x Blessing power Soul damage through armour, and Judged); rank II Under the Eye (`lumeri_templar`: Witnessed, allies within 3 +2 to hit), Blessed Arms (load a Hymn into the weapon); rank III Sanctuary (`:5287`: a Hymn only it says, half damage in a 3x3, a pool of `40 x`), Verdict (`classes.json:7716`: 4 AP and 1 Devotion level, once a fight, a plain attack x (1 + Blessing power)).
+**The Chaplain** (`classes.json:2836`): no move costs MP; `gain` The Patron at Your Side, Amen. Rank I Ward (a Whisper, 1 AP, a fight-long shield of `10 x` on an ally, four at once), Smite (once a turn, a weapon hit adds `20 x` Blessing power Soul damage through armour, and Judged); rank II Under the Eye, Blessed Arms; rank III Sanctuary (a Hymn only it says, half damage in a 3x3, a pool of `40 x`), Verdict (`classes.json:7716`: 4 AP and 1 Devotion level, once a fight, a plain attack x (1 + Blessing power)).
 
 ### 3(b) Faith's ladder, points 1 to 10
 
-**Two layers, because the counter is earned across a run.** Devotion (the run's) keeps its shape: it opens the tiers (Hymn I at standing 3, II 5, III 7, the Miracle 10; Faith gates kept: Hymns 3, Witnessed 5, the Miracle 7). That is the door's long Reach, earned by deeds, not bought. **Inside a fight the door gets the counter it lacks: Grace** (a new resource, "Needs" row 1). **Faith's Reach is the Grace you may hold; Bite is what one step of Grace adds to the prayer that spends it.**
+**Two layers, because Devotion is earned across a run.** Devotion keeps its shape: it opens the tiers (Hymn I at standing 3, II 5, III 7, the Miracle 10; Faith gates kept: Hymns 3, Witnessed 5, the Miracle 7) and **it is the prayer's grade** (A9, 01 T9: standing 3 / 5 / 7 / 10 as Fine / Masterwork / Relic / Celestial, x1.15 / 1.3 / 1.5 / 1.75; prayers have no roll). **Inside a fight the door has Grace** (C19 accepts it; the resource `grace`, S10). **Faith's Reach is the Grace you may hold (`res_max:grace`); Bite is what one step of Grace adds to the prayer that spends it.**
 
-**Grace** (PROVISIONAL): each prayer you say (a Whisper, Ward) lays 1, at most one a turn from prayers; the first act each turn your patron likes (its liked tags, detected as today) lays 1; **a taboo act clears all of it**; a turn in which you neither prayed nor did a liked act loses 1 (the wear). A Hymn, Sanctuary and Verdict **spend all of it**; a Whisper may spend it instead of laying (your choice when you say it). The Miracle neither lays nor spends. Grace is gone when the fight ends.
+**Grace** (PROVISIONAL): each prayer you say (a Whisper, Ward) lays 1, at most one a turn from prayers; the first act each turn your patron likes (its liked tags, detected as today) lays 1; **a taboo act clears all of it**; a turn in which you neither prayed nor did a liked act loses 1 (the wear, `wear:grace`, S6). A Hymn, Sanctuary and Verdict **spend all of it**; a Whisper may spend it instead of laying (your choice when you say it). The Miracle neither lays nor spends. Grace is gone when the fight ends.
 
 | Faith | What exists (kept) | Reach (Grace) | Bite (a step, on the prayer that spends it) | New |
 | --- | --- | --- | --- | --- |
-| 1 | Whispers | **2** | **+15%** | Grace; Blessing power +5% a point (was a false +10%) |
+| 1 | Whispers | **2** | **+15%** | Grace; a Whisper spends it (the cash-out from point 1, C18); Blessing power +5% a point (01's card) |
 | 2 | Name the Sinner | | | |
 | 3 | perk step; Hymns open | | | |
 | 4 | fork: Steadfast or Round of Blessings | **3** | | |
 | 5 | Witnessed | | | |
 | 6 | perk step | | **+20%** | |
-| 7 | perk step | **4** | | |
-| 8 | fork: Swift Psalm or Benediction | | | **the Push: pray above your standing**, moved here (3(d)) |
+| 7 | perk step | **4** (needs Conscience 4, B13) | | |
+| 8 | fork: Swift Psalm or Benediction | | | **the Push: pray above your standing**, moved here (C17; 3(d)) |
 | 9 | perk step | | **+25%** | |
-| 10 | Mastered: Judgement Day | **5** | | |
+| 10 | Mastered: Judgement Day | **5** (needs Conscience 7 and Authority 4, B13) | | |
 
-**The Hymn's wait, PROVISIONAL: `8 - 0.5 x Faith`, rounded up, at least 3** (Faith 1 8, 4 6, 7 5, 10 3; Virtue leaves it). Reason: every second Faith point takes a round off, up to the tenth (today points past 7 do nothing).
+**The Hymn's wait, PROVISIONAL: `10 - 0.5 x Faith - 0.25 x (Virtue - 1)`, rounded up, at least 3** (`cooldown_rule` base 10, per_faith 0.5, per_virtue 0.25 counted above 1). Faith and Virtue 4: 8 rounds; 7 and 7: 5; 9 and 9: 4; 10 and 10: 3 (the floor is first met at the top). Reason: every second Faith point takes a round off, up to the tenth (today points past 7 do nothing), and Virtue keeps its card's line (01 section 4.2: "Hymns return sooner"). Longer than today in the middle: the wait is the Hymn's price now that Grace pays for waiting.
 
 ### 3(c) The cash-out: the Hymn, and what it costs
 
-A prayer that spends Grace is worth **x(1 + Bite x S(n))**: Faith 1 x1.33 (2 Grace on a Whisper); Faith 4 x1.55 (3); Faith 7 x2.07 (4); Faith 9 x2.34 (4); Faith 10 **x2.86** (5).
+A prayer that spends Grace is worth **`C = 1 + Bite x S(n)`**: Faith 1 **x1.33** (2 Grace, on a Whisper); Faith 4 **x1.55** (3); Faith 7 **x2.07** (4); Faith 9 **x2.34** (4); Faith 10 **x2.86** (5). Prayers land (no roll, no Margins).
 
-**Costs, one by one.** AP kept (Whisper 1, Hymn 3, the Miracle 3, Ward 1, Sanctuary 3). No MP (kept: the prayer door's fuel is Devotion and the wait). The Miracle's price, 5 Devotion levels, kept: on 05-pacing's curve it is about 13 hours of faith. The Hymn's wait as above. Verdict 3 AP (was 4) and 1 Devotion level (3(i)).
+**Costs.** AP kept (Whisper 1, Hymn 3, the Miracle 3, Ward 1, Sanctuary 3). No MP (the prayer door's fuel is Devotion and the wait). The Miracle's price, 5 Devotion levels, kept: on 05's curve about 13 hours of faith. Verdict 3 AP (was 4) and 1 Devotion level (3(i)).
 
-**The compounding rule, in plain actions** (a Hymn is about 2.5 PA for its 3 AP, its wait being its price; a Whisper about 0.6 PA):
+**The compounding rule, in plain prayers** (a prayer at x1):
 
-| Who | Grace held, Bite | One cash-out is worth | How often | Against plain play |
-| --- | --- | --- | --- | --- |
-| Faith 1 | 2, 15% | a Whisper x1.33: 0.8 PA | every second turn | a small edge; Hymns are shut below Faith 3 |
-| Faith 4, a mixed character | 3, 15% | a Hymn x1.55: 3.9 PA, or a Whisper x1.55 between Hymns: 0.9 PA | a Whisper cash-out every two turns, a Hymn every 6 rounds | about a tenth over plain, often |
-| Faith 7 | 4, 20% | a Hymn x2.07: 5.2 PA | every 5 rounds | about a third over plain across the wait |
-| Faith 10, a specialist | 5, 25% | a Hymn x2.86: 7.2 PA | every 3 rounds | about 45% over three turns of plain play, if no taboo clears the Grace |
+| Who | Grace held, Bite | One cash-out | How often |
+| --- | --- | --- | --- |
+| Faith 1 | 2, 15% | a Whisper x1.33 | every second turn; Hymns are shut below Faith 3 |
+| Faith 4, a mixed character | 3, 15% | a Hymn x1.55, or a Whisper x1.55 between Hymns | a Whisper cash-out every two turns, a Hymn every 8 rounds |
+| Faith 7 (Conscience 4) | 4, 20% | a Hymn x2.07 | every 5 rounds |
+| Faith 10, a specialist | 5, 25% | a Hymn x2.86 | every 3 rounds, if no taboo clears the Grace |
 
-The consequence: one taboo clears the Grace you saved for the Hymn, and Devotion still moves as today.
+At level 20 a specialist's Judgement with five Grace at Devotion 10 (Celestial) is **16,685** before the sum (01 T11): five digits, landed. The consequence: one taboo clears the Grace you saved for the Hymn, and Devotion still moves as today.
 
 ### 3(d) The Push at Faith 8: pray above your standing
 
-Exists for every Faithful today; it moves to Faith 8 as the door's Push (question 3). Once a fight, a Hymn **one tier past your Devotion standing**: TN 12 + 2 a tier (kept). **Price, whether it lands or not: 10 Devotion XP; 20 if it misses** (was a miss -3). PROVISIONAL. Reason: asking past what you have earned always costs standing, the run remembers; on 05-pacing's curve 10 XP is about an hour of faith early and less than half an hour late.
+Exists for every Faithful today; it moves to Faith 8 as the door's Push (C17). **Once a turn** (Law 5, as the eight others; critic M12), a Hymn **one tier past your Devotion standing** (the tier is Devotion's Reach, raised by one for the use): TN 12 + 2 a tier (kept). **Price, whether it lands or not: 10 Devotion XP; 20 if it misses** (was a miss -3). PROVISIONAL. Reason: asking past what you have earned always costs standing; on 05's pace (about 8.5 Devotion XP an hour) 10 XP is an hour of faith. The Hymn's wait spaces it in practice.
 
 ### 3(e) Marks on the door, and Devotion's pace
 
-**Door Marks:** earned by **Grace spent** on worthy foes (a specialist about 6 a fight, 19 an hour). **Thresholds, PROVISIONAL: 40, 210, 325, 440.**
+**The unit: Grace spent** on worthy foes. **Thresholds: 05's formula**; at this drafter's reading of 19 Grace an hour for a specialist, about 38 / 209 / 323 / 437, set from the simulator.
 
 | Mark | About | Gives |
 | --- | --- | --- |
-| I | hour 2 | a fight starts with 1 Grace (primed) |
+| I | hour 2 | a fight starts with 1 Grace (primed; op `resource` on `combat_start`) |
 | II | hour 11 | a taboo costs half your Grace (rounded down), not all |
 | middle | hour 17 | your Hymn's wait is 1 round shorter (never under its floor) |
-| III | hour 23 | praying above your standing costs no Devotion once a fight |
+| III | hour 23 | praying above your standing costs no Devotion XP once a fight |
 
-**Devotion** (05-pacing's numbers, adopted): the curve `[0, 10, 25, 42, 68, 100, 140, 185, 225, 260, 300]`; `tag_caps.fight` 3; a run's cap 30 a stage in place of the session's 6 (a Survival run is one session, so 6 is all a whole run gives today); about 8.5 XP an hour: **standing 3 at about hour 5, 5 at 12, 7 at 22, 10 at 35**. **And the start: 0, not 3** (`patrons.json:8`; question 2). Reason: with a start of 3 a Faithful has Hymn I in its first minute and the calendar's first step never happens.
+**Devotion** (05 section 4, quoted; C19): the curve **`[0, 10, 25, 42, 68, 100, 140, 185, 225, 260, 300]`**; `tag_caps.fight` 3; a new `tag_caps.stage` 30 in a run in place of the session's 6; about 8.5 XP an hour: **standing 3 at about hour 5.0, 5 at 11.8, 7 at 21.9, 10 at 35.5**. **Devotion starts at 0** for a new character (ruling 19; `patrons.json:8` today 3); a live character keeps what it has (XP above the new top of 300 is held at 300, standing 10, nothing lost).
 
-What Reach and Bite mean for a door whose counter is earned across a run: Devotion is the tier ladder, felt as a new prayer every few hours; Faith points buy the fight's engine on top of it (Grace held, Grace's worth, the wait). A Faith 10 at standing 5 has the Hymn I and II of a believer and the Grace of a saint; a Faith 4 at standing 10 the Miracle and a short litany.
+What Reach and Bite mean for a door whose counter is earned across a run: Devotion is the tier ladder and the grade, felt as a new prayer every few hours; Faith points buy the fight's engine on top of it (Grace held, Grace's worth, the wait). A Faith 10 at standing 5 has Hymns I and II at Masterwork and the Grace of a saint; a Faith 4 at standing 10 the Miracle, at Celestial, and a short litany.
 
 ### 3(f) Tags for mixed characters
 
-- **This door keeps others'**: a Whisper is quiet: it carries "keeps Hidden" (a Shadow user may whisper without breaking cover), "keeps the chain" and "keeps plates". A Hymn is sung: it keeps none. A Whisper calms 1 Strain once a turn (2(f)).
-- **Others keep this door's**: every act a patron likes lays Grace (the tags already detect protect, heal, supply, hold, trick, burn, storm, kill, judge, mercy: `patrons.json tags`), so the Guard user's Brace (hold), the medic's Mend (heal) and the Sigilist's FIRE (burn) feed a Faithful's Grace with no new rule; and they carry "keeps Grace" (the wear guard), so a turn spent on them does not lose a step.
+- **This door keeps others'** (S6): a Whisper is quiet: it carries "keeps Hidden", "keeps the chain" and "keeps plates". A Hymn is sung: it keeps none. A Whisper calms 1 Strain once a turn (2(f)).
+- **Others keep this door's**: every act a patron likes lays Grace (the tags already detect protect, heal, supply, hold, trick, burn, storm, kill, judge, mercy: `patrons.json tags`), so the Guard user's Brace (hold), the medic's Mend (heal) and the Sigilist's FIRE (burn) feed a Faithful's Grace with no new rule; and they carry "keeps Grace", so a turn spent on them does not lose a step.
 
 ### 3(g) Conscience (beta) and Authority (gamma), points 1 to 10
 
-**Conscience: how prayer keeps you safe.** Kept: prayer shields +1% x Faith a point (the feed), +10% shields received a point (read from the row in place of `character.ts:1249`), perk steps 3, 5, 7, 9, Mastered at 10. New, PROVISIONAL, where a point moved only those two numbers:
+**Conscience: how prayer keeps you safe.** Every point: +10% shields received (read from the row, in place of `character.ts:1249`); **the feed with a flat term (B20):** your prayer shields are `(4% + 1% x Faith) x Conscience` stronger (`feed_flat` 0.04, PROVISIONAL; reason: a first point of Conscience is a twentieth on the shield of a Faith-1 prayer, not a hundredth). New, PROVISIONAL:
 
 | Points | New | Reason |
 | --- | --- | --- |
 | 2 | **Clear Conscience:** the first taboo each fight costs no Devotion XP | you saw where it led and stopped |
-| 4 | **Grace does not wear:** a turn without prayer or a liked act no longer loses a step | the believer's calm holds |
+| 4 | **Grace wears slower:** an idle turn loses a step only if your last turn was idle too; and **opens Grace 4** (B13, with Faith 7) | the believer's calm holds, but idling still costs (critic-player 14) |
 | 6 | your prayer shield on a friend lays 1 Grace for you (once a turn) | protecting is praying |
+| 7 | **opens Grace 5** (B13, with Faith 10 and Authority 4) | |
 | 8 | when one of your prayer shields breaks, its holder has +1 Defense until your next turn | the god's guard does not vanish at once |
 
-**Authority: the door outside a fight, its Call and its voice.** Every point adds its full points to checks and Asks and +1 tile of Order reach (Karma as the Narrator's). Kept: Order's steps 1, 4, 8; the price at 1, 5, 9, 10; perks; Mastered On My Mark. New, PROVISIONAL: **at 2, a friend who acts on your Order lays 1 Grace for you if your patron likes what it did**; **at 6, your Order also ends Fear and Shaken on the friend**. Reason: points 2 and 6 moved only a tile; the commanding priest's voice is part of the door.
+**Authority: the door outside a fight, its Call and its voice.** Every point adds its full points to checks and Asks and +1 tile of Order reach (Karma as the Narrator's). Kept: Order's steps 1, 4, 8; the price at 1, 5, 9, 10; perks; Mastered On My Mark. New, PROVISIONAL: **at 2, a friend who acts on your Order lays 1 Grace for you if your patron likes what it did**; **at 4, it opens Grace 5** with Faith 10 and Conscience 7 (B13); **at 6, your Order also ends Fear and Shaken on the friend**. Reason: points 2 and 6 moved only a tile; the commanding priest's voice is part of the door.
 
-### 3(h) Virtue's card, made true
+### 3(h) Virtue's card (01 section 4.2, A4)
 
-| Per point above 1 | Today | Proposed (PROVISIONAL) | Reason |
-| --- | --- | --- | --- |
-| Blessing power | +6%, unstated | **+10%**, said on the card (profiles `blessing`, `blessing_mend` attr 0.10; Faith 0.05) | the attribute is the engine's size |
-| Hymns return sooner | 0.25 round, rounded up | **removed** (the wait is Faith's, 3(b)) | it was felt one point in four |
-| (new) Devotion XP | | **+5% Devotion XP from every gain** | everyone is Faithful: a point of Virtue speeds a gunner's standing (Witnessed, interventions) too |
-| (new) Shields received | | **+5% shields received** from any source | every squad has a shielder; never dead |
+| Per point above 1 | Today | 01's card |
+| --- | --- | --- |
+| Blessing power | +6%, unstated | **+10%**, said on the card (`blessing`, `blessing_mend`; Faith +5%, multiplied) |
+| Hymns return sooner | 0.25 round, rounded up | **kept**, on the new wait (3(b)) |
+
+The first draft's "+5% Devotion XP" and "+5% shields received" are withdrawn: Devotion's rate is 05's (D22), the card is 01's, and both were under a tenth (critic-player 8).
 
 ### 3(i) The Chaplain: what only it has
 
-**Only the Chaplain:** Ward, Smite, Sanctuary, The Patron at Your Side and Verdict are its own; all stay.
+**Only the Chaplain:** Ward, Smite, Sanctuary, The Patron at Your Side, Amen and Verdict are its own; all stay. Every base below is 01's x0.6 value (T2b) on the prayer's profile and column, x the Devotion grade.
 
 | Rank | Move | Today, set-up met | Worth pressing? | Becomes (PROVISIONAL) |
 | --- | --- | --- | --- | --- |
-| I | Ward | a fight-long shield for 1 AP, four at once | yes | **0.6 H**; a Whisper, so it lays Grace |
-| I | Smite | +20 x Blessing power on a hit: today about 0.75 of a rifle shot added | yes | **0.5 P** on a hit, once a turn |
-| gain | The Patron at Your Side | | (passive) | kept |
+| I | Ward | a fight-long shield for 1 AP, four at once | yes | base 6.0 (01); a Whisper, so it lays Grace |
+| I | Smite | +20 x Blessing power on a hit | yes | base 12 (01), on `deal`, once a turn |
+| gain | The Patron at Your Side; Amen | | (passive) | kept; Amen's base 6.0 (01) |
 | II | Under the Eye | +2 to hit near you while Witnessed | (passive) | kept |
 | II | Blessed Arms | a Hymn loaded into the weapon | yes | kept; the loaded Hymn keeps the Grace it spent |
-| III | Sanctuary | half damage in a 3x3, a pool of `40 x` | yes | pool **2.0 H**; spends Grace like a Hymn (the pool x the Grace multiplier) |
-| III | Verdict | 4 AP and 1 Devotion: a plain attack x (1 + Blessing power), about 2.7 hits for the AP of two plain actions | **no** (1.35 a plain action, and it costs standing) | **3 AP**, once a fight, 1 Devotion level: a plain attack x (1 + Blessing power) **x the Grace multiplier** (it spends Grace). At Faith 10 with 5 Grace, about 9 hits: the Chaplain's five-digit blow at level 20, paid in standing |
+| III | Sanctuary | half damage in a 3x3, a pool of `40 x` | yes | pool base 24 (01); spends Grace like a Hymn (the pool x `C`) |
+| III | Verdict | 4 AP and 1 Devotion: a plain attack x (1 + Blessing power), about 2.7 hits for the AP of two plain actions | **no** (1.35 a plain action, and it costs standing) | **3 AP**, once a fight, 1 Devotion level: a plain attack x (1 + Blessing power) **x `C`** (it spends Grace). At Faith 10 with 5 Grace, about 9 plain hits: the Chaplain's five-digit blow at level 20, paid in standing. Its `(1 + Blessing power)` is the door's `C` with Grace's, not a sum term (A8) |
 
 ### 3(j) How a player spends: the Virtue specialist and a mixed crusader
 
-**The Chaplain** (Virtue 7, Agility 3, Endurance 3; Faith 7, Dexterity 2, Conscience 1: Smite needs hits).
+**The Chaplain** (creation: Virtue 7, Agility 3, Endurance 3; Faith 7, Conscience 3; Smite's hits come from a pistol from level 4). Devotion standing by 05's hours.
 
 | Level (hour) | Buys | What the player gets |
 | --- | --- | --- |
-| 1 (0) | creation | Whispers, Name the Sinner, Hymns open (standing 0: none yet), fork a, Witnessed, three perk steps; Grace 4, Bite +20%; wait 5 |
-| 2 (1) | Conscience 2; Endurance 4 | Clear Conscience; HP |
-| 3 (2) | Chaplain rank I; Authority 1, 2 | Ward, Smite, the Patron at Your Side; Order |
-| 4 (3) | Conscience 3; Agility 4 | a perk |
-| 5 (4) | rank II; Conscience 4, Authority 3 | Under the Eye, Blessed Arms; Grace does not wear |
-| 5 to 6 (5) | (Devotion 3) | **Hymn I** arrives with deeds, not a level |
-| 6 (6) | Virtue 8; Faith 8 | fork b, **the Push** |
-| 7 (8) | Conscience 5, Authority 4 | a perk; Order moves a friend |
-| 8 (11) | Authority 5; Agility 5 | a perk |
-| 8 to 9 (12) | (Devotion 5) | **Hymn II** |
-| 9 (13) | Conscience 6, Authority 6 | shields lay Grace; Order ends Fear |
+| 1 (0) | creation | Whispers, Name the Sinner, Hymns open (standing 0: none yet), fork a, Witnessed, three perk steps; **Grace 3** (Grace 4 waits on Conscience 4), Bite +20%; Clear Conscience, a Conscience perk; wait 5 |
+| 2 (0.5) | Conscience 4; Endurance 4 | **Grace 4**, Grace wears slower; HP |
+| 3 (1.25) | Chaplain rank I; Authority 1, 2 | Ward, Smite, the Patron at Your Side, Amen; Order, Orders lay Grace |
+| 4 (2.5) | Dexterity 1, 2 | Smite's pistol hits |
+| 5 (4) | rank II; Virtue 8; Faith 8 | Under the Eye, Blessed Arms; fork b, **the Push**; +10% Blessing power |
+| 5 to 6 (5.0) | (Devotion 3) | **Hymn I**, at Fine: arrives with deeds, not a level |
+| 6 (6.4) | Conscience 5; Agility 4 | a perk |
+| 7 (8.8) | Conscience 6, 7 | shields lay Grace, a perk; Grace 5's beta gate met |
+| 8 (11.2) | Authority 3; Endurance 5 | a perk |
+| 8 to 9 (11.8) | (Devotion 5) | **Hymn II**; prayers at Masterwork |
+| 9 (13.6) | Authority 4, Conscience 8 | Order moves a friend; the broken shield's guard; Grace 5's gamma gate met |
 | 10 (16) | Virtue 9; Faith 9 | **Bite +25%**, a perk, wait 4 |
-| 11 (18) | Conscience 7, Authority 7 | two perks |
-| 12 (21) | Conscience 8; Endurance 5 | the broken shield's guard |
-| 12 (22) | (Devotion 7) | **Hymn III** |
-| 13 (23) | Authority 8, Conscience 9 | Order's top step; a perk |
-| 14 (26) | Authority 9; Agility 6 | a perk; Order for 1 AP |
-| 15 (28) | rank III; Dexterity 3, 4 | Sanctuary, Verdict; **flag: the door's skills wait on Virtue 10** |
-| 16 (31) | Virtue 10; Faith 10 | **Grace 5**, Mastered Judgement Day, wait 3 |
-| 17 (33) | Conscience 10, Authority 10 | Foreseen, On My Mark |
-| 18 to 19 (35 to 38) | (Devotion 10) | **the Miracle** (Faith 7 met long before) |
-| 18 to 20 | 4 Skill and 2 Attribute points | Dexterity, breadth |
+| 11 (18.4) | Conscience 9, Authority 5 | two perks |
+| 12 (20.8) | Authority 6; Agility 5 | Order ends Fear |
+| 12 to 13 (21.9) | (Devotion 7) | **Hymn III**; prayers at Relic |
+| 13 (23.2) | Authority 7, 8 | a perk; Order's top step |
+| 14 (25.6) | Dexterity 3, 4 | Smite lands more often |
+| 15 (28) | rank III; Virtue 10; Faith 10 | **Grace 5**, Mastered Judgement Day, wait 3; Sanctuary, Verdict |
+| 16 (30.4) | Conscience 10; Endurance 6 | Foreseen |
+| 17 (32.8) | Authority 9, 10 | On My Mark; Order for 1 AP |
+| 18 (35.2) | Dexterity 5; Agility 6 | (Devotion 10 at 35.5): **the Miracle**, prayers at Celestial |
+| 19 (37.6) | Pain Threshold 1, 2 | HP |
+| 20 (40) | Pain Threshold 3; Endurance 7 | HP |
 
-**A mixed crusader** (Strength 7, Virtue 4; Raw Power 6, Faith 4; class at 3 the Breaker: no Smite, but Whispers between blows and a Hymn when standing allows).
+**A mixed crusader** (Strength 7, Virtue 4, Endurance 2; Raw Power 6, Faith 4; the Breaker at 3: no Smite, but Whispers between blows and a Hymn when standing allows). **Hands:** prayer needs no focus (`survival.json:52 focus_by_door` has no Faith entry), so the maul stays in both hands: no swap.
 
 | Level | Buys | What the player gets |
 | --- | --- | --- |
-| 1 | creation | Grace 3, Whispers, Name the Sinner, fork a; the chain |
-| 2 | Conscience 1; Virtue 5 | prayer shields; +10% Blessing power |
-| 3 | Raw Power 7, Faith 5 | the Breaker; Witnessed |
-| 4 | Conscience 2; Endurance 3 | Clear Conscience |
-| 5 | rank II; Guts 1, 2 | Strength's beta |
-| 6 | Strength 8; Raw Power 8 | Overswing |
-| 7 | Authority 1, 2 | Order; Orders lay Grace |
-| 8 | Virtue 6; Faith 6 | Bite +20% |
-| 9 | Guts 3, 4 | a perk |
-| 10 | Strength 9; Raw Power 9 | Raw Power's Bite |
-| 11 | Conscience 3, 4 | a perk; Grace does not wear |
-| 12 | Virtue 7; Faith 7 | **Grace 4**; the Miracle's Faith gate met |
-| 13 | Guts 5, 6 | a perk |
-| 14 | Conscience 5; Endurance 4 | a perk |
-| 15 | rank III; Guts 7, Authority 3 | a perk |
-| 16 | Strength 10; Raw Power 10 | Mastered |
-| 17 | Guts 8, Conscience 6 | shields lay Grace |
-| 18 | Virtue 8; Faith 8 | **the Push**, fork b |
-| 19 | Guts 9, 10 | Guts Mastered |
-| 20 | Authority 4; Endurance 5 | Order moves a friend |
+| 1 | creation | Grace 3, Whispers, Name the Sinner, fork a; wait 8; Momentum at Raw Power 6 |
+| 2 | Raw Power 7; Virtue 5 | +10% Blessing power (Momentum's step at 7 waits on Guts 4) |
+| 3 | Faith 5, Guts 1 | the Breaker; Witnessed |
+| 4 | Guts 2, 3 | a perk |
+| 5 | rank II; Guts 4; Strength 8 | Momentum's step at 7; (Devotion 3 about now: Hymn I) |
+| 6 | Raw Power 8; Virtue 6 | Overswing, fork b |
+| 7 | Faith 6, Authority 1 | Bite +20%; Order |
+| 8 | Conscience 1; Virtue 7 | prayer shields, shields received |
+| 9 | Faith 7, Conscience 2 | the Miracle's Faith gate; Clear Conscience |
+| 10 | Raw Power 9; Strength 9 | Raw Power's Bite |
+| 11 | Conscience 3, 4 | **Grace 4**; Grace wears slower |
+| 12 | Guts 5; Virtue 8 | +10% Blessing power |
+| 13 | Guts 6, 7 | a perk |
+| 14 | Intimidation 1, 2 | Threaten |
+| 15 | rank III; Raw Power 10; Strength 10 | Mastered (Momentum's top waits on Intimidation 4) |
+| 16 | Faith 8; Endurance 3 | **the Push**, fork b |
+| 17 | Intimidation 3, 4 | Momentum's top Reach |
+| 18 | Guts 8; Endurance 4 | (Devotion 10 about hour 35: the Miracle) |
+| 19 | Authority 2, Conscience 5 | Orders lay Grace; a perk |
+| 20 | Conscience 6; Endurance 5 | shields lay Grace |
 
-Every level buys something felt. Every Brace (hold) and every kill a war patron likes lays Grace, so the crusader's Whispers between blows cash out every second turn, and Hymns come when Devotion allows (standing 3 at about hour 5, the Miracle at about hour 35).
+Every level buys something felt (the critic's note on the first draft's level-2 Conscience 1 is taken: Raw Power 7 is bought there). Every Brace and every kill a war patron likes lays Grace, so the crusader's Whispers between blows cash out every second turn, and Hymns come when Devotion allows.
 
-### 3(k) Prayers on the new scale (specialist's Blessing power, before the relic's grade)
+### 3(k) Prayers on 01's columns (the specialist's Blessing power, Standard; x the Devotion grade, 01 T9, and x `C` when it spends Grace)
 
-| Prayer | Multiple | Level 1 | Level 10 | Level 20 |
+Damage reads `deal` on `blessing`, heals and shields `mend` on `blessing_mend` (today `blessing` reads `scale`, which 01 deletes). Each base is 01's x0.6 value (T2b).
+
+| Prayer | Base (01 T2b) | Level 1 (7/7) | Level 10 (9/9) | Level 20 (10/10) |
 | --- | --- | --- | --- | --- |
-| Rebuke (Whisper) | 0.6 P | 11 | 84 | 840 |
-| Health (Whisper) | 0.5 H | 11 | 88 | 770 |
-| Protection (Whisper) | 0.6 H shield | 13 | 105 | 920 |
-| Ward (Chaplain) | 0.6 H shield, for the fight | 13 | 105 | 920 |
-| Smite (Chaplain) | 0.5 P | 9 | 70 | 700 |
-| A damage Hymn (Judgement, Lightning Rod's first) | 2.5 P | 45 | 350 | 3,500 |
-| Lightning Rod's chain; Thunderclap, each foe | 1.0 P | 18 | 140 | 1,400 |
-| Last Crossing on a Boss | 1.8 P | 32 | 250 | 2,520 |
-| A heal Hymn (Warm Hands) | 2.0 H | 44 | 350 | 3,080 |
-| Saint's Shield | 2.4 H shield | 53 | 420 | 3,700 |
-| Absolution's heal | 1.2 H | 26 | 210 | 1,850 |
-| Coin for the Ferry | 0.6 H on standing up | 13 | 105 | 920 |
-| Hearthlight, each turn in it | 0.4 H | 9 | 70 | 615 |
-| Sanctuary's pool (Chaplain) | 2.0 H | 44 | 350 | 3,080 |
-| An intervention (damage) | (0.6 + 0.12 x Devotion) P | 11 to 32 | 84 to 250 | 840 to 2,520 |
-| Mother Ember's intervention | (0.3 + 0.06 x Devotion) H | 7 to 20 | 53 to 160 | 460 to 1,390 |
-
-A Hymn that spends Grace multiplies these by 3(c)'s multiplier (x2.86 for a specialist). Damage reads `deal`, heals and shields `mend` (today Rebuke, Smite and the damage Hymns read `scale`, `rules.json:1874`; that column goes). The Miracles keep their shapes and ride the same columns.
+| Rebuke (Whisper) | 12 | 23 | 156 | 1,190 |
+| Health (Whisper) | 5.1 | 14 | 110 | 923 |
+| Protection (Whisper), Ward (Chaplain) | 6.0 | 17 | 130 | 1,086 |
+| Smite (Chaplain) | 12 | 23 | 156 | 1,190 |
+| Judgement, Lightning Rod's first | 34 | 64 | 443 | 3,373 |
+| Thunderclap, each foe | 12 | 23 | 156 | 1,190 |
+| Last Crossing on a Boss | 24 | 45 | 313 | 2,381 |
+| Warm Hands | 17 | 48 | 367 | 3,077 |
+| Saint's Shield | 20 | 57 | 432 | 3,620 |
+| Absolution's heal | 11 | 31 | 238 | 1,991 |
+| Coin for the Ferry | 6.6 | 19 | 143 | 1,194 |
+| Hearthlight, each turn in it | 5.4 | 15 | 117 | 977 |
+| Sanctuary's pool (Chaplain) | 24 | 68 | 518 | 4,343 |
+| An intervention (damage) | 12 + 2.4 x Devotion (01, M7) | 23 to 68 | 156 to 469 | 1,190 to 3,571 |
+| Mother Ember's intervention | 4.2 + 1.26 x Devotion (its row's `value` 7 and `per_devotion` 2.1, x0.6) | 12 to 48 | 91 to 363 | 760 to 3,040 |
+| The Miracles (Nerukhan's, Old Overcast's) | 78, 90 | 147, 169 | 1,017, 1,173 | 7,738, 8,928 |
 
 ---
 
-## 4. Questions for the lead (at most five; my recommendation first)
+## 4. Questions for the lead
 
-1. **One rule for the Soul cards: attribute +10% a point, alpha skill +5%.** It changes the cards: Insight 6 to 10%, Determination 5 (false today) to 10%, Will Power 10 (false) to 5%, Faith 10 (false) to 5%, Virtue gains +10% Blessing power. **Recommend yes**: the Momentum pattern, and three false promises become true.
-2. **Devotion starts at 0, not 3**, with 05-pacing's curve and caps. **Recommend yes**: otherwise Hymn I is there from the first minute and the calendar's first step (standing 3 at hour 5) never happens. Existing characters keep their XP.
-3. **Praying above your standing becomes the Push at Faith 8** (today any Faithful may), priced 10 Devotion XP on a success and 20 on a miss. **Recommend yes**: the law puts every Push at 8, and a price on success is what "it always costs" means.
-4. **Outburst Reach takes stages 3 and 4 from Will Power 1 to 6** (everyone reaches 4 today). **Recommend yes**: Reach has to be bought or a 10 is not a different machine; Overdraw, the free Pump and swells still make a low-point heart quick.
-5. **MP becomes a choice:** pools shrink to about four full cash-outs (`(40 + 12 x (Det - 1) + 8 x (Ins - 1)) x mp`), Pumps cost 10% of the Begin each, Syphon's bands become 10 to 40, Tending costs halve and ride `mp`. **Recommend yes**: today a specialist holds nine cash-outs and Syphon refills a quarter of a pool for 1 AP, so MP is never felt. Old saves keep their share of the bar (as rules 1.24 did).
+None new: every cross-file question of the first draft is settled by the rulings (the cards A4; MP A6; the stack A8; grades A9; the gates B12, B13; Reach C16; the Pushes C17; the cash-out from 1 C18; Grace, a heal that Bonds and Devotion's start C19; the beta's first point C20; the rates D22). Two readings this file takes, both 01's and stated there: Snap All's five digits are counted in total (01 question 2), and Snap's damage reads `deal` on the `tend` profile (01 3.1).
+
+Defects found on the way (for the lead; data and code, not this file's to fix): `faith.ts:149 interventionHeal` types fallbacks 10 and 3 that disagree with Mother Ember's row (7 and 2.1) and with the prayer text (`patrons.json prayer.intervention.text`: "10 + 3 x your Devotion"); 01 T2b lists Mother Ember's `value` but not its `per_devotion` (2.1, x0.6 by A1: 1.26).
 
 ---
+
+## Critics' findings
+
+| Finding | Status | How, or why not |
+| --- | --- | --- |
+| consistency S1 (x0.45 against x0.6) | FIXED | every base is 01's x0.6 value (T2b); P, H and `hp_ref` are gone; every table is base x Stat x 01's column (0.1) |
+| consistency S4 (the cards' slopes) | FIXED | A4 and 01 4.2 quoted: Insight, Determination, Virtue +10%; Empathy, Will Power, Faith +5%; multiplied (1(h), 2(h), 3(h)) |
+| consistency S5 (Max MP and its price) | FIXED | 04's pool is ruled (A6); every pool, price and Syphon is quoted from 01 T7a, T7b (1(c), 2(c)) |
+| consistency S6 (Strain's burn) | FIXED | 6% of max HP a point, 01 T7b; Composure 10's 4% is this door's Mastery line (2(g)) |
+| consistency S9 (the critical's feeders) | FIXED for 04's part | `soul_modules.json damage.critical` goes (01 section 9); a Bolt's and a Lance's Margins add to `C` (2(c)); nothing else here rolls |
+| consistency S14 (six digits; the stack) | FIXED for 04's part | `C` and `Σ` named for each door (0.4); Verdict's multiplier is `C`; the sum's trim is 07's (01 10.3 item 5) |
+| consistency M2 (four-digit cash-outs) | FIXED | Bonds' Bite at 9 raised to x1.6: Snap All of four 10,500 in total at level 20 (1(b)); the Release (14,982) and the Hymn (16,685) hold five digits on 01 T11 |
+| consistency M5 (two heal columns) | FIXED | `hp_ref` dropped; every heal reads 01's `mend` (1(k), 3(k)) |
+| consistency M6 (Devotion's curve and start) | FIXED | 05's curve and caps quoted, start 0 (ruling 19); live XP clamped to 300 (3(e)) |
+| consistency M7 (the intervention) | FIXED | 01's `12 + 2.4 x Devotion` on `blessing`, `deal`, the Devotion grade; the first draft's multiple of P dropped (3(k)) |
+| consistency M8 (the Push's shape) | FIXED | every Soul Push raises the door's Reach by one for the use through `res_max:` (S5): a Bond, a stage, a tier (1(d), 2(d), 3(d)) |
+| consistency M12 (Grace; the prayer Push) | FIXED | Grace accepted (C19), listed as S10; the prayer Push is once a turn (3(d)) |
+| consistency minor 1 (the cash-out's outer form) | FIXED | each door's `C` is its own constant plus S3's `S(n)` (`1 +`, `0.8 +` with the ratio, none for Snap All) (0.4) |
+| consistency minor 2 (Marks' thresholds) | FIXED | 05's formula on each door; this file names the unit and gives its reading (1(e), 2(e), 3(e)) |
+| consistency section 4 (primitives merged) | FIXED | the list uses the merged names: S2, S3 (`cash_share:`), S4, S5, S6, S10, S11 |
+| consistency section 5 item 4 (Shape, Storm Front, Heart Surge's 4) | FIXED | Shape's handler retires; Storm Front's literals into `numbers`; Heart Surge reads `res_max:stage` (2(i)) |
+| consistency section 5 item 5 (literals) | FIXED for 04's | `maxMp`, `syphonMult`, `soulCostSaving`, `healReceivedMult`, `shieldReceivedMult`, `HYMN_COOLDOWN`'s fallbacks move to data in the same change (Built from) |
+| consistency section 6 M-3 (moved rungs) | FIXED by ruling | C16 and C17 rule the losses (stages 3 and 4, One More Bond, praying above standing); held counters clamp in a saved fight (What re-records) |
+| consistency section 6 M-6 (MP revision; Devotion above 300) | FIXED | 01's `MP_REV` by share of the bar; Devotion XP clamped to 300 (3(e)) |
+| player 1 (the files on two scales) | FIXED | as consistency S1 |
+| player 2 (a specialist never ahead in Reach) | FIXED | B13's gates on all three Soul doors (0.3, 1(b), 2(b), 3(b)); the mixed tables show the second door one step short |
+| player 3 (the wide character) | NOT FIXED | ruling B14: no rank III and no Push for it in 0.34, flagged for Leon |
+| player 4 (the gates and the Attribute point) | FIXED | B12's swap; all six spend tables redrawn on it; the Mender's dead stretch is one level (14), not two |
+| player 5 (two focuses, one hand) | FIXED | each two-door table states its hands: the medic's revolver and Attuner (no swap), the fighter-channeler's gauntlet or 1 AP a hand, the crusader no focus |
+| player 8 (dead points: Will Power 1 to 3, Conscience 1, Virtue's +5% Devotion XP) | FIXED | Will Power's card says "a taste"; Conscience's feed gains a flat term (B20); Virtue's small lines withdrawn (3(h)) |
+| player 9 (Mark I against class starts) | FIXED | the Mender's free Bond stacks with Bonds' Mark I; Afterglow and Outbursts' Mark I never overlap and add in one stat (1(e), 2(e)) |
+| player 12 (rewards taken back) | NOT FIXED here | the stage Reach (C16) and Devotion's start (ruling 19) are ruled; live characters keep their points, ranks (B15) and Devotion XP; a "your sheet changed" panel is the migration owner's and the client's (05, 06) |
+| player 14 (actions with too little consequence) | FIXED in part | Conscience 4 no longer removes the wear (an idle turn after an idle turn still loses a step); Bonds at 0 MP and Tending ties stand by ruling C19 |
+| player 18 (two counters for prayer) | NOT FIXED here | Grace is ruled (C19); the tooltip is the client's text |
 
 ## 5. Built from
 
 | Rule or number | The existing piece and its data key (file) | What must change |
 | --- | --- | --- |
-| Bonds held 1 / 2 / 3 / 4 at Empathy 1 / 4 / 7 / 10 | stat `ties_max:bond` (`kit.ts:204 tieCap`), `tending.json` `tend.threads`, `tend.bonds_5`, `tend.bonds_8` | the two rows' `requires` to 4 and 7; one new row at 10; `tend.mender_bonds` retires; or all four through the door ladder (shared) |
-| Tending ties | op `tie` (kind bond) on `acted`, predicate `target_not_tied` | an effect on `tend.mend`, `tend.shield`, `medic.triage` |
-| Snap All, Bite x1.0 / 1.2 / 1.4 | `tend.snap` amounts (`tending.json:667, :676`), the `targets: {tied: bond}` selector (as `tend.threads`' echo) | an "all" choice on the action; the amounts read Bite (door ladder) x the cash-out sum's per-unit share (shared, one more form) |
-| Snap's damage on `deal` | `rules.json output.profiles` | a new profile row `tend_harm` (Insight, Empathy, level `deal`): data |
-| Overbind | a condition with `stat_mod ties_max:bond +1` (condition rows carry stat_mods, e.g. `conditions.json` `seen_range`), `deal` with `delay: until target_turn_start` (as the echo) | a condition row and a 0-AP grant on Empathy 8 |
-| Tending MP costs | each verb's `res.mp` (`tending.json:727, :811, :876`), `classes.json` Triage, Inspire, Rally | new bases; MP read x `mp` in `price` for the `mp` resource (`effects/cost.ts`) when the row says so |
-| Healing given +10% / +5% | profiles `healing`, `mend`, `tend` (`rules.json:1970`) attr and skill | data |
-| Camaraderie's and Conscience's received bonuses | `heal_received`, `shield_received` stats (`character.ts:1247, :1249`) | read the rows' `numbers` (the typed 0.1 goes) |
+| Every base on the new scale | each file's own keys (01 T2b) | 01's values; Triage 3.4 and Love 1.69 in place of 01's 2.58 and 1.14 (1(i)) |
+| Heals on `mend`, damage on `deal`, Snap's damage on `deal` | `levelFactor` (`effects/output.ts`); 01's "column by kind and dealer" (`openAmount`, `levelOf`) | nothing of 04's: 01's change |
+| Bonds held 1 / 2 / 3 / 4 at Empathy 1 / 4 / 7 / 10 with B13's gates | stat `ties_max:bond` (`kit.ts tieCap`), `tending.json tend.threads`, `tend.bonds_5`, `tend.bonds_8` | the door ladder (S2) writes `res_max:bond`; `tend.bonds_5`, `tend.bonds_8` and `tend.mender_bonds` retire |
+| Snap at Empathy 1 | `tending.json:534-539 tend.snap requires` | `min` 2 to 1 |
+| Tending ties at Empathy 2 | op `tie` (kind bond) on `acted`, predicate `target_not_tied` | an effect on `tend.mend`, `tend.shield`, `medic.triage` gated on Empathy 2 |
+| Snap All, Bite x1.0 / 1.3 / 1.6 | `tend.snap` amounts (`tending.json:668, :677`), the `targets: {tied: bond}` selector (as `tend.threads`' echo) | an "all" choice on the action; the amounts read Bite (S2) x `cash_share:bond` (S3) |
+| Overbind | a one-use condition with `stat_mod res_max:bond +1` (S5); its HP price a share, op `resource` on `turn_start` | a condition row and a 0-AP grant on Empathy 8 |
+| Tending MP costs | each verb's `res.mp` (`tending.json`), `classes.json` Triage, Inspire, Rally; the cost site (`effects/cost.ts`) | 01 T7b's bases, read x `mp` (01's change) |
+| Healing given +10% / +5% | profiles `healing`, `mend`, `tend` | 01 T5 (data) |
+| Camaraderie's and Conscience's received bonuses | stats `heal_received`, `shield_received` (`character.ts:1247, :1249`) | read the rows' `numbers` (the typed 0.1 goes) |
+| The feed's flat term (B20) | `doorFeed` (`effects/feed.ts:36`) | `per_point.numbers.feed_flat` on Camaraderie (0.02) and Conscience (0.04): extension E1 |
 | Hold Together, Both Ways | op `redirect` with `limit.reaction` (Share a Hit's rows), `mend_mult` on `heal` with `if.actor_tied` | data rows on Camaraderie 6 and 8 |
 | Taunt Bonds (Insinuation 6) | `call.taunt` step; op `tie` on the failed save | a step row |
-| Stage Reach 2 / 3 / 4 / 5 | `MAX_STAGE` (`magic.ts:729`, from `soul_modules.json:13`) | read per character through the door ladder (shared); Heart Surge and the Push add one |
-| Bite and the compounding Release | `stageMult` (`magic.ts:730`), `feelings.json plain_step`, the held design's `plus` | the multiplier becomes `0.8 + sum(step x 1.2^i)` in the one place it is built (`outburstTerms`, `magic.ts:1371`); the ratio from the cash-out sum's data |
-| Soul power +10% / +5% | profiles `soul`, `soul_mend` (`rules.json:1866`) | attr 0.10 on Determination, skill 0.05 on Will Power: data |
-| MP pool, Pump MP, Syphon | `maxMp` (`character.ts:860`), `pump_mp` (`soul_modules.json:56`), `syphonMult` (`character.ts:903`), `rules.json` mana bands `syphon_mp` | the typed numbers move to `attributes.json derived` and `rules.json`; a new level column `mp` (data, beside `deal`, `scale`, `mend`); a save migration like `migrateCharacterMp` |
-| Strain's burn on HP | `strain.burn_per_point` (`soul_modules.json:65`) | a share of max HP in place of 8 HP |
-| Overdraw past the top | Overdraw (`skills.json:4688`), the toggle predicate, Strain via op `resource` | a step on Will Power 8; "no fall next turn" as a condition on the `turn` calming row |
-| Door Marks (all three) | the keyed practice track (shared) | three `marks` rows |
-| Afterglow, Mark I of Outbursts | stat `begin_stage` (new, "Needs" row 2) answered by a condition laid on a Release at stage 2+ | a condition row; Begin reads the stat |
-| Iron Heart, Heart Surge, Storm Front | `classes/i.ts:1147-1240` handlers; their rows | Storm Front's 10 / 2 / 2 into `numbers`; Heart Surge's top reads Reach; Shape's handler retires (the lint count falls by one) |
-| Module practice, feeling marks | `soul_modules.json:1327 practice`; `feelings.json` | 05-pacing's numbers |
-| Grace | a resource row (new, "Needs" row 1); op `resource` on `acted` (prayer) and in `faith.ts`'s tag recorder (the liked act, the taboo); the wear guard (shared) for "keeps Grace"; flags `mark` / `no_flag` for the turn's wear | the resource row; numbers `grace.per_prayer`, `per_liked`, `taboo` in `patrons.json prayer`; the Hymn's amount x `1 + Bite x S(n)` |
-| Grace Reach 2 / 3 / 4 / 5, Bite 15 / 20 / 25% | the door ladder (shared) on the prayer door's row | data |
-| The Hymn's wait | `patrons.json:82 cooldown_rule` (`character.ts:1266 HYMN_COOLDOWN`) | base 8, per_faith 0.5, per_virtue 0 |
-| Devotion's start, curve and caps | `patrons.json:8, :17, :48`; `faith.ts:95 TAG_CAPS` | 05-pacing's numbers and start 0 |
-| Blessing power +10% / +5%, Devotion XP +5%, shields received +5% | profiles `blessing`, `blessing_mend`; `faith.ts` Devotion move (`faith.ts:457`, the one choke point); stat `shield_received` | data, and the choke point reads Virtue's `derived` |
-| The Push of prayer | `patrons.json:100 overreach` | `faith_min` 8 on it; the price on success and miss |
-| Prayer amounts on `deal` and `mend` | `patrons.json` effect values; profiles `blessing` (level `scale`) | values to the multiples of 3(k); the `blessing` profile's level to `deal` |
-| Ward, Smite, Sanctuary, Verdict | `classes.json:2865, :2922, :5287, :7716` | new bases; Verdict 3 AP and the Grace multiplier |
-| Conscience 2 / 4 / 6 / 8, Authority 2 / 6 | the Devotion choke point (`faith.ts:457`), the wear guard, op `resource` on `shield`, `defense_bonus` via a condition, `cleanse` on the Order | data rows on the skills |
-| Rank levels 3 / 5 / 15 | `classes.json:17 rank_levels` | II 5, III 15 |
-| Determination's Heart saves | stat `save_heart` | a row on `attributes.json derived` read through the stat |
+| Stage Reach 2 / 3 / 4 / 5 | `MAX_STAGE` (`magic.ts:729`, from `soul_modules.json:13`) | read per character as `res_max:stage` (S5) through the door ladder (S2); Heart Surge and the Push add one |
+| The compounding Release | `stageMult` (`magic.ts:730`), `feelings.json plain_step`, the held design's `plus` | `C = 0.8 + sum(step x 1.2^i)` in the one place it is built (`outburstTerms`, `magic.ts:1371`); the ratio from S3's data key |
+| Soul power +10% / +5% | profiles `soul`, `soul_mend` | 01 T5 (data) |
+| MP pool, Pump MP, Syphon | `maxMp` (`character.ts:860`), `pump_mp` (`soul_modules.json:56`), `syphonMult` (`character.ts:903`), `rules.json` mana bands `syphon_mp` | 01's change (A6): numbers into `attributes.json derived` and `rules.json`; `MP_REV` |
+| Strain's burn as a share; Composure 10's 4% | `strain.burn_per_point` (`soul_modules.json:65`, `magic.ts:734 STRAIN_BURN`) | 01's `burn_share` 0.06; a Composure 10 row lowering it (data) |
+| Overdraw past the top | Overdraw (`skills.json:4688`), the toggle predicate, Strain via op `resource` | a step on Will Power 8 adding `res_max:stage` +1 for the use; "no fall next turn" as a condition on the `turn` calming row |
+| Margins on a Bolt or a Lance | 01's S1 at `classes/soul.ts:36-39` | 01's change |
+| Door Marks (all three) | the keyed Marks (S4) | three `marks` rows from 05's formula; Mark I of prayer is op `resource grace +1` on `combat_start` |
+| Afterglow, Outbursts' Mark I | stat `begin_stage` (S11) answered by a condition (Afterglow) and the mark (Mark I) | a condition row; Begin reads the stat |
+| Iron Heart, Heart Surge, Storm Front | `classes/i.ts:1147-1240` handlers; their rows | Storm Front's 10 / 2 / 2 into `numbers`; Heart Surge reads `res_max:stage`; Shape's handler retires |
+| Module practice, feeling marks | `soul_modules.json:1327 practice`; `feelings.json` | 05's numbers |
+| Grace | the resource `grace` (S10); op `resource` on `acted` (prayer) and in `faith.ts`'s tag recorder (the liked act, the taboo); `wear:grace` (S6); flags `mark` / `no_flag` for the turn's wear | the resource row; `grace.per_prayer`, `per_liked`, `taboo` in `patrons.json prayer`; the Hymn's amount x `C` |
+| Grace Reach 2 / 3 / 4 / 5, Bite 15 / 20 / 25% | the door ladder (S2) on the prayer door's row, writing `res_max:grace` | data |
+| The Hymn's wait | `patrons.json:82 cooldown_rule` (`character.ts:1266 HYMN_COOLDOWN`, whose typed fallbacks go) | base 10, per_faith 0.5, per_virtue 0.25 counted above 1 |
+| Devotion's start, curve and caps | `patrons.json:8, :17, :48`; `faith.ts:95 TAG_CAPS` | 05's numbers; start 0 for new characters |
+| Prayer graded by Devotion | 01's standing predicate and the rarity rows' `with_this` (01 section 8) | 01's change |
+| Blessing power +10% / +5% | profiles `blessing`, `blessing_mend` | 01 T5; the `blessing` level `deal` (01) |
+| The Push of prayer | `patrons.json:100 overreach` | `faith_min` 8; once a turn; the price on success and on a miss |
+| Ward, Smite, Sanctuary, Amen, Verdict | `classes.json` guardian rows, `:7716` | 01's bases; Verdict 3 AP and `C` |
+| Conscience 2 / 4 / 6 / 8, Authority 2 / 6 | the Devotion choke point (`faith.ts` `shiftDevotion`), `wear:grace`, op `resource` on `shield`, `defense_bonus` via a condition, `cleanse` on the Order | data rows on the skills |
+| Rank levels 3 / 5 / 15 | `classes.json:17 rank_levels` | II 5, III 15 (05's change) |
 
 ## 6. Needs a new primitive
 
-Two of my own; the shared ones are 02-body's (the door ladder, the cash-out sum, the keyed practice track, the wear guard) and are not counted again, except one more form of the cash-out sum.
+Names from critic-consistency's merged list (section 4). General pieces only.
 
-| Primitive | Smallest form | Why nothing existing does it |
+| Piece | Smallest form | Why nothing existing does it |
 | --- | --- | --- |
-| **Resource `grace`** | one row in `data/actions.json resources` (`grace`, unit, `res.grace`), its max from the door ladder; laid and spent by op `resource` and by `faith.ts`'s tag recorder reading `patrons.json` numbers | prayer has no in-fight counter: `devotion_xp` is the run's (character-wide, and spending it is the Miracle's price), `ledger` is the Mender's, the rest belong to other doors |
-| **Stat `begin_stage`** | one line in `STATS` (`effects/stats.ts`): the stage a Begin starts at; asked by Begin | the twin of `momentum_start` for the heart; `free_pumps` gives AP-free Pumps, held to one a turn by `FREE_PER_TURN`, so it cannot start a heart higher; `rider_stage` moves only the rider |
-| (one more form of the shared **cash-out sum**) | the per-unit share `S(n) / n` for a cash-out that lands on several units (`cash_share:<resource>` beside `cash:<resource>`) | Snap All pays each Bond an even share of `Bite x S(n)`; a number block can add and multiply sources but cannot divide by the count |
+| **S10. The resource `grace`** | one row in `data/actions.json resources` (`grace`, `res.grace`), its max `res_max:grace` from the door ladder; laid and spent by op `resource` and by `faith.ts`'s tag recorder reading `patrons.json` numbers | prayer has no in-fight counter: `devotion_xp` is the run's, `ledger` is the Mender's, the rest belong to other doors |
+| **S11. The stat `begin_stage`** | one line in `STATS` (`effects/stats.ts`): the stage a Begin starts at | the twin of `momentum_start` for the heart; `free_pumps` gives AP-free Pumps and `rider_stage` moves only the rider |
+| **S3's `cash_share:<resource>`** (with the shared `cash:`) | `S(n) / n` beside `S(n)` in `SOURCE_SPACES` (`effects/triggers.ts:373`) | Snap All pays each Bond an even share; a number block can add and multiply sources but cannot divide by the count |
+| **S5. `res_max:<resource>`** (shared) | `ties_max:<kind>` generalised; Reach writes it, a Push is a one-use condition adding 1 | Bonds already read `ties_max:bond`; the stage (`MAX_STAGE`) and Grace have no cap a stat can move |
+| **S2, S4, S6** (shared) | the door ladder (with B13's second and third `points` keys), keyed Marks, `wear:<resource>` | as critic-consistency section 4 |
+| **E1. The feed's flat term** (extension) | `doorFeed`'s product becomes `1 + (feed_flat + feed x alpha) x beta`, `feed_flat` 0 where a row gives none | B20: a beta point must count from the first; today a feed is zero with no alpha points and tiny with few |
 
 ## 7. What re-records
 
 | Guard | What moves, and why |
 | --- | --- |
-| Damage tables (`test/golden-damage*.test.ts`, `test/golden/*.json`; the magic, perks, classes and builds tables) | every Outburst (the compounding Release, D, Soul power slopes, `deal`), every heal and shield (Tending bases, `mend` on `hp_ref`, Insight's slope), Snap on `tend_harm`, every prayer (multiples of P and H, Grace, `deal` in place of `scale`), Smite, Verdict, Sanctuary, the Ledger cap, interventions |
-| Costs tables (`golden-costs*`, `costs-cooldowns`) | Tending's MP, Pump MP, Syphon, Triage, Inspire, Rally; the Hymn's wait (base 8, Faith only); Verdict 3 AP; Overdraw past the top; Overbind |
-| Rules tables (`golden-rules`) | Bonds held by Empathy, Snap All, Tending ties; stage Reach; Grace laid, worn and cleared; Strain's burn and Mana Shock |
+| Damage tables (`test/golden-damage*.test.ts`, `test/golden/*.json`; magic, perks, classes, builds) | every Outburst (the compounding Release, the Damage school 22.2, the slopes, `deal`, the Emanator's grade, Margins on Bolt and Lance), every heal and shield (01's bases on `mend`, Insight's slope, the Attuner's grade), Snap on `deal`, Snap All's Bite, every prayer (01's bases, Grace, `deal` in place of `scale`, the Devotion grade), Smite, Verdict, Sanctuary, Triage 3.4, Love 1.69, interventions |
+| Costs tables (`golden-costs*`, `costs-cooldowns`) | Tending's MP, Pump MP, Syphon, Triage, Inspire, Rally (01 T7b); the Hymn's wait (base 10, Faith and Virtue); Verdict 3 AP; Overdraw past the top; Overbind's share |
+| Rules tables (`golden-rules`) | Bonds held by Empathy with B13's gates, Snap at 1, Snap All, Tending ties; stage Reach; Grace laid, worn and cleared; Strain's burn as a share |
 | Item-ops table (`golden-itemops`) | Iron Heart, Storm Front, Heart Surge, Shape (retired), Ward, Smite, Take the Weight, the Ledger |
-| Conditions table | Overbind's and the Push's conditions, Afterglow's |
+| Conditions table | Overbind's and the Pushes' conditions, Afterglow's |
 | Replay guard (`test/replay-hash.test.ts`) | every seeded game with a Soul caster or a Faithful |
-| Old saves (`test/old-save.test.ts`) | an MP revision (as `MP_REV`, `character.ts:864`): each Emanator and Attuner keeps its share of the bar; Devotion XP kept; the Mender's fourth Bond clamped to the new Reach |
-| Tests that read today's numbers | soul and outburst suites (the stage table, `MAX_STAGE`, damage base 37), faith suites (the wait, the curve, tag caps, start 3), tending suites (Bonds at 5 and 8, Snap one), class suites (rank levels 6 and 12), `heal-pct.test.ts` |
-| Lint and literal baselines | shrink: `maxMp`, `syphonMult`, `soulCostSaving`, `soulRangeBonus`, `moduleSlots`, `healReceivedMult`, `shieldReceivedMult` stop typing numbers; Storm Front's three literals; Shape's handler gone |
-| Screen data (`protodata.json`), ladder rows | Empathy's, Will Power's and Faith's per-point rows; the three cards; Camaraderie, Insinuation, Conscience and Authority's new rows; the Channeler's rank I |
+| Old saves (`test/old-save.test.ts`) | 01's `MP_REV` (each Emanator and Attuner keeps its share of the bar); Devotion XP kept, above 300 held at 300; the Mender's fourth Bond and a held stage above the new Reach clamped in a saved fight |
+| Tests that read today's numbers | soul and outburst suites (the stage table, `MAX_STAGE`, damage base 37), faith suites (the wait, the curve, tag caps, start 3), tending suites (Bonds at 5 and 8, Snap at 2, Snap one), class suites (rank levels 6 and 12), `heal-pct.test.ts`, `bond-heal-shown.test.ts` |
+| Lint and literal baselines | shrink: `maxMp`, `syphonMult`, `soulCostSaving`, `healReceivedMult`, `shieldReceivedMult`, `HYMN_COOLDOWN`'s fallbacks stop typing numbers; Storm Front's three literals; Shape's handler gone |
+| Screen data (`protodata.json`), ladder rows, `tools/text_numbers.py` | Empathy's, Will Power's and Faith's per-point rows; the three cards (01's texts); Camaraderie, Insinuation, Conscience and Authority's new rows; the Channeler's rank I; every prayer text that types a digit reads its row |
 | Survival measures (`npm run balance`) | everything; read, not held to a line |

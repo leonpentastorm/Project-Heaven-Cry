@@ -1,8 +1,18 @@
 # 06. The world's side: enemies, their levels, Survival's shape, the budget and campaign tiers
 
-Drafter's file for the 0.34 rebalance (21 Nov 2026). It is written to the charter, `docs/design/proposals/2026-11-21-the-curve.md` section 18, and to Leon's debate rounds in sections 10, 11, 13, 15 and 17 of that file. **Nothing here is built.** Every proposed number is PROVISIONAL. Facts about today were checked in data and code at `release/0.34-final` (`ae619d8f6`) and carry file:line.
+Drafter's file for the 0.34 rebalance, **second draft** (21 Nov 2026). **Nothing here is built.** Every proposed number is PROVISIONAL. It applies the lead's rulings (`00-rulings.md`: A1 to A3, A8, B15, C19, D22, D24, D25, D28) and fixes the critics' findings that name this file (the table "Critics' findings" at the end). Above it stand Leon's rulings and the charter (`docs/design/proposals/2026-11-21-the-curve.md`, sections 10 to 18).
 
-**The scale file.** `docs/design/growth/01-scale.md` did not exist when I wrote this. The attacker and defender columns below come from the charter's numbers, as section 1.2 sets out. Every enemy column is defined as a **ratio to those two columns**, so when 01-scale lands, its columns replace mine and the enemy table is derived again by the same three formulas (1.3). Nothing else in this file needs to change.
+**01-scale.md owns every shared number** (the factor x0.6, the level columns, the enemy columns `hp_mult`, `damage_mult`, `armour_mult`, `defense_plus`, `attack_plus`, the tier rows, character HP, armour, a plate, the grade ladder, Margins). This file quotes them by name (01 section 3.1 and T4 for the columns, 3.2 for the stated attacker and defender, 3.3 for Defense, 3.4 and T12 for the tier rows) and types none of its own. **05-pacing.md owns every rate and the clock** (ruling 22): map hours, the squad's level at a map's end, XP. **07-gear-perks.md owns the grade lists by map** (ruling 25). The first draft's enemy table (written on the charter's x0.45 before 01 existed) is discarded.
+
+Facts about today were checked in data and code at `release/0.34-final` HEAD `d61ec6f13` and carry file:line. The derived tables (1.3, 1.4, 4.1, 4.2) are worked from 01's formulas with a read-only calculation; change a number in 01 and they move with it.
+
+## 0. What changed from the first draft, in short
+
+1. **The enemy table is 01's** (ruling A2, A3): smooth columns, Defense and to-hit level-free, tier Defense 8 / 9 / 11 / 14 / 15 fixed. My jumps at levels 5, 12 and 17 and my `defense_plus` that followed the expected attacker are gone (critic-consistency M1). What this file adds is the reading per map (1.3).
+2. **Survival's shape follows ruling D24 and 05's clock:** five maps, foes 2m − 1 early, 2m late, the Elites and the Boss at 2m + 1, the final boss at 11; endless at one level a map to level-20 foes at about hour 40; hours from 05.
+3. **The budget is re-derived on 01's columns:** a level of gap is about x1.38 of a foe's worth (`lag_factor` 0.72); Elite and Boss bulk re-read for their Defense 14 and 15; `pressure_kind` makes hard, deadly and final fights press harder a round (D24); the map term is 0 while foes climb and only grows past level 20.
+4. **Enemy doors read the same ladders as characters:** tag steps at the Reach points, with the family points ruling 13 asks; plates soak on `armour_mult`, dealt amounts on `damage_mult` (01 section 3.1); casters' Line length and stage from Brain Power and Will Power in their door blocks; the Pressure tier offset as data on the tier row (ruling 19).
+5. **The migration of ruling B15 is written here** (section 7): no live character loses a point above a new ceiling or a rank III held before level 15.
 
 ---
 
@@ -10,175 +20,95 @@ Drafter's file for the 0.34 rebalance (21 Nov 2026). It is written to the charte
 
 ### 1.1 Today (checked)
 
-**The tier rows are the level-1 numbers** (`data/enemies.json`):
+**The tier rows are the level-1 numbers** (`data/enemies.json`): vermin (`:7`), minion (`:39`), Soldier (`:70`), Elite (`:105`), Boss (`:146`), each with `hp`, `defense`, `attack_bonus`, `armour`, a `damage` factor and a `lag` (levels under the fight level: vermin and minion 3, Soldier 1 and 2 from level 10 at `:102`, Elite and Boss 0).
 
-| Tier (line) | HP | Defense | Attack | Armour | Damage factor | Lag (`lag`, levels under the fight level) |
-| --- | --- | --- | --- | --- | --- | --- |
-| vermin (:7) | 15 | 10 | +0 | 0 | 0.5 | 3 (:36) |
-| minion (:39) | 70 | 10 | +1 | 0 | 1.0 | 3 (:67) |
-| soldier (:70) | 140 | 11 | +3 | 5 | 0.78 | 1, and 2 from level 10 (:102) |
-| elite (:105) | 240 | 12 | +5 | 10 | 1.05 | 0 (:143) |
-| boss (:146) | 820 | 13 | +6 | 10 | 1.2 | 0 (:186) |
+**The level table** (`enemies.json:214`, rows 1 to 20) raises them: at level 20 `hp_mult` 8.4844, `armour_mult` 7.5, `damage_mult` 8.5312, `defense_plus` 6 and `attack_plus` 6 (01 T1 prints the column today).
 
-**The level table** (`enemies.json:214`, rows 1 to 20) raises those numbers. At level 20: `hp_mult` 8.4844, `armour_mult` 7.5, `defense_plus` 6 (reached at level 13), `attack_plus` 6, `damage_mult` 8.5312. Its note (`:191`) says it was fitted so "a Soldier takes about 3.5 of the plain rifleman's hits at level 1 and just under 4 from level 12".
+**How it is applied.** `levelled()` (`packages/engine/src/data.ts:117`) gives HP = hp x hp_mult and armour = armour x armour_mult (rounded), Defense + defense_plus, attack + attack_plus, and the damage factor x damage_mult. `unitFromEnemy` (`combat.ts:636`) puts them on the unit; the factor becomes `lvlDmg`, which an enemy's weapon hit multiplies.
 
-**How the table is applied.** `levelled()` (`packages/engine/src/data.ts:117-120`) works out:
-- HP = hp × hp_mult, and armour = armour × armour_mult, both rounded;
-- Defense + defense_plus, and attack + attack_plus;
-- the damage factor × damage_mult.
+**The level-gap rules** (`enemies.json:199-212`): `one_hit_levels_below` 5 (a foe, never an Elite or a Boss, five or more levels under the attacker dies to any damaging hit; `combat.ts:738-742`); `to_hit_per_level` 1 up to `max_levels` 5 (the higher +1 a level, the lower -1, `levelGap`, `combat.ts:732-737`, read in the one to-hit hook, `combat.ts:1502`); `full_hp_guard` (an Elite or a Boss at or above the attacker's level is left on 1 HP by any single action from full; `combat.ts:752`); `narrator_shift` -3 to +2 (`:195`; `fightLevel`, `combat.ts:1785-1789`).
 
-`unitFromEnemy` (`packages/engine/src/combat.ts:636-650`) puts these on the unit. The factor becomes `lvlDmg`. In `attackDamage` (`combat.ts:1518-1533`) an enemy's hit is its weapon's base × `lvlDmg`: no profile k, no Level term. Armour comes off flat ("dealt = max(1, floor(amount) − armour)", `data/rules.json` `output.formula`).
+**The doors on enemies.** `armDoors` (`combat.ts:668-686`) reads a row's `doors` blocks: `hold`, `skills` (the highest across blocks, `:673`), `faith` (**the last block's wins**, `:675`), `wants` and `hands`. The tag rows are `ai.tag_doors` (`enemies.json:729`): `faithful` (Nerukhan, Devotion 3, Faith 1) and `skulk` (Tag, Ingenuity 3). Guard is apart: `armGuard` (`combat.ts:700-704`) reads a row's own `guard.plates` and `guard.durability`, typed per row (`heartfire_elite`, `enemies.json:603`: plates 3, Durability 5).
 
-**Weapons.** A foe's weapon comes from `data/survival.json` `pools` (`:473`), by tier and range, and a setting may name its own. A Soldier's ranged pool is the Hellraiser service rifle (30), the Legion bullpup (28), the lever carbine (32) and the Magistrate pistol (26) (`data/weapons.json`).
+**Casters.** Sigil casters (`casters`, `enemies.json:432`) take their Line length from `sigils.json enemy_ai.max_words` by tier (`sigils.json:318`: minion 2, Soldier 3, Elite 4, Boss 4), with a second copy typed in code (`sigil.ts:1444`, `ENEMY_MAX_WORDS`). Soul casters (`soul_casters`, `:520`) carry `mp` 80 / 140 / 220, `strain_limit` 4 / 5 / 6, `free_pumps` 0 / 1 / 2 and `reach_bonus` 0 / 0 / 1 (`:527-530`, `:569-572`, `:621-624`).
 
-**The level-gap rules** (`enemies.json:199-212`):
-- `one_hit_levels_below` 5: a foe 5 or more levels under the attacker dies to any damaging hit (`combat.ts:742`).
-- `to_hit_per_level` 1, up to `max_levels` 5.
-- `full_hp_guard` (tiers elite and boss, left on 1 HP; `combat.ts:752`, `:763-790`; spec rules 1.15 point 4).
-- `narrator_shift` −3 to +2 (`:195`; `combat.ts:1787`).
+**Pressure's cap by tier** is typed in the reader by tier name (`physical/pressure.ts:15-17`, `pressureCap`).
 
-**The doors on enemies** (rules 1.79 and 1.83). A row's `doors` block is read by `armDoors` (`combat.ts:668-686`): `hold`, `skills` (raised, never lowered), `faith`, `wants` and `hands`. The rows that carry one:
-- the caster rows, for example `heart_adept` (`enemies.json:521`): Empathy 3, an Attuner, Bond, Tug and Snap, Mother Ember at Devotion 3;
-- the tag rows in `ai.tag_doors` (`:729`): `faithful` (Nerukhan, Devotion 3) and `skulk` (Tag, Ingenuity 3).
+### 1.2 The columns and the rows: 01's, quoted
 
-Guard is separate. `armGuard` (`combat.ts:700-704`) reads a row's own `guard.plates` and `guard.durability`, typed per row: `heartfire_elite` has plates 3 and Durability 5 (`enemies.json:603`). It does **not** read a tag block, and the plate count is not derived from Durability.
+- **Columns** (01 section 3.1, T4): `hp_mult` = 140^((L - 1)/19), `damage_mult` = 54^((L - 1)/19), `armour_mult` = `deal`, `defense_plus` and `attack_plus` 0 at every level. They replace `enemies.json:214` row for row.
+- **Whom they are written for** (01 section 3.2): the stated attacker (T4b: a one-door specialist at the gated attribute and alpha, one grade under the map's best, the ordinary sheet sum) and the stated defender (T4c: the frail character in Light armour). The map's best grade those bands read is ruling 25's (section 3.2 below gives the maps their levels).
+- **Defense and to-hit** (01 section 3.3, ruling A3): the tier's own, fixed: vermin 8, minion 9, Soldier 11, Elite 14, Boss 15; to-hit +0 / +1 / +3 / +5 / +6. The gap (+1 a level to 5) is the only way a level touches the roll. *A point of skill is always a Margin you can see, and "against an Elite the same roll just lands" holds at every level.*
+- **Tier rows** (01 section 3.4, T12's last table): HP and armour today's x0.6, the damage factor x1.28.
+- **One field this file adds to each tier row, from ruling 19:** `pressure_off`, the levels under the best Reach laid on the target that its Pressure cap stands at: vermin, minion and Soldier 0, Elite 1, Boss 2. `pressureCap` reads it (critic-consistency section 5 item 2) in place of the tier names. *An Elite shakes off one pip of what the best shooter lays, a Boss two.*
+- **`lag` is read again** as the offset under the place's level (section 2.2): vermin and minion 1, Soldier, Elite and Boss 0 (one row each, `{ from: 1, lag: n }`). *A swarm is a level under its masters, so more of them fit the room.*
 
-### 1.2 The stated attacker and defender (whom the table is written for)
+### 1.3 What the squad meets on each map (derived from 1.2 and section 3.2)
 
-**The attacker** is a specialist on one door: its door attribute at the ceiling for its level, the skill at the attribute, carrying a weapon **one grade under the best grade the foe's level band offers** (section 3.4). The reference weapon is the rifle at the charter's base of 14 (today's 30 × 0.45). Its plain hit D(L) is no Margin, no critical and no cash-out:
+Foe levels are section 3.2's; the squad's levels and the hours are 05's (section 1, the pinned map table; endless at one level a map by ruling D24). A foe's rifle hit is a service rifle (18) in its hands, as 01 T12 counts it. PROVISIONAL with everything it is made of.
 
-D(L) = 18 × 1.21^(L−1) × grade(L) × build(L)
+| Map | Soldier at the early level: HP / armour / rifle hit | Elite at the map's top level | Boss at the map's top level |
+| --- | --- | --- | --- |
+| 1 (foes 1 / 2 / 3) | 84 / 3 / 18 | 242 / 9 / 37 | 828 / 9 / 42 |
+| 2 (3 / 4 / 5) | 141 / 4 / 27 | 408 / 13 / 56 | 1,392 / 13 / 64 |
+| 3 (5 / 6 / 7) | 238 / 7 / 42 | 686 / 19 / 85 | 2,343 / 19 / 97 |
+| 4 (7 / 8 / 9) | 400 / 10 / 63 | 1,153 / 28 / 130 | 3,941 / 28 / 148 |
+| 5 (9 / 10 / 11) | 673 / 14 / 97 | 1,940 / 42 / 197 | 6,630 / 42 / 226 (the final boss) |
+| 8 (12 / 13 / 14) | 1,468 / 25 / 181 | 4,234 / 75 / 371 | 14,467 / 75 / 424 |
+| 10 (14 / 15 / 16) | 2,470 / 37 / 276 | 7,123 / 110 / 564 | 24,338 / 110 / 645 |
+| 14 (18 / 19 / 20) | 6,990 / 81 / 639 | 20,160 / 240 / 1,306 | 68,880 / 240 / 1,493 |
 
-- **grade(L):** Standard ×1 for foe levels 1 to 4, Fine ×1.15 for 5 to 11, Masterwork ×1.3 for 12 to 16, Relic ×1.5 for 17 to 20 (the grade multipliers are the curve's section 4).
-- **build(L):** (1 + 0.10 × (attribute − 7)) × (1 + 0.03 × (skill − 7)). The attribute is 7, then 8 from level 5, 9 from 10 and 10 from 15 (the gates on fives). The 0.03 for a skill point is my stand-in for 01-scale's skill Bite.
+The stated attacker of the squad's level (01 T4b, its rifle variant of T12) against those foes, in plain hits after armour (no Margins, no misses), and the stated defender's count of the top foe's hits:
 
-**Its to-hit A(L)** is the skill's modifier (points − 1; Mastered +9) plus the grade's accuracy (+0 / +1 / +2 / +3): +6 at level 1, +8 at 5, +9 at 10, +11 at 15 and +12 at 20.
+| Map | Its rifle specialist on arrival: hits on an early Soldier | At the Boss (the squad's level then): hits on the Elite / the Boss | The frail character at that level survives the Elite's / the Boss's hits |
+| --- | --- | --- | --- |
+| 1 | 2.7 (level 1) | 4.3 / 14.6 (level 4) | 3.6 / 3.1 |
+| 2 | 2.3 (level 4) | 5.3 / 18.2 (level 5) | 2.8 / 2.4 |
+| 3 | 2.9 (level 5) | 5.0 / 17.0 (level 7) | 2.9 / 2.4 |
+| 4 | 2.7 (level 7) | 6.9 / 23.7 (level 8) | 2.2 / 1.9 |
+| 5 | 3.7 (level 8) | 6.0 / 20.3 (level 10) | 2.3 / 1.9 |
+| 8 | 2.7 (level 12) | 6.9 / 23.4 (level 13) | 2.2 / 1.9 |
+| 14 | 2.9 (level 18) | 7.1 / 24.4 (level 19) | 2.2 / 1.9 |
 
-**The defenders:**
-- **frail:** Endurance 1, Pain Threshold 0, light armour. HP 60 at level 1 to 3,000 at level 20, geometric (the charter's numbers).
-- **hardy:** Endurance 7, medium armour. HP 120 to 8,000.
+What a player reads off it:
+1. **A Soldier is two and a half to four solid hits at every map** (01's promise that fight length holds), and the Boss is a squad's fight everywhere: 15 to 24 of one specialist's plain hits at the full four-player share.
+2. **The map's top is one level over a squad that walked it** from map 4 on (05's squad gains about 1.4 levels a map there): the +1 to hit and a level's HP are felt, and **a frail character goes down to two hits of the Elite or the Boss** (at equal level 01 T12 gives three to three and a half). *The last fight of a map is where the wall earns its place.* On map 1 the squad levels past the Boss (05: the class and three levels come in the first map), so map 1's Boss is the one a squad meets at or under its level: the full-HP guard is off for a squad of level 4.
+3. **Rushing shows:** a squad that skips map 2's fights reaches the Boss at 4, a level under it: the gap's -1 to hit, a level's HP and 1.39 of the room (section 4.1).
 
-Their armour is taken as 10% (frail) and 20% (hardy) of a Soldier's raw hit at their level. That is 01-scale's to set; the shares below move with it.
+### 1.4 What one level does, on these columns
 
-| Level | D(L), the attacker's plain hit | A(L) | frail HP | hardy HP |
-| --- | --- | --- | --- | --- |
-| 1 | 18 | +6 | 60 | 120 |
-| 5 | 50 | +8 | 137 | 291 |
-| 10 | 146 | +9 | 383 | 877 |
-| 15 | 478 | +11 | 1,072 | 2,649 |
-| 20 | 1,431 | +12 | 3,000 | 8,000 |
+One level of gap between a foe and the squad moves its HP x1.297 (`hp_mult`'s step), its hit x1.234 (`damage_mult`'s step) and both rolls by one (the gap rule). Through 01 T10's expected worth (the stated attacker at +6 against Defense 11, Perception 1) that is **about x1.41 the turns to drop it and x1.35 what it deals a round**: one foe a level over is worth about 1.38 foes of your level. That is the budget's `lag_factor` (section 4.1).
 
-So a hit is two digits at level 1 and four at level 20, as Leon asked. The specialist's full cash-outs (Law 2) reach five digits at level 20. The charter's x7 Coup is about 5.5 plain blows (curve section 16), and a plain two-handed blow at level 20 is about 4,000, so the Coup is above 20,000.
+**The gap rules (kept, unchanged numbers):**
+- **`one_hit_levels_below` 5:** a foe five levels under already has a quarter of the HP of one at your level (1.297^5 = 3.7); the rule finishes the sliver. *Go back to an early map's foes five levels later and they drop to anything.*
+- **`to_hit_per_level` 1, `max_levels` 5:** with Margins (01 section 9) each level of gap also moves the Margin threshold by one, so a level ahead is felt in how hard you hit as well as how often.
+- **The full-HP guard (kept):** on 01's scale a level-20 Elite has 20,160 HP (16,128 at the four-player share) and a specialist's largest legal turn reaches five digits (01 T11, under 100,000 by ruling A8), so a top cash-out can take an Elite of your level from full: it is left on 1 HP and the next action ends it. A Boss (68,880 at level 20) takes several. *The big blow is the turning point of a Boss fight, never its whole story.* A squad a level over the map's Elite has no guard to face: *over-level and the guard is gone.* The Miracle and an execution stay past it (spec rules 1.15 point 4).
+- **`narrator_shift` -3 to +2:** kept. In a campaign it now shifts the zone's level, not the party's (section 6).
 
-### 1.3 The three column rules (PROVISIONAL)
+### 1.5 Enemies and the doors
 
-The engine keeps **one level table applied to every tier** (`levelled()` unchanged in shape). The columns are no longer fitted by a simulator to a rifle. Each one is chosen for what a player feels:
+**One copy:** an enemy's door does what a character's does, at the enemy's door points and its level.
+- **Reach comes from points**, read from the door's ladder (02 to 04; the door-ladder piece, critic-consistency S2). Guard's plates, Shadow's meter, a Line's length, an Outburst's top stage and Bonds held are never typed into an enemy row.
+- **A tag at a Reach step carries the family that step needs** (ruling 13): at alpha 7 the door's beta at 4; at alpha 10 the beta at 7 and the gamma at 4. *A level-15 skulker hides as deep as a character with the same points does, and a player reads it off the ladder it climbs.*
+- **What an enemy deals through a door** (a Slam, a Snap, a Rebuke, an Outburst, a Figment's blow) reads `damage_mult` at its level (01 section 3.1: an amount reads the column of its dealer; critic-consistency minor 4). **What it soaks** (a plate) reads `armour_mult`, as its armour does: 01 sets a character's plate on `deal` (T8), and `armour_mult` = `deal`, so *a plate is a plate on either side of the board.* A heal or a shield an enemy gives reads its own multipliers as today (`mending.level_factor.who`, 01 section 3.1).
 
-1. **`hp_mult(L)` = D(L)/D(1) × (1 + (4.0/3.5 − 1) × (L − 1)/19).** *So a Soldier of your level always takes three or four of your solid hits, and a little more at level 20, which leaves room for the long cash-outs.* A Soldier goes from 3.5 plain hits at level 1 to 4.0 at level 20, and an Elite from 7 to 8.
-2. **`armour_mult(L)` = D(L)/D(1).** *So a foe's armour is always the same bite out of a good hit, and a weak weapon or a small hit always feels the plate. A big cash-out loses only a sliver to armour.* Flat armour that keeps pace with the hit is how the cash-out pays: Law 2's reward grows against armour for free.
-3. **`damage_mult(L)` = frailHP(L)/frailHP(1) × 3.5/(3.5 + 0.5 × (L − 1)/19).** *So a Soldier of your level always takes about a quarter of a frail character's HP with a solid hit (3.5 hits to drop you at level 1, 4 at level 20), and a hardy one twice that or better.*
+**The tag rows** (`ai.tag_doors`; data only; PROVISIONAL). Step I keeps today's points where a tag exists; II and III are the Reach steps at 7 and 10.
 
-Defense and to-hit columns:
-- **`defense_plus(L)` = A(L) − A(1)**: 0 / 0 / 0 / 0 / 2 (levels 5 to 9) / 3 (10, 11) / 4 (12 to 14) / 5 (15, 16) / 6 (17 to 20). *So the specialist with the expected grade hits a foe of its own level as often at level 20 as at level 1. Better gear or a level ahead buys Margins; a weaker grade feels it.*
-- **`attack_plus(L)`**: today's column, kept until 01-scale gives the defender's Defense by level. Then it becomes that Defense's rise from level 1, by the same rule.
-
-The full table (one row a level; replaces `enemies.json:214`):
-
-| L | hp_mult | armour_mult | defense_plus | attack_plus (today's, kept) | damage_mult |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 1.000 | 1.000 | 0 | 0 | 1.000 |
-| 2 | 1.219 | 1.210 | 0 | 0 | 1.219 |
-| 3 | 1.486 | 1.464 | 0 | 0 | 1.487 |
-| 4 | 1.812 | 1.772 | 0 | 0 | 1.814 |
-| 5 | 2.877 | 2.793 | 2 | 0 | 2.212 |
-| 6 | 3.507 | 3.380 | 2 | 1 | 2.698 |
-| 7 | 4.274 | 4.089 | 2 | 1 | 3.291 |
-| 8 | 5.208 | 4.948 | 2 | 1 | 4.015 |
-| 9 | 6.347 | 5.987 | 2 | 1 | 4.898 |
-| 10 | 8.683 | 8.133 | 3 | 2 | 5.975 |
-| 11 | 10.581 | 9.841 | 3 | 2 | 7.290 |
-| 12 | 14.574 | 13.461 | 4 | 2 | 8.894 |
-| 13 | 17.757 | 16.288 | 4 | 3 | 10.852 |
-| 14 | 21.634 | 19.708 | 4 | 3 | 13.242 |
-| 15 | 29.361 | 26.565 | 5 | 4 | 16.159 |
-| 16 | 35.769 | 32.144 | 5 | 4 | 19.719 |
-| 17 | 50.276 | 44.877 | 6 | 5 | 24.065 |
-| 18 | 61.242 | 54.302 | 6 | 5 | 29.369 |
-| 19 | 74.597 | 65.705 | 6 | 6 | 35.845 |
-| 20 | 90.860 | 79.503 | 6 | 6 | 43.750 |
-
-**The jumps at levels 5, 12 and 17** (×1.5 and more on HP) are where the expected grade steps up. Because foe levels come from the map (section 2), each jump falls on a **map boundary**: *a new map's foes ask for the grade its shop and vault now sell.* A squad that upgraded on time feels nothing; one that did not feels the map change. That is the consequence, and the cure is on the shelf.
-
-### 1.4 The new tier rows (level 1; PROVISIONAL)
-
-| Tier | HP | Armour | Defense | Attack | Damage factor | Why a player would recognise it |
-| --- | --- | --- | --- | --- | --- | --- |
-| vermin | 14 | 0 | 8 | +0 | 0.85 | one solid hit drops one at any level (0.8 of a hit at 1, 0.9 at 20); a swarm is many small bites |
-| minion | 32 | 0 | 9 | +1 | 1.75 | two hits; it carries the light guns, so its factor is high and its bite is still smaller than a Soldier's |
-| soldier | 56 | 2 | 11 | +3 | 1.35 | three and a half hits for you; three and a half hits on a frail character |
-| elite | 98 | 4 | 14 | +5 | 1.85 | twice a Soldier's hits. Its Defense is 3 over a Soldier's, so the specialist's roll "just lands" and Margins are rare; it hits a frail character in two or three |
-| boss | 338 | 5 | 15 | +6 | 2.1 | about 26 plain hits at full share (four players), so a squad has to build and cash out to end it in nine rounds |
-
-Today's Elite Defense of 12 is only one over a Soldier's. With Margins (Law 2) that would let a master hit an Elite as hard as a Soldier. Defense 14 is chosen so the curve's promise holds: *a master beats a weak foe by 8 and hits half again as hard; against an Elite the same roll just lands.*
-
-### 1.5 The table at levels 1, 5, 10, 15, 20 (derived from 1.3 and 1.4)
-
-"Hits" is the attacker's plain hits to drop the foe from full HP. "Hit %" is the attacker's chance to hit at equal level. It stays the same at every level, by design.
-
-| L | Tier | HP | Armour | Defense | Attack | Hits | Hit % |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | vermin / minion / soldier / elite / boss | 14 / 32 / 56 / 98 / 338 | 0 / 0 / 2 / 4 / 5 | 8 / 9 / 11 / 14 / 15 | +0 / +1 / +3 / +5 / +6 | 0.8 / 1.8 / 3.5 / 7.0 / 26.0 | 95 / 90 / 80 / 65 / 60 |
-| 5 | same order | 40 / 92 / 161 / 282 / 972 | 0 / 0 / 6 / 11 / 14 | 10 / 11 / 13 / 16 / 17 | as level 1 + 0 | 0.8 / 1.8 / 3.7 / 7.2 / 27.0 | same |
-| 10 | same order | 122 / 278 / 486 / 851 / 2,935 | 0 / 0 / 16 / 33 / 41 | 11 / 12 / 14 / 17 / 18 | + 2 | 0.8 / 1.9 / 3.7 / 7.5 / 28.0 | same |
-| 15 | same order | 411 / 940 / 1,644 / 2,877 / 9,924 | 0 / 0 / 53 / 106 / 133 | 13 / 14 / 16 / 19 / 20 | + 4 | 0.9 / 2.0 / 3.9 / 7.7 / 28.8 | same |
-| 20 | same order | 1,272 / 2,908 / 5,088 / 8,904 / 30,711 | 0 / 0 / 159 / 318 / 398 | 14 / 15 / 17 / 20 / 21 | + 6 | 0.9 / 2.0 / 4.0 / 8.0 / 29.7 | same |
-
-**What a foe's hit does to the defenders.** Rifle-class weapon (14 base), at equal level; the figure is how many landed hits drop the defender from full:
-
-| L | Soldier's raw hit | frail lasts | hardy lasts | Elite's raw hit | frail / hardy | Boss's raw hit | frail / hardy |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 19 | 3.5 | 7.9 | 26 | 2.5 / 5.4 | 29 | 2.2 / 4.7 |
-| 5 | 42 | 3.6 | 8.7 | 57 | 2.6 / 5.9 | 65 | 2.2 / 5.1 |
-| 10 | 113 | 3.8 | 9.7 | 155 | 2.7 / 6.6 | 176 | 2.3 / 5.7 |
-| 15 | 305 | 3.9 | 10.8 | 419 | 2.8 / 7.4 | 475 | 2.4 / 6.4 |
-| 20 | 827 | 4.0 | 12.1 | 1,133 | 2.9 / 8.3 | 1,286 | 2.5 / 7.1 |
-
-The hardy character grows hardier with level: Endurance's HP per level outpaces the foes, which is *what a point in Endurance should feel like.*
-
-For comparison, today at level 20 a Soldier has 1,188 HP, 38 armour and a ×6.65 factor (`enemies.json:70` × `:214`). The new Soldier at level 20 has 5,088 HP against a 1,431 hit. Today the comparison is 1,188 against about 300 (`rules.json` `output.level.note`: "a plain rifle hit is 40 at level 1 and about 300 at level 20").
-
-### 1.6 Enemies and the doors on the new scale
-
-The rule is **one copy**: an enemy's door does what a character's does, at the enemy's door points and its level.
-- **Reach comes from points**, from the door drafters' Reach rows: Guard's plates 2 / 3 / 4 / 6 at Durability 1 / 4 / 7 / 10 (curve section 2).
-- **Bite and any HP-shaped amount** (a plate's soak, a Whisper's heal, a Snap's hurt, a Tug's MP) ride the same level column a character's door reads, at the enemy's level (the Level term of `effects/output.ts`; enemies read `lvlDmg` today, combat.ts:1531).
-
-No door number is typed into an enemy row.
-
-**Door points rise with the place, as tags** (data only; `armDoors` already takes the higher of every block's `skills`, `combat.ts:673`). Today's `ai.tag_doors` gains three steps of each door (PROVISIONAL):
-
-| Tag (step I / II / III) | Door points | What the player meets |
+| Tag (I / II / III) | Door points (with ruling 13's family at II and III) | What the player meets |
 | --- | --- | --- |
-| `plated` / `plated_ii` / `plated_iii` | Durability 4 / 7 / 10 | 3 / 4 / 6 plates; Challenge and Slam from the Durability ladder as the rows hold them today (`heartfire_elite` wants, `enemies.json:604-611`) |
-| `skulk` (exists, Ingenuity 3) / `skulk_ii` / `skulk_iii` | Ingenuity 3 / 6 / 9 | Tag, Hide; deeper Shadow at II, the Break from Hidden at III |
-| `faithful` (exists, Devotion 3, Faith 1) / `faithful_ii` / `faithful_iii` | Devotion 3 / 6 / 9; Faith 1 / 3 / 5 | Whispers (Health under half HP); at II Protection; Witnessed at III (Faith 5) |
-| `bonded` / `bonded_ii` / `bonded_iii` | Empathy 3 / 6 / 9, an Attuner | Bond, Tug the runner back, Snap the one nearly done; more Bonds held by Reach |
+| `plated` / `plated_ii` / `plated_iii` (new) | Durability 4 / 7 / 10; Pain Threshold 4 at II, 7 at III; Sensory 4 at III | the plates 02's ladder gives at those points; Challenge and Slam from the Durability ladder, as `heartfire_elite`'s `wants` hold them (`enemies.json:604-611`) |
+| `skulk` (exists, Ingenuity 3) / `skulk_ii` / `skulk_iii` | Ingenuity 3 / 7 / 10; Analysis 4 at II, 7 at III; Vigilant 4 at III | Tag and Hide; the deeper meter at II; the Break from Hidden at III |
+| `faithful` (exists, Devotion 3, Faith 1) / `faithful_ii` / `faithful_iii` | Devotion 3 / 5 / 7, Faith 1 / 3 / 5 (the standing that opens Hymn I / II / III; Witnessed at Faith 5) | Whispers (Health under half HP); a Hymn at II; Witnessed at III |
+| `bonded` / `bonded_ii` / `bonded_iii` (new) | Empathy 4 / 7 / 10, an Attuner in hand (`hands`); Camaraderie 4 at II, 7 at III; Implication 4 at III | Bond, Tug the runner back, Snap the one nearly done; the Bonds 04's ladder holds at those points |
 
-*So a level-15 skulker hides deeper than a level-3 one, as a character with more Ingenuity does, and a player reads it off the same ladder they climb.*
+**Guard by the same reader:** `armGuard` reads Durability from every door block (tags included) and takes the plates from the ladder; the row's typed `guard` block goes (one copy of the rule). `heartfire_elite` becomes `doors.skills.durability` 5 (today's points).
 
-**The casters** keep their rows (`casters` `:432`, `soul_casters` `:520`; Max Sigil words by tier from `sigils.json enemy_ai.max_words`).
-- Their `mp`, `strain_limit` and `free_pumps` follow whatever the Outburst drafter sets for a character's pool at a level. If a character's MP scales by level, `mp` here is read through the same column. If it does not, nothing changes.
-- Sigil casters' Line length follows the Sigils Reach row by their Brain Power, given as `skills` in their door block (Brain Power 1 / 4 / 7 = 2 / 3 / 4 glyphs). That replaces the separate `max_words` by tier, which is a second copy of the rule.
+**Faith by the highest:** `armDoors` takes the highest Devotion and Faith across blocks, as it takes the highest skill, so a tag never lowers a caster's own standing (today the last block wins, `combat.ts:675`).
 
-**Elite and Boss guard (keep).** No single action takes an Elite or Boss at or above the attacker's level from full HP to nothing. On the new scale it does three things:
-1. **At level 20:** a full ×7 cash-out (about 20,000) would one-shot an Elite of 8,904 HP. The guard leaves it on 1 HP, and the next action of anyone ends it. Against a four-player Boss (30,711) the same cash-out takes about two thirds: *the big blow is the turning point of a Boss fight, never its whole story.*
-2. **The guard falls away for the squad that took the long road.** Foe levels are the map's (section 2), so a squad a level over the map's Elite has earned the right to delete it. *Effort is rewarded: over-level and the guard is gone.*
-3. The Miracle and an execution stay past it, as today (spec rules 1.15 point 4).
-
-**The other gap rules (keep, unchanged numbers):**
-- **`one_hit_levels_below` 5:** a foe 5 levels under already has 1/2.6 to 1/3.4 of the HP of one at your level (the HP column steps ×1.21 to ×1.5 a level). The rule just finishes the sliver. *Go back to an early map's foes at level 7 and they drop to anything.*
-- **`to_hit_per_level` 1, `max_levels` 5:** on the Margin rule each level of gap also moves the Margin threshold by one, so a level ahead is felt in how hard you hit as well as how often.
-- **`narrator_shift` −3 to +2:** kept. In a campaign it now moves the zone's level, not the party's (section 6).
+**The casters keep their rows**, read through the same ladders:
+- **Sigil casters' Line length** comes from Brain Power in their door block, on 03's ladder (Line 2 / 3 / 4 at Brain Power 1 / 4 / 7, ruling 19): a minion-tier caster Brain Power 1, a Soldier 4, an Elite and a Boss 7 (with Rumination 4), so each keeps today's length. `sigils.json enemy_ai.max_words` and `ENEMY_MAX_WORDS` (`sigil.ts:1444`) go: a second copy of the rule.
+- **Soul casters' top stage** comes from Will Power in their door block, on 04's ladder (ruling 16: the top stage is bought): the heart adept Will Power 4 (stage 3), the heartfire elite 7 (stage 4, with Composure 4), the heart sovereign 10 (stage 5, with Composure 7 and Lore Master 4). `reach_bonus` goes. *A Soldier's heart fills to three, an Elite's to four, a Boss's to five, as a player's would at those points.*
+- **Soul casters' MP:** today's `mp` (80 / 140 / 220) stays as the level-1 pool and rides `mp` at the caster's level (01 T7b: "an enemy caster's pool, x mp at its level"). *They already hold about three of their own full cash-outs (the adept's Heart bolt full is 28 MP; the sovereign's lance 56), a fight's worth, as a character's pool holds about four.* `strain_limit` and `free_pumps` are counts and do not scale.
 
 ---
 
@@ -186,25 +116,17 @@ No door number is typed into an enemy row.
 
 ### 2.1 Where the party's level sets a foe's level today (checked)
 
-1. **Survival's generator.** `composeEncounter` (`packages/engine/src/run/encounter.ts:164-166`) sets `L = fightLevelOf(inp.levels)`: the living characters' average level, rounded down (`data.ts:124`). The callers pass the party's levels: `game.ts:3621` (a node's fight) and `run/ambush.ts:83` (an ambush).
-2. **`foeLevel`** (`encounter.ts:74-75`) gives every foe a level from L:
-   - an ordinary tier is L − `tierLag` (`:65-68`, from the tier's `lag` rows);
-   - an Elite or Boss is L + `eliteUp(stage)` (`:70`, from `survival.json stage.elite_up` {per 2, max 4} at `:55-62`).
-
-   So the foes copy the party and the growth cancels.
-3. **`foeCost`** (`encounter.ts:83-86`) prices a foe by `lag_factor`^(L − level) (`survival.json:79`, 0.83), measured against the same party level.
-4. **Story fights and campaigns.** `fightLevel` (`combat.ts:1785-1789`) returns the level given outright, else the party's average plus the Narrator's shift. `encounterLevels` (`game.ts:1663-1670`) takes `level` from a prepared encounter or enemy when the file has one. None of M813's encounters do (`data/campaigns/m813.json` `encounters`).
-5. **The Narrator's drill spawn.** `sandbox/spawn` (`game.ts:4331`): "empty is the squad's level".
+1. **Survival's generator.** `composeEncounter` (`run/encounter.ts:164-166`) sets `L = fightLevelOf(inp.levels)`, the living characters' average rounded down (`data.ts:124`); the callers pass the party's levels (`game.ts:3621` a node's fight, `run/ambush.ts:83` an ambush).
+2. **`foeLevel`** (`encounter.ts:74-75`): an ordinary tier is L - `tierLag` (`:65-68`); an Elite or a Boss is L + `eliteUp(stage)` (`:70`, `survival.json stage.elite_up` {per 2, max 4}, `:61`). *The foes copy the party and the growth cancels.*
+3. **`foeCost`** (`encounter.ts:83-86`) prices a foe by `lag_factor`^(L - level) (`survival.json:79`, 0.83).
+4. **Story fights.** `fightLevel` (`combat.ts:1785-1789`): the level given outright, else the party's average plus the Narrator's shift. `encounterLevels` (`game.ts:1664-1670`) takes a prepared encounter's or enemy's `level`; M813's encounters give none (`data/campaigns/m813.json:73`, `:93`, `:132`).
+5. **The drill spawn.** `sandbox/spawn` (`game.ts:4331`, `:4352`): "empty is the squad's level".
 
 ### 2.2 What replaces it
 
-**A foe's level comes from the place.**
-- In Survival: from the map (the run's `stage`) and the node's depth, read from a new `survival.json levels` block (section 3.2) by one reader, `worldLevel(stage, depth, tier)`.
-- In a campaign: from the zone (section 6).
+**A foe's level comes from the place** (ruling D24: "an enemy's level comes from the map and the row, never from the party"). In Survival from the map (the run's `stage`) and the node's row, read from a new `survival.json levels` block (section 3.2) by `foeLevel`, whose body is rewritten to read it (`worldLevel`'s work; critic-consistency section 4: a rewrite, not a new piece); `eliteUp` and `stage.elite_up` are deleted. In a campaign from the zone (section 6). The drill spawn takes the zone's level when the campaign gives one, else the squad's.
 
-The party's level is used for one thing only: **the budget's level difference** (section 4), which says how much of the room a foe takes up for *this* squad. `tierLag` stays, with a new meaning: its `lag` rows become an offset under the place's level (vermin 1, minion 1, soldier 0, elite and boss 0). *A swarm is a level under its masters, so more of them fit the room.* `eliteUp` and `stage.elite_up` are deleted.
-
-*So taking the long road (more fights, more training) makes you stronger than the map, and rushing to the Boss makes you weaker than it. A level means something because the world does not follow you.*
+**The party's level is used for one thing:** the budget's level difference (section 4), how much of the room a foe takes for *this* squad. *Taking the long road makes you stronger than the map; rushing to the Boss makes you weaker than it. A level means something because the world does not follow you.*
 
 ---
 
@@ -212,83 +134,85 @@ The party's level is used for one thing only: **the budget's level difference** 
 
 ### 3.1 Today (checked)
 
-- A run is stages, each a 15-row path map: gate Elite at row 8, final junction at 13, shop and rest at 14, the Boss at 15 (`survival.json map` `:805`).
-- After a Boss comes a boon and the next stage's tile from `world.offer` 3 settings (`:413`; `run/stage.ts:130-134`).
-- It runs until the squad dies or retires after a Boss (`run/state.ts:252`, `:257`; `RunEnd.how` is 'lost' or 'retired', `:71`). There is no final boss and no end.
-- **Grade ceilings:** `rewards.ceiling` is fine / masterwork / relic for stages 1 / 2 / 3+ (`:147`; `run/rewards.ts:156`). The validator refuses Celestial as a ceiling (`tools/validate.py:2960`). The vault gives grade_up 1, at most Relic (`:580`).
-- **The stage term:** bulk ×(1 + 0.42(s − 1)) and pressure ×(1 + 0.35(s − 1)) (`stage` `:55-62`; `budgetFor`, `encounter.ts:92-96`).
+- A run is stages, each a 15-row path map: the gate Elite at row 8, the final junction at 13, the shop and rest at 14, the Boss at 15 (`survival.json:805-812`, `map`).
+- After a Boss: a boon of three and the next stage's tile from `world.offer` settings (`:413`; `run/stage.ts:125-134`).
+- It runs until the squad falls or retires after a Boss (`run/state.ts:252`, `:257`; `RunEnd.how` 'lost' or 'retired', `:71`). No final boss, no end.
+- **Grade ceilings:** `rewards.ceiling` fine / masterwork / relic for stages 1 / 2 / 3+ (`:147`; `stageCeiling`, `run/rewards.ts:156`); the validator refuses Celestial in it (`tools/validate.py:2959-2960`) and `cappedRarity` turns a Celestial roll into a Relic (`run/rewards.ts:159-163`). The vault: `grade_up` 1, `grade_max` relic (`:580`).
+- **The stage term:** bulk x(1 + 0.42 (s - 1)) and pressure x(1 + 0.35 (s - 1)) (`:55-62`; `budgetFor`, `encounter.ts:92-96`).
 
-### 3.2 Five maps, then endless (PROVISIONAL)
+### 3.2 Five maps, then endless (ruling D24; PROVISIONAL)
 
-The run's `stage` stays the counter (saves load unchanged). On screen it is called **the map**. Maps 1 to 5 are Survival proper; map 6 onward is endless.
+The run's `stage` stays the counter (saves load unchanged); on screen it is **the map**. Maps 1 to 5 are Survival proper; map 6 on is endless. "Early" is rows 1 to 7, "late" rows 9 to 14; the gate Elite (row 8), every Elite node and the vault's guard take the top column.
 
-**The level table by map and depth.** "Early" is rows 1 to 7, "late" is rows 9 to 14. The gate Elite (row 8), the vault's guard and every Elite take the Elite column.
+| Map | Early foes | Late foes | Elites, gate, vault guard | Boss | Squad arrives / leaves (05) | Hours (05) |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 1 | 2 | 3 | 3 | 1 / 4.3 | 0 to 3.0 |
+| 2 | 3 | 4 | 5 | 5 | 4.3 / 5.9 | 3.0 to 6.1 |
+| 3 | 5 | 6 | 7 | 7 | 5.9 / 7.2 | 6.1 to 9.3 |
+| 4 | 7 | 8 | 9 | 9 | 7.2 / 8.6 | 9.3 to 12.6 |
+| 5 | 9 | 10 | 11 | **the final boss, 11** | 8.6 / 10.0 | 12.6 to 16.0 |
+| endless, map n (6 on) | n + 4 | n + 5 | n + 6 | n + 6 | n + 4 / n + 5 | 2.4 a map from hour 16 |
 
-| Map | Early foes | Late foes | Elites, gate, vault guard | Boss | Squad arrives / leaves at about | Hours (about) | Best grade found here |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1 | 2 | 3 | 3 | 1 / 3 | 0 to 2 | Fine (vault Masterwork) |
-| 2 | 3 | 4 | 5 | 5 | 3 / 5 | 2 to 4.5 | Fine (vault Masterwork) |
-| 3 | 5 | 6 | 7 | 7 | 5 / 7 | 4.5 to 8 | Masterwork (vault Relic) |
-| 4 | 7 | 8 | 9 | 9 | 7 / 9 | 8 to 12.5 | Masterwork (vault Relic) |
-| 5 | 9 | 10 | 11 | **final boss 11** | 9 / 10 | 12.5 to 16 | Masterwork (vault Relic) |
-| endless e (map 5 + e) | 10 + e | 11 + e | 12 + e | 12 + e | 10 + e − 1 / 10 + e | 2.4 a map | Relic (maps 6 to 9); Celestial as a find from map 10 (foe level 17) |
-
-Every level is capped at 20 (`enemies.json levels.max`).
+Every level is capped at 20 (`enemies.json levels.max`). The Elites and the Boss reach 20 on map 14 (hour 35.2 to 37.6), the late rows on map 15 (to hour 40), everything on map 16: **level-20 foes at about hour 40, as the squad reaches 20** (05's XP table, level 20 at hour 40).
 
 **Why these numbers (one line each):**
-- **The Boss at 2m + 1 and level with the squad that walked the map:** *the Boss is the top of the map, at your level if you fought your way there, a level over you if you rushed; the full-HP guard is on.*
-- **Early foes at the squad's arrival level, late foes a level up:** *the map's second half is felt as harder, and by then you have levelled into it.*
-- **The final boss at 11 for a level-10 squad:** *the last fight of Survival is one level over you, with the gap's +1 to hit and the guard.*
-- **The hours match the charter's chase calendar:** level 3 at about hour 2, 5 at 4, 7 at 8, 9 at 13 and 10 at 16 (curve section 12; level and XP are the progression drafter's to fit). Tiers I and II (levels 1 to 10) are done at the final boss, as Leon ruled (curve section 10 item 4).
-- **The best grade by map** follows the calendar: Fine by hour 3, Masterwork by 8, Relic by 20, Celestial by 33. The vault is always one step over the map's shelf. *Taking the dead-end fight pays a grade early.*
+- **Two levels a map, the Boss at 2m + 1** (ruling D24): *the Boss is the top of the map, a level over a squad that is still climbing, at its level if it fought for it.*
+- **Early foes at the map's opening level, late foes one up:** *the map's second half is harder, and by then you have levelled into it.* On map 2 the early rows are a level under the squad (05 front-loads map 1 with the class), so *the class is played on a map's easy half before the map climbs.*
+- **The final boss at 11 for a level-10 squad** (D24): *the last fight of Survival is one level over you: the gap's +1 to hit, a level's HP and the guard.*
+- **Endless at one level a map, about 2.4 hours** (D24; 05's XP table: 2.4 hours a level from level 6): *each endless map is a level for you and a level for them.* **For 05:** its first draft's endless row (maps of 3.5 to 4.5 hours, about 1.5 levels each) is what D24 replaces; at 1.5 levels a map the squad would stand four levels over its foes by map 11 and earn a third of a fight's worth (critic-consistency S12). 05 sets the endless XP so a map is about a level.
+
+**The grade a map finds and sells** is ruling 25, written as 07's lists: Fine on maps 1 and 2, Masterwork on 3 and 4; Relic found on map 5 and sold only in endless; Celestial found only, from map 10 (the vault and one Boss pick in four). The hours above are the ones 07's table quotes. The stated attacker's grade bands (01 T4b) read the same rows.
+
+**What the player sees (critic-player 16):** the path map's card and each fight node show the foes' level beside the squad's (read from `levels` and `fightLevelOf`; client text), so a level gained is read as "map 2's Soldiers now fall faster" and a level rushed as "this Boss is a level over you".
 
 ### 3.3 The final boss (data, from existing rows)
 
-A template **`last_reckoning`**, the only template on map 5's Boss node (`survival.json levels.final.template`), with target rounds 12 (`levels.final.rounds`; a normal Boss's is 9). Its slots:
+A template **`last_reckoning`**, the one template on map 5's Boss node (`survival.json levels.final.template`), with target rounds 12 (`levels.final.rounds`; a Boss's is 9). Its slots, filled by the generator as every fight's are:
 
-1. **The final boss.** Tier `boss`, `boss: true` (it reads the setting's Boss block for its name, kind, weapon and face, as today, `encounter.ts` `armed`), caster `heart_sovereign` (`enemies.json` `soul_casters`: Sovereign lance, Rime bolt, Gale heart, Sovereign's grace; Mother Ember at Devotion 6) and tags `plated_ii` and `faithful_ii`. So it carries 4 plates, Slam, Whispers and an Outburst it builds and holds.
-2. **One `sigil_warden`** (`enemies.json:469`): CHAIN, FREEZE, WARD and NULL on what the squad leaves on the field. Required.
-3. **One `heartfire_elite`** with `plated_ii`: Guard, Challenge and Slam. Required.
-4. **Minions, up to 4, tag `bonded`:** they Tug a runner back to the boss.
+1. **The final boss** (required): tier `boss`, `boss: true` (the setting's Boss block for its name, kind, weapon and face, as `armed` reads it today, `encounter.ts:197`), caster `heart_sovereign` (`enemies.json:616`: Sovereign lance, Rime bolt, Gale heart, Sovereign's grace; Mother Ember at Devotion 6), tags `plated_ii` and `faithful_ii`: plates, Slam, Hymns and an Outburst it builds to stage 5 and holds.
+2. **A `sigil_warden`** (`enemies.json:469`, tier Elite; SHOCK, FREEZE, CHAIN and WARD among its words), optional, one.
+3. **A `heartfire_elite`** (`:564`) with `plated`, optional, one.
+4. **Minions, up to four, tag `bonded`**, optional: they Tug a runner back to the boss.
 
-*It asks for everything the five maps taught: break plates, kill the healer's words, keep the line together against FIRE and CHAIN, do not run from the Bonds, and build a cash-out for the turn its plates are down.* No new behaviour: every piece is a row that exists.
+*It asks for everything the five maps taught: break plates, kill the words, keep the line together against FIRE and CHAIN, do not run from the Bonds, and build a cash-out for the turn its plates are down.* No new behaviour: every piece is a row that exists.
 
-- **Its level:** 11. **Its HP at four players:** 338 × 10.58 × (12/9 bulk) ≈ 4,770, about 37 plain hits of the level-11 attacker (177 a hit, 49 armour). The budget scales HP to reach the bulk target, as it does for every fight (`encounter.ts:170-185`).
-- **After it falls:** the boon of three as after every Boss, then the **Survival cleared** panel with the run's score. The **account's permanent upgrade** is a slot that ships empty: `survival.json levels.final.account_reward: null`, with the text "Kept for when accounts exist" (charter: not in 0.34). Then the squad chooses: **retire** (the run ends, `how: 'retired'`) or **walk on** into endless (stage 6's tiles).
+- **Its numbers at level 11** (1.2's columns): HP 6,630 at the four-player share (`share.boss.hp` 1; 1,856 / 3,315 / 4,973 for squads of 1 to 3), armour 42, Defense 15, +6 to hit, a rifle-class hit 226. About 20 plain hits of a level-10 rifle specialist (01 T12: 368 a hit at level 10, less its armour).
+- **What it fills:** the Boss is about 9.8 Soldier-equivalents of bulk at four (section 4.1), the final room 12 (section 4.2): a squad of four meets the sovereign, one lieutenant and its minions; a solo meets the sovereign at its share and the minions. The generator scales HP to the bulk target as for every fight (`encounter.ts:170-185`).
+- **After it falls:** the boon of three as after every Boss, then the **Survival cleared** panel with the run's score. The account's permanent upgrade is a slot that ships empty: `levels.final.account_reward: null`, text "Kept for when accounts exist" (charter: not in 0.34). Then the squad **retires** (`how: 'retired'`) or **walks on** into endless (map 6's tiles).
 
 ### 3.4 Endless: how it keeps getting meaner (PROVISIONAL)
 
-- **Levels:** one a map, by the table above, until foes cap at 20. Ordinary foes reach 20 on map 14's late rows, at about hour 37.6, and everything is 20 by map 15, at about hour 40. *Level-20 foes arrive as your character reaches 20, and from then on the fights change, not the numbers.*
-- **Numbers:** the budget's map term (section 4.3) keeps adding +0.1 bulk and +0.1 pressure a map with no end. *Each map past the cap puts a little more in the room.*
-- **What a fight is made of: a kit a map, in this order** (each endless map adds the next; after the eighth the list starts again one door step stronger, `_ii` to `_iii`, up to `_iii`):
+- **Levels:** one a map (3.2) until foes stop at 20 on map 16. *Level-20 foes arrive as your character reaches 20; from then on the fights change, not the numbers.*
+- **Numbers past the cap:** from the first map whose every foe is 20 (map 16), the map term adds +0.1 bulk and +0.1 pressure a map with no end (section 4.3). *Each map past the cap puts a little more in the room: about one more Soldier in a four-squad's plain fight every two maps.*
+- **What a fight is made of: a kit a map, in this order** (each endless map adds the next; after the eighth the list starts again one tag step stronger, to `_iii`):
 
 | Endless map | Kit added | What the squad must answer |
 | --- | --- | --- |
-| 1 (map 6) | Soldiers `plated_ii` | plates on the line: armour-piercing, Slam, a cash-out for a plate-less turn |
-| 2 | casters in plain fights (`caster_guards`, `healer_line` weight ×2) | kill the words first |
-| 3 | Elites `faithful_ii`, Bosses `faithful_iii` | Witnessed foes; silence or Rebuke |
-| 4 | minions `skulk_ii` everywhere | spotting; flanks are never safe |
-| 5 | Elites `bonded_ii` | a runner is Tugged back; break the Bond or fight in its reach |
-| 6 | an Elite slot in plain fights (`firing_line`'s Elite slot from row 1) | every fight has a centre |
-| 7 | the gate becomes `twin_elites` | two plated centres at once |
-| 8 | the Boss node draws `last_reckoning` (the final boss's template at the map's level) | the final boss, again, meaner |
+| 6 | Soldiers `plated_ii` | plates on the line: armour-piercing, Slam, a cash-out for a plate-less turn |
+| 7 | casters in plain fights (`caster_guards` and `healer_line` weight x2) | kill the words first |
+| 8 | Elites `faithful_ii`, Bosses `faithful_iii` | Witnessed foes; silence or Rebuke |
+| 9 | minions `skulk_ii` everywhere | spotting; flanks are never safe |
+| 10 | Elites `bonded_ii` | a runner is Tugged back; break the Bond or fight in its reach |
+| 11 | an Elite slot in plain fights (`firing_line`'s Elite slot from row 1) | every fight has a centre |
+| 12 | the gate draws `twin_elites` (squads of 3 or more, its `min_party`; else `elite_pack`) | two plated centres at once |
+| 13 | the Boss node draws `last_reckoning` at the map's level | the final boss, again, meaner |
 
-**Kinds and kits by setting** stay as they are: a setting's `kinds`, `pools`, `boss` and `vault_guard` (`survival.json settings` `:559`).
-- Endless repeats settings once all six are played. `world` (`:413`) already falls back when none is unplayed.
-- In endless the `pools` may name the new Items 2.0 rows: *Smetanita guns that lay Pressure on you, Whisper-line weapons that keep a skulker Hidden.* This is data on the setting's `pool`.
+**Kinds and kits by setting** stay as they are: a setting's `kinds`, `pools`, `boss` and `vault_guard` (`survival.json settings`, `:559`). Endless repeats settings once all are played (`world`, `:413`, already falls back). A setting's `pools` may name Items 2.0 rows (data).
 
-### 3.5 What today's "stages" become (data keys)
+**The boon cap** stays (ruling A10, 01 section 12): past it a Boss's boon of three is worth 0, and its card says so (critic-consistency minor 6).
+
+### 3.5 What today's keys become
 
 | Key (today) | Becomes |
 | --- | --- |
-| `RunState.stage` (`run/state.ts:112`) | unchanged: the map number; 1 to 5 Survival, 6+ endless |
+| `RunState.stage` (`run/state.ts:112`) | unchanged: the map number; 1 to 5 Survival, 6 on endless |
 | `survival.json stage.elite_up` (`:61`) | deleted (replaced by `levels`) |
-| `stage.bulk` 0.42, `stage.pressure` 0.35 | 0.1 and 0.1 (section 4.3) |
-| `stage.credits` 0.35, `stage.xp` [1, 2.6, 4, 4, 4.5] | the economy and progression drafters'. **My one ask:** XP should be paid by the foe's level against the character's (the calendar: "weak foes give nothing"), not by a stage multiplier |
-| `rewards.ceiling` ["fine", "masterwork", "relic"] (`:147`) | by map: fine, fine, masterwork, masterwork, masterwork, relic (maps 6 to 9), celestial (map 10+; the last repeats). Needs the validator rule changed (Question 3) |
-| `vault.grade_max` "relic" (`:580`) | "celestial": *the dead-end fight in endless is where the first Celestial can come from* |
-| `enemies.json items[].lag` | kept in shape; the offset under the place's level (section 2.2) |
-| new `survival.json levels` | `{ maps: [ { map, early, late, elite, boss, tags: { tier: [tag] }, from_template... } x5 ], endless: { early: 10, late: 11, big: 12, per_map: 1, kits: [ ... ], beyond: { bulk: 0.1, pressure: 0.1 } }, final: { stage: 5, template: "last_reckoning", rounds: 12, account_reward: null, text } }` |
+| `stage.bulk` 0.42, `stage.pressure` 0.35 (`:57-58`) | 0.1 and 0.1, counted from `stage.from` 16 (section 4.3) |
+| `stage.credits`, `stage.xp` (`:59-60`) | 05's (05 retires `stage.xp` for its XP by the fight's level) |
+| `rewards.ceiling` (`:147`), `vault.grade_max` (`:580`), the validator's rule (`tools/validate.py:2960`), `cappedRarity`'s Celestial clamp (`run/rewards.ts:161`) | 07's lists under ruling 25; 07 owns the reader change |
+| `enemies.json items[].lag` | kept in shape; the offset under the place's level (1.2) |
+| `enemies.json items[].pressure_off` (new) | 0 / 0 / 0 / 1 / 2 (1.2, ruling 19) |
+| new `survival.json levels` | `{ maps: [ { map, early, late, top, boss, tags: { tier: [tag] } } x5 ], endless: { from_map: 6, early: 4, late: 5, top: 6, per_map: 1, kits: [ ... ] }, final: { stage: 5, template: "last_reckoning", rounds: 12, account_reward: null, text } }` (endless levels are the map number plus the offsets) |
 | `templates[].from_depth` | joined by `from_stage` on templates and slots (section 5) |
 | `rounds` (`:64`) | joined by `pressure_kind` (section 4.2) |
 
@@ -298,148 +222,187 @@ A template **`last_reckoning`**, the only template on map 5's Boss node (`surviv
 
 ### 4.1 The cost of one foe (Soldier-equivalents, SE)
 
-Today (`survival.json tiers` `:70-77`): bulk / pressure is vermin 0.3 / 0.3, minion 0.55 / 0.75, soldier 1 / 1, elite 2.1 / 2.2, boss 7.9 / 3. `foeCost` multiplies by `lag_factor`^(squad − foe) and the Elite and Boss share by squad size (`share` `:80-83`).
+Today (`survival.json tiers`, `:70-77`): bulk / pressure vermin 0.3 / 0.3, minion 0.55 / 0.75, Soldier 1 / 1, Elite 2.1 / 2.2, Boss 7.9 / 3; `foeCost` multiplies by `lag_factor`^(squad - foe) and the Elite and Boss share by squad size (`share`, `:80-83`).
 
-**New (PROVISIONAL):**
-- **Bulk becomes plain hits over a Soldier's** (section 1.4): vermin 0.25, minion 0.5, soldier 1, elite 2.0, boss 7.5. *So the room's size reads in the same hits you count.* Pressure is kept as fitted, and re-measured by the run simulator.
-- **`lag_factor` 0.83 becomes 0.78.** *A foe one level over you takes about a fifth more to put down and hits a fifth harder, and the gap's +1 makes it a little surer: it fills the room like 1.3 foes of your level.* That is ×1.21 a level on HP and on damage, and about ×1.05 from the gap's ±1 to hit.
+**New (PROVISIONAL), each derived, not fitted:**
+- **Pressure rows unchanged.** 01 moves every tier's damage factor by the same x1.28 and keeps the tiers' to-hit, so a tier's hurt per round against a Soldier's is what it was.
+- **Bulk rows re-read for the new Defense** (01 section 3.3): today's bulk x (the stated attacker's expected worth against the old Defense over against Soldier 11, today's rules) x (its worth against Soldier 11 over against the new Defense, 01 T10). It holds within a few hundredths for to-hit +6 to +12: **vermin 0.25, minion 0.5, Soldier 1, Elite 2.5, Boss 9.8.** *An Elite and a Boss are harder to hit (14 and 15), so each takes more of the squad's turns than its HP alone says, and the generator must know it.*
+- **`lag_factor` 0.83 becomes 0.72** (1.4: a level is about x1.38). *A foe one level over you takes about two fifths longer to drop and hits about a third harder: it fills the room like 1.4 foes of your level.*
 
-Cost factor by **foe level minus the squad's level** (one squad level: the living characters' average, rounded down, `data.ts:124`):
+Cost factor by **foe level minus the squad's level** (the squad's level: the living characters' average rounded down, `data.ts:124`):
 
-| Foe − squad | −5 or less | −4 | −3 | −2 | −1 | 0 | +1 | +2 | +3 | +4 | +5 |
+| Foe - squad | -5 | -4 | -3 | -2 | -1 | 0 | +1 | +2 | +3 | +4 | +5 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| × cost | 0.29 (and its bulk is one hit: vermin's 0.25) | 0.37 | 0.47 | 0.61 | 0.78 | 1 | 1.28 | 1.64 | 2.11 | 2.70 | 3.46 |
+| x cost | 0.19 | 0.27 | 0.37 | 0.52 | 0.72 | 1 | 1.39 | 1.93 | 2.68 | 3.72 | 5.17 |
 
-So a Soldier two levels over a squad costs 1.64 SE of bulk and of pressure. An Elite of map 1 (level 3) against a level-1 squad costs 2.0 × 1.64 = 3.3 bulk × its share. *Rushing is felt in the generator too: fewer bodies, each a wall.*
+At -5 the one-hit rule ends any ordinary foe at the first hit; its cost there is the room it takes until it is hit.
+
+**Rushing, for squads of 1 to 4:** map 2's gate Elite (level 5) against the hard room (6.5 rounds; 4.2), bulk cost / pressure cost, by the squad's level:
+
+| Squad of | Hard room (bulk / pressure) | Squad at 3 | at 4 | at 5 (walked it) | at 6 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 1.6 / 1.5 | 3.6 / 2.6 | 2.6 / 1.8 | 1.9 / 1.3 | 1.4 / 1.0 |
+| 2 | 3.3 / 2.1 | 4.8 / 4.2 | 3.5 / 3.1 | 2.5 / 2.2 | 1.8 / 1.6 |
+| 3 | 4.9 / 3.1 | 4.8 / 4.2 | 3.5 / 3.1 | 2.5 / 2.2 | 1.8 / 1.6 |
+| 4 | 6.5 / 4.1 | 3.9 / 3.4 | 2.8 / 2.4 | 2.0 / 1.8 | 1.4 / 1.3 |
+
+*Rushing is felt in the generator too: a squad two levels short meets the gate Elite alone and it is a wall (its HP is what its level says; its damage is brought to the room's cap, as `anchorDamage` does today, `encounter.ts:158-162`); a squad that walked the map meets the Elite and its line.*
 
 ### 4.2 The budget by squad and difficulty
 
-Difficulty words map onto the node kinds Survival has. A campaign's encounter `difficulty` (easy, standard, hard; `campaign-format.md` `encounters`) reads the same rows, easy as light. Bulk is 0.25 × n × rounds (`bulk_per_char_round`, `:65`); pressure is `pressure_per_char`[n − 1] × n (`:66`) × the new `pressure_kind`.
+Difficulty words map onto Survival's node kinds; a campaign encounter's `difficulty` (easy, standard, hard, `campaign-format.md:21`) reads the same rows, easy as light. Bulk is `bulk_per_char_round` 0.25 x n x rounds (`:65`); pressure is `pressure_per_char`[n - 1] x n (`:66`) x the new `pressure_kind` (ruling D24: "hard, deadly and final fights press harder a round as well as lasting longer").
 
 | Difficulty (node kind) | Rounds | `pressure_kind` (new) | Squad of 1: bulk / pressure | of 2 | of 3 | of 4 |
 | --- | --- | --- | --- | --- | --- | --- |
-| light (a plain fight at depth 1 or 2; easy) | 4 | 0.85 | 1.0 / 1.1 | 2.0 / 1.5 | 3.0 / 2.3 | 4.0 / 3.1 |
+| light (a plain fight at row 1 or 2; easy) | 4 | 0.85 | 1.0 / 1.1 | 2.0 / 1.5 | 3.0 / 2.3 | 4.0 / 3.1 |
 | standard (a plain fight) | 5 | 1.0 | 1.25 / 1.3 | 2.5 / 1.8 | 3.75 / 2.7 | 5.0 / 3.6 |
-| hard (Elite, gate; the vault guard ×1.3 on both) | 6.5 | 1.15 | 1.6 / 1.5 | 3.25 / 2.1 | 4.9 / 3.1 | 6.5 / 4.1 |
-| deadly (Boss) | 9 | 1.25 | 2.25 / 1.6 | 4.5 / 2.25 | 6.75 / 3.4 | 9.0 / 4.5 |
-| final boss | 12 | 1.35 | 3.0 / 1.8 | 6.0 / 2.4 | 9.0 / 3.6 | 12.0 / 4.9 |
+| hard (an Elite, the gate; the vault's guard x1.3 on both, `:580`) | 6.5 | 1.15 | 1.6 / 1.5 | 3.25 / 2.1 | 4.9 / 3.1 | 6.5 / 4.1 |
+| deadly (a Boss) | 9 | 1.25 | 2.25 / 1.6 | 4.5 / 2.25 | 6.75 / 3.4 | 9.0 / 4.5 |
+| final boss | 12 | 1.35 | 3.0 / 1.8 | 6.0 / 2.4 | 9.0 / 3.65 | 12.0 / 4.9 |
 
-`pressure_kind` (PROVISIONAL): *an Elite's room hurts more each round, not only for longer; you feel it in the first exchange, not the sixth.* Today the pressure cap does not depend on the kind at all (`budgetFor`, `encounter.ts:95`).
+`pressure_kind`, one line each: *the first fights of a map are a warm-up (0.85); an Elite's room hurts more each round, so you feel it in the first exchange, not the sixth (1.15); a Boss's more (1.25); the last fight of Survival most (1.35).* Today the pressure cap does not read the kind at all (`budgetFor`, `encounter.ts:95`). The run simulator re-measures them before 0.34 ships, as readings.
+
+**A Boss at four fills its room:** the Boss's bulk (9.8 at the four-player share 1) is inside the deadly room's band (9.0, `bulk_band` 0.15), so a four-squad's Boss comes with few or no adds where today it came with about one Soldier's worth. This is the honest cost of Defense 15 at 01's HP (question 1).
 
 ### 4.3 Where the generator reads it
 
-- `budgetFor` (`encounter.ts:92-96`) gains the `pressure_kind` multiplier, and the final boss's rounds from `levels.final`. The map term stays in the same place: (1 + 0.1 × (s − 1)) on bulk and on pressure.
-- `foeCost` (`:83-86`) keeps its formula, with the squad level, the foe's place-level and the new `lag_factor`.
-- `fill` (`:127-160`) calls `worldLevel` in place of `foeLevel`.
+- `budgetFor` (`encounter.ts:92-96`) multiplies the pressure cap by `pressure_kind`, takes the final's rounds from `levels.final`, and counts the map term from `stage.from`: (1 + 0.1 x max(0, s - from)) on bulk and on pressure. *While foes climb, their levels are the growth; a map term on top would make a level-15 fight longer than a level-5 one twice over (01's `hp_mult` already lets a level-20 fight run about a third longer).*
+- `foeCost` (`:83-86`) keeps its formula, with the squad's level, the foe's place level and `lag_factor` 0.72.
+- `fill` (`:128-160`) gets each foe's level from `foeLevel`'s new body (the place).
 - `bulk_band`, `pressure_band`, `max_foes` and `share` are unchanged.
 
 ---
 
 ## 5. Each map asks something different (PROVISIONAL)
 
-A map's identity is its **order** (players pick the setting from the offer, `world`), so what it is made of is read from `levels.maps[m]`: which templates may be drawn there (`from_stage` on templates and slots) and which tags its foes carry by tier (`tags`).
+A map's identity is its **order** (players pick the setting, `world`), so what it is made of is read from `levels.maps[m]`: which templates may be drawn there (`from_stage` on templates and slots) and which tags its foes carry by tier (`tags`).
 
-| Map | Templates that open here (today's ids) | Tags its foes carry | What it asks of the squad |
+| Map | Templates that open here (today's ids, `survival.json:495-558`) | Tags its foes carry | What it asks of the squad |
 | --- | --- | --- | --- |
-| 1 | `firing_line`, `swarm`, `rush`, `machines`, `elite_pack` (gate), `champion` (Boss) | the gate Elite and the Boss `plated` | aim, cover, focus fire. It **meets Guard once** at the gate, so the Durability door is learned by facing it |
-| 2 | + `ambush` (`skulk` minions and Soldiers) | minions `skulk` | spotting, flanks, not walking into the open; Soldiers' Suppress puts Pressure on you |
-| 3 | + `caster_guards`, `healer_line` (from row 1 of the map, not depth 3 or 5 as now), `warden` (gate) | casters `bonded` (the heart adept's Attuner exists) | spread out against FIRE, kill the healer first, break or respect the Bonds |
-| 4 | + `twin_elites` (gate) | Soldiers `plated`; Elites `faithful` | armour-piercing and the big cash-out (armour is flat), Slam plates, Rebuke prayers |
+| 1 | `firing_line`, `swarm`, `rush`, `machines`, `elite_pack` (gate), `champion` (Boss) | the gate Elite and the Boss `plated` | aim, cover, focus fire; it **meets Guard once** at the gate, so the Durability door is learned by facing it |
+| 2 | + `ambush` (`skulk` minions and Soldiers) | minions `skulk` | spotting, flanks, not walking into the open; Soldiers' Suppress lays Pressure on you |
+| 3 | + `caster_guards`, `healer_line` (from row 1 of the map, not rows 3 and 5 as now), `warden` (gate) | casters `bonded` | spread out against FIRE, kill the healer first, break or respect the Bonds |
+| 4 | + `twin_elites` (gate, squads of 3 or more) | Soldiers `plated`; Elites `faithful` | armour-piercing and the big cash-out, Slam plates, Rebuke prayers |
 | 5 | everything; `firing_line`'s Elite slot opens from row 9 | Elites `plated_ii`; casters `faithful` | all of it at once, then `last_reckoning` |
 
-*So the five maps teach the doors on the other side one at a time, and the final boss asks for all of them.* Endless (3.4) then raises each door a step and makes one thing at a time the rule rather than the exception.
-
-`from_depth` on today's templates (`survival.json templates` `:495`: ambush 3, caster_guards 3, healer_line 5, warden 8 and twin_elites 8 at the gate row) stays for the row inside a map. `from_stage` is added beside it.
+*So the five maps teach the doors on the other side one at a time, and the final boss asks for all of them.* Endless (3.4) then raises each door a step and makes one thing at a time the rule. `from_depth` on today's templates (`ambush` 3, `caster_guards` 3, `healer_line` 5, `warden` 8, `twin_elites` 8) stays for the row inside a map; `from_stage` is added beside it.
 
 ---
 
-## 6. A campaign states its tier
+## 6. A campaign states its tier (ruling D28)
 
 ### 6.1 Today
 
 - A campaign file has no tier and no level (`docs/design/campaign-format.md` "Top level").
-- An encounter may carry `difficulty` and the enemies' `level` (`game.ts:1663-1670`); M813 gives none.
-- So every M813 fight takes the party's level (`combat.ts:1785-1789`).
-- M813's kicker says "ONE-SHOT · 2–3 SESSIONS" as text only (`m813.json` `kicker`).
+- An encounter may carry `difficulty` and the enemies' `level` (`game.ts:1664-1670`); M813 gives none, so every M813 fight takes the party's level (`combat.ts:1785-1789`).
+- M813's kicker says "ONE-SHOT · 2–3 SESSIONS" as text only (`m813.json:6`).
 
 ### 6.2 The new fields (PROVISIONAL)
 
 | Field | Where | What it is | Read by |
 | --- | --- | --- | --- |
-| `tier` | top level | `one_shot`, `season`, `campaign` or `epic` (curve section 10 item 1): **one_shot** a few sessions inside one level tier; **season** tiers I and II (levels 1 to 10, about 16 hours: Survival's five maps); **campaign** I to III (1 to 15, about 28 hours); **epic** I to IV (1 to 20 and the peak, about 40 hours and on) | the Room card, `validateCampaign` (that `levels` fits the tier), the progression drafter's XP pace |
-| `levels` | top level | `{ start, end }`: the level the story is written to begin and end at | `validateCampaign`; the fallback for a zone with no level |
-| `level` | each zone | **the place's level**: every fight in the zone without a level given takes it, then the Narrator's shift (−3 to +2) is added | `fightLevel` (`combat.ts:1785`) and the drill spawn (`game.ts:4331`) |
-| `level` | encounter and enemy | exists (`game.ts:1663-1670`); now expected, not optional, on a shipped campaign | as today |
-| `acts[].level` | each act | optional band `{ from, to }` for the validator to check its zones against | `validateCampaign` |
+| `tier` | top level | one of 05's content tiers (05 section 2, "Campaigns: the author's rule"; `rules.json pacing_target.tiers`): `one_shot`, `season`, `campaign`, `epic`; their hours and levels are 05's rows, not typed here | the Room card, `validateCampaign` (`packages/engine/src/campaign.ts:122`: that `levels` fits the tier's row), 05's XP pace |
+| `levels` | top level | `{ start, end }`: the levels the story is written to begin and end at | `validateCampaign`; the fallback for a zone with no level |
+| `level` | each zone | **the place's level**: every fight in the zone with no level given takes it, then the Narrator's shift (-3 to +2) | `fightLevel` (`combat.ts:1785`), the drill spawn (`game.ts:4331`) |
+| `level` | encounter and enemy | exists (`game.ts:1664-1670`); now expected on a shipped campaign | as today |
+| `acts[].level` | each act, optional | a band `{ from, to }` the validator checks its zones against | `validateCampaign` |
 
-**The order a fight takes its level:** given outright → the encounter's → the zone's (plus the shift) → the campaign's `levels.start` (plus the shift) → **the party's (plus the shift), only for a file with no level anywhere** (a host's own custom file, `own.json`). The validator warns on that last fallback in a shipped campaign. *So a campaign's world, like Survival's, does not follow the party: a hard place is hard.*
+**The order a fight takes its level:** given outright, then the encounter's, then the zone's (plus the shift), then the campaign's `levels.start` (plus the shift), then **the party's (plus the shift), only for a file with no level anywhere** (a host's own file), with a validator warning on a shipped campaign (ruling D28). *A campaign's world, like Survival's, does not follow the party: a hard place is hard.*
 
-**What M813 declares:**
-- `tier: "one_shot"` and `levels: { start: 1, end: 3 }`;
-- zones `shield_line` 1, `rear_pad` 2, `outpost` 2, `outpost_1` 3;
-- encounters "Picking at the dead" 1, "The ramp" 2, "Station security" 3.
+**What M813 declares:** `tier: "one_shot"` and `levels: { start: 1, end: 3 }` (05: a one-shot from level 1 reaches the class); zones `shield_line` 1, `rear_pad` 2, `outpost` 2, `outpost_1` 3 (`m813.json:174`, `:612`, `:918`, `:1238`); encounters "Picking at the dead" 1, "The ramp" 2, "Station security" 3. *The first fight is at your level; the ramp is a level up as the guns turn on you; station security is the level you should have grown to by the end.* `curse`, `godplot` and `summoning` declare their tier and zone levels when their acts are written. The Proving Ground (`proving.json`) keeps its waves' own levels.
 
-*The tutorial fight is at your level; the ramp is a level up as the guns turn on you; station security is the level you should have grown to by the end.* `curse`, `godplot` and `summoning` are campaign starts; they declare `tier: "campaign"` and zone levels when their acts are written. The Proving Ground (`proving.json`) keeps its waves' own levels and is not read here.
+---
+
+## 7. Migration: nothing is taken from a live character (ruling B15)
+
+05 quotes this section; it is the one copy.
+
+- **Points above a new ceiling.** Today's ceiling is 8 from level 3, 9 from 6, 10 from 9 (`rules.json:194` `cap_by_level`); 05 moves it to 8 / 9 / 10 at 5 / 10 / 15. A 0.33 specialist is one over at levels 3 to 4, 6 to 9 and 10 to 14 (critic-consistency M-1). Nothing refuses it at load (`validateSheet`, `character.ts:340`, checks the creation sheet only), but `legendRoom` (`character.ts:1327-1330`) goes negative and eats a later Legendary Deed's room. **The move:** a `CAP_REV`; at migration the points standing above the new ceiling are recorded as `c.capGrace` (a count), and `legendRoom` counts them beside `legends`. Nothing is refunded or lowered; a later ceiling rise absorbs them; skill <= attribute and every perk step stay true.
+- **Rank III before level 15.** `classRank` (`character.ts:1378-1386`) reads the level every call, so a level 12 to 14 character holding rank III would lose it when `rank_levels.III` moves to 15. **The move:** at the same revision, `c.rankHeld` records the rank held, and `classRank` returns at least it.
+- **A saved run between nodes** loads unchanged: `stage` keeps its meaning (the map number) and a run holds no unit; the next fight is built at the map's levels. A 0.33 squad on today's pace (05: map 3 ends at level 8 today) meets map 3's foes at 5 to 7, over-levelled, which takes nothing from it.
+- **A room saved in the middle of a fight** is ruling E's (01 section 13 states the two options for the lead).
+- **Tested through the real load path** (ruling B15): `test/old-save.test.ts` gains a 0.33 fixture of a level-12 specialist with an attribute at 10 and rank III; it loads through the game's own load and keeps every point and its rank.
 
 ---
 
 ## Questions for the lead
 
-1. **The Boss at 2m + 1 (3, 5, 7, 9, 11) or 2m + 2?** The brief allowed "3 or 4" for map 1. Recommended: **2m + 1.** A map-1 Boss at 4 against a level-2 or level-3 squad drops a frail character in two hits with a +2 gap to hit, before the class at level 3 has been played.
-2. **Endless at one level a map (ten endless maps to level 20, about 2.4 hours each) or two (five maps of about 5 hours)?** Recommended: **one a map.** A map's 15 rows hold about 2.5 hours, and one level a map keeps "level-20 foes at about hour 40" without stretching a map.
-3. **Celestial as a find from map 10, through `rewards.ceiling`.** The validator today says Celestial is never a ceiling, because the ceiling also caps the shop (`tools/validate.py:2960`). Recommended: **allow `celestial` in the ceiling list for reward rolls; the shop clamps to the highest sold grade at or under it** (a reader change in the shop, one rule).
-4. **The party-level fallback in campaigns.** Keep it only for a file with no level anywhere (a host's custom), with a warning? Recommended: **yes.** Removing it breaks every custom file a host has saved.
-5. **`pressure_kind`, harder rounds for hard and deadly fights.** Today only their length differs. Recommended: **yes**, at 1.15 / 1.25 / 1.35, re-measured by the run simulator before 0.34 ships.
+1. **A four-squad's Boss fills its room alone (4.2).** At 01's HP and Defense 15 the Boss is 9.8 SE of bulk at the four-player share, inside the deadly room of 9.0, so its adds go. Keep it (a Boss fight of four is the Boss), or scale `share.boss.hp` and `share.elite.hp` by today's bulk over the new (about x0.8) so the adds come back at the same rounds? Recommended: **keep it** and let the run simulator read it; the share is the lever if the fight reads empty.
 
----
+## Critics' findings
+
+| Finding | Status | How, or why not |
+| --- | --- | --- |
+| consistency S1 (x0.45 against x0.6) | FIXED | the first draft's numbers discarded; every enemy number is 01's or derived from 01's formulas (1.2 to 1.4) |
+| consistency S2 (two enemy tables) | FIXED | one table, 01's T4; my jump rule and rising Defense dropped |
+| consistency S3 (tier rows) | FIXED | 01's rows quoted (1.2); bulk re-read for their Defense (4.1); the final boss restated on them (3.3) |
+| consistency S11 (grade by map, three lists) | FIXED for 06 | ruling 25 quoted; the lists, the vault rule and the validator are 07's; my own grade column removed |
+| consistency S12 (endless pace) | NOT FIXED as asked | ruling D24 sets one level a map; the critic's foe levels by 05's 1.5-a-map clock are overruled. Hours are 05's for maps 1 to 5; the endless clash is put to 05 (3.2) |
+| consistency M1 (columns cancel growth) | FIXED | 01's smooth columns, level-free Defense (1.2) |
+| consistency M4 (`attack_plus` at today's column) | FIXED | 0 at every level (01) |
+| consistency minor 4 (enemy door amounts) | FIXED | dealt amounts on `damage_mult`; a plate on `armour_mult` as armour, with the reason (1.5) |
+| consistency minor 6 (boon cap) | FIXED for 06 | the cap stays (A10); the card says a boon past it is worth 0 (3.4) |
+| consistency minor 8 (final boss HP) | FIXED | 6,630 at four, on 01's columns (3.3) |
+| consistency section 4 (06's two primitives) | FIXED | `worldLevel` is `foeLevel`'s rewritten body; the zone level is a parameter of `fightLevel`; both listed as extensions |
+| consistency section 5 item 2 (Pressure offsets by tier name) | FIXED | `pressure_off` on each tier row (1.2) |
+| consistency section 5 item 7 (`last_reckoning` named in prose) | FIXED | data only, read through `levels.final.template` (3.3) |
+| consistency M-1, M-2 (ceilings, rank III on load) | FIXED | section 7 (ruling B15) |
+| consistency M-8 (a room saved mid-fight) | NOT FIXED here | ruling E: the builder proposes, the lead approves (01 section 13) |
+| player 1 (files on two scales; map hours) | FIXED for 06 | 01's numbers; 05's hours and squad levels (3.2) |
+| player 13 (06 cancels the to-hit) | FIXED | level-free Defense (1.2) |
+| player 15 (boon cap) | NOT FIXED | ruling A10 and 01 section 12 keep the cap; slots would be a new rule the rulings did not take |
+| player 16 ("I levelled, the Soldier didn't get easier") | FIXED for 06's part | foe levels from the map, so a level gained is felt on the same map; the map card shows foe and squad levels (3.2); the level-up screen's text is the client's |
 
 ## Built from
 
 | Rule or number | The existing piece and data key that carries it (file) | What must change |
 | --- | --- | --- |
-| Enemy HP, armour, Defense, attack and damage by level | `levelled()` (`packages/engine/src/data.ts:117`), `enemies.json levels.table` | the table's 20 rows (1.3); no code |
-| Tier level-1 rows | `enemies.json items[]` hp, armour, defense, attack_bonus, damage | five rows (1.4) |
-| The attacker and defender columns | 01-scale.md (not yet written) | the three column rules re-derived when it lands |
-| Gap rules, guard, shift | `enemies.json levels.gap` and `narrator_shift`; `combat.ts:742`, `:752-790`, `:1787` | none |
-| Foe level from the place (Survival) | `foeLevel` (`run/encounter.ts:74`), `tierLag` (`:65`) | `foeLevel`'s body becomes `worldLevel(stage, depth, tier)` reading `survival.json levels`; `eliteUp` and `stage.elite_up` deleted; `lag` reread as the offset |
-| Foe cost by level difference | `foeCost` (`encounter.ts:83`), `lag_factor` (`survival.json:79`) | `lag_factor` 0.78; `tiers` bulk 0.25 / 0.5 / 1 / 2.0 / 7.5 |
-| Budget by squad and kind | `budgetFor` (`encounter.ts:92`), `rounds`, `pressure_per_char`, `bulk_per_char_round` | read `pressure_kind` (new data key) and the final's rounds |
-| Map term | `stage.bulk`, `stage.pressure` | 0.1 and 0.1 |
-| Templates by map | `templatesFor` (`encounter.ts:116`), `templates[].from_depth`, slots' `from_depth` (`:146`) | add `from_stage` beside `from_depth` in the same filters (an extension of a filter that exists) |
-| Tags by map and kit | slot `tags` (applied in `armed`, `encounter.ts:214`), `ai.tag_doors` (`enemies.json:729`), `armDoors` (`combat.ts:668`) | `armed` also adds `levels.maps[m].tags[tier]` and the endless kits' tags; new tag rows `plated*`, `skulk_ii/iii`, `faithful_ii/iii`, `bonded*` (data) |
-| Guard on a tagged enemy, plates by Reach | `armGuard` (`combat.ts:700`), the door's Reach row (doors drafter) | `armGuard` reads Durability from every door block (tags included) and takes plates from the Reach row; the typed `guard.plates` is removed (one copy of the rule) |
-| Enemy door amounts by level | the Level term of `effects/output.ts` | enemies read their level's column as a character does (no typed amount) |
-| Casters' Line length | `sigils.json enemy_ai.max_words` | replaced by Brain Power in the caster's `doors.skills` through the Sigils Reach row |
-| The final boss | `templates`, `champion`'s slot shape, setting `boss`, `soul_casters.heart_sovereign`, `casters.sigil_warden`, `heartfire_elite` | a new template `last_reckoning` (data); `composeEncounter` picks it and its rounds from `levels.final` on that stage's Boss node |
-| Survival ends, endless begins | `endRun` and the `boon` / `tile` states (`run/state.ts:252-257`), `RunEnd.cleared` | the "Survival cleared" panel after stage `levels.final.stage` (text in data); the choice to retire or walk on uses today's retire |
-| The account's upgrade | none | `levels.final.account_reward: null` (an empty slot, not read in 0.34) |
-| Grade by map | `rewards.ceiling` (`survival.json:147`; `run/rewards.ts:156`), `vault` | lists by map; `tools/validate.py:2960` allows Celestial for reward rolls (Question 3) |
-| Campaign tier and levels | `validateCampaign` (`packages/engine/src/campaign.ts`), `encounterLevels` (`game.ts:1663`), `fightLevel` (`combat.ts:1785`) | the fields of 6.2; `fightLevel` takes the zone's level before the party's |
+| Enemy columns and tier rows | `levelled()` (`data.ts:117`), `enemies.json levels.table`, `items[]` | 01's (its Built from) |
+| The Pressure tier offset | `pressureCap` (`physical/pressure.ts:15-17`) | reads `pressure_off` from the tier row (02 writes the cap's Reach part) |
+| Gap rules, guard, shift | `enemies.json levels.gap`, `narrator_shift`; `levelGap` (`combat.ts:732`), `:738-742`, `BOSS_GUARD` (`:752`), `fightLevel` (`:1785`) | none |
+| Foe level from the place (Survival) | `foeLevel` (`run/encounter.ts:74`), `tierLag` (`:65`) | `foeLevel`'s body reads `survival.json levels` by stage, row and tier; `eliteUp` and `stage.elite_up` deleted; `lag` read as the offset |
+| Foe cost by level difference | `foeCost` (`encounter.ts:83`), `lag_factor` (`survival.json:79`), `tiers` (`:70-77`) | `lag_factor` 0.72; bulk 0.25 / 0.5 / 1 / 2.5 / 9.8; pressure unchanged |
+| Budget by squad and kind | `budgetFor` (`encounter.ts:92`), `rounds`, `pressure_per_char`, `bulk_per_char_round` | reads `pressure_kind`, the final's rounds and `stage.from` |
+| Map term | `stage.bulk`, `stage.pressure` | 0.1 and 0.1 from `stage.from` 16 |
+| Templates by map | `templatesFor` (`encounter.ts:116-118`), slots' `from_depth` (`:140`) | `from_stage` beside `from_depth` in the same two filters |
+| Tags by map and kit | slot `tags` (applied in `armed`, `encounter.ts:197`), `ai.tag_doors` (`enemies.json:729`), `armDoors` (`combat.ts:668`) | `armed` also adds `levels.maps[m].tags[tier]` and the endless kits' tags; new tag rows `plated*`, `skulk_ii/iii`, `faithful_ii/iii`, `bonded*` (data); `armDoors` takes the highest Devotion and Faith across blocks |
+| Guard on any enemy, plates by Reach | `armGuard` (`combat.ts:700`), 02's Durability ladder (the door-ladder piece) | `armGuard` reads Durability from every door block and the plates from the ladder; the typed `guard` block goes |
+| Enemy door amounts and plates by level | the dealer's column (01 section 3.1); `armour_mult` | none beyond 01's rule; a plate's soak reads `armour_mult` |
+| Casters' Line length and top stage | `sigils.json enemy_ai.max_words`, `ENEMY_MAX_WORDS` (`sigil.ts:1444`), `soul_casters[].reach_bonus` | Brain Power and Will Power in the casters' `doors.skills`, read by 03's and 04's ladders; `max_words`, its code copy and `reach_bonus` go |
+| Casters' MP | `soul_casters[].mp`, 01's `mp` column | the number read x `mp` at the caster's level |
+| The final boss | `templates`, `champion`'s slot shape, setting `boss`, `heart_sovereign`, `sigil_warden`, `heartfire_elite` | a template `last_reckoning` (data); `composeEncounter` picks it and its rounds from `levels.final` on that stage's Boss node |
+| Survival ends, endless begins | `endRun` and the `boon` / `tile` states (`run/state.ts:252-257`), `RunEnd.cleared` | the "Survival cleared" panel after `levels.final.stage` (text in data); retire or walk on uses today's retire |
+| Campaign tier and levels | `validateCampaign` (`campaign.ts:122`), `encounterLevels` (`game.ts:1664`), `fightLevel` (`combat.ts:1785`), the drill spawn (`game.ts:4331`), 05's `pacing_target.tiers` | the fields of 6.2; `fightLevel` takes the zone's level before the party's; a validator warning on the last fallback |
+| Migration | `legendRoom` (`character.ts:1327`), `classRank` (`:1378`), the load path's `migrateCharacter*` (`game.ts:18`) | `CAP_REV`; `capGrace` read by `legendRoom`; `rankHeld` read by `classRank` |
 
 ## Needs a new primitive
 
-| Piece | Smallest form | Why nothing existing does it |
-| --- | --- | --- |
-| 1. `worldLevel(stage, depth, tier)` | an exported reader in `run/encounter.ts` over `survival.json levels` (maps rows, endless rule, final); returns a level 1 to 20 | every level source today is the party's (`fightLevelOf`) or a number given outright. Nothing gives a level from a place. It replaces `foeLevel` and `eliteUp` rather than adding beside them |
-| 2. The zone's level in `fightLevel` | `fightLevel(chars, { level, shift, place })`: a `place` level (the zone's, else the campaign's `levels.start`) that the shift is added to, before the party fallback | `fightLevel` knows only an outright level (no shift) or the party's; there is no "a level that the Narrator may still shift" |
+None from this file. Everything rides a piece that exists; the extensions below are each one more key or parameter of that piece, under the names of critic-consistency section 4's list where it has one:
 
-The extensions, each of a piece that nearly does it and not new (listed for the lead's check):
-- `from_stage` beside `from_depth`;
-- map `tags` added in `armed` beside slot tags;
-- `pressure_kind` beside `rounds` in `budgetFor`;
-- `armGuard` reading tag blocks and the Reach row.
+| Extension | Smallest form | Why it is not a new piece |
+| --- | --- | --- |
+| `foeLevel` reads the place (06's former `worldLevel`) | its body reads `survival.json levels` (stage, row, tier); same signature's callers | a rewrite of an existing function (critic-consistency section 4) |
+| The zone's level in `fightLevel` | `fightLevel(chars, { level, shift, place })`: a place level the shift is added to, before the party fallback | a parameter of an existing function |
+| `from_stage` beside `from_depth` | one key in the two existing filters | on critic-consistency's extension list |
+| `pressure_kind` in `budgetFor` | one multiplier read beside `rounds` | on the extension list |
+| `stage.from` in `budgetFor` | the map term counted from a stage | one key in the existing term |
+| `armGuard` reading door blocks and the Reach row | the ladder's plates in place of a typed count | on the extension list |
+| `armDoors` faith by the highest | `max` in place of overwrite, as for `skills` | the same rule the reader already applies to skills |
+| `pressure_off` on the tier row | `pressureCap` reads a field in place of tier names | critic-consistency section 5 item 2 |
+| `capGrace`, `rankHeld` | two saved fields with a load default, read by `legendRoom` and `classRank` | critic-consistency M-1 and M-2's form; general for any later ceiling or rank move |
 
 ## What re-records
 
 | What | Why it moves |
 | --- | --- |
-| `packages/engine/test/golden/enemies.json`, `rules-enemies.json` / `.log.json`, `costs-foes.json` | every enemy stat block and level row changes |
-| `golden/replays.json`, `test/helpers/replay.ts` | seeded fights: foe HP, armour, Defense, levels and the generator's picks all move |
-| `enemy-levels.test.ts`, `rules115-review.test.ts`, `rules123-defence.test.ts`, `bugsweep-1112.test.ts` | they read the level table and the gap at today's numbers |
-| `survival-encounter.test.ts`, `survival-stage.test.ts`, `survival-vault.test.ts`, `survival-layout.test.ts`, `survival-faces.test.ts` | `composeEncounter`'s levels come from the map, not the party; `eliteUp` is gone; new `lag_factor`, tier bulk, `pressure_kind`, `from_stage`, the final template |
-| `enemy-doors-183.test.ts`, `enemy-bonds-186.test.ts`, `enemy-ai-179.test.ts` | new tag rows, and Guard from tags and Reach in place of typed plates |
-| `test/balance/survival-run*.test.ts`, `survival-run-levels.test.ts`, `party-fit.test.ts`, `step1-fit.test.ts`, `defence-measure.test.ts`, `balance-sim.test.ts` (`sim.ts`, `fit.ts`) | the run simulator's whole curve (levels by map, five maps and endless). The bars are re-set as readings, not lines (rules 1.94) |
-| `magic-measure.test.ts` (castsToKill Elite ≥ 2, Boss ≥ 4), `shadow-measure.test.ts` | Elite and Boss HP and armour move; the guard assertion stays |
-| `tools/validate.py` (the ceiling rule at `:2960`; the new `levels` block and campaign fields) | new checks, and one rule changed |
-| `apps/web/e2e` suites that read a foe's HP or a Survival stage's level, and `npm run try` scenarios that name enemy numbers | displayed numbers change |
-| `docs/rules/PHC-Core-Rules-v1.0.md` rules 1.15 and 1.41 to 1.48 (the spec first, then data) and `docs/design/survival-spec.md` | the text of the level table, the budget and Survival's shape |
+| `packages/engine/test/golden/enemies.json`, `rules-enemies.json` / `.log.json`, `costs-foes.json` | every enemy stat block, level row, tier bulk and `lag_factor` |
+| `golden/replays.json`, `test/replay-hash.test.ts`, `test/helpers/replay.ts` | seeded fights: foe HP, armour, Defense, levels and the generator's picks |
+| `enemy-levels.test.ts`, `rules115-review.test.ts`, `rules123-defence.test.ts`, `bugsweep-1112.test.ts` | the level table and the gap at today's numbers |
+| `survival-encounter`, `survival-stage`, `survival-vault`, `survival-layout`, `survival-faces`, `survival-run-levels` suites | levels from the map; `eliteUp` gone; new `lag_factor`, tier bulk, `pressure_kind`, `stage.from`, `from_stage`, the final template |
+| `enemy-doors-183.test.ts`, `enemy-bonds-186.test.ts`, `enemy-ai-179.test.ts`, the Sigil and Soul caster suites | new tag rows; Guard from door blocks and the ladder; Line length and top stage from Brain Power and Will Power; faith by the highest |
+| the Pressure suites that read `elite_max` and `boss_max` | `pressure_off` on the tier row |
+| `test/balance/survival-run*`, `party-fit`, `step1-fit`, `defence-measure`, `balance-sim` (`sim.ts`, `fit.ts`), `magic-measure`, `shadow-measure` | the run's whole curve and Elite and Boss HP; read again as readings (rules 1.94); the guard assertion stays |
+| `test/old-save.test.ts` and a new 0.33 fixture | `CAP_REV`, `capGrace`, `rankHeld` (section 7) |
+| `tools/validate.py` | the `levels` block, `pressure_off`, the campaign fields and the fallback warning (the ceiling rule is 07's) |
+| `apps/web` suites and e2e that read a foe's HP or a map's level; `npm run try` scenarios naming enemy numbers | displayed numbers; the map card's levels |
+| `docs/rules/PHC-Core-Rules-v1.0.md` rules 1.15 and 1.41 to 1.48, `docs/design/survival-spec.md`, `docs/design/campaign-format.md` | the spec first, then the data: the level table, the budget, Survival's shape, the campaign fields |

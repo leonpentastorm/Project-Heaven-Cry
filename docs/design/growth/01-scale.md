@@ -1,40 +1,37 @@
-# 01. The number scale (the 0.34 rebalance, design phase; drafted 21 Nov 2026)
+# 01. The number scale (the 0.34 rebalance, design phase; second draft, 21 Nov 2026)
 
-**For the lead.** Nothing here is built. Every proposed number is PROVISIONAL. Every table below is printed by `tools/balance/scale.py` (it reads `data/*.json` and writes nothing): change a number in its `PROPOSAL` block and run it again (`PYTHONUTF8=1 python tools/balance/scale.py`, or one section: `today columns weapons digits flat stats hp check costs margins caps`). Facts about today were read in data and code at the release branch's HEAD `ae619d8f6`; where a map in `proposals/2026-11-21-maps/` said otherwise, the file won.
+**For the lead.** Nothing here is built. Every proposed number is PROVISIONAL. This draft applies the lead's rulings (`00-rulings.md`, A1 to A10, B11, B12) and fixes the critics' findings that name this file (the table "Critics' findings" at the end). **This file owns every shared number** (the factor, the columns, the cards, HP, MP and the cost rule, a plate, armour, the grade ladder, Margins, the stack rule, the enemy columns and tier rows): the other six files quote them from here by the table or formula name, and type none of their own.
+
+Every table below is printed by `tools/balance/scale.py` (it reads `data/*.json` and writes nothing): change a number in its `PROPOSAL` block and run it again (`PYTHONUTF8=1 python tools/balance/scale.py`, or one section: `today factor weapons digits columns cards hp costs plate grades margins top check caps`). Facts about today were read in data and code at the release branch's HEAD `d61ec6f13`.
 
 Leon's ruling this file answers (the curve, section 17 item 2): *a hit is one or two digits at level 1, four at level 20, five for something super; you feel every level in the power of the hits, your HP, their HP, AP cost, mana cost; nothing is 100 HP because other games do it.*
 
-## 0. What I decided, in five lines
+## 0. What changed from the first draft, in short
 
-1. **One factor for every flat number: x0.6** (not the charter's x0.45 for weapons and x0.6 for HP). Damage, HP, healing, shields, armour, soak, cover, hazards and enemy HP all move together, so every count of hits (to kill, to survive, to heal) stays what it is today and only the changes I name move it. A rifle shot is 28 at level 1, a specialist's maul blow 63, a frail character has 60 HP.
-2. **One level column for a character: x40 at level 20 (x1.214 a level)**, read by every hit, every HP bar, armour and Guard's soak; heals and shields read it times a normal bar's growth (x65). Enemies: damage x60 and HP x90 at level 20, because they are written for a specialist whose gear is one grade under the stage's best. Defense and to-hit become level-free; only the level *gap* (+1 a level, to 5) touches the roll.
-3. **The cards become true.** Each damage profile's slopes are what its cards say (Strength +10%, Raw Power +5%, Dexterity +4% on guns, light blades and thrown, Intelligence and Brain Power +10%, Expression +10%, Determination +5%, Will Power +10%, Virtue +5% and Faith +10%, Insight and Empathy +6%). Each profile's own constant `k` is re-set so a normal share (4 and 4) deals today's number x0.6 at level 1; the melee, thrown and Figment factors fold into their `k` and go. A dabbler hits up to a quarter softer than today, a specialist up to a quarter harder.
-4. **Character HP = deal(L) x (60 + 10 x (Endurance - 1) + (L - 1) x (1 + 0.5 x Pain Threshold))**: 60 / 120 at level 1 for Endurance 1 / 7, 3,160 and 10,560 at level 20 (Endurance 1 and Pain Threshold 0; Endurance 10 and Pain Threshold 10).
-5. **Margins replace the capped critical** (every full 4 over the Defense or TN adds a quarter; a natural 20 adds two, Perception 4, 7 and 10 one more each), with the grade ladder (Fine x1.15 +1 to Celestial x1.75 +3) on damage and on armour, and a grade for magic too: the Evoker's and Emanator's grade, and Devotion as the faithful's grade. The caps that only held a reward down go.
+1. **The cards follow A4:** every door attribute +10% a point above 1, every alpha +5% a point, **the two multiplied**; Agility's +10% goes to the Dexterity weapons (no hidden pin); each weapon row already names its pair (`phys.scales_with` x `phys.hits_with`), so no `blade` profile is needed; new data rows `bow`, `thrown`, `guard`.
+2. **HP follows A5** (Pain Threshold +6% max HP a point), **MP follows A6** (04's pool on an `mp` column; Strain and every self-paid HP price a share of max HP), **Margins follow A7** (a quarter of the plain hit plus a point of Perception; the critical and its cap go), **the stack rule follows A8** (five multiplying terms, one sum), **grades follow A9** (Relic +3, foci and Devotion graded).
+3. **Enemies (A3, item 10):** the columns are written for a stated attacker and a stated defender, smooth, level-free on the roll; tier rows are x0.6 with 06's Defense (8 / 9 / 11 / 14 / 15). hp_mult x140 and damage_mult x54 at level 20 (were x90 and x60), because the attacker now carries the ordinary sheet bonus and the multiplied cards.
+4. **Level 1 stays two digits (A1):** five rows whose level-1 Fine hit would show three digits take a factor of their own (the three rocket tubes x0.3, the satchel x0.45, the arbalest x0.55), computed by the script; the two draw bows move their Raw Power onto the Stat term.
+5. **The top of the scale is computed (A8, T11):** every door's plain hit and full cash-out at level 20; four doors need Bite or rule changes (Guard, Bonds, Shadow, Sigils) and 07's squad sum (+220%) must come down to each door's budget (the tightest, the Coup, +57%).
 
 ---
 
 ## 1. How the engine computes a hit today (checked in code and data)
 
-**The one formula** (`packages/engine/src/effects/output.ts:4-7`, and `data/rules.json:1722` `output.formula`):
+**The one formula** (`packages/engine/src/effects/output.ts:4-7`, `data/rules.json` `output.formula`): `amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, capped at +100%)`, then `dealt = max(1, floor(amount) - armour)`.
 
-`amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, capped at +100%)`, then `dealt = max(1, floor(amount) - armour)`.
-
-| Term | Where the code builds it | The data keys that carry it |
+| Term | Where the code builds it today | The data keys that carry it |
 | --- | --- | --- |
-| base | `combat.ts:1527` (`weaponDamage`) for a weapon; `amounts` blocks for everything else (`effects/amounts.ts`, `output.ts:174-175`) | `weapons.json items[].damage` (a number, a `within_4 / within_8` band for shotguns, or a formula such as `20 + 5*raw_power` for bows); `items.json mod_bayonet.melee_damage`; every `amounts.<key>.base` and `per[]`; `sigils.json items[].damage / heal / shield`; `soul_modules.json damage.base` (37, read by `magic.ts:752`); `patrons.json` effects' `value`; `conditions.json` ticks |
-| flat | the `damage_out` hook's `ctx.add` (`combat.ts:1554-1556`) | items' ops |
-| Stat | `output.ts:87-92` `statTerm` = k x (1 + attr x (Attribute - 1) + skill x Skill); a weapon's Stat is `character.ts:833-837` `weaponMult` (the row's `phys.profile`, its `scales_with` Attributes and its `hits_with` skill); an enemy's Stat and Level together are `Unit.lvlDmg` = tier `damage` x level `damage_mult` (`combat.ts:639`, `:711`) | `rules.json output.profiles` (`:1814`) and `output.pairs` (`:1995`); `weapons.json items[].phys` |
-| Level | `output.ts:111-117` `levelFactor`, the profile's `level` column at the dealer's level; `scaleOf` (`:120`) reads `scale` for everything measured in HP (`character.ts:801` max HP, `:803` armour, `physical/core.ts:121` Guard's soak, `combat.ts:808-818` objects) | `rules.json output.level.deal` (`:1724`, x7.5 at 20), `.scale` (`:1746`, x4.69), `.mend` (`:1768`, x11.97); `enemies.json levels.table` (`:214`): `hp_mult` x8.48, `armour_mult` x7.5, `damage_mult` x8.53, `defense_plus` +6, `attack_plus` +6 at 20 |
-| own multipliers | `combat.ts:1536-1547`: rarity (`att.dmgMult`), technique, **melee factor** (`:1537`, x1.35 on every character's melee blow), wear, ammunition, **the critical** (`:1542-1544`: 1.5 + 0.03 x (Perception - 1) + 0.02 x Dexterity, held to 2.0 by `character.ts:853-855`), ambush, Weakened, Sharpened | `rules.json output.factors` (`:1987`: melee 1.35, thrown 0.7, figment 0.9); `rules.json rarity` (`:1601`: `dmg` 1 on every grade); `weapons_rules.ammo_types[].damage_mult` |
-| target bonuses | `output.ts:129-134` `stackDamage`: added, held between -90% and +100% (`VS_CAP`, a constant in code) | items' `vs` pushes |
-| armour | `output.ts:208-214` `armourAgainst`, `landed` | `rules.json combat.armor.classes[].value` (`:798`: 0 / 5 / 10 / 15 / 20 / 25 / 18) x grade `arm` (1 everywhere) x scale; `enemies.json items[].armour` x `armour_mult` |
+| base | `combat.ts:1527` (`weaponDamage`) for a weapon; `amounts` blocks for everything else (`effects/amounts.ts`) | `weapons.json items[].damage`; every `amounts.<key>.base` and `per[]`; `sigils.json items[].damage / heal / shield`; `soul_modules.json damage.base` 37 (read by `magic.ts:752`); `patrons.json` effects' `value`; `conditions.json` ticks |
+| Stat | `statTerm` (`output.ts:87-92`): `k x (1 + attr x (A - 1) + skill x S)`, **added**, summed over the pair; a weapon's pair is its row's (`weaponMult`, `character.ts:833-837`: `phys.scales_with` and `phys.hits_with` or `also_scales`); an enemy's Stat and Level are `Unit.lvlDmg` (`combat.ts:639`, `:711`) | `rules.json output.profiles`, `output.pairs`; `weapons.json items[].phys` |
+| Level | `levelFactor` (`output.ts:111-117`); `scaleOf` (`:120`) for everything measured in HP (`character.ts:801` max HP, armour, `physical/core.ts:121` Guard's soak, objects) | `rules.json output.level.deal` (x7.5 at 20), `.scale` (x4.69), `.mend` (x11.97); `enemies.json levels.table` (`:214`) |
+| own multipliers | `combat.ts:1536-1547`: rarity, technique, the melee factor (`MELEE_FACTOR`, `:46`, `:1537`), wear, ammunition, the critical (`critMult`, `character.ts:853-855`: 1.5 + 0.03 x (Perception - 1) + 0.02 x Dexterity, to 2.0), ambush, Weakened, Sharpened | `rules.json output.factors` (melee 1.35, thrown 0.7, figment 0.9); `rules.json rarity` (`dmg` 1 on every grade) |
+| target bonuses | `stackDamage` (`output.ts:131-134`): added, held between -90% and `VS_CAP` +100% (`:129`) | items' `vs` pushes |
+| armour | `armourAgainst` (`output.ts:208-214`) | `rules.json combat.armor.classes[].value` (0 / 5 / 10 / 15 / 20 / 25 / 18) x grade `arm` (1) x `scale`; `enemies.json items[].armour` x `armour_mult` |
 
-What a character's weapon profile does today (`rules.json:1830`, `:1840`): **melee** k 1.15385, +0.05 a point of the row's Attribute, no skill slope; **gun** k 1.275, +0.0294 a point of Agility, no skill slope. **Sigil** k 1.7, **soul** k 1.55, **elemental** k 1: no slope at all (`:1850-1873`): Intelligence, Brain Power, Expression, Determination and Will Power add nothing to the damage their cards promise. Raw Power's `+5% physical damage` (`skills.json raw_power per_point.numbers.damage` 0.05) and Dexterity's `+2% critical damage` are text only on a weapon. **HP** (`character.ts:798`, `:801`): `round(scale(L) x (100 + 15 x (End - 1) + (L - 1) x (5 + 2 x PT)))`, with 100, 15 and 5 typed in code. **Healing** reads `mend` (x11.97), so a heal outgrew the bars (x9.1 for Endurance 1) by a third.
+What today's profiles really pay (T1): melee reads +0.05 a point of its Attribute and no skill; a gun +0.029 a point of Agility and no skill; Sigils, Outbursts and the elemental bonus read no slope at all, so Intelligence, Brain Power, Expression, Determination and Will Power add nothing to the damage their cards promise. HP is `round(scale(L) x (100 + 15 x (End - 1) + (L - 1) x (5 + 2 x PT)))` with every number typed in code (`character.ts:798`, `:801`). A heal reads `mend` (x11.97), which outgrew the bars (x9.1 for Endurance 1) by a third.
 
-The full profile table and today's three columns are T1:
-
-#### T1. Today: the output formula's terms, as data holds them (rules.json output)
+#### T1. Today: the output formula's terms as data holds them (rules.json output)
 
 | profile | k | attr | skill | level column | pair (attrs ; skills) | floor | min_pct |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -62,336 +59,108 @@ factors: melee 1.35, thrown 0.7, figment 0.9
 | level | deal | scale | mend |
 | --- | --- | --- | --- |
 | 1 | 1.0 | 1.0 | 1.0 |
-| 2 | 1.1119 | 1.0424 | 1.1018 |
-| 3 | 1.2363 | 1.1239 | 1.188 |
-| 4 | 1.3746 | 1.1782 | 1.3102 |
 | 5 | 1.5284 | 1.2736 | 1.5054 |
-| 6 | 1.6993 | 1.3416 | 1.5858 |
-| 7 | 1.8894 | 1.4534 | 1.8269 |
-| 8 | 2.1008 | 1.5372 | 2.0568 |
-| 9 | 2.3359 | 1.6685 | 2.2425 |
 | 10 | 2.5972 | 1.7708 | 2.5322 |
-| 11 | 2.8877 | 1.9252 | 2.9263 |
-| 12 | 3.2108 | 2.0495 | 3.312 |
-| 13 | 3.57 | 2.2313 | 3.8289 |
-| 14 | 3.9694 | 2.4809 | 4.5177 |
 | 15 | 4.4135 | 2.7584 | 5.3265 |
-| 16 | 4.9072 | 3.067 | 6.272 |
-| 17 | 5.4562 | 3.4102 | 7.3831 |
-| 18 | 6.0667 | 3.7917 | 8.6792 |
-| 19 | 6.7454 | 4.2159 | 10.1983 |
 | 20 | 7.5 | 4.6875 | 11.9672 |
 
-
-Three things today that would leave numbers on the old scale whatever the columns say (each a "must change" in the Built-from table):
-
-- **A thrown blast, a barrel, a trap and a hazard read no level.** `tactics.ts:433-435` and `perks/c.ts:485` hurt with `w.damage x factors.thrown`; `combat.ts:889-893` with `explodes.damage`; both through `hurtUnit` (`combat.ts:859`), which takes the number as given. A frag deals 28 at level 20 as at level 1.
-- **Figments grow their HP by the enemy HP column** (`figments.json:18` `level.hp: ["hp_mult"]`), not by what hits them.
-- **The heal gate counts to `gate.hp` x scale** (`output.ts:264`; `rules.json:1582` `mending.gate.hp` 145, the old reference character), not to a bar at that level.
-
-## 2. The new columns
-
-### 2.1 The level column `deal`: x40 at level 20
-
-`deal(L) = 40 ^ ((L - 1) / 19)`: **x1.214 a level, x2.17 at 5, x5.74 at 10, x15.2 at 15, x40 at 20.** PROVISIONAL. *Reason a player sees: every level-up makes your hit, your HP bar and your armour a fifth bigger, every time, and by level 20 a rifle shot that was 28 is past a thousand.*
-
-It is read by every amount a character deals (the `weapon`, `melee`, `blade`, `gun`, `thrown`, `sigil`, `elemental`, `soul`, `blessing`, `flat`, `figment` profiles), by max HP, by armour and by Guard's soak. **`scale` stops being a second column:** it names `deal` (today it is the "new deal over the old" of rules 1.36, a correction for a column that no longer differs; two columns with one meaning is a second copy of a rule). The physical, elemental, healing and blessing profiles that read `scale` today read `deal`.
-
-### 2.2 Heals and shields: `mend` = deal x the growth of a normal bar
-
-`mend(L) = deal(L) x (90 + 3 x (L - 1)) / 90`, x65 at level 20. PROVISIONAL. *Reason: a heal that closes a third of a friend's bar at level 1 closes a third of it at level 20; a normal-share character's bar (Endurance 4, Pain Threshold 4) grows by its per-level HP on top of the column, so the heal does too.* The percent gates (`min_pct`, a share of the target's max HP) are unit-free and stay; the HP they count up to becomes `gate.hp` 90 (the new normal bar at level 1) x `mend`, not x `scale`.
-
-### 2.3 Enemy damage and armour
-
-- **damage_mult(L) = 60 ^ ((L - 1) / 19)**, x60 at 20. PROVISIONAL. *Reason: your armour grows with its grade (x1.15 to x1.75) and takes a flat number off every hit; if a Soldier's rifle grew only with the level, a Heavy plate in Celestial grade would stop nine tenths of it at level 20. x60 is the level column times the armour grade one step under the stage's best (Relic, x1.5), so a same-level Soldier lands about the same share of your bar at 20 as at 1.* A Figment's HP grows by this column too (`figments.json level.hp: ["damage_mult"]`): it is built to take those hits.
-- **armour_mult(L) = deal(L)**, x40. *Reason: an enemy's plate keeps its bite against a plain level-matched hit; your Strength, skill and grade cut through it.* A dabbler at level 20 loses about a fifth of a pistol shot to a Soldier's plate; a specialist loses a twentieth.
-- **Each tier's `damage` x1.28** (vermin 0.64, minion 1.28, Soldier 1.0, Elite 1.34, Boss 1.54). PROVISIONAL. *Reason: the charter's frail character takes three to four hits from a level-1 Soldier (18 a shot against 60 HP, 15 through Light armour: four); today it takes four to five.* This is the one deliberate change in the hit counts against characters.
-
-### 2.4 Enemy HP: `hp_mult` = 90 ^ ((L - 1) / 19)
-
-x2.58 at 5, x8.43 at 10, x27.5 at 15, x90 at 20 (x1.267 a level). PROVISIONAL. The working (T2b): the charter writes enemies for one expected attacker, a specialist in the grade one step under the stage's best. That attacker's plain hit grows by the level column (x40), by its Attribute and skill reaching 10 (x1.16, the mean of the maul and the rifle), and by its grade (Relic x1.5): x70 at level 20. x90 makes a level-20 fight about 1.3 times as long in plain hits as a level-1 fight. *Reason a player sees: a Boss at 20 lasts long enough for a chain of seven or a stage-5 Release to be built and spent; and a character who skipped its points or its gear feels it, because the enemy is written for one who did not.* The curve stays smooth: a grade found is a jump in your damage, never cancelled by a jump in theirs. **Margins are not in it** (section 8): a master's extra quarters are the reward of skill and shorten the fight; if a stage then reads too easy, the stage changes (more foes, an Elite), never the reward (the curve, section 6).
-
-#### T2. The new columns, levels 1 to 20
-
-| level | deal (hits, HP, armour, soak) | mend (heals, shields) | enemy hp_mult | enemy damage_mult | enemy armour_mult | defense_plus | attack_plus | HP End 1 PT 0 | HP End 4 PT 4 | HP End 10 PT 10 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0 | 0 | 60 | 90 | 150 |
-| 2 | 1.214 | 1.255 | 1.267 | 1.240 | 1.214 | 0 | 0 | 74 | 113 | 189 |
-| 3 | 1.474 | 1.573 | 1.606 | 1.539 | 1.474 | 0 | 0 | 91 | 142 | 239 |
-| 4 | 1.790 | 1.969 | 2.035 | 1.909 | 1.790 | 0 | 0 | 113 | 177 | 301 |
-| 5 | 2.174 | 2.464 | 2.579 | 2.368 | 2.174 | 0 | 0 | 139 | 222 | 378 |
-| 6 | 2.640 | 3.080 | 3.268 | 2.937 | 2.640 | 0 | 0 | 172 | 277 | 475 |
-| 7 | 3.206 | 3.847 | 4.141 | 3.644 | 3.206 | 0 | 0 | 212 | 346 | 596 |
-| 8 | 3.893 | 4.801 | 5.248 | 4.520 | 3.893 | 0 | 0 | 261 | 432 | 747 |
-| 9 | 4.727 | 5.987 | 6.650 | 5.607 | 4.727 | 0 | 0 | 321 | 539 | 936 |
-| 10 | 5.739 | 7.461 | 8.427 | 6.955 | 5.739 | 0 | 0 | 396 | 672 | 1,171 |
-| 11 | 6.969 | 9.292 | 10.679 | 8.627 | 6.969 | 0 | 0 | 488 | 836 | 1,464 |
-| 12 | 8.463 | 11.566 | 13.533 | 10.702 | 8.463 | 0 | 0 | 601 | 1,041 | 1,828 |
-| 13 | 10.276 | 14.387 | 17.150 | 13.275 | 10.276 | 0 | 0 | 740 | 1,295 | 2,281 |
-| 14 | 12.478 | 17.885 | 21.733 | 16.468 | 12.478 | 0 | 0 | 911 | 1,610 | 2,845 |
-| 15 | 15.152 | 22.223 | 27.540 | 20.428 | 15.152 | 0 | 0 | 1,121 | 2,000 | 3,546 |
-| 16 | 18.399 | 27.598 | 34.900 | 25.340 | 18.399 | 0 | 0 | 1,380 | 2,484 | 4,416 |
-| 17 | 22.341 | 34.256 | 44.226 | 31.433 | 22.341 | 0 | 0 | 1,698 | 3,083 | 5,496 |
-| 18 | 27.128 | 42.501 | 56.044 | 38.992 | 27.128 | 0 | 0 | 2,089 | 3,825 | 6,836 |
-| 19 | 32.941 | 52.706 | 71.021 | 48.369 | 32.941 | 0 | 0 | 2,569 | 4,744 | 8,499 |
-| 20 | 40.000 | 65.333 | 90.000 | 60.000 | 40.000 | 0 | 0 | 3,160 | 5,880 | 10,560 |
-
-Today, for comparison: deal x7.50, scale x4.69, mend x11.97 at level 20; enemy hp_mult x8.48, damage_mult x8.53, defense_plus 6, attack_plus 6.
-
-#### T2b. The enemy HP column's working (the expected attacker: a specialist, gear one grade under the stage's best)
-
-| level | main attr = skill | expected grade | deal | stat growth (melee and gun mean) | grade x | attacker growth | enemy hp_mult | fight length vs level 1 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 7 | standard | 1.00 | 1.000 | 1.0 | 1.0 | 1.0 | 1.00 |
-| 5 | 7 | standard | 2.17 | 1.000 | 1.0 | 2.2 | 2.6 | 1.19 |
-| 10 | 9 | fine | 5.74 | 1.108 | 1.15 | 7.3 | 8.4 | 1.15 |
-| 15 | 9 | masterwork | 15.15 | 1.108 | 1.3 | 21.8 | 27.5 | 1.26 |
-| 20 | 10 | relic | 40.00 | 1.162 | 1.5 | 69.7 | 90.0 | 1.29 |
-
-
-### 2.5 Defense and to-hit are level-free; the gap rule does the levels
-
-`defense_plus` and `attack_plus` go to 0 at every level (today +6 each at 20, `enemies.json:214` table). *Reason: today an enemy's Defense rises with the level exactly as a character's skill does, so seven points of Dexterity buy nothing against a same-level foe; level-free, every point is a Margin (section 8).* The roll is bounded: modifiers run -2 to +9 from skill, +3 from grade, a few from perks, against Defense 10 to 16, so a d20 still decides.
-
-The **level gap** (`enemies.json:199` `gap`: +1 to hit for each level between an enemy and a character, for the higher, and -1 for the lower, to 5; `combat.ts:736-742`) **stays and becomes the only place a level touches the roll.** With enemy levels from the stage (the curve, Law 6), a squad that took the long road is +2 or +3 against the stage: two or three more faces of the die land and each lands a Margin sooner. A squad that rushed is -2: misses and no Margins. The one-hit rule five levels down and the Elite and Boss guard stay as they are (section 9).
-
-## 3. The one factor, and every base number
-
-### 3.1 Why one factor, x0.6
-
-The charter proposed weapon bases x0.45 (a rifle 14, a maul 20) and HP x0.6 (60 for Endurance 1). I checked both and moved the first, with this working:
-
-- Damage and HP sit on two different sides: what a character deals is measured against an enemy's HP, what an enemy deals against a character's HP. The unit is free; only the two ratios matter (hits to kill, hits to survive). Two factors are harmless only if every number belongs to one side.
-- Many numbers belong to both: a barrel's blast, burning, a trap, a hazard, cover's HP, a Figment that hits and is hit, Guard's soak against an enemy's hit, a shield against either. With x0.45 on what characters deal and x0.6 on bars, each of those needs a side, and every one put on the wrong side moves a fight by a third without anyone choosing it.
-- **x0.6 on everything keeps every count of hits exactly where it is today**, so the only changes a player feels are the ones this file names (the cards, the grades, Margins, the frail character's four Soldier hits, the columns). That is the meaning of "make no mistake" here.
-- The digits rule holds with x0.6 (T3b, T7): every plain hit at level 1 is one or two digits except the rocket tubes and the satchel (below); every specialist's plain hit at level 20 is four digits; a full Momentum chain is five.
-
-So the charter's reference hits become: a specialist's two-handed blow **63** at level 1 and **5,417** at 20 (charter: about 40 and 4,000); a rifle shot **28** and **2,110** (charter: about 18 and 1,400); a x7 Coup **29,905** (charter: above 20,000). Each is the same digits.
-
-### 3.2 Weapons: every row x0.6, rounded half up, no row bumped
-
-- A number: `round_half_up(old x 0.6)`. A shotgun band: each band the same. A bow formula: base and per-point each (recurve `12 + 3*raw_power`, longbow `15 + 4*raw_power`). `splash_damage` the same (60 to 36).
-- **No row is bumped to keep a strict order.** 18 pairs of rows in one category meet on one new number (listed in T3); every one was under a tenth apart today (2.4% to 6.2%), a gap no player could feel by Leon's rule, and those rows still differ in AP, range, magazine, accuracy, price and their maker's line. Bumping instead pushed 28 rows up by a point and cascaded (a maul at 28, not 27).
-- **The rocket tubes and the satchel charge stay three digits at level 1** (the siege tube 78 x 1.388 = 108 for a normal share). *Reason: a one-shot rocket is the level-1 "something super", one digit above a plain hit as five digits is above four at level 20.* PROVISIONAL; if the lead wants every level-1 hit under 100, the three tube rows and the satchel take x0.5 instead.
-- The 72 rows Items 2.0 added are inside the 144 and take the same rule.
-
-**New profiles on the rows** (the cards, section 4): every gun's `phys.scales_with` becomes empty (Agility no longer) and it reads Dexterity at +4% through the `gun` profile; the 17 light blades that scale with Agility today take a new `blade` profile (Dexterity +4%); the 6 light melee rows that scale with Strength (axes, hammers, the pick) stay on `melee`; shields keep Endurance on `melee` (the Bulwark's attribute is its shield blow's size; the Endurance card gains the line); the 6 thrown rows take a new `thrown` profile (Dexterity +4%); bows and focus weapons keep the `weapon` profile (k 1.5, no slope; a bow's draw is its Raw Power formula).
-
-#### T3. Every weapon row, old and new (weapons.json damage x F, rounded half up)
-
-| category | id | damage today | damage new | profile today (scales_with) | profile new |
+| level | hp_mult | armour_mult | damage_mult | defense_plus | attack_plus |
 | --- | --- | --- | --- | --- | --- |
-| bow | recurve_bow | 20 + 5*raw_power | 12 + 3*raw_power | weapon (agility) | weapon (no slope, k 1.5) |
-| bow | repeating_crossbow | 22 | 13 | weapon (agility) | weapon (no slope, k 1.5) |
-| bow | short_bow | 24 | 14 | weapon (agility) | weapon (no slope, k 1.5) |
-| bow | longbow | 25 + 6*raw_power | 15 + 4*raw_power | weapon (agility) | weapon (no slope, k 1.5) |
-| bow | crossbow | 55 | 33 | weapon (agility) | weapon (no slope, k 1.5) |
-| bow | arbalest | 72 | 43 | weapon (agility) | weapon (no slope, k 1.5) |
-| heavy | breacher_tube | 110 | 66 | gun (agility) | gun (Dexterity) |
-| heavy | legion_siege_tube | 130 | 78 | gun (agility) | gun (Dexterity) |
-| heavy | lumeri_votive_torch | 16 | 10 | gun (agility) | gun (Dexterity) |
-| heavy | purifier_flamer | 20 | 12 | gun (agility) | gun (Dexterity) |
-| heavy | hellraiser_spinner | 20 | 12 | gun (agility) | gun (Dexterity) |
-| heavy | hellraiser_rotary | 22 | 13 | gun (agility) | gun (Dexterity) |
-| heavy | hellraiser_twin_rotary | 22 | 13 | gun (agility) | gun (Dexterity) |
-| heavy | lumeri_cathedral_burner | 24 | 14 | gun (agility) | gun (Dexterity) |
-| heavy | hellraiser_lmg | 25 | 15 | gun (agility) | gun (Dexterity) |
-| heavy | smetanita_snub_launcher | 36 | 22 | gun (agility) | gun (Dexterity) |
-| heavy | smetanita_thumper | 40 | 24 | gun (agility) | gun (Dexterity) |
-| heavy | smetanita_drum_launcher | 40 | 24 | gun (agility) | gun (Dexterity) |
-| heavy | blackpoint_carbine | 54 | 32 | gun (agility) | gun (Dexterity) |
-| heavy | blackpoint_700 | 66 | 40 | gun (agility) | gun (Dexterity) |
-| heavy | legion_throwaway_tube | 90 | 54 | gun (agility) | gun (Dexterity) |
-| heavy_melee | lance | 32 | 19 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | lowland_chopper | 33 | 20 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | kemizuchi_sword_breaker | 33 | 20 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | legion_rank_sword | 34 | 20 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | ork_machete | 35 | 21 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | glaive | 36 | 22 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | broadback_sabre | 36 | 22 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | ork_cleaver_glaive | 37 | 22 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | ork_rip_saw | 38 | 23 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | war_axe | 40 | 24 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | long_draw | 41 | 25 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | adamantile_greatsword | 42 | 25 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | maul | 45 | 27 | melee (strength) | melee (strength and Raw Power) |
-| heavy_melee | ork_wreck_saw | 46 | 28 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | throwing_knives | 12 | 7 | melee (agility) | blade (Dexterity) |
-| light_melee | combat_knife | 15 | 9 | melee (agility) | blade (Dexterity) |
-| light_melee | afterword | 15 | 9 | melee (agility) | blade (Dexterity) |
-| light_melee | legion_leaf_dagger | 16 | 10 | melee (agility) | blade (Dexterity) |
-| light_melee | pitch_axe | 17 | 10 | melee (agility) | blade (Dexterity) |
-| light_melee | ork_skinner | 17 | 10 | melee (agility) | blade (Dexterity) |
-| light_melee | trench_knife | 18 | 11 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | short_draw | 18 | 11 | melee (agility) | blade (Dexterity) |
-| light_melee | war_pick | 18 | 11 | melee (agility) | blade (Dexterity) |
-| light_melee | legion_gladius | 19 | 11 | melee (agility) | blade (Dexterity) |
-| light_melee | kemizuchi_duelling_blade | 19 | 11 | melee (agility) | blade (Dexterity) |
-| light_melee | sabre | 20 | 12 | melee (agility) | blade (Dexterity) |
-| light_melee | katana | 20 | 12 | melee (agility) | blade (Dexterity) |
-| light_melee | dock_cutter | 21 | 13 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | kemizuchi_side_sword | 21 | 13 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | hatchet | 22 | 13 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | legion_spear | 22 | 13 | melee (agility) | blade (Dexterity) |
-| light_melee | ork_snarl_knife | 22 | 13 | melee (agility) | blade (Dexterity) |
-| light_melee | war_hammer | 23 | 14 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | adamantile_longsword | 23 | 14 | melee (strength) | melee (strength and Raw Power) |
-| light_melee | adamantile_plate_needle | 24 | 14 | melee (agility) | blade (Dexterity) |
-| light_melee | throwing_javelins | 24 | 14 | melee (agility) | blade (Dexterity) |
-| light_melee | throwing_darts | 9 | 5 | melee (agility) | blade (Dexterity) |
-| mana | emanator_gauntlet | 18 | 11 | weapon (strength) | weapon (no slope, k 1.5) |
-| mana | spellslinger_pistol | 22 | 13 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | bot_thread_banner | 24 | 14 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | grand_staff | 24 | 14 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | evoker_blade | 26 | 16 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | emanator_katana | 26 | 16 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | core_rifle | 29 | 17 | weapon (agility) | weapon (no slope, k 1.5) |
-| mana | lumeri_censer_gun | {within_4: 30, within_8: 18} | {within_4: 18, within_8: 11} | weapon (agility) | weapon (no slope, k 1.5) |
-| pistol | whisper_pistol | 15 | 9 | gun (agility) | gun (Dexterity) |
-| pistol | smetanita_pocket_pistol | 15 | 9 | gun (agility) | gun (Dexterity) |
-| pistol | parlour_pistol | 16 | 10 | gun (agility) | gun (Dexterity) |
-| pistol | decrkm_autopistol | 17 | 10 | gun (agility) | gun (Dexterity) |
-| pistol | mandestra_drum_pistol | 18 | 11 | gun (agility) | gun (Dexterity) |
-| pistol | service_pistol | 20 | 12 | gun (agility) | gun (Dexterity) |
-| pistol | smetanita_service_pistol | 21 | 13 | gun (agility) | gun (Dexterity) |
-| pistol | magistrate_pistol | 26 | 16 | gun (agility) | gun (Dexterity) |
-| revolver | snub_revolver | 26 | 16 | gun (agility) | gun (Dexterity) |
-| revolver | drifter_revolver | 28 | 17 | gun (agility) | gun (Dexterity) |
-| revolver | smetanita_hand_cannon | 36 | 22 | gun (agility) | gun (Dexterity) |
-| revolver | frontier_hand_cannon | 38 | 23 | gun (agility) | gun (Dexterity) |
-| rifle | adcorp_short_carbine | 27 | 16 | gun (agility) | gun (Dexterity) |
-| rifle | legion_bullpup | 28 | 17 | gun (agility) | gun (Dexterity) |
-| rifle | hellraiser_trench_carbine | 28 | 17 | gun (agility) | gun (Dexterity) |
-| rifle | adamantile_carbine | 28 | 17 | gun (agility) | gun (Dexterity) |
-| rifle | hellraiser_service_rifle | 30 | 18 | gun (agility) | gun (Dexterity) |
-| rifle | adamantile_battle_rifle | 30 | 18 | gun (agility) | gun (Dexterity) |
-| rifle | adcorp_line_rifle | 30 | 18 | gun (agility) | gun (Dexterity) |
-| rifle | arsenal_piston_rifle | 30 | 18 | gun (agility) | gun (Dexterity) |
-| rifle | chezknov_battle_rifle | 31 | 19 | gun (agility) | gun (Dexterity) |
-| rifle | albert_town_brush_carbine | 31 | 19 | gun (agility) | gun (Dexterity) |
-| rifle | lever_carbine | 32 | 19 | gun (agility) | gun (Dexterity) |
-| rifle | legion_marksman_rifle | 32 | 19 | gun (agility) | gun (Dexterity) |
-| rifle | albert_town_service_rifle | 32 | 19 | gun (agility) | gun (Dexterity) |
-| rifle | ccec_marksman_rifle | 33 | 20 | gun (agility) | gun (Dexterity) |
-| rifle | adcorp_designated_rifle | 34 | 20 | gun (agility) | gun (Dexterity) |
-| rifle | chezknov_precision_rifle | 35 | 21 | gun (agility) | gun (Dexterity) |
-| rifle | adamantile_heavy_rifle | 36 | 22 | gun (agility) | gun (Dexterity) |
-| rifle | arsenal_heavy_rifle | 38 | 23 | gun (agility) | gun (Dexterity) |
-| rifle | albert_town_stalking_rifle | 44 | 26 | gun (agility) | gun (Dexterity) |
-| rifle | long_rifle | 47 | 28 | gun (agility) | gun (Dexterity) |
-| shield | deflector | 12 | 7 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | buckler | 15 | 9 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | bulwark_screen | 15 | 9 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | barrier_wall | 15 | 9 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | riot_shield | 20 | 12 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | pavise | 20 | 12 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | spiked_buckler | 20 | 12 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | boss_shield | 25 | 15 | melee (endurance) | melee (endurance and Raw Power) |
-| shield | ram_plate | 30 | 18 | melee (endurance) | melee (endurance and Raw Power) |
-| shotgun | lumeri_hand_scatter | {within_4: 36, within_8: 15} | {within_4: 22, within_8: 9} | gun (agility) | gun (Dexterity) |
-| shotgun | brigade_shot_pistol | {within_4: 38, within_8: 14} | {within_4: 23, within_8: 8} | gun (agility) | gun (Dexterity) |
-| shotgun | brigade_auto_shotgun | {within_4: 40, within_8: 24} | {within_4: 24, within_8: 14} | gun (agility) | gun (Dexterity) |
-| shotgun | brigade_drum_shotgun | {within_4: 40, within_8: 24} | {within_4: 24, within_8: 14} | gun (agility) | gun (Dexterity) |
-| shotgun | lumeri_scattergun | {within_4: 40, within_8: 25} | {within_4: 24, within_8: 15} | gun (agility) | gun (Dexterity) |
-| shotgun | fowling_gun | {within_4: 40, within_8: 30} | {within_4: 24, within_8: 18} | gun (agility) | gun (Dexterity) |
-| shotgun | lumeri_long_scatter | {within_4: 40, within_8: 30} | {within_4: 24, within_8: 18} | gun (agility) | gun (Dexterity) |
-| shotgun | sawn_off | {within_4: 42, within_8: 15} | {within_4: 25, within_8: 9} | gun (agility) | gun (Dexterity) |
-| shotgun | coach_gun | {within_4: 45, within_8: 25} | {within_4: 27, within_8: 15} | gun (agility) | gun (Dexterity) |
-| smg | whisper_smg | 16 | 10 | gun (agility) | gun (Dexterity) |
-| smg | decrkm_smg | 19 | 11 | gun (agility) | gun (Dexterity) |
-| smg | mandestra_drum_gun | 19 | 11 | gun (agility) | gun (Dexterity) |
-| smg | whisper_carbine | 19 | 11 | gun (agility) | gun (Dexterity) |
-| smg | arsenal_courier_pdw | 19 | 11 | gun (agility) | gun (Dexterity) |
-| smg | legion_pdw | 20 | 12 | gun (agility) | gun (Dexterity) |
-| smg | chezknov_machine_carbine | 20 | 12 | gun (agility) | gun (Dexterity) |
-| smg | decrkm_carbine | 21 | 13 | gun (agility) | gun (Dexterity) |
-| smg | mandestra_drum_rifle | 21 | 13 | gun (agility) | gun (Dexterity) |
-| thrown | smoke_grenade | 0 | 0 | weapon (agility) | thrown (Dexterity) |
-| thrown | flashbang | 0 | 0 | weapon (agility) | thrown (Dexterity) |
-| thrown | bot_scrambler | 0 | 0 | weapon (agility) | thrown (Dexterity) |
-| thrown | satchel_charge | 120 | 72 | weapon (agility) | thrown (Dexterity) |
-| thrown | incendiary_grenade | 15 | 9 | weapon (agility) | thrown (Dexterity) |
-| thrown | frag_grenade | 40 | 24 | weapon (agility) | thrown (Dexterity) |
-| unarmed | fists | 10 | 6 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | hand_wraps | 14 | 8 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | striking_gloves | 17 | 10 | melee (agility) | melee (agility and Raw Power) |
-| unarmed | beast_bite | 18 | 11 | weapon (strength) | weapon (no slope, k 1.5) |
-| unarmed | kemizuchi_strikers | 19 | 11 | melee (agility) | melee (agility and Raw Power) |
-| unarmed | knuckledusters | 20 | 12 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | weighted_gloves | 22 | 13 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | hellraiser_piston_knuckles | 24 | 14 | melee (agility) | melee (agility and Raw Power) |
-| unarmed | iron_mitts | 25 | 15 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | figment_edge | 25 | 15 | weapon (strength) | weapon (no slope, k 1.5) |
-| unarmed | hellraiser_servo_fist | 30 | 18 | melee (strength) | melee (strength and Raw Power) |
-| unarmed | figment_claws | 30 | 18 | weapon (strength) | weapon (no slope, k 1.5) |
-| unarmed | hellraiser_door_knocker | 34 | 20 | melee (strength) | melee (strength and Raw Power) |
-
-Rows of one category that meet on one new number: 18 (the gap between them today in the last column)
-
-| category | lower row | today | higher row | today | new (both) | gap today |
-| --- | --- | --- | --- | --- | --- | --- |
-| pistol | parlour_pistol | 16 | decrkm_autopistol | 17 | 10 | 6.2% |
-| rifle | chezknov_battle_rifle | 31 | lever_carbine | 32 | 19 | 3.2% |
-| rifle | chezknov_battle_rifle | 31 | legion_marksman_rifle | 32 | 19 | 3.2% |
-| rifle | chezknov_battle_rifle | 31 | albert_town_service_rifle | 32 | 19 | 3.2% |
-| rifle | ccec_marksman_rifle | 33 | adcorp_designated_rifle | 34 | 20 | 3.0% |
-| light_melee | legion_leaf_dagger | 16 | pitch_axe | 17 | 10 | 6.2% |
-| light_melee | legion_leaf_dagger | 16 | ork_skinner | 17 | 10 | 6.2% |
-| light_melee | trench_knife | 18 | legion_gladius | 19 | 11 | 5.6% |
-| light_melee | trench_knife | 18 | kemizuchi_duelling_blade | 19 | 11 | 5.6% |
-| light_melee | dock_cutter | 21 | hatchet | 22 | 13 | 4.8% |
-| light_melee | dock_cutter | 21 | legion_spear | 22 | 13 | 4.8% |
-| light_melee | dock_cutter | 21 | ork_snarl_knife | 22 | 13 | 4.8% |
-| light_melee | war_hammer | 23 | adamantile_plate_needle | 24 | 14 | 4.3% |
-| light_melee | war_hammer | 23 | throwing_javelins | 24 | 14 | 4.3% |
-| heavy_melee | lowland_chopper | 33 | legion_rank_sword | 34 | 20 | 3.0% |
-| heavy_melee | glaive | 36 | ork_cleaver_glaive | 37 | 22 | 2.8% |
-| heavy_melee | long_draw | 41 | adamantile_greatsword | 42 | 25 | 2.4% |
-| unarmed | beast_bite | 18 | kemizuchi_strikers | 19 | 11 | 5.6% |
-
-Meetings where the gap today was a tenth or more (a gap a player could feel): 0
-
-| id | splash_damage today | new |
-| --- | --- | --- |
-| breacher_tube | 60 | 36 |
-| legion_throwaway_tube | 60 | 36 |
-| legion_siege_tube | 60 | 36 |
+| 1 | 1.0 | 1.0 | 1.0 | 0 | 0 |
+| 5 | 1.6557 | 1.5283 | 1.401 | 2 | 0 |
+| 10 | 2.851 | 2.6031 | 2.2666 | 4 | 2 |
+| 15 | 4.9375 | 4.4134 | 4.2204 | 6 | 4 |
+| 20 | 8.4844 | 7.5 | 8.5312 | 6 | 6 |
 
 
-#### T3b. The digits rule by category: the strongest row of each, a plain hit (no Margins; a bow at Raw Power 10)
+Three places today that would leave numbers on the old scale whatever the columns say (each a "must change" in the Built-from table):
 
-| category | strongest row | new base | profile | L1 at 1/0 | L1 at 4/4 | L1 at 7/7 | L20 at 10/10, Celestial |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| bow | longbow | 55 | weapon | 82 | 82 | 82 | 5,775 |
-| heavy | legion_siege_tube | 78 | gun | 93 | 108 | 119 | 9,143 |
-| heavy_melee | ork_wreck_saw | 28 | melee | 33 | 50 | 65 | 5,618 |
-| light_melee | war_hammer | 14 | melee | 17 | 25 | 33 | 2,809 |
-| mana | lumeri_censer_gun | 18 | weapon | 27 | 27 | 27 | 1,890 |
-| pistol | magistrate_pistol | 16 | gun | 19 | 22 | 24 | 1,876 |
-| revolver | frontier_hand_cannon | 23 | gun | 28 | 32 | 35 | 2,696 |
-| rifle | long_rifle | 28 | gun | 33 | 39 | 43 | 3,282 |
-| shield | ram_plate | 18 | melee | 21 | 32 | 42 | 3,611 |
-| shotgun | coach_gun | 27 | gun | 32 | 37 | 41 | 3,165 |
-| smg | decrkm_carbine | 13 | gun | 16 | 18 | 20 | 1,524 |
-| thrown | satchel_charge | 72 | thrown | 65 | 76 | 83 | 6,387 |
-| unarmed | hellraiser_door_knocker | 20 | melee | 24 | 36 | 47 | 4,013 |
+- **A thrown blast, a barrel, a trap and a hazard read no level** (`tactics.ts:433-435`, `perks/c.ts:485`: `w.damage x factors.thrown`; `combat.ts:889-893`: `explodes.damage`; all through `hurtUnit`, `combat.ts:859`, which takes the number as given). A frag deals the same at level 20 as at 1.
+- **Figments grow their HP by the enemy HP column** (`figments.json:18` `level.hp: ["hp_mult"]`), not by what hits them.
+- **The heal gate counts to `gate.hp` x scale** (`output.ts:264`; `rules.json mending.gate.hp` 145, the old reference character), not to a bar at that level.
 
+## 2. The factor x0.6 (ruling A1)
 
-### 3.3 Every other flat number in data: x0.6
+**One factor, x0.6, on every flat number** of damage, HP, healing, shields, armour, soak, plates, cover, hazards, damage over time, enemy HP and items. *Reason a player sees: damage and HP move together, so every count of hits to drop a foe, to drop you and to heal you stays what it is today for a character who spread its points; only the changes this bible names move a count.*
 
-The rule, so that nothing stays on the old scale:
+Rounding: a weapon row half up to a whole number, never under 1; an `amounts` base to two places (the formula floors at the end); any other whole number of 10 or more to a whole number, smaller ones to two places. **No row is bumped** to keep a strict order: 18 pairs of rows in one category meet on one new number (T3), each under a tenth apart today, a gap no player could feel.
 
-| Kind | Rule | Data keys |
-| --- | --- | --- |
-| A flat amount (damage, heal, shield, HP, armour, soak, tick, splash, a price in HP) | x0.6, kept to two places (an `amounts` base is not rounded to a whole number: the formula floors at the end) | every `amounts.<key>.base`; every `per[]` value that counts a thing (Momentum, kg, charge, Guard, Devotion, armour value, Improvisation, mastery, forms); `damage`, `hp`, `heal`, `shield`, `armour`, `tick`, `tick_damage`, `splash_damage`, `melee_damage`, `burn_per_point`, `hp_per_step`, `self_damage`, `soak`, `heal_enemy`, `shield_enemy`, `boss_damage`, `damage_per_flux_over`, `hp_per_point`; the `value` of every `heal`, `shield`, `damage` op and every `stat_mod` on `hp` |
-| A share of something | unchanged (unit-free) | a `per[]` of `event:*`, `self:max_hp`, `max_hp`, `res:ledger`, `damage`; every `*_pct`, `*_share`, `*_mult`, `hp_frac`, `min_pct`, `cap_pct`, `stim_pct`, `if.*_hp_*` |
-| A per-level HP number | x0.25, Pain Threshold's rate (2 a point a level becomes 0.5) | `traits.json` `derived.hp_per_level` (-2 on Oil in My Mind and Oil in My Soul becomes -0.5) |
-| An enemy tier's `damage` | x1.28 (section 2.3) | `enemies.json items[].damage` |
-| A count | unchanged | plates, pips, glyphs, charges, Strain, Echo, Devotion, Flux, cores |
+**Not touched by the factor:** every share and every count (listed under T2). **Moved by another rule, named here:** a self-paid HP price becomes a share of max HP (section 6); an enemy tier's damage factor x1.28 (section 3.4); the two per-level HP numbers of traits leave with A5 (07 restates them as shares); the five rows of T3b's last table take a factor of their own (below).
 
-T4 lists every number the rule touches outside `weapons.json` (188, plus the named rows), with today's value and the new one:
+**Level 1 stays one or two digits (A1).** At x0.6 a level-1 specialist (7 and 7) holding a Fine weapon (Fine is found from map 1, ruling 25) would put three digits on screen with five rows. The rule, computed by the script and never typed: *such a row takes the largest step of 0.05 under 0.6 that keeps that hit two digits, one factor for the breaking rows of a category, so their order holds.* That gives the three rocket tubes x0.3, the satchel charge x0.45 and the arbalest x0.55. *Reason: a rocket is still the biggest single hit of a level-1 fight and still throws its splash; level 1 stays two digits as Leon asked.* One order changes in the `heavy` category: the siege tube (39) now hits its one target a point under the Blackpoint 700 (40), and adds its splash to everything near. PROVISIONAL.
 
-#### T4. Every other flat number of damage, HP, healing, shield, armour and soak: x F, rounded as its file rounds
+**The two draw bows** (recurve and longbow, `base + per x raw_power` today) move their draw onto the Stat term (`phys.also_scales: [dexterity, raw_power]`, a key `weaponMult` already reads), and their row number is set so a normal share deals today's blow x0.6, the same pin as every profile's `k`. *Reason: with Agility and Dexterity now on every bow, the Raw Power in the base made a level-20 longbow shot five digits; on the Stat term a strong archer still draws harder, by the card's +5%.*
+
+#### T2. The factor x0.6: every data file and key it applies to
+
+| file | key | numbers | rule |
+| --- | --- | --- | --- |
+| weapons.json | items[].damage (a number, a within_4 / within_8 band, or a bow's base + per-point formula), items[].splash_damage | 144 | x0.6, half up; five rows x their own (T3b) |
+| classes.json | amounts.*.base | 37 | x0.6 |
+| classes.json | amounts.*.per[] (a part per Momentum, kg, charge, Guard, armour value...) | 6 | x0.6 |
+| classes.json | effects[].value (op heal / shield / damage / stat_mod hp) | 3 | x0.6 |
+| classes.json | hp | 2 | x0.6 |
+| conditions.json | amounts.*.base | 7 | x0.6 |
+| conditions.json | effects[].value (op heal / shield / damage / stat_mod hp) | 3 | x0.6 |
+| effect_ops.json | base | 2 | x0.6 |
+| effect_ops.json | value | 1 | x0.6 |
+| effect_ops.json | hp | 1 | x0.6 |
+| effect_ops.json | damage | 1 | x0.6 |
+| enemies.json | hp | 8 | x0.6 |
+| enemies.json | armour | 4 | x0.6 |
+| feelings.json | damage | 2 | x0.6 |
+| feelings.json | heal | 2 | x0.6 |
+| feelings.json | items[shame].pour.self_damage | 1 | a share of max HP (section 6) |
+| feelings.json | price.hp_per_step | 1 | a share of max HP (section 6) |
+| figments.json | hp | 11 | x0.6 |
+| figments.json | armour | 5 | x0.6 |
+| figments.json | amounts.*.base | 3 | x0.6 |
+| forks.json | amounts.*.base | 3 | x0.6 |
+| items.json | melee_damage | 1 | x0.6 |
+| objects.json | hp | 13 | x0.6 |
+| objects.json | damage | 4 | x0.6 |
+| patrons.json | effects[].value (op heal / shield / damage / stat_mod hp) | 17 | x0.6 |
+| patrons.json | boss_damage | 1 | x0.6 |
+| perks.json | amounts.*.base | 3 | x0.6 |
+| perks.json | amounts.*.per[] (a part per Momentum, kg, charge, Guard, armour value...) | 1 | x0.6 |
+| rules.json | hp | 2 | x0.6 |
+| rules.json | mana.sigil.flux.overload.damage_per_flux_over | 1 | a share of max HP (section 6) |
+| rules.json | damage | 1 | x0.6 |
+| rules.json | output.amounts.flux_overload.damage.per[0](flux_over) | 1 | a share of max HP (section 6) |
+| rules.json | base | 1 | x0.6 |
+| shadow.json | amounts.*.base | 1 | x0.6 |
+| sigils.json | damage | 8 | x0.6 |
+| sigils.json | shield | 1 | x0.6 |
+| sigils.json | shield_enemy | 1 | x0.6 |
+| sigils.json | heal | 1 | x0.6 |
+| sigils.json | heal_enemy | 1 | x0.6 |
+| sigils.json | hp | 2 | x0.6 |
+| soul_modules.json | strain.burn_per_point | 1 | a share of max HP (section 6) |
+| soul_modules.json | tick_damage | 1 | x0.6 |
+| soul_modules.json | damage | 1 | x0.6 |
+| soul_modules.json | heal | 1 | x0.6 |
+| soul_modules.json | heal_enemy | 1 | x0.6 |
+| soul_modules.json | shield | 2 | x0.6 |
+| soul_modules.json | tick | 1 | x0.6 |
+| techniques.json | soak | 1 | x0.6 |
+| tending.json | amounts.*.base | 5 | x0.6 |
+| traits.json | amounts.*.base | 1 | x0.6 |
+| traits.json | amounts.*.per[] (a part per Momentum, kg, charge, Guard, armour value...) | 3 | x0.6 |
+| traits.json | items[oil_in_my_mind].effects[4].derived.hp_per_level | 1 | restated by 07 |
+| traits.json | items[oil_in_my_soul].effects[4].derived.hp_per_level | 1 | restated by 07 |
+| traits.json | hp_per_point | 1 | x0.6 |
+| traits.json | hp | 2 | x0.6 |
+| traits.json | items[crawler_blooded].amounts.blessing_burn.base | 1 | a share of max HP (section 6) |
+| rules.json | combat.armor.classes[].value | 7 | x0.6 |
+| rules.json | combat.attack.cover.half.hp, .full.hp | 2 | x0.6 |
+| rules.json | mending.gate.hp (the normal bar the heal gate counts to) | 1 | becomes the normal bar at level 1 (section 3.1) |
+| soul_modules.json | damage.base, damage.enemy_base | 2 | x0.6 |
+| patrons.json | prayer.intervention.amount.base, .per_devotion | 2 | x0.6 |
+| enemies.json | items[].damage (a tier's damage factor, not HP) | 5 | x1.28 (section 3.4) |
+
+Not touched by the factor: every share (`*_pct`, `*_share`, `*_mult`, `hp_frac`, `min_pct`, `cap_pct`, `stim_pct`, a `per[]` of `event:*`, `self:max_hp`, `max_hp`, `res:ledger`, `damage`) and every count (plates, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion, AP).
+
+#### T2b. Every number the factor moves outside weapons.json (188), today and new
 
 | file | path | today | new |
 | --- | --- | --- | --- |
@@ -473,9 +242,9 @@ T4 lists every number the rule touches outside `weapons.json` (188, plus the nam
 | feelings.json | .items[rage].residue.damage | 5 | 3.0 |
 | feelings.json | .items[love].residue.heal | 5 | 3.0 |
 | feelings.json | .items[spite].residue.damage | 5 | 3.0 |
-| feelings.json | .items[shame].pour.self_damage | 8 | 4.8 |
+| feelings.json | .items[shame].pour.self_damage | 8 | 6% of max HP |
 | feelings.json | .items[guilt].residue.heal | 5 | 3.0 |
-| feelings.json | .price.hp_per_step | 8 | 4.8 |
+| feelings.json | .price.hp_per_step | 8 | 6% of max HP |
 | figments.json | .forms[double].hp | 30 | 18 |
 | figments.json | .forms[eye].hp | 15 | 9.0 |
 | figments.json | .forms[wall].hp | 60 | 36 |
@@ -540,9 +309,9 @@ T4 lists every number the rule touches outside `weapons.json` (188, plus the nam
 | perks.json | .items[last_charge].amounts.shield_by_armour.per[0](armour_value) | 3 | 1.8 |
 | rules.json | .combat.attack.cover.half.hp | 30 | 18 |
 | rules.json | .combat.attack.cover.full.hp | 80 | 48 |
-| rules.json | .mana.sigil.flux.overload.damage_per_flux_over | 10 | 6.0 |
+| rules.json | .mana.sigil.flux.overload.damage_per_flux_over | 10 | 7% of max HP |
 | rules.json | .mana.sigil.example.damage | 26 | 16 |
-| rules.json | .output.amounts.flux_overload.damage.per[0](flux_over) | 10 | 6.0 |
+| rules.json | .output.amounts.flux_overload.damage.per[0](flux_over) | 10 | 7% of max HP |
 | rules.json | .output.amounts.school_rider.heal.base | 30 | 18 |
 | shadow.json | .items[shadow.rig].amounts.rig.base | 25 | 15 |
 | sigils.json | .example.damage | 26 | 16 |
@@ -559,7 +328,7 @@ T4 lists every number the rule touches outside `weapons.json` (188, plus the nam
 | sigils.json | .items[mend].heal_enemy | 25 | 15 |
 | sigils.json | .items[raise].barrier.hp | 30 | 18 |
 | sigils.json | .items[watch].hp | 10 | 6.0 |
-| soul_modules.json | .strain.burn_per_point | 8 | 4.8 |
+| soul_modules.json | .strain.burn_per_point | 8 | 6% of max HP |
 | soul_modules.json | .aura.tick_damage | 5 | 3.0 |
 | soul_modules.json | .schools[damage].damage | 40 | 24 |
 | soul_modules.json | .schools[buff].heal | 11.3 | 6.78 |
@@ -575,297 +344,738 @@ T4 lists every number the rule touches outside `weapons.json` (188, plus the nam
 | tending.json | .items[tend.shield].amounts.shield.base | 4.5 | 2.7 |
 | traits.json | .items[grenadiers_arm].amounts.damage.base | 10 | 6.0 |
 | traits.json | .items[grenadiers_arm].amounts.damage.per[0](kg) | 0.25 | 0.15 |
-| traits.json | .items[oil_in_my_mind].effects[4].derived.hp_per_level (a per-level HP number: at the Pain Threshold rate, x0.25) | -2 | -0.5 |
-| traits.json | .items[oil_in_my_soul].effects[4].derived.hp_per_level (a per-level HP number: at the Pain Threshold rate, x0.25) | -2 | -0.5 |
+| traits.json | .items[oil_in_my_mind].effects[4].derived.hp_per_level | -2 | 07 restates (a share of max HP) |
+| traits.json | .items[oil_in_my_soul].effects[4].derived.hp_per_level | -2 | 07 restates (a share of max HP) |
 | traits.json | .items[factory_made].amounts.repair.per[0](improvisation) | 10 | 6.0 |
 | traits.json | .items[factory_made].effects[3].hp_per_point | 10 | 6.0 |
 | traits.json | .items[drone_handler].amounts.repair.per[0](mastery) | 10 | 6.0 |
 | traits.json | .items[drone_handler].effects[drone].hp | 30 | 18 |
-| traits.json | .items[crawler_blooded].amounts.blessing_burn.base | 10 | 6.0 |
+| traits.json | .items[crawler_blooded].amounts.blessing_burn.base | 10 | 7% of max HP |
 | traits.json | .items[beast_handler].effects[beast].hp | 60 | 36 |
 
-| armour class | value today | new |
+
+#### T3. Every weapon row: damage today and new (x0.6 half up; the rows of the last table of T3b x their own), and its profile
+
+| category | id | damage today | damage new | factor | profile today | profile new | pair the row reads (scales_with x hits_with) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bow | recurve_bow | 20 + 5*raw_power | 21 | 0.6 | weapon | bow | agility x dexterity + raw_power (also_scales) |
+| bow | repeating_crossbow | 22 | 13 | 0.6 | weapon | bow | agility x dexterity |
+| bow | short_bow | 24 | 14 | 0.6 | weapon | bow | agility x dexterity |
+| bow | longbow | 25 + 6*raw_power | 25 | 0.6 | weapon | bow | agility x dexterity + raw_power (also_scales) |
+| bow | crossbow | 55 | 33 | 0.6 | weapon | bow | agility x dexterity |
+| bow | arbalest | 72 | 40 | 0.55 | weapon | bow | agility x dexterity |
+| heavy | breacher_tube | 110 | 33 | 0.3 | gun | gun | agility x dexterity |
+| heavy | legion_siege_tube | 130 | 39 | 0.3 | gun | gun | agility x dexterity |
+| heavy | lumeri_votive_torch | 16 | 10 | 0.6 | gun | gun | agility x dexterity |
+| heavy | purifier_flamer | 20 | 12 | 0.6 | gun | gun | agility x dexterity |
+| heavy | hellraiser_spinner | 20 | 12 | 0.6 | gun | gun | agility x dexterity |
+| heavy | hellraiser_rotary | 22 | 13 | 0.6 | gun | gun | agility x dexterity |
+| heavy | hellraiser_twin_rotary | 22 | 13 | 0.6 | gun | gun | agility x dexterity |
+| heavy | lumeri_cathedral_burner | 24 | 14 | 0.6 | gun | gun | agility x dexterity |
+| heavy | hellraiser_lmg | 25 | 15 | 0.6 | gun | gun | agility x dexterity |
+| heavy | smetanita_snub_launcher | 36 | 22 | 0.6 | gun | gun | agility x dexterity |
+| heavy | smetanita_thumper | 40 | 24 | 0.6 | gun | gun | agility x dexterity |
+| heavy | smetanita_drum_launcher | 40 | 24 | 0.6 | gun | gun | agility x dexterity |
+| heavy | blackpoint_carbine | 54 | 32 | 0.6 | gun | gun | agility x dexterity |
+| heavy | blackpoint_700 | 66 | 40 | 0.6 | gun | gun | agility x dexterity |
+| heavy | legion_throwaway_tube | 90 | 27 | 0.3 | gun | gun | agility x dexterity |
+| heavy_melee | lance | 32 | 19 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | lowland_chopper | 33 | 20 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | kemizuchi_sword_breaker | 33 | 20 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | legion_rank_sword | 34 | 20 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | ork_machete | 35 | 21 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | glaive | 36 | 22 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | broadback_sabre | 36 | 22 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | ork_cleaver_glaive | 37 | 22 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | ork_rip_saw | 38 | 23 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | war_axe | 40 | 24 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | long_draw | 41 | 25 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | adamantile_greatsword | 42 | 25 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | maul | 45 | 27 | 0.6 | melee | melee | strength x raw_power |
+| heavy_melee | ork_wreck_saw | 46 | 28 | 0.6 | melee | melee | strength x raw_power |
+| light_melee | throwing_knives | 12 | 7 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | combat_knife | 15 | 9 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | afterword | 15 | 9 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | legion_leaf_dagger | 16 | 10 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | pitch_axe | 17 | 10 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | ork_skinner | 17 | 10 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | trench_knife | 18 | 11 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | short_draw | 18 | 11 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | war_pick | 18 | 11 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | legion_gladius | 19 | 11 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | kemizuchi_duelling_blade | 19 | 11 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | sabre | 20 | 12 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | katana | 20 | 12 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | dock_cutter | 21 | 13 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | kemizuchi_side_sword | 21 | 13 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | hatchet | 22 | 13 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | legion_spear | 22 | 13 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | ork_snarl_knife | 22 | 13 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | war_hammer | 23 | 14 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | adamantile_longsword | 23 | 14 | 0.6 | melee | melee | strength x dexterity |
+| light_melee | adamantile_plate_needle | 24 | 14 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | throwing_javelins | 24 | 14 | 0.6 | melee | melee | agility x dexterity |
+| light_melee | throwing_darts | 9 | 5 | 0.6 | melee | melee | agility x dexterity |
+| mana | emanator_gauntlet | 18 | 11 | 0.6 | weapon | weapon | strength x raw_power |
+| mana | spellslinger_pistol | 22 | 13 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | bot_thread_banner | 24 | 14 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | grand_staff | 24 | 14 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | evoker_blade | 26 | 16 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | emanator_katana | 26 | 16 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | core_rifle | 29 | 17 | 0.6 | weapon | weapon | agility x dexterity |
+| mana | lumeri_censer_gun | {within_4: 30, within_8: 18} | {within_4: 18, within_8: 11} | 0.6 | weapon | weapon | agility x dexterity |
+| pistol | whisper_pistol | 15 | 9 | 0.6 | gun | gun | agility x dexterity |
+| pistol | smetanita_pocket_pistol | 15 | 9 | 0.6 | gun | gun | agility x dexterity |
+| pistol | parlour_pistol | 16 | 10 | 0.6 | gun | gun | agility x dexterity |
+| pistol | decrkm_autopistol | 17 | 10 | 0.6 | gun | gun | agility x dexterity |
+| pistol | mandestra_drum_pistol | 18 | 11 | 0.6 | gun | gun | agility x dexterity |
+| pistol | service_pistol | 20 | 12 | 0.6 | gun | gun | agility x dexterity |
+| pistol | smetanita_service_pistol | 21 | 13 | 0.6 | gun | gun | agility x dexterity |
+| pistol | magistrate_pistol | 26 | 16 | 0.6 | gun | gun | agility x dexterity |
+| revolver | snub_revolver | 26 | 16 | 0.6 | gun | gun | agility x dexterity |
+| revolver | drifter_revolver | 28 | 17 | 0.6 | gun | gun | agility x dexterity |
+| revolver | smetanita_hand_cannon | 36 | 22 | 0.6 | gun | gun | agility x dexterity |
+| revolver | frontier_hand_cannon | 38 | 23 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adcorp_short_carbine | 27 | 16 | 0.6 | gun | gun | agility x dexterity |
+| rifle | legion_bullpup | 28 | 17 | 0.6 | gun | gun | agility x dexterity |
+| rifle | hellraiser_trench_carbine | 28 | 17 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adamantile_carbine | 28 | 17 | 0.6 | gun | gun | agility x dexterity |
+| rifle | hellraiser_service_rifle | 30 | 18 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adamantile_battle_rifle | 30 | 18 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adcorp_line_rifle | 30 | 18 | 0.6 | gun | gun | agility x dexterity |
+| rifle | arsenal_piston_rifle | 30 | 18 | 0.6 | gun | gun | agility x dexterity |
+| rifle | chezknov_battle_rifle | 31 | 19 | 0.6 | gun | gun | agility x dexterity |
+| rifle | albert_town_brush_carbine | 31 | 19 | 0.6 | gun | gun | agility x dexterity |
+| rifle | lever_carbine | 32 | 19 | 0.6 | gun | gun | agility x dexterity |
+| rifle | legion_marksman_rifle | 32 | 19 | 0.6 | gun | gun | agility x dexterity |
+| rifle | albert_town_service_rifle | 32 | 19 | 0.6 | gun | gun | agility x dexterity |
+| rifle | ccec_marksman_rifle | 33 | 20 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adcorp_designated_rifle | 34 | 20 | 0.6 | gun | gun | agility x dexterity |
+| rifle | chezknov_precision_rifle | 35 | 21 | 0.6 | gun | gun | agility x dexterity |
+| rifle | adamantile_heavy_rifle | 36 | 22 | 0.6 | gun | gun | agility x dexterity |
+| rifle | arsenal_heavy_rifle | 38 | 23 | 0.6 | gun | gun | agility x dexterity |
+| rifle | albert_town_stalking_rifle | 44 | 26 | 0.6 | gun | gun | agility x dexterity |
+| rifle | long_rifle | 47 | 28 | 0.6 | gun | gun | agility x dexterity |
+| shield | deflector | 12 | 7 | 0.6 | melee | melee | endurance x durability |
+| shield | buckler | 15 | 9 | 0.6 | melee | melee | endurance x durability |
+| shield | bulwark_screen | 15 | 9 | 0.6 | melee | melee | endurance x durability |
+| shield | barrier_wall | 15 | 9 | 0.6 | melee | melee | endurance x durability |
+| shield | riot_shield | 20 | 12 | 0.6 | melee | melee | endurance x durability |
+| shield | pavise | 20 | 12 | 0.6 | melee | melee | endurance x durability |
+| shield | spiked_buckler | 20 | 12 | 0.6 | melee | melee | endurance x durability |
+| shield | boss_shield | 25 | 15 | 0.6 | melee | melee | endurance x durability |
+| shield | ram_plate | 30 | 18 | 0.6 | melee | melee | endurance x durability |
+| shotgun | lumeri_hand_scatter | {within_4: 36, within_8: 15} | {within_4: 22, within_8: 9} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | brigade_shot_pistol | {within_4: 38, within_8: 14} | {within_4: 23, within_8: 8} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | brigade_auto_shotgun | {within_4: 40, within_8: 24} | {within_4: 24, within_8: 14} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | brigade_drum_shotgun | {within_4: 40, within_8: 24} | {within_4: 24, within_8: 14} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | lumeri_scattergun | {within_4: 40, within_8: 25} | {within_4: 24, within_8: 15} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | fowling_gun | {within_4: 40, within_8: 30} | {within_4: 24, within_8: 18} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | lumeri_long_scatter | {within_4: 40, within_8: 30} | {within_4: 24, within_8: 18} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | sawn_off | {within_4: 42, within_8: 15} | {within_4: 25, within_8: 9} | 0.6 | gun | gun | agility x dexterity |
+| shotgun | coach_gun | {within_4: 45, within_8: 25} | {within_4: 27, within_8: 15} | 0.6 | gun | gun | agility x dexterity |
+| smg | whisper_smg | 16 | 10 | 0.6 | gun | gun | agility x dexterity |
+| smg | decrkm_smg | 19 | 11 | 0.6 | gun | gun | agility x dexterity |
+| smg | mandestra_drum_gun | 19 | 11 | 0.6 | gun | gun | agility x dexterity |
+| smg | whisper_carbine | 19 | 11 | 0.6 | gun | gun | agility x dexterity |
+| smg | arsenal_courier_pdw | 19 | 11 | 0.6 | gun | gun | agility x dexterity |
+| smg | legion_pdw | 20 | 12 | 0.6 | gun | gun | agility x dexterity |
+| smg | chezknov_machine_carbine | 20 | 12 | 0.6 | gun | gun | agility x dexterity |
+| smg | decrkm_carbine | 21 | 13 | 0.6 | gun | gun | agility x dexterity |
+| smg | mandestra_drum_rifle | 21 | 13 | 0.6 | gun | gun | agility x dexterity |
+| thrown | smoke_grenade | 0 | 0 | 0.6 | weapon | thrown | agility x dexterity |
+| thrown | flashbang | 0 | 0 | 0.6 | weapon | thrown | agility x dexterity |
+| thrown | bot_scrambler | 0 | 0 | 0.6 | weapon | thrown | agility x dexterity |
+| thrown | satchel_charge | 120 | 54 | 0.45 | weapon | thrown | agility x dexterity |
+| thrown | incendiary_grenade | 15 | 9 | 0.6 | weapon | thrown | agility x dexterity |
+| thrown | frag_grenade | 40 | 24 | 0.6 | weapon | thrown | agility x dexterity |
+| unarmed | fists | 10 | 6 | 0.6 | melee | melee | strength x raw_power |
+| unarmed | hand_wraps | 14 | 8 | 0.6 | melee | melee | strength x raw_power |
+| unarmed | striking_gloves | 17 | 10 | 0.6 | melee | melee | agility x dexterity |
+| unarmed | beast_bite | 18 | 11 | 0.6 | weapon | weapon | strength x raw_power |
+| unarmed | kemizuchi_strikers | 19 | 11 | 0.6 | melee | melee | agility x dexterity |
+| unarmed | knuckledusters | 20 | 12 | 0.6 | melee | melee | strength x raw_power |
+| unarmed | weighted_gloves | 22 | 13 | 0.6 | melee | melee | strength x dexterity |
+| unarmed | hellraiser_piston_knuckles | 24 | 14 | 0.6 | melee | melee | agility x dexterity |
+| unarmed | iron_mitts | 25 | 15 | 0.6 | melee | melee | strength x raw_power |
+| unarmed | figment_edge | 25 | 15 | 0.6 | weapon | weapon | strength x raw_power |
+| unarmed | hellraiser_servo_fist | 30 | 18 | 0.6 | melee | melee | strength x raw_power |
+| unarmed | figment_claws | 30 | 18 | 0.6 | weapon | weapon | strength x raw_power |
+| unarmed | hellraiser_door_knocker | 34 | 20 | 0.6 | melee | melee | strength x raw_power |
+
+Rows of one category that meet on one new number: 18
+
+| category | lower row | today | higher row | today | new (both) | gap today |
+| --- | --- | --- | --- | --- | --- | --- |
+| pistol | parlour_pistol | 16 | decrkm_autopistol | 17 | 10 | 6.2% |
+| rifle | chezknov_battle_rifle | 31 | lever_carbine | 32 | 19 | 3.2% |
+| rifle | chezknov_battle_rifle | 31 | legion_marksman_rifle | 32 | 19 | 3.2% |
+| rifle | chezknov_battle_rifle | 31 | albert_town_service_rifle | 32 | 19 | 3.2% |
+| rifle | ccec_marksman_rifle | 33 | adcorp_designated_rifle | 34 | 20 | 3.0% |
+| light_melee | legion_leaf_dagger | 16 | pitch_axe | 17 | 10 | 6.2% |
+| light_melee | legion_leaf_dagger | 16 | ork_skinner | 17 | 10 | 6.2% |
+| light_melee | trench_knife | 18 | legion_gladius | 19 | 11 | 5.6% |
+| light_melee | trench_knife | 18 | kemizuchi_duelling_blade | 19 | 11 | 5.6% |
+| light_melee | dock_cutter | 21 | hatchet | 22 | 13 | 4.8% |
+| light_melee | dock_cutter | 21 | legion_spear | 22 | 13 | 4.8% |
+| light_melee | dock_cutter | 21 | ork_snarl_knife | 22 | 13 | 4.8% |
+| light_melee | war_hammer | 23 | adamantile_plate_needle | 24 | 14 | 4.3% |
+| light_melee | war_hammer | 23 | throwing_javelins | 24 | 14 | 4.3% |
+| heavy_melee | lowland_chopper | 33 | legion_rank_sword | 34 | 20 | 3.0% |
+| heavy_melee | glaive | 36 | ork_cleaver_glaive | 37 | 22 | 2.8% |
+| heavy_melee | long_draw | 41 | adamantile_greatsword | 42 | 25 | 2.4% |
+| unarmed | beast_bite | 18 | kemizuchi_strikers | 19 | 11 | 5.6% |
+
+Meetings where the gap today was a tenth or more: 0
+
+| id | splash_damage today | new |
 | --- | --- | --- |
-| None | 0 | 0.0 |
-| Light | 5 | 3.0 |
-| Medium | 10 | 6.0 |
-| Heavy | 15 | 9.0 |
-| Assault | 20 | 12.0 |
-| Juggernaut | 25 | 15.0 |
-| Breacher plate | 18 | 10.8 |
-
-| named number | today | new |
-| --- | --- | --- |
-| techniques.json rules.guard.soak (a plate, x the level column) | 6 | 3.6 |
-| soul_modules.json damage.base (a character's Damage school) | 37 | 22.2 |
-| soul_modules.json damage.enemy_base | 24 | 14.4 |
-| rules.json mending.gate.hp (the reference bar the gate counts to) | 145 | 90 |
-| patrons.json prayer.intervention.amount (base, per Devotion) | 20, 4 | 12, 2.4 |
-| rules.json combat.attack.cover half / full hp | 30 / 80 | 18 / 48 |
-
-Counted: 188 flat numbers outside weapons.json (plus the named rows above).
+| breacher_tube | 60 | 18 |
+| legion_throwaway_tube | 60 | 18 |
+| legion_siege_tube | 60 | 18 |
 
 
-## 4. The Stat terms made true, and the grades
+#### T3b. Leon's digits rule, weapon by category: the strongest row of each, one plain hit (no Margins, no sheet; a draw bow at Raw Power 0 / 4 / 3 / 3 at level 1, 10 at level 20)
 
-### 4.1 Slopes and `k`
+| category | strongest row | new base | profile | L1 at 1/0 | L1 at 4/4 | L1 at 7/7 | L1 at 7/7 Fine | L20 at 10/10 Relic | L20 at 10/10 Celestial | flag |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bow | arbalest | 40 | bow | 38 | 60 | 83 | 96 | 6,577 | 7,673 | - |
+| heavy | blackpoint_700 | 40 | gun | 36 | 56 | 77 | 88 | 6,084 | 7,098 | - |
+| heavy_melee | ork_wreck_saw | 28 | melee | 32 | 50 | 69 | 80 | 5,498 | 6,414 | - |
+| light_melee | war_hammer | 14 | melee | 16 | 25 | 35 | 40 | 2,749 | 3,207 | - |
+| mana | lumeri_censer_gun | 18 | weapon | 27 | 27 | 27 | 31 | 1,620 | 1,890 | - |
+| pistol | magistrate_pistol | 16 | gun | 14 | 22 | 31 | 35 | 2,433 | 2,839 | - |
+| revolver | frontier_hand_cannon | 23 | gun | 20 | 32 | 44 | 51 | 3,498 | 4,081 | - |
+| rifle | long_rifle | 28 | gun | 25 | 39 | 54 | 62 | 4,259 | 4,968 | - |
+| shield | ram_plate | 18 | melee | 21 | 32 | 45 | 51 | 3,534 | 4,124 | - |
+| shotgun | coach_gun | 27 | gun | 24 | 37 | 52 | 60 | 4,106 | 4,791 | - |
+| smg | decrkm_carbine | 13 | gun | 12 | 18 | 25 | 29 | 1,977 | 2,307 | - |
+| thrown | satchel_charge | 54 | thrown | 36 | 57 | 79 | 90 | 6,215 | 7,251 | - |
+| unarmed | hellraiser_door_knocker | 20 | melee | 23 | 36 | 50 | 57 | 3,927 | 4,582 | - |
 
-Each profile's slope is its card's number; its `k` is set so a **normal share** (4 in the Attribute and 4 in the skill, the game's own `output.floor_reference`, `rules.json:1981`) deals at level 1 exactly today's number x0.6. *Reason: a character who spread its points sits where it sits today; every point above that is the card's promise, and every point below it is missing.* `k` is no longer a "pin": the notes that call it one (`rules.json:1838`, `:1848`) go. A card's promise holds whatever `k` is: a Strength point adds k x 0.10, which is +10% of the Strength-1 character's blow.
+The rows that take a factor of their own: at x0.6 a level-1 specialist in Fine would put three digits on screen
 
-| Profile | Attribute slope | Skill slope | Data keys |
-| --- | --- | --- | --- |
-| `melee` (heavy melee, Strength light melee, unarmed on Strength, shields on Endurance) | +0.10 a point of the row's `scales_with` | Raw Power +0.05 | `output.profiles.melee` attr 0.10, skill 0.05, k 1.194 (`factors.melee` 1.35 folded in, then deleted); `weapons.json phys.hits_with` stays `raw_power` |
-| `blade` (new row; the 17 light blades on Agility today) | none | Dexterity +0.04 | `output.profiles.blade` (new, data only): attr 0, skill 0.04, level `deal`, k 1.544 (folds the melee factor); rows' `phys.profile: "blade"`, `scales_with: []` |
-| `gun` | none (Agility no longer) | Dexterity +0.04 | `output.profiles.gun` attr 0, skill 0.04, k 1.196; every gun row's `phys.scales_with: []` |
-| `thrown` (new row) | none | Dexterity +0.04 | `output.profiles.thrown` (new, data only), k 0.905 (folds `factors.thrown` 0.7, then deleted) |
-| `sigil` | Intelligence +0.10 | Brain Power +0.10 | `output.profiles.sigil` attr 0.10, skill 0.10, k 1.0 |
-| `elemental` | Expression +0.10 | none | `output.profiles.elemental` attr 0.10, skill 0, k 0.769, level `deal`; `attributes.json` expression formula loses "+ 0.05 x Visualization" (Visualization's card never promised it) |
-| `soul` | Determination +0.05 | Will Power +0.10 | `output.profiles.soul` attr 0.05, skill 0.10, k 1.0 |
-| `blessing` | Virtue +0.05 | Faith +0.10 | `output.profiles.blessing` attr 0.05, skill 0.10, k 0.876, level `deal`; Virtue's card gains "+5% Blessing power" (question 3) |
-| `healing`, `mend`, `tend` and the other landed heal and shield profiles | Insight +0.06 | Empathy +0.06 | unchanged slopes and `k` (as built); level `mend` |
-| `figment` | none | none | k 1.35 (`factors.figment` 0.9 folded in, then deleted) |
-| `physical` (Hurl, Grenadier's Arm) | Strength +0.10 | Raw Power +0.05 | level `deal` (was `scale`) |
+| row | today | at x0.6 | L1 7/7 Fine at x0.6 | own factor | new | L1 7/7 Fine | L20 10/10 Celestial |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| breacher_tube | 110 | 66 | 146 | 0.3 | 33 | 73 | 5,856 |
+| satchel_charge | 120 | 72 | 120 | 0.45 | 54 | 90 | 7,251 |
+| arbalest | 72 | 43 | 103 | 0.55 | 40 | 96 | 7,673 |
+| legion_throwaway_tube | 90 | 54 | 119 | 0.3 | 27 | 60 | 4,791 |
+| legion_siege_tube | 130 | 78 | 172 | 0.3 | 39 | 86 | 6,920 |
 
-**Cards that change words:** Dexterity's "+2% critical damage" becomes "+4% damage: guns, light blades, thrown" (`skills.json dexterity per_point.numbers.crit` 0.02 becomes `damage` 0.04); Agility's card loses nothing (it never promised damage); Endurance gains "+10% shield blows"; Virtue gains "+5% Blessing power"; Perception's "+3% critical damage" becomes Margins (section 8); Intelligence, Expression, Determination, Brain Power, Will Power and Faith become true as written.
 
-#### T5. The Stat terms: today and new (k re-pinned so a normal share, 4 and 4, deals today's x F at level 1)
+## 3. The level columns (ruling A2) and the enemy columns (A3, item 10)
 
-| profile | reads | attr a point | skill a point | k new | today at 4/4 | new / today at 1/0 | at 4/4 | at 7/7 | at 10/10 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| melee | Strength (or the row's scales_with) and Raw Power | 0.1 | 0.05 | 1.194 | 1.791 | 1.194 / 1.558 | 1.791 / 1.791 | 2.329 / 2.025 | 2.866 / 2.259 |
-| blade | Dexterity (light blades that scale with Agility today) | 0.0 | 0.04 | 1.544 | 1.791 | 1.544 / 1.558 | 1.791 / 1.791 | 1.977 / 2.025 | 2.162 / 2.259 |
-| gun | Dexterity (Agility no longer) | 0.0 | 0.04 | 1.196 | 1.388 | 1.196 / 1.275 | 1.388 / 1.388 | 1.531 / 1.500 | 1.675 / 1.613 |
-| thrown | Dexterity | 0.0 | 0.04 | 0.905 | 1.050 | 0.905 / 1.050 | 1.050 / 1.050 | 1.159 / 1.050 | 1.267 / 1.050 |
-| sigil | Intelligence and Brain Power | 0.1 | 0.1 | 1.000 | 1.700 | 1.000 / 1.700 | 1.700 / 1.700 | 2.300 / 1.700 | 2.900 / 1.700 |
-| elemental | Expression | 0.1 | 0.0 | 0.769 | 1.000 | 0.769 / 1.000 | 1.000 / 1.000 | 1.231 / 1.000 | 1.462 / 1.000 |
-| soul | Determination and Will Power | 0.05 | 0.1 | 1.000 | 1.550 | 1.000 / 1.550 | 1.550 / 1.550 | 2.000 / 1.550 | 2.450 / 1.550 |
-| blessing | Virtue and Faith | 0.05 | 0.1 | 0.876 | 1.358 | 0.876 / 0.956 | 1.358 / 1.358 | 1.752 / 1.702 | 2.146 / 2.046 |
-| healing | Insight and Empathy (as built) | 0.06 | 0.06 | 1.392 | 1.977 | 1.392 / 1.392 | 1.977 / 1.977 | 2.478 / 2.478 | 2.979 / 2.979 |
+### 3.1 The formulas (each a named column in `rules.json output.level` or `enemies.json levels.table`)
 
-A card's promise holds against the 1-point character: a Strength point is +10% of the Strength-1 blow (k x 0.1 over k), whatever k is.
-
-| grade | damage x | armour x | to hit | today |
+| Column | Formula | At 5 / 10 / 15 / 20 | Read by | Reason a player sees (PROVISIONAL) |
 | --- | --- | --- | --- | --- |
-| standard | 1.0 | 1.0 | +0 | x1 damage, +0 |
-| fine | 1.15 | 1.15 | +1 | x1 damage, +1 |
-| masterwork | 1.3 | 1.3 | +2 | x1 damage, +2 |
-| relic | 1.5 | 1.5 | +3 | x1 damage, +2 |
-| celestial | 1.75 | 1.75 | +3 | x1 damage, +2 |
+| `deal` | `40 ^ ((L - 1) / 19)`, x1.214 a level | 2.17 / 5.74 / 15.2 / 40 | every amount a character deals (every damage profile), max HP, armour values, a plate's soak, objects' HP, cover | every level-up makes your hit, your bar and your armour a fifth bigger; a rifle shot of 28 at level 1 is past a thousand at 20 |
+| `mend` | `deal(L) x (90 + (L - 1)) / 90` | 2.27 / 6.31 / 17.5 / 48.4 | every heal and shield (the `healing`, `mend`, `tend`, `*_mend`, `repair` profiles) | a heal that closes a third of a normal friend's bar at level 1 closes a third of it at 20: it is the normal bar's growth (Endurance 4, A5's formula; the Pain Threshold term is a constant share and cancels) |
+| `mp` | `1 + 0.06 x (L - 1)` | 1.24 / 1.54 / 1.84 / 2.14 | Max MP and every MP price on the `mp` rule (section 6) | 04's: about four full cash-outs a pool at every level |
+| `hp_mult` (enemy) | `140 ^ ((L - 1) / 19)` | 2.83 / 10.4 / 38.1 / 140 | every enemy's HP, its companions' | written for the stated attacker (T4b): a level-20 fight is about 1.3 times a level-1 fight in plain hits, room for the long cash-outs; a grade found is a jump in your damage, never cancelled by a jump in theirs |
+| `damage_mult` (enemy) | `54 ^ ((L - 1) / 19)` | 2.32 / 6.62 / 18.9 / 54 | every enemy weapon hit (`lvlDmg`) and every amount an enemy deals (its doors, its Outbursts); a Figment's HP (`figments.json level.hp`); a hazard with no dealer at the fight's level | written for the stated defender (T4c): a frail character survives four same-level Soldier hits at every level |
+| `armour_mult` (enemy) | `= deal(L)` | as `deal` | every enemy's armour | a foe's plate keeps its bite against a plain level-matched hit; your cards and your grade cut through it |
+| `defense_plus`, `attack_plus` | 0 at every level | 0 | the roll | A3: the roll is bounded; only the level gap (+1 a level, to 5) touches it |
 
+**`scale` stops being a column:** `scaleOf` (`output.ts:120`) reads `deal` and the `scale` array is deleted (two columns with one meaning are a second copy of a rule). The `mend` column is defined from A5's HP formula, so the two can never drift: the ruling's "x65" was the reading of the first draft's HP formula; on A5's it is x48.4, and the ruling's reason (a heal stays the same share of a bar) is what the formula keeps. The heal gate counts to `mending.gate.hp` x `mend`: **`gate.hp` becomes 112**, the normal bar at level 1 (90 x 1.24).
 
-### 4.2 The grade ladder, on damage and on armour
+**An amount reads the column of its kind and its dealer:** a damage amount reads `deal` (a character's) or `damage_mult` (an enemy's), whatever profile it names (a Snap's damage on the `tend` profile reads `deal`); a heal or shield reads `mend` (a character's) or the enemy's own multipliers as today (`mending.level_factor.who`). *One rule, so a plate and a shot of one foe grow together (critic-consistency minor 4).*
 
-| Grade | Damage x | Armour x | To hit | Also (the charter) |
-| --- | --- | --- | --- | --- |
-| Standard | 1 | 1 | +0 | |
-| Fine | 1.15 | 1.15 | +1 | |
-| Masterwork | 1.3 | 1.3 | +2 | a mod slot more |
-| Relic | 1.5 | 1.5 | +3 (today +2) | a property |
-| Celestial | 1.75 | 1.75 | +3 (today +2) | two properties |
+#### T4. The level columns, levels 1 to 20
 
-PROVISIONAL. Data keys: `rules.json rarity.<grade>.dmg`, `.arm`, `.acc` (`:1601`). *Reason: a grade is how hard the thing does what it does; Fine is a felt step (+15% and a face of the die), Celestial is three-quarters again.* The mod slot (unbuilt: `character.ts:1721` reads only the row's own `mod_slots`) and the properties belong to the Items 2.0 drafter; the text at `rules.json:1603` ("adds no damage") is rewritten.
+deal(L) = 40 ^ ((L - 1) / 19); mend(L) = deal(L) x (90 + 1 x (L - 1)) / 90 (the normal bar's growth: Endurance 4, any Pain Threshold); mp(L) = 1 + 0.06 x (L - 1); hp_mult(L) = 140 ^ ((L - 1) / 19); damage_mult(L) = 54 ^ ((L - 1) / 19); armour_mult(L) = deal(L); defense_plus and attack_plus 0.
 
-**Magic gets a grade too** (a new general piece, section "Needs a new primitive"). Today a Sigil, an Outburst and a prayer read no grade (no reader of rarity in `sigil.ts` or `magic.ts`), so at level 20 a Sigilist would fall x1.75 behind a rifle for no reason a player can see. Proposal: a damage, heal or shield profile names where its grade comes from: `sigil` and `elemental` from the held Evoker, `soul` and `soul_mend` from the held Emanator, the weapon profiles from the weapon (as today), and **`blessing` from Devotion**: standing 3, 5, 7 and 10 count as Fine, Masterwork, Relic and Celestial. *Reason: the faithful's gear is its standing; the chase calendar puts Devotion 3 / 5 / 7 / 10 at hours 5 / 12 / 22 / 35, the same hours as Fine / Masterwork / Relic / Celestial, so a Chaplain grows as a gunner does, earned by deeds instead of credits.*
-
-## 5. Character HP
-
-`maxHp = round(deal(L) x (60 + 10 x (End - 1) + (L - 1) x (1 + 0.5 x PT)))`, perks and traits inside the bracket as today (`fx('hp')`, `fx('hp_per_level')`). PROVISIONAL. The numbers move from code (`character.ts:798`, `:801`) to data: `attributes.json endurance.derived[max_hp]` (base 60, `per_point_above_1` 10, per level 1) and `skills.json pain_threshold per_point.numbers.hp_per_level` (0.5). *Reasons: 60 is three to four Soldier hits for the frail and 120 at Endurance 7 is twice that (the charter); an Endurance point is a sixth of the frail bar at level 1 and still an eighth at 20; Pain Threshold is the toughness that grows: nothing at level 1, a fifteenth of the bar at 10, as much as an Endurance point at 20.* Pain Threshold's other lines (Guard soak, elemental resistance) are what its point gives at level 1.
-
-#### T6. Character HP: deal(L) x (60 + 10 x (End - 1) + (L - 1) x (1 + 0.5 x PT)), and what one point gives
-
-| build | L1 new (today) | L5 | L10 | L15 | L20 |
-| --- | --- | --- | --- | --- | --- |
-| End 1 PT 0 | 60 (100) | 139 (153) | 396 (257) | 1,121 (469) | 3,160 (914) |
-| End 4 PT 2 | 90 (145) | 213 (231) | 620 (400) | 1,788 (748) | 5,120 (1,481) |
-| End 4 PT 4 | 90 (145) | 222 (251) | 672 (464) | 2,000 (902) | 5,880 (1,838) |
-| End 7 PT 0 | 120 (190) | 270 (267) | 740 (416) | 2,030 (717) | 5,560 (1,336) |
-| End 7 PT 4 | 120 (190) | 287 (308) | 844 (544) | 2,455 (1,026) | 7,080 (2,048) |
-| End 10 PT 10 | 150 (235) | 378 (427) | 1,171 (815) | 3,546 (1,614) | 10,560 (3,328) |
-
-| level | HP at End 1 PT 0 | one Endurance point | one Pain Threshold point |
-| --- | --- | --- | --- |
-| 1 | 60 | +10 (16.7%) | +0 (0.0%) |
-| 10 | 396 | +57 (14.5%) | +26 (6.5%) |
-| 20 | 3,160 | +400 (12.7%) | +380 (12.0%) |
-
-
-A save moves once (the existing `migrateCharacterHp`, `character.ts:810-816`, with a new `HP_REV`): a character keeps the same share of its new max HP as it held of the old one.
-
-## 6. The check: six builds, levels 1 to 20
-
-Gear by the chase calendar (the curve, section 14: Fine by hour 3, Masterwork by 8, Relic by 20, Celestial by 33, so levels 4, 7, 12, 17); a specialist's main Attribute and its alpha skill 7 at creation and 8, 9, 10 with the Attribute point after each gate (levels 6, 10, 16). Cash-outs use the Law 2 pattern (Reach 3 / 4 / 5 / 7 for Momentum and 2 / 3 / 4 / 5 for the other doors at 1 / 4 / 7 / 10 points; Bite 25 / 30 / 35% at 1 / 6 / 9; each unit 1.2 times the one before): **the door drafters' own numbers replace these columns.** Enemies are of the character's level, carrying the service rifle.
-
-#### T7. The check: six builds against a same-level Soldier, Elite and Boss
-
-Plain: one plain attack or cast, no Margins. A turn: 6 AP of it (the Chaplain: three pistol shots and one Smite). Cash-out: the Law 2 pattern at the door's Reach (each unit 1.2 x the one before, Bite 25 / 30 / 35%), on one plain hit. Kill: plain turns to kill one foe of that tier alone, after armour; in brackets counting misses and Margins. Survive: the same-level foe's rifle hits taken before 0 HP, after armour. Flags: D (digits: a level-1 plain hit over two digits; at level 20 a specialist's plain hit under four or its cash-out under five), E (a same-level Elite in under one turn), B (a Boss in under two turns alone), L (a Boss over twelve turns alone), F (under two Soldier hits survived).
-
-| build | L | attr/skill | grade | armour | plain | cash-out | HP | turns: Soldier | Elite | Boss | survives: Soldier | Elite | Boss | flags |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Two-handed Strength specialist (maul, Momentum) | 1 | 7/7 | standard | Medium | 63 | x5: 203 | 80 | 0.7 (0.6) | 1.3 (1.2) | 4.3 (4.4) | 6.7 | 4.4 | 3.7 | - |
-|  | 5 | 7/7 | fine | Medium | 157 | x5: 508 | 196 | 0.7 (0.6) | 1.3 (1.1) | 4.4 (4.1) | 7.1 | 4.6 | 3.9 | - |
-|  | 10 | 9/9 | masterwork | Medium | 541 | x5: 1,951 | 672 | 0.7 (0.5) | 1.2 (0.8) | 4.1 (3.0) | 8.4 | 5.4 | 4.6 | - |
-|  | 15 | 9/9 | relic | Heavy | 1,649 | x5: 5,944 | 2,106 | 0.7 (0.5) | 1.3 (0.8) | 4.3 (3.0) | 13.0 | 7.3 | 5.8 | - |
-|  | 20 | 10/10 | celestial | Heavy | 5,417 | x7: 29,905 | 7,040 | 0.7 (0.4) | 1.3 (0.8) | 4.3 (2.9) | 15.7 | 8.6 | 6.8 | - |
-| Rifle Dexterity specialist (service rifle, Pressure) | 1 | 7/7 | standard | Light | 28 | x4: 72 | 70 | 1.1 (1.0) | 2.2 (2.0) | 7.6 (7.5) | 4.7 | 3.3 | 2.8 | - |
-|  | 5 | 7/7 | fine | Light | 69 | x4: 180 | 170 | 1.2 (0.9) | 2.2 (1.8) | 7.6 (6.9) | 4.8 | 3.4 | 2.9 | - |
-|  | 10 | 9/9 | masterwork | Light | 218 | x4: 629 | 562 | 1.2 (0.8) | 2.2 (1.5) | 7.5 (5.3) | 5.5 | 3.9 | 3.3 | - |
-|  | 15 | 9/9 | relic | Light | 665 | x4: 1,916 | 1,742 | 1.2 (0.8) | 2.3 (1.5) | 7.9 (5.2) | 5.8 | 4.1 | 3.5 | - |
-|  | 20 | 10/10 | celestial | Light | 2,110 | x5: 7,605 | 5,880 | 1.3 (0.8) | 2.3 (1.4) | 7.9 (5.1) | 6.8 | 4.7 | 4.1 | D |
-| Pistol and knife, mixed (Dexterity and Ingenuity 5/4 at L1, 8/8 at L20) | 1 | 5/5 | standard | Light | 17 | x3: 33 | 70 | 2.0 (2.0) | 4.3 (4.4) | 14.6 (16.8) | 4.7 | 3.3 | 2.8 | L |
-|  | 5 | 6/6 | fine | Light | 44 | x3: 85 | 165 | 1.9 (1.6) | 3.9 (3.4) | 13.4 (12.8) | 4.7 | 3.3 | 2.9 | L |
-|  | 10 | 6/6 | masterwork | Light | 133 | x3: 278 | 505 | 2.0 (1.6) | 4.1 (3.3) | 14.1 (12.3) | 4.9 | 3.5 | 3.0 | L |
-|  | 15 | 7/7 | relic | Light | 418 | x4: 1,090 | 1,636 | 2.1 (1.4) | 4.0 (2.8) | 13.8 (10.4) | 5.5 | 3.8 | 3.3 | L |
-|  | 20 | 8/8 | celestial | Light | 1,326 | x4: 3,462 | 5,100 | 2.1 (1.4) | 4.0 (2.6) | 13.6 (9.6) | 5.9 | 4.1 | 3.5 | L |
-| Sigilist (FIRE in a Line of two, Evoker grade) | 1 | 7/7 | standard | Light | 77 | x4: 202 | 60 | 0.6 (0.5) | 1.0 (0.9) | 3.4 (3.5) | 4.0 | 2.8 | 2.4 | - |
-|  | 5 | 7/7 | fine | Light | 194 | x4: 505 | 139 | 0.6 (0.5) | 1.0 (0.9) | 3.5 (3.3) | 4.0 | 2.8 | 2.4 | - |
-|  | 10 | 9/9 | masterwork | Light | 678 | x4: 1,952 | 479 | 0.5 (0.4) | 0.9 (0.6) | 3.2 (2.4) | 4.7 | 3.3 | 2.8 | E |
-|  | 15 | 9/9 | relic | Light | 2,066 | x4: 5,946 | 1,379 | 0.6 (0.4) | 1.0 (0.7) | 3.4 (2.4) | 4.6 | 3.2 | 2.8 | - |
-|  | 20 | 10/10 | celestial | Light | 6,833 | x5: 24,630 | 4,720 | 0.6 (0.3) | 1.0 (0.6) | 3.4 (2.2) | 5.4 | 3.8 | 3.3 | E |
-| Channeler (Damage school Bolt at stage 1, Emanator grade) | 1 | 7/7 | standard | Light | 44 | x4: 116 | 70 | 2.0 (1.8) | 3.7 (3.5) | 12.8 (13.0) | 4.7 | 3.3 | 2.8 | L |
-|  | 5 | 7/7 | fine | Light | 111 | x4: 290 | 165 | 2.1 (1.7) | 3.8 (3.2) | 13.0 (12.0) | 4.7 | 3.3 | 2.9 | L |
-|  | 10 | 9/9 | masterwork | Light | 381 | x4: 1,097 | 562 | 1.9 (1.3) | 3.5 (2.4) | 12.0 (8.8) | 5.5 | 3.9 | 3.3 | - |
-|  | 15 | 9/9 | relic | Light | 1,160 | x4: 3,341 | 1,636 | 2.1 (1.3) | 3.7 (2.4) | 12.7 (8.6) | 5.5 | 3.8 | 3.3 | L |
-|  | 20 | 10/10 | celestial | Light | 3,807 | x5: 13,724 | 5,500 | 2.1 (1.3) | 3.6 (2.3) | 12.4 (8.2) | 6.3 | 4.4 | 3.8 | L |
-| Chaplain (pistol at Dexterity 2 plus Smite; Devotion as its grade) | 1 | 7/7 | standard | Medium | 37 | x4: 55 | 90 | 1.4 (2.0) | 2.9 (4.3) | 9.9 (16.9) | 7.5 | 4.9 | 4.2 | - |
-|  | 5 | 7/7 | fine | Medium | 91 | x4: 137 | 217 | 1.5 (1.8) | 2.9 (3.8) | 9.8 (14.8) | 7.9 | 5.1 | 4.3 | - |
-|  | 10 | 9/9 | masterwork | Medium | 296 | x4: 519 | 703 | 1.5 (1.7) | 2.9 (3.5) | 9.8 (13.3) | 8.8 | 5.7 | 4.8 | - |
-|  | 15 | 9/9 | relic | Heavy | 902 | x4: 1,582 | 2,152 | 1.6 (1.6) | 3.0 (3.3) | 10.2 (12.5) | 13.2 | 7.4 | 6.0 | - |
-|  | 20 | 10/10 | celestial | Heavy | 2,888 | x5: 6,497 | 7,060 | 1.6 (1.7) | 3.0 (3.3) | 10.2 (12.7) | 15.7 | 8.6 | 6.9 | D |
-
-| tier | L1 | L5 | L10 | L15 | L20 |
-| --- | --- | --- | --- | --- | --- |
-| vermin | 9 HP, 0 armour, 12 a rifle hit | 23 HP, 0 armour, 27 a rifle hit | 76 HP, 0 armour, 80 a rifle hit | 248 HP, 0 armour, 235 a rifle hit | 810 HP, 0 armour, 691 a rifle hit |
-| minion | 42 HP, 0 armour, 23 a rifle hit | 108 HP, 0 armour, 55 a rifle hit | 354 HP, 0 armour, 160 a rifle hit | 1,157 HP, 0 armour, 471 a rifle hit | 3,780 HP, 0 armour, 1,382 a rifle hit |
-| soldier | 84 HP, 3 armour, 18 a rifle hit | 217 HP, 7 armour, 43 a rifle hit | 708 HP, 17 armour, 125 a rifle hit | 2,313 HP, 45 armour, 367 a rifle hit | 7,560 HP, 120 armour, 1,078 a rifle hit |
-| elite | 144 HP, 6 armour, 24 a rifle hit | 371 HP, 13 armour, 57 a rifle hit | 1,214 HP, 34 armour, 168 a rifle hit | 3,966 HP, 91 armour, 494 a rifle hit | 12,960 HP, 240 armour, 1,452 a rifle hit |
-| boss | 492 HP, 6 armour, 28 a rifle hit | 1,269 HP, 13 armour, 65 a rifle hit | 4,146 HP, 34 armour, 192 a rifle hit | 13,550 HP, 91 armour, 565 a rifle hit | 44,280 HP, 240 armour, 1,659 a rifle hit |
-
-
-What the check says:
-
-1. **The digits rule holds** for every plain hit at level 1 (17 to 77) and every specialist's at 20 (2,110 to 6,833; the Chaplain's pistol and Smite together 2,888). **Five digits at 20** come from the Momentum chain (29,905), the Sigil Line (24,630) and the Outburst (13,724). The rifle's Pressure cash-out (7,605) reaches five digits only with its Margins (x1.6 a shot for a level-20 specialist against a Soldier); the prayer cash-out (6,497) is landed, has no roll and so no Margins. **Flag D for the Pressure and prayer drafters:** Reach 5 at Bite 35% is a x3.6 cash-out, Momentum's x7 is x5.5.
-2. **Fight length holds across the levels**: every build's turns to kill a Soldier, an Elite and a Boss alone are within a fifth of its level-1 number at 20 in plain hits; counting Margins, specialists get faster as they level (the maul's Elite from 1.2 to 0.8 turns), which is the reward.
-3. **Flags E:** a Sigilist one-turns a same-level Elite at 10 and 20 (two Lines of two a turn at 2.9 Sigil power and its Evoker's grade). The Elite guard (`sigils.json:124` `elite_guard`: one Evoke never takes a full-HP Elite to nothing) still holds, so it takes two Evokes; I leave it: the Sigilist's Lines are its specialist's Reach. **Flags L:** a Boss takes the mixed character 13 to 15 turns alone and the Channeler 12 to 13 at plain stage-1 Bolts. A Boss is a party's fight; a mixed character is "more often and weaker" by the charter. No cell flags F: the frail Sigilist survives four Soldier hits at level 1 and four to five and a half later.
-4. **Survive** grows with Endurance, Pain Threshold and armour, as it should: the maul specialist in Heavy plate takes 6.7 Soldier hits at 1 and 15.7 at 20; the frail Sigilist 4.0 and 5.4.
-5. Margins against an Elite or Boss (Defense 12 and 13) add less than against a Soldier (11): "against an Elite the same roll just lands" (the curve, Law 2) shows in the brackets.
-
-## 7. Costs and pools
-
-**The rule.** AP is the clock and never scales (6 a turn, 2 to 9, perks +3 at most; `rules.json:493`, `effects/ap.ts:16-20`). A cost is paid in one of three currencies, and each has one rule:
-
-1. **A count** (plates, chain, pips, glyphs, Flux, core charge, Strain, Echo, Devotion): never scales with the level. Its pool grows by points (Reach, Law 1) and its cost grows with what you build (Law 2). *Reason: a choice at level 1 is the same choice at 20, because both sides of it are counted in the same things.*
-2. **MP**: a budget between rests (MP refills at a long rest, `rules.json rest.long.mp`; it is not refilled between fights), so it does not scale with the level either: the level grows what each MP buys (the column), points grow the pool. **Max MP stays `100 + 75 x (Det - 1) + 25 x (Ins - 1)`** (its numbers move from `character.ts:860` to data). *Reason: a Damage design with two modules is about 50 MP and its Pumps to stage 4 another 50, so a Channeler at Determination 7 (625 MP with Insight 4) holds about six full cash-outs before a syphon or a rest, and a dabbler at Determination 1 holds one: the choice is real at both ends.* Each door's MP, charge and core costs are the door drafters'; the rule they write to: **the bill grows with the Reach spent, never with the level**.
-3. **HP**: a flat HP price (Strain's burn, a feeling's price, Overclock's strain, Flux overload, a feeling's self-damage) is x0.6 and rides the `deal` column (through the `flat` profile or `scaleOf`, as it does today); a share of max HP (Mana Shock 25%, Take the Weight 15%) is unit-free and stays. *Reason: a price in blood costs the same share of your bar at every level.*
-
-#### T8. Pools and costs as data holds them today
-
-| pool or cost | today | where | kind (section 7 of 01-scale.md) |
-| --- | --- | --- | --- |
-| AP a turn | 6 | rules.json combat.ap | flat: the clock |
-| Max MP | 100 + 75 x (Det - 1) + 25 x (Ins - 1) (typed in character.ts:860) | character.ts MP_BASE... | grows by points only |
-| Outburst school base cost | damage 20, buff 20, control 25, status 20 | soul_modules.json schools[].base_cost | flat MP; the bill grows with what is built |
-| Pump | 10% of the Begin a stage reached | soul_modules.json cycle.pump_mp | share of the Begin |
-| Strain limit | 3, +1 at Composure 1, 2, 4, 6, 8 | soul_modules.json strain.limit | flat count |
-| Strain burn | 8 HP a point over (x the level column) | soul_modules.json strain.burn_per_point | HP: on the deal column |
-| Mana Shock | 25% of max HP | soul_modules.json strain.shock.hp_share | share of the bar |
-| Flux safe max | 6 | rules.json mana.sigil.flux.safe_max | flat count |
-| Flux overload | 10 true damage a Flux over | rules.json output.amounts.flux_overload | HP: on the deal column (flat profile) |
-| Core charge | standard 10, small 5, heavy 20 | rules.json mana.cores | flat count |
-| Guard plates | pool 1, max 4; soak 6 a plate | techniques.json rules.guard; skills.json durability | count flat; soak on the deal column |
-| Devotion | 0 to 10; XP curve "45/102/200/450" | patrons.json devotion | flat standing |
-| Echo | 3 | rules.json echo.max | flat count |
-| Feeling HP price | 8 HP a step | feelings.json price.hp_per_step | HP: on the deal column |
-
-
-The pools I am asked to set:
-
-| Pool | Today | New | Reason |
-| --- | --- | --- | --- |
-| Max MP | 100 + 75 x (Det - 1) + 25 x (Ins - 1) | unchanged, into data | six full Outbursts at Det 7 between rests, one at Det 1 (above) |
-| Flux safe max | 6 (`rules.json:1434`) | 6, a count | a Line of four leaves room for one more Line before the vent; the Push past it (Overflux) is the consequence |
-| Strain limit | 3, +1 at Composure 1, 2, 4, 6, 8 (`soul_modules.json strain.limit`) | unchanged | the count of how far a heart is pushed; Composure is its Reach |
-| Strain burn | 8 a point over, x scale | 4.8, x deal | the same share of your bar at every level |
-| Core charge | standard 10, small 5, heavy 20 (`rules.json:1412`) | unchanged, a count | a core is a number of glyphs, not of HP |
-| Guard soak | 6 a plate, x scale (`techniques.json:38`) | 3.6, x deal (the reader rounds: 4 at level 1) | a plate eats about a fifth of a same-level Soldier's shot (a quarter today, before the Soldier's damage rose by x1.28) |
-| Devotion | 0 to 10, XP 45 / 102 / 200 / 450 | unchanged | it is standing; with section 4.2 it is also the faithful's grade |
-
-## 8. Margins
-
-**The rule** (the curve, Law 2; agreed by Leon, round 1 item 5): every full 4 a roll beats the Defense or the TN by is a **Margin**; each Margin adds a quarter to what the roll does. A natural 20, and a roll in a weapon's critical range (an aimed shot's 19, an ambush's 19), is a **critical**: it lands and adds two Margins. PROVISIONAL. Data: `rules.json rolls.margins {step 4, per 0.25, critical 2, critical_perception_at [4, 7, 10]}`.
-
-**Where the engine resolves it.** The one judge of a d20 is `packages/engine/src/rolls.ts:78` (its result already carries `total`, `tn` and `nat`, `:50-58`): it gains `margins`. A weapon attack's roll is `combat.ts:1644-1648` (`total = roll + toHit` against `need`); its damage term is pushed where the critical term is pushed today (`combat.ts:1542-1544`, `critOf`), as `1 + 0.25 x margins`. The same at a Sigil's roll (`sigil.ts:334-339` `spellCritMult`) and an Outburst's Bolt and Lance (`classes/soul.ts:36-39`). A landed action (a prayer, a heal, a Smite) has no roll and no Margins. A check against a TN reports its Margins with the result (the Narrator reads "beat it by 8: two Margins" as degree; an amount a check produces takes them). Enemies get Margins as characters do.
-
-**What goes:** `CRIT_BASE`, `CRIT_MAX`, `CRIT_PER_PERCEPTION`, `CRIT_PER_DEXTERITY` (`character.ts:853-855`), `soul_modules.json damage.critical` and the `sigils.json grammar.critical` block. **What it becomes:**
-
-- **Perception's "+3% critical damage"** becomes **"a critical adds one more Margin at Perception 4, 7 and 10"** (2 / 3 / 4 / 5). *Reason: a point a step is felt at the moment it matters (a critical from Hidden lands a quarter harder for each step), and Perception is the Shadow door's Attribute, where criticals live.*
-- **Dexterity's "+2% critical damage"** goes to its damage line (section 4).
-- **An item that raised the critical multiplier** (the `crit_damage` stat; `ctx.critBonus` on `damage_out`: One Shot's Breath Held, Tunnel Vision's +25%) adds the same number to what a critical's Margins add (Tunnel Vision: a critical adds 0.75, not 0.5). Same stat, same hook, no new piece.
-- **Critical damage taken** (Perception -10% a point and Analysis -5% today, `crit_taken`) cuts what a critical's own Margins add by that share, as it cuts the critical bonus today.
-
-#### T9. Margins: the expected damage multiplier of one attack (misses count 0; in brackets the chance to hit)
-
-| to-hit modifier | Defense 10 | Defense 12 | Defense 14 | Defense 16 |
-| --- | --- | --- | --- | --- |
-| -2 | 0.55 (45%) | 0.41 (35%) | 0.29 (25%) | 0.17 (15%) |
-| -1 | 0.62 (50%) | 0.47 (40%) | 0.35 (30%) | 0.23 (20%) |
-| +0 | 0.70 (55%) | 0.55 (45%) | 0.41 (35%) | 0.29 (25%) |
-| +1 | 0.78 (60%) | 0.62 (50%) | 0.47 (40%) | 0.35 (30%) |
-| +2 | 0.86 (65%) | 0.70 (55%) | 0.55 (45%) | 0.41 (35%) |
-| +3 | 0.95 (70%) | 0.78 (60%) | 0.62 (50%) | 0.47 (40%) |
-| +4 | 1.04 (75%) | 0.86 (65%) | 0.70 (55%) | 0.55 (45%) |
-| +5 | 1.12 (80%) | 0.95 (70%) | 0.78 (60%) | 0.62 (50%) |
-| +6 | 1.23 (85%) | 1.04 (75%) | 0.86 (65%) | 0.70 (55%) |
-| +7 | 1.32 (90%) | 1.12 (80%) | 0.95 (70%) | 0.78 (60%) |
-| +8 | 1.43 (95%) | 1.23 (85%) | 1.04 (75%) | 0.86 (65%) |
-| +9 | 1.48 (95%) | 1.32 (90%) | 1.12 (80%) | 0.95 (70%) |
-
-How many of the 20 faces give each count of Margins against a Soldier's Defense 11:
-
-| modifier | miss | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| level | deal | mend | mp | enemy hp_mult | enemy damage_mult | enemy armour_mult | defense_plus | attack_plus |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| +0 | 10 | 4 | 4 | 1 | 0 | 1 | 0 | 0 |
-| +3 | 7 | 4 | 4 | 4 | 0 | 0 | 1 | 0 |
-| +6 | 4 | 4 | 4 | 4 | 3 | 0 | 1 | 0 |
-| +9 | 1 | 4 | 4 | 4 | 4 | 2 | 0 | 1 |
-| +12 | 1 | 1 | 4 | 4 | 4 | 4 | 1 | 0 |
+| 1 | 1.000 | 1.000 | 1.00 | 1.000 | 1.000 | 1.000 | 0 | 0 |
+| 2 | 1.214 | 1.228 | 1.06 | 1.297 | 1.234 | 1.214 | 0 | 0 |
+| 3 | 1.474 | 1.507 | 1.12 | 1.682 | 1.522 | 1.474 | 0 | 0 |
+| 4 | 1.790 | 1.850 | 1.18 | 2.182 | 1.877 | 1.790 | 0 | 0 |
+| 5 | 2.174 | 2.271 | 1.24 | 2.830 | 2.316 | 2.174 | 0 | 0 |
+| 6 | 2.640 | 2.787 | 1.30 | 3.671 | 2.857 | 2.640 | 0 | 0 |
+| 7 | 3.206 | 3.419 | 1.36 | 4.761 | 3.524 | 3.206 | 0 | 0 |
+| 8 | 3.893 | 4.195 | 1.42 | 6.176 | 4.348 | 3.893 | 0 | 0 |
+| 9 | 4.727 | 5.147 | 1.48 | 8.010 | 5.363 | 4.727 | 0 | 0 |
+| 10 | 5.739 | 6.313 | 1.54 | 10.389 | 6.616 | 5.739 | 0 | 0 |
+| 11 | 6.969 | 7.744 | 1.60 | 13.475 | 8.162 | 6.969 | 0 | 0 |
+| 12 | 8.463 | 9.497 | 1.66 | 17.478 | 10.069 | 8.463 | 0 | 0 |
+| 13 | 10.276 | 11.646 | 1.72 | 22.670 | 12.421 | 10.276 | 0 | 0 |
+| 14 | 12.478 | 14.280 | 1.78 | 29.404 | 15.322 | 12.478 | 0 | 0 |
+| 15 | 15.152 | 17.509 | 1.84 | 38.138 | 18.902 | 15.152 | 0 | 0 |
+| 16 | 18.399 | 21.465 | 1.90 | 49.467 | 23.317 | 18.399 | 0 | 0 |
+| 17 | 22.341 | 26.313 | 1.96 | 64.160 | 28.765 | 22.341 | 0 | 0 |
+| 18 | 27.128 | 32.252 | 2.02 | 83.218 | 35.484 | 27.128 | 0 | 0 |
+| 19 | 32.941 | 39.530 | 2.08 | 107.938 | 43.774 | 32.941 | 0 | 0 |
+| 20 | 40.000 | 48.444 | 2.14 | 140.000 | 54.000 | 40.000 | 0 | 0 |
+
+#### T4b. The enemy HP column's working: the stated attacker
+
+| level | door attribute / alpha | grade (one under the map's best) | ordinary sheet sum | deal | Stat growth (melee and gun) | attacker growth | hp_mult | fight length vs level 1 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 7/7 | standard | +0% | 1.00 | 1.000 | 1.0 | 1.0 | 1.00 |
+| 5 | 8/8 | standard | +8% | 2.17 | 1.102 | 2.6 | 2.8 | 1.09 |
+| 6 | 8/8 | fine | +10% | 2.64 | 1.102 | 3.7 | 3.7 | 1.00 |
+| 10 | 9/9 | masterwork | +18% | 5.74 | 1.208 | 10.6 | 10.4 | 0.98 |
+| 15 | 10/10 | masterwork | +28% | 15.15 | 1.319 | 33.3 | 38.1 | 1.15 |
+| 16 | 10/10 | relic | +30% | 18.40 | 1.319 | 47.3 | 49.5 | 1.04 |
+| 20 | 10/10 | relic | +38% | 40.00 | 1.319 | 109.2 | 140.0 | 1.28 |
+
+At level 20 the stated attacker hits x109.2 harder than at level 1; x 1.3 (the fight a little longer, the charter) is 142.0; the PROPOSAL rounds it to 140.
+
+#### T4c. The enemy damage column's working: the stated defender
+
+| level | frail HP (End 1, PT 0) | armour grade | Light armour | damage_mult that keeps its count | damage_mult (proposed) | Soldier rifle hits it survives |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 60 | standard | 3.0 | 1.00 | 1.00 | 4.0 |
+| 5 | 139 | standard | 6.5 | 2.29 | 2.32 | 4.0 |
+| 10 | 396 | masterwork | 22.4 | 6.74 | 6.62 | 4.1 |
+| 15 | 1,121 | masterwork | 59.1 | 18.86 | 18.90 | 4.0 |
+| 20 | 3,160 | relic | 180.0 | 53.89 | 54.00 | 4.0 |
 
 
-Against today: a +6 shooter against Defense 10 expects x0.88 a shot today (85% to hit, a 5% critical at x1.5); with Margins x1.23. **Margins make a specialist about a third faster against a weak foe** and change little against an Elite at Defense 14 to 16. That is the reward Law 2 names; it is not taken back in the enemy HP column (section 2.4).
+### 3.2 The stated attacker and the stated defender (item 10)
 
-## 9. The engine's caps that limit a reward
+- **The stated attacker** (T4b) is a specialist on one door: its door attribute and alpha at the ceiling the gates allow (7 to level 4; 8 from 5, 9 from 10, 10 from 15: ruling B12 puts the gate and the point that uses it on the same level), holding **the grade one step under the map's best**, with **the ordinary sheet bonus a character of that level holds: +2% a level over 1** (+38% at 20: about one mod, one boon and one perk that applies to a plain hit). The map's best grade by level reads rulings 24 and 25: maps 1 and 2 (levels 1 to 5) Fine; maps 3 and 4 (to 9) Masterwork; map 5 and endless maps 6 to 9 (10 to 15) Relic; endless map 10 on (16 on) Celestial. So the stated attacker holds Standard, Fine, Masterwork and Relic in those bands.
+- **The stated defender** (T4c) is the frail character: Endurance 1, Pain Threshold 0, Light armour in the same stated grade. damage_mult keeps it at its level-1 count of a same-level Soldier's rifle hits (four).
+- The hardy defender (Endurance 7, Medium) follows from the same columns and survives more as it levels (T12), because Endurance's base grows with every level on the column: *what a point in Endurance should feel like.*
 
-From `docs/design/proposals/2026-11-21-caps-the-engine-reads.md` "Limits a reward", each checked where it is read:
+### 3.3 Defense and to-hit are level-free (A3); the gap stays
 
-| Cap | Ruling | Reason |
+`defense_plus` and `attack_plus` are 0 at every level (today +6 each at 20, `enemies.json:214`). An enemy's Defense is its tier's, fixed: **vermin 8, minion 9, Soldier 11, Elite 14, Boss 15** (06's; today 10 / 10 / 11 / 12 / 13, `enemies.json:12, :44, :75, :110, :151`). Its to-hit is its tier's `attack_bonus` (today's, kept: +0 / +1 / +3 / +5 / +6). *Reason: every point of skill is a Margin you can see (section 9), and "against an Elite the same roll just lands" holds at every level.* The level gap (`enemies.json:199` `gap`: +1 to hit a level for the higher, -1 for the lower, to 5; `combat.ts:736-742`), the one-hit rule five levels down and the Elite and Boss full-HP guard (`:203`) stay, unchanged.
+
+### 3.4 The tier rows (level 1; HP, armour and companions x0.6, damage factor x1.28)
+
+The rows are T12's last table (level 1 and on the columns). HP and armour are today's x0.6 (vermin 9, minion 42, Soldier 84, Elite 144, Boss 492; armour 0 / 0 / 3 / 6 / 6). **Each tier's `damage` factor x1.28** (vermin 0.64, minion 1.28, Soldier 1.0, Elite 1.344, Boss 1.536). *Reason: the charter's frail character takes three to four hits from a level-1 Soldier (18 a shot through Light armour's 3: four); today it takes five and a half.* This is the one deliberate change in the hit counts against characters.
+
+## 4. The cards (ruling A4)
+
+### 4.1 One rule for the nine
+
+**Stat = k x (1 + 0.10 x (Attribute - 1)) x (1 + 0.05 x Skill)**, the pair the profile or the weapon row names. PROVISIONAL. Each profile's `k` is set so a **normal share** (4 and 4, `rules.json output.floor_reference`) deals at level 1 exactly today's number x0.6: *a character who spread its points sits where it sits today; every point above that is the card's promise, every point below it is missing.* A card's promise holds whatever `k` is: a point is +10% (or +5%) of the 1-point character's number. `factors.melee`, `.thrown` and `.figment` fold into their profiles' `k` and go (and `MELEE_FACTOR`, `combat.ts:46`, `:1537`); the "pin" notes (`rules.json` profile notes) go. `statTerm`'s sum becomes the product of an attribute bracket and a skill bracket, and `normalShareTerm` (the heal floor's reference) the same product.
+
+**A weapon reads its row's pair** (it does today: `weaponMult`): heavy melee Strength x Raw Power; the six light melee rows on Strength x Dexterity; the 17 light blades and three Agility gloves Agility x Dexterity; shields Endurance x Durability; guns, bows and thrown Agility x Dexterity. So **Agility's +10% reaches every Dexterity weapon through the rows, and no blade profile is needed.** Focus weapons and a beast's bite stay on `weapon` (no slope: their door's power is the spell).
+
+### 4.2 The cards, in words (the text keys and the numbers they read)
+
+| Door | Attribute: its card (`attributes.json <id>.player` and `derived`) | Alpha: its card (`skills.json <id>.per_point`) |
 | --- | --- | --- |
-| Target bonuses at most +100% (`VS_CAP`, `output.ts:129`; the label at `combat.ts:1558`) | **Remove the top** (keep the -90% floor, so a hit always does something) | past the cap a seventh perk against a target gives nothing: a point not felt |
-| The critical at most x2.0 (`CRIT_MAX`, `character.ts:853`) | **Replace** with Margins (section 8) | the capped critical is what Law 2 replaces |
-| `SIGIL_CAP` 350, `SIGIL_CAP_CRIT` 500 (`sigil.ts:329`, `magic.ts:646`) | **Remove** | dead: `capParts` returns its parts unchanged; and 350 means nothing on the new scale |
-| Boon cap 50 (`survival.json:219`, `run/power.ts:25`) | **Keep** | a rule a player sees: how many boons a character carries; the Survival drafter may turn it into slots |
-| Starting boon at most 6, shrine token at most 8 (`survival.json:322`, `:438`) | **Keep** | which boons a node offers: a menu, not a held reward |
-| A variant at most 20 worth (`variants.json:8`) | **Keep** | it prices a variant and keeps it the same weapon; it does not hold a player's reward down |
-| The stage's grade ceiling, the vault at most Relic (`survival.json:147`, `:580`) | **Keep** | the chase calendar: a higher grade is found by going deeper |
-| Mod band 0.5 (`survival.json:149`) | **Keep** | which mods a reward offers |
-| Fight budget bands, `max_foes` (`survival.json:63-69`) | **Keep** | the generator's own shape; it is how "the stage changes" |
-| Elites and Bosses at most 4 levels up (`survival.json:61` `elite_up`) | **Replace** by the stage's own enemy levels (the curve, Law 6; the Survival drafter's table) | an enemy's level comes from where it lives, never from the party |
-| Camp budget 300 (`survival.json:42`) | **Keep** | credits, not HP; Leon's ruling (19 Nov) |
-| A melee opener at most +50% (`techniques.json:285` `max_pct`) | **Replace** by the Momentum door's Reach (the door drafter) | a run is a counter; Reach is bought with points, not capped |
-| One heal at most half the target's max HP (`rules.json:1590` `mending.cap_pct`, `output.ts:281`) | **Remove** (question 4) | a healer's full cash-out may save a friend outright; the per-round brake on giving the same target again (`mending.brake`, x1.5 a give) already prices a stream of heals |
-| Devotion XP caps 2 / 2 / 6, the Narrator's 10 (`patrons.json:48`, `:56`) | **Keep** | they pace the chase calendar (Devotion 10 at hour 35), a rule a player sees |
-| Elemental damage taken at most 80% resisted (`rules.json:857`) | **Keep** | a rule a player sees: nothing is immune by stacking |
-| Ambush damage taken at most 60% (`effects/damage.ts:81`) | **Keep** | the same |
-| Damage reduction at most 60% (`rules.json:23` `reduction_cap_pct`) | **Remove** | no reader in the engine |
-| `output.level.reference_hp` (`rules.json:1791`) | **Remove** | the ceilings' unit; no reader in the engine or the client |
+| Guard | **Endurance:** +10 base HP (A5), +10% a plate soaks and a Slam, +10% shield blows, +10% to ignore an injury (`derived` 0 and 1 move from code to data) | **Durability:** +5% a plate soaks and a Slam, +5% shield blows (Reach and verbs: 02) |
+| Momentum | **Strength:** +10% damage with the melee rows that scale with it, +5 kg carried | **Raw Power:** +5% damage with the rows that hit with it (`per_point.numbers.damage` 0.05, now true), +1 to hit |
+| Pressure | **Agility:** +10% damage with Dexterity weapons (guns, bows, light blades, thrown), +0.5 tile an AP, +1 Initiative | **Dexterity:** +5% damage with Dexterity weapons (`numbers.crit` 0.02 becomes `damage` 0.05), +1 to hit with them |
+| Shadow | **Perception:** +10% on a Break (4.3), a Margin worth one point more (A7, section 9), +2 tiles of vision; its "+3% critical damage" and "-10% critical damage taken" go (07 restates what critical damage taken becomes) | **Ingenuity:** +5% on a Break |
+| Sigils | **Intelligence:** +10% Sigil power | **Brain Power:** +5% Sigil power (`numbers.sigil` 0.1 becomes 0.05) |
+| Figments | **Expression:** +10% Figment blows and HP, +10% elemental damage; glyphs 0.1 AP cheaper | **Visualization:** +5% Figment blows and HP, +5% elemental damage |
+| Bonds | **Insight:** +10% healing and shields given, +8 max MP (x mp), Soul magic 5% cheaper | **Empathy:** +5% healing and shields given (`numbers.heal` 0.06 becomes 0.05) |
+| Outbursts | **Determination:** +10% Soul power, +12 max MP (x mp), +5% mana syphoned (04) | **Will Power:** +5% Soul power (`numbers.soul` 0.1 becomes 0.05; its +10% syphoned goes, 04) |
+| Prayer | **Virtue:** +10% Blessing power (A4: the card gains it); Hymns return sooner (04's wait) | **Faith:** +5% Blessing power (`numbers.blessing` 0.1 becomes 0.05) |
 
-Structural rules a player sees (the Elite and Boss guard, the one-hit rule five levels down, the gap read to 5 levels, AP 2 to 9, Attribute and skill caps, Echo 3, the Strain limit, Light armour's cap for Forlorn Hope) all **stay**.
+`repair` (Expression x Proficiency) takes the same slopes: Proficiency is Expression's beta, and its +5% on a repair is its own line (B20: a beta counts from its first point).
 
-#### T10. The engine's caps that limit a reward (docs/design/proposals/2026-11-21-caps-the-engine-reads.md): see section 9 of 01-scale.md for the rulings
+### 4.3 One pair to a hit
+
+A hit reads **one** attribute term and **one** skill term (A8 lists "attribute" and "skill" once each): **the pair of the door that cashes it out, else its weapon's.** A Break from Hidden reads Perception and Ingenuity in place of its weapon's pair; a plain shot from the same gun reads Agility and Dexterity. *Reason: a Break is what the Shadow door deals (A4), and a hit carrying two attribute terms would multiply a two-attribute character's cards twice: a level-20 Break would show six digits with nothing else on the sheet.* This is a reading of A4 and A8 put to the lead (question 1). It replaces 03's `attr:perception` term in the Break's multiplier.
+
+#### T5. The profiles after ruling A4: attribute +10% a point above 1, alpha +5% a point, the two multiplied; k set so a normal share (4 and 4) deals today's number x0.6 at level 1
+
+| profile | reads | attr | skill | today at 4/4 | k new | level column | grade from | Stat at 1/0 | at 7/7 | at 10/10 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| melee | the row's scales_with Attribute and hits_with skill (heavy and light melee, unarmed, shields) | 0.1 | 0.05 | 1.791 | 1.1483 | deal | the weapon | 1.148 | 2.480 | 3.273 |
+| gun | the row's pair: Agility and Dexterity | 0.1 | 0.05 | 1.388 | 0.8894 | deal | the weapon | 0.889 | 1.921 | 2.535 |
+| bow | the row's pair: Agility and Dexterity (new row; bows read `weapon` today) | 0.1 | 0.05 | 1.500 | 0.9615 | deal | the weapon | 0.962 | 2.077 | 2.740 |
+| thrown | the row's pair: Agility and Dexterity (new row; factors.thrown folded in) | 0.1 | 0.05 | 1.050 | 0.6731 | deal | the weapon | 0.673 | 1.454 | 1.918 |
+| weapon | nothing (focus weapons, a beast's bite): unchanged | 0 | 0 | 1.500 | 1.5000 | deal | the weapon | 1.500 | 1.500 | 1.500 |
+| physical | Strength and Raw Power (Hurl, Grenadier's Arm) | 0.1 | 0.05 | 1.500 | 0.9615 | deal | none | 0.962 | 2.077 | 2.740 |
+| guard | Endurance and Durability (new row: a plate's soak) | 0.1 | 0.05 | 1.000 | 0.6410 | deal | the worn armour | 0.641 | 1.385 | 1.827 |
+| sigil | Intelligence and Brain Power | 0.1 | 0.05 | 1.700 | 1.0897 | deal | the Evoker | 1.090 | 2.354 | 3.106 |
+| elemental | Expression and Visualization | 0.1 | 0.05 | 1.000 | 0.6410 | deal | the Evoker | 0.641 | 1.385 | 1.827 |
+| figment | Expression and Visualization (factors.figment folded in) | 0.1 | 0.05 | 1.350 | 0.8654 | deal | the Visualizer | 0.865 | 1.869 | 2.466 |
+| figment_hp | Expression and Visualization | 0.1 | 0.05 | 0.560 | 0.3590 | enemy damage_mult (figments.json level.hp) | the Visualizer | 0.359 | 0.775 | 1.023 |
+| soul | Determination and Will Power | 0.1 | 0.05 | 1.550 | 0.9936 | deal | the Emanator | 0.994 | 2.146 | 2.832 |
+| blessing | Virtue and Faith | 0.1 | 0.05 | 1.358 | 0.8702 | deal | Devotion | 0.870 | 1.880 | 2.480 |
+| healing | Insight and Empathy | 0.1 | 0.05 | 1.977 | 1.2671 | mend | the Attuner | 1.267 | 2.737 | 3.611 |
+| mend | Insight and Empathy | 0.1 | 0.05 | 1.977 | 1.2671 | mend | the Attuner | 1.267 | 2.737 | 3.611 |
+| tend | Insight and Empathy (a damage amount on it reads deal) | 0.1 | 0.05 | 5.311 | 3.4044 | mend | the Attuner | 3.404 | 7.353 | 9.702 |
+| sigil_mend | Intelligence and Brain Power | 0.1 | 0.05 | 2.313 | 1.4828 | mend | the Evoker | 1.483 | 3.203 | 4.226 |
+| soul_mend | Determination and Will Power | 0.1 | 0.05 | 1.840 | 1.1797 | mend | the Emanator | 1.180 | 2.548 | 3.362 |
+| blessing_mend | Virtue and Faith | 0.1 | 0.05 | 2.045 | 1.3108 | mend | Devotion | 1.311 | 2.831 | 3.736 |
+| repair | Expression and Proficiency (the beta: Proficiency's own line) | 0.1 | 0.05 | 1.977 | 1.2671 | mend | none | 1.267 | 2.737 | 3.611 |
+| flat | nothing: unchanged | 0 | 0 | 1.000 | 1.0000 | deal | none | 1.000 | 1.000 | 1.000 |
+
+#### T5b. The nine attribute cards and the nine alpha cards: what one point is worth (the reference action, Standard grade, the other side of the pair at 4)
+
+| door | attribute | its card | reference action | one attribute point adds, L1 / L10 / L20 | alpha | its card | one alpha point adds, L1 / L10 / L20 | profiles (rules.json output.profiles) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Guard | endurance | +10 base HP, +10% a plate soaks and a Slam, +10% shield blows, +10% to ignore an injury | a plate (3.6) | 0.3 / 1.6 / 11.1 | durability | +5% a plate soaks and a Slam, +5% shield blows | 0.1 / 0.9 / 6.0 | guard; melee on shield rows |
+| Momentum | strength | +10% melee damage (rows that scale with Strength), +5 kg carried | a maul blow (27) | 3.7 / 21.4 / 148.8 | raw_power | +5% melee damage (rows that hit with Raw Power) | 2.0 / 11.6 / 80.6 | melee; physical |
+| Pressure | agility | +10% damage with Dexterity weapons (guns, bows, light blades, thrown), +0.5 tile an AP, +1 Initiative | a service rifle shot (18) | 1.9 / 11.0 / 76.8 | dexterity | +5% damage with Dexterity weapons, +1 to hit with them | 1.0 / 6.0 / 41.6 | gun; bow; thrown; melee on Agility rows |
+| Shadow | perception | +10% on a Break; +1 point on a Margin's worth (A7); +2 tiles of vision | a Break's rifle shot (18) | 1.9 / 11.0 / 76.8 | ingenuity | +5% on a Break | 1.0 / 6.0 / 41.6 | the Break's pair (section 4.3) |
+| Sigils | intelligence | +10% Sigil power | a FIRE glyph (18) | 2.4 / 13.5 / 94.2 | brain_power | +5% Sigil power | 1.3 / 7.3 / 51.0 | sigil; sigil_mend |
+| Figments | expression | +10% Figment blows and HP, +10% elemental damage; glyphs 0.1 AP cheaper | a beast's claws (18) | 1.9 / 10.7 / 74.8 | visualization | +5% Figment blows and HP, +5% elemental damage | 1.0 / 5.8 / 40.5 | figment; figment_hp; elemental |
+| Bonds | insight | +10% healing and shields given, +8 max MP (x mp), 5% cheaper Soul magic | a Mend (2.25) | 0.9 / 5.8 / 44.5 | empathy | +5% healing and shields given | 0.5 / 3.1 / 24.1 | healing; mend; tend |
+| Outbursts | determination | +10% Soul power, +12 max MP (x mp), +5% mana syphoned | the Damage school (22.2) | 2.6 / 15.2 / 105.9 | will_power | +5% Soul power | 1.4 / 8.2 / 57.4 | soul; soul_mend |
+| Prayer | virtue | +10% Blessing power; Hymns return sooner (04) | Judgement (34) | 3.6 / 20.4 / 142.0 | faith | +5% Blessing power | 1.9 / 11.0 / 76.9 | blessing; blessing_mend |
+
+Endurance's HP line on its own (Pain Threshold 4): one point is +12 / 71 / 496 HP at levels 1 / 10 / 20. Insight's and Determination's MP lines: +8 and +12 MP at level 1, x mp after.
+
+
+## 5. Character HP (ruling A5)
+
+**maxHp = round((60 + 10 x (Endurance - 1) + (level - 1)) x (1 + 0.06 x Pain Threshold) x deal(level))**, perks and traits through `fx('hp')` as today. PROVISIONAL. The numbers move from code (`character.ts:798`, `:801`) to data: `attributes.json endurance.derived[0]` (base 60, `per_point_above_1` 10, a level 1) and `skills.json pain_threshold per_point.numbers.hp_pct` 0.06 (replaces `hp_per_level` 2). *Reasons: 60 is four Soldier hits for the frail and 120 at Endurance 7 is twice that (the charter); every Pain Threshold point is +6% of the bar from the first point, the same share at every level.* Pain Threshold's other lines (its plate feed, its elemental resistance) are 02's.
+
+#### T6. Character HP = (60 + 10 x (Endurance - 1) + 1 x (level - 1)) x (1 + 0.06 x Pain Threshold) x deal(level)
+
+| build | L1 | L5 | L10 | L15 | L20 |
+| --- | --- | --- | --- | --- | --- |
+| End 1, PT 0 | 60 | 139 | 396 | 1,121 | 3,160 |
+| End 1, PT 5 | 78 | 181 | 515 | 1,458 | 4,108 |
+| End 1, PT 10 | 96 | 223 | 634 | 1,794 | 5,056 |
+| End 4, PT 0 | 90 | 204 | 568 | 1,576 | 4,360 |
+| End 4, PT 5 | 117 | 266 | 739 | 2,049 | 5,668 |
+| End 4, PT 10 | 144 | 327 | 909 | 2,521 | 6,976 |
+| End 7, PT 0 | 120 | 270 | 740 | 2,030 | 5,560 |
+| End 7, PT 5 | 156 | 350 | 963 | 2,639 | 7,228 |
+| End 7, PT 10 | 192 | 431 | 1,185 | 3,249 | 8,896 |
+| End 10, PT 0 | 150 | 335 | 913 | 2,485 | 6,760 |
+| End 10, PT 5 | 195 | 435 | 1,186 | 3,230 | 8,788 |
+| End 10, PT 10 | 240 | 536 | 1,460 | 3,976 | 10,816 |
+
+Against today (in brackets; today's units, before x0.6):
+
+| build | L1 | L10 | L20 |
+| --- | --- | --- | --- |
+| End 1, PT 0 | 60 (100) | 396 (257) | 3,160 (914) |
+| End 4, PT 4 | 112 (145) | 705 (464) | 5,406 (1,838) |
+| End 7, PT 0 | 120 (190) | 740 (416) | 5,560 (1,336) |
+| End 10, PT 10 | 240 (235) | 1,460 (815) | 10,816 (3,328) |
+
+| level | HP at End 4, PT 4 | one Endurance point | one Pain Threshold point |
+| --- | --- | --- | --- |
+| 1 | 112 | +12 (11.1%) | +5 (4.8%) |
+| 10 | 705 | +71 (10.1%) | +34 (4.8%) |
+| 20 | 5,406 | +496 (9.2%) | +262 (4.8%) |
+
+
+## 6. MP and every cost (ruling A6)
+
+**The pool:** `Max MP = (40 + 12 x (Determination - 1) + 8 x (Insight - 1)) x mp(level)` (04's), its numbers moved from code (`character.ts:860`) to `attributes.json determination` and `insight` `derived`. *Reason: about four full cash-outs a pool at every level, so a Syphon, a design's size and the MP left are a real choice at level 1, 10 and 20 (today's pool holds six or more and is never felt).*
+
+**The rule for a cost, one per currency** (every cost in the game is in T7b, with its data key):
+
+1. **AP is the clock** and never scales (6 a turn, 2 to 9; `rules.json combat.ap`, `effects/ap.ts:16-20`).
+2. **A count** (plates, chain, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion) never scales with the level: the pool grows by points (Reach), the bill by what you build.
+3. **MP, by the design:** an Outburst school, module, tone and second school are flat; a Pump costs a tenth of the Begin each (04), so the bill grows with the design, never with the level.
+4. **MP, on the column:** every other MP price (Tending, the Mender's moves, perks, Syphon's gain, an enemy caster's pool) is a number x `mp` at the payer's level. Its number is the door drafter's (04, 07, 06), restated on the new pool.
+5. **HP you pay yourself is a share of your own max HP:** Strain's burn **6% a point over** (A6), Mana Shock 25% (kept), a feeling's HP price and Shame's pour 6%, a Flux overload 7% a Flux over. The share is today's number over the old reference bar (145, `mending.gate.hp`), to a whole percent. *Reason: a price in blood costs the same share of your bar at every level and for every build.*
+6. **HP you deal to someone else** (a trap, a barrel, a hazard, a tick, Redline's hurt to its own Figment) is x0.6 on the dealer's column.
+
+#### T7a. The MP pool: (40 + 12 x (Determination - 1) + 8 x (Insight - 1)) x mp(level)
+
+| build | L1 | L5 | L10 | L15 | L20 | today (every level) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Det 1, Ins 1 | 40 | 50 | 62 | 74 | 86 | 100 |
+| Det 4, Ins 4 | 100 | 124 | 154 | 184 | 214 | 400 |
+| Det 7, Ins 2 | 120 | 149 | 185 | 221 | 257 | 575 |
+| Det 2, Ins 7 | 100 | 124 | 154 | 184 | 214 | 325 |
+| Det 10, Ins 4 | 172 | 213 | 265 | 316 | 368 | 850 |
+| Det 10, Ins 10 | 220 | 273 | 339 | 405 | 471 | 1,000 |
+
+#### T7b. Every cost in the game, its data key and its rule
+
+Rules: **clock** (AP, never scales); **count** (never scales: the pool grows by points, the bill by what you build); **design** (MP, flat: it grows with the design, never with the level); **mp** (MP, x the `mp` column at the payer's level); **share** (HP paid by yourself: a share of your own max HP); **deal** (HP dealt to someone else: x0.6 and the dealer's column).
+
+| cost | data key | today | new (PROVISIONAL) | rule |
+| --- | --- | --- | --- | --- |
+| AP a turn, every action's AP | rules.json combat.ap; each action's `ap` / `ap_cost` | 6 a turn, 2 to 9 | unchanged | clock |
+| Max MP | character.ts:860 `MP_BASE`... (typed) to attributes.json determination and insight `derived` | 100 + 75 x (Det - 1) + 25 x (Ins - 1) | (40 + 12 x (Det - 1) + 8 x (Ins - 1)) x mp (04) | mp |
+| an Outburst school | soul_modules.json schools[].base_cost | damage 20, buff 20, control 25, status 20 | unchanged | design |
+| a module, a tone, a second school | soul_modules.json items[].cost, tones[].cost, second_school.cost; rules.json mana.soul.design.second_school_extra_cost | modules 5 to 20, tones 5, second school 10 | unchanged | design |
+| a Pump | soul_modules.json cycle.pump_mp.share_per_stage (read at magic.ts:793-807) | 0.1 of the Begin for each stage it reaches | a tenth of the Begin each (04), so the price grows with the design | design |
+| Syphon | rules.json mana.meter.bands[].syphon_mp; syphon_bonus_pct (:377); skills.json will_power per_point.numbers.syphon; character.ts:903 `syphonMult` (typed) | 30/60/90/120 x (1 + 0.1 x (Det - 1) + 0.1 x Will Power) | 10 / 20 / 30 / 40 x (1 + 0.05 x (Det - 1)) x mp (04); Will Power leaves it | mp |
+| the air's Soul cost | rules.json mana.meter.bands[].soul_cost_mult | 1.5/1.0/0.75/0.5 | unchanged | a share |
+| Mend, Mend Yourself, Shield, Field Surgery | tending.json items[tend.mend / tend.mend_self / tend.shield / tend.field_surgery].effects[0].res.mp.base | 24, 24, 30, 45 (Empathy 9: -6) | 12, 12, 15, 30; Empathy 9: a quarter less (04) | mp |
+| a Bonded ally goes Down | tending.json bond.down_mp | 10 | 8 (04) | mp |
+| Triage, Inspire, Rally (the Mender) | classes.json move_pool.moves[triage / inspire].effects[0].res.mp; base[bard].ranks.III.moves[rally].effects[0].res.mp | 18, 30, 60 | 10, 12, 35 (04) | mp |
+| perks that cost MP | perks.json items[nobody_left_behind / steady_hands / pull_together] effects res.mp | 36; 15, 18; 12, 15 | x0.5, as Tending (07 restates) | mp |
+| an enemy caster's pool | enemies.json soul_casters[].mp | 80, 140, 220 | x mp at its level; 06 restates the number on the new pool | mp |
+| Strain | soul_modules.json cycle.begin_strain, swell_strain, flooded_strain, no_emanator_strain; items[].strain_extra; feelings.json items[].pour.strain; strain.limit | Begin 1, swell 1, Flooded 2, no Emanator 4; limit 3 + Composure steps | unchanged | count |
+| Strain's burn | soul_modules.json strain.burn_per_point (magic.ts:734 `STRAIN_BURN`); text rules.json:1486 | 8 HP a point over, x scale | 6% of max HP a point over (A6); the key becomes `burn_share` 0.06 and the text reads it | share |
+| Mana Shock | soul_modules.json strain.shock.hp_share | 25% of max HP | unchanged | share |
+| a feeling bought with HP | feelings.json price.hp_per_step | 8 HP a step | 6% of max HP a step | share |
+| Shame's pour | feelings.json items[shame].pour.self_damage | 8 HP | 6% of max HP | share |
+| Flux | sigils.json items[].flux; rules.json mana.sigil.flux.safe_max | 1 a glyph (2 for TWICE); safe 6 | unchanged in the rule (03 sets the limit by Rumination) | count |
+| Flux overload | rules.json mana.sigil.flux.overload.damage_per_flux_over; output.amounts.flux_overload | 10 true damage a Flux over | 7% of max HP a Flux over | share |
+| a glyph's charge, a core | sigils.json items[].charge; rules.json mana.cores.*.charge; skills.json brain_power per_point.numbers.charge | words 1 to 2; cores 5 / 10 / 20 | unchanged | count |
+| a Figment's charge, upkeep, the Visualizer's core | figments.json forms[].charge, trait_charge, upkeep, visualizer.charge | forms 1 to 4, traits 1, core 10 | unchanged in the rule (03 sets the upkeep) | count |
+| Shadow spent | shadow.json items[].effects res.shadow; forks.json | 1 to 2 | unchanged | count |
+| plates spent | skills.json durability unlocks res.guard; techniques.json rules.guard.interpose_cost, items[shield_bash].numbers.guard_cost | Challenge 1, Slam 2, Interpose 1, Shield Bash 1 | unchanged in the rule (02 sets Slam to all) | count |
+| Momentum spent | techniques.json rules.momentum.strike_cost, opener_cost; items[].numbers.momentum_cost | 1, 1 | unchanged | count |
+| pips spent | techniques.json rules.pressure.take_cost | 2 | unchanged in the rule (02 makes a Take spend all) | count |
+| Devotion spent | patrons.json prayer.miracle.devotion_cost_levels | 5 levels | unchanged (04 adds the Push's XP) | count |
+| Echo | rules.json echo | 1 a reroll, 3 at most | unchanged | count |
+| Redline (the Rigger) hurts its Figment | classes.json base[trickster].ranks.II.moves[overclock].amounts.strain.base | 5 true damage | 3.0 on the flat profile (deal) | deal |
+| a trap, a hazard, a barrel, burning, bleeding | objects.json items[].trap / hazard / explodes.damage; conditions.json items[].amounts.tick | T2b | x0.6; the dealer's column (a hazard with no dealer: the fight's level on damage_mult) | deal |
+
+What the pool buys (04's typical designs; a full cash-out is the Begin and a tenth of it for each Pump to Reach):
+
+| level | Channeler | pool | a design's Begin | a full cash-out | full cash-outs a pool | a Mend (12 x mp) | Mends a pool |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Det 7, Ins 2 | 120 | 25 | 35.0 | 3.4 | 12 | 10.0 |
+| 10 | Det 9, Ins 3 | 234 | 45 | 63.0 | 3.7 | 18 | 12.7 |
+| 20 | Det 10, Ins 4 | 368 | 75 | 112.5 | 3.3 | 26 | 14.3 |
+
+
+## 7. A plate and armour on the new scale (item 6)
+
+**One plate soaks `3.6 x Stat(guard) x deal(level) x the worn armour's grade`**, then Pain Threshold's feed (02's, `effects/feed.ts doorFeed`), read at the one site (`guardSoak`, `physical/core.ts:121`) by the soak and by the Slam. `guard` is a new profile row (data): Endurance x Durability on the one card rule, `k` 0.641 so a normal share (4 and 4) soaks today's 6 x0.6 = 3.6. PROVISIONAL. *Reason: a plate is what the wall is made of: the Guard door's attribute and alpha make it thicker, as every card makes its door bigger, and its armour's grade hardens it as it hardens the armour value.* (critic-consistency S8 asked for `3.6 x deal x (1 + 0.1 x (End - 1)) x feed`; this is that, with Durability's +5% (A4) and the normal-share pin every profile has.) Reach, Bite and the feed are 02's.
+
+**Armour values:** `rules.json combat.armor.classes[].value` x0.6 (Light 3, Medium 6, Heavy 9, Assault 12, Juggernaut 15, Breacher plate 10.8), x `deal` at the wearer's level, x the piece's grade (`rules.json rarity.<grade>.arm`). **Cover:** `combat.attack.cover.half.hp` 18 and `.full.hp` 48, x `deal` at the fight's level, as objects are today.
+
+#### T8. One plate's soak = 3.6 x Stat(guard: Endurance, Durability) x deal(level) x the worn armour's grade (then Pain Threshold's feed, 02's)
+
+| build | L1 | L5 | L10 | L15 | L20 | L20 Celestial |
+| --- | --- | --- | --- | --- | --- | --- |
+| End 1, Dur 0 | 2.3 | 5.0 | 13.2 | 35.0 | 92.3 | 161.5 |
+| End 4, Dur 4 | 3.6 | 7.8 | 20.7 | 54.5 | 144.0 | 252.0 |
+| End 7, Dur 7 | 5.0 | 10.8 | 28.6 | 75.5 | 199.4 | 348.9 |
+| End 10, Dur 10 | 6.6 | 14.3 | 37.7 | 99.7 | 263.1 | 460.4 |
+
+A same-level Soldier's rifle hit for comparison: 18 / 119 / 970 at levels 1 / 10 / 20.
+
+#### T8b. Armour values: class value x0.6 x deal(level) x the grade
+
+| class | today | new at L1 | L1 Standard | L1 Fine | L10 Masterwork | L10 Relic | L20 Relic | L20 Celestial |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Light | 5 | 3.0 | 3.0 | 3.4 | 22.4 | 25.8 | 180.0 | 210.0 |
+| Medium | 10 | 6.0 | 6.0 | 6.9 | 44.8 | 51.7 | 360.0 | 420.0 |
+| Heavy | 15 | 9.0 | 9.0 | 10.3 | 67.2 | 77.5 | 540.0 | 630.0 |
+| Assault | 20 | 12.0 | 12.0 | 13.8 | 89.5 | 103.3 | 720.0 | 840.0 |
+| Juggernaut | 25 | 15.0 | 15.0 | 17.2 | 111.9 | 129.1 | 900.0 | 1,050.0 |
+| Breacher plate | 18 | 10.8 | 10.8 | 12.4 | 80.6 | 93.0 | 648.0 | 756.0 |
+
+An enemy's armour: the tier's value x0.6 x armour_mult (= deal):
+
+| tier | today | new | L1 | L5 | L10 | L15 | L20 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vermin | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+| minion | 0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+| soldier | 5 | 3.0 | 3.0 | 6.5 | 17.2 | 45.5 | 120.0 |
+| elite | 10 | 6.0 | 6.0 | 13.0 | 34.4 | 90.9 | 240.0 |
+| boss | 10 | 6.0 | 6.0 | 13.0 | 34.4 | 90.9 | 240.0 |
+
+
+## 8. The grade ladder (ruling A9; item 7)
+
+The one ladder (`rules.json rarity.<grade>`: `dmg`, `arm`, `acc`), read by four things:
+
+- **Weapons:** damage and to-hit, as `att.dmgMult` reads rarity today (`combat.ts:1536`).
+- **Armour:** the armour value and a plate's soak (`bodyArmourValue` x `armOf`, `character.ts:796`).
+- **The four foci:** Sigils by the Evoker's grade, Outbursts by the Emanator's, Figments by the Visualizer's, Bonds and Tending by the Attuner's (`focusRarity`, `character.ts:1086`, exists). The grade's damage, heal and to-hit go on the door's events made with that focus: each rarity row carries them under `with_this` (ENGINE-HOOKS: "a door's event ... with that door's focus"), collected by `effects/collect.ts:220`, as 07 proposes.
+- **Devotion, the faithful's grade:** standing 3 / 5 / 7 / 10 counts as Fine / Masterwork / Relic / Celestial for prayers (`patrons.json devotion.grade_at`). Prayers have no roll, so only the multiplier applies. *Reason: the faithful's gear is its standing, earned by deeds instead of credits.* Devotion starts at 0 (ruling 19); its curve is 05's.
+
+Masterwork adds a mod slot; Relic one property, Celestial two, and **neither costs boon room** (07 owns the slots and properties). Which grade a map finds and sells is rulings 24 to 26 (05, 06, 07 own it; section 3.2 reads it).
+
+#### T9. The grade ladder (A9): one row per grade, read by weapons, armour, the four foci and Devotion
+
+| grade | today (dmg, acc) | weapon damage | weapon to hit | armour value (and a plate's soak) | Evoker, Emanator, Visualizer, Attuner | Devotion (the faithful's grade; prayers have no roll) | also |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| standard | x1, +0 | x1.0 | +0 | x1.0 | x1.0, +0 to hit (a spell with a roll) | standing 0 to 2: x1 |  |
+| fine | x1, +1 | x1.15 | +1 | x1.15 | x1.15, +1 to hit (a spell with a roll) | standing 3: x1.15 |  |
+| masterwork | x1, +2 | x1.3 | +2 | x1.3 | x1.3, +2 to hit (a spell with a roll) | standing 5: x1.3 | a mod slot more |
+| relic | x1, +2 | x1.5 | +3 | x1.5 | x1.5, +3 to hit (a spell with a roll) | standing 7: x1.5 | one property (no boon room) |
+| celestial | x1, +2 | x1.75 | +3 | x1.75 | x1.75, +3 to hit (a spell with a roll) | standing 10: x1.75 | two properties (no boon room) |
+
+
+## 9. Margins (ruling A7; item 8)
+
+**The rule.** Every full 4 a roll beats the Defense or the TN by is a **Margin**; a **natural 20** lands and adds **two** more (a roll in a widened critical range counts as a critical: 07). A Margin adds **a quarter of the plain hit's own damage plus one percentage point a point of Perception** (Perception 1: 26%, Perception 10: 35%; the ruling's "25% to 35%" read as "+1 point for each point"). The plain hit is the weapon's or spell's damage before the cash-out's multiplier, so **Margins add to the cash-out factor, they do not multiply it** (section 10). PROVISIONAL. Data: `rules.json rolls.margins {step 4, per 0.25, per_perception 0.01, critical 2}`.
+
+**Where the engine resolves it.** The judge of every d20 (`packages/engine/src/rolls.ts:78`; its result already carries `total`, `tn` and `nat`, `:50-58`) gains `margins`. A weapon attack's roll is `combat.ts:1644-1648`; its damage term goes where the critical term is pushed today (`combat.ts:1542-1544`), the same at a Sigil's roll (`sigil.ts:334-339`) and an Outburst's Bolt and Lance (`classes/soul.ts:36-39`). A landed action (a prayer, a heal, a Smite, a Slam's push, a Snap) has no roll and no Margins. A check against a TN reports its Margins with the result (the Narrator reads "beat it by 8: two Margins" as degree). Enemies get Margins as characters do.
+
+**What goes:** `CRIT_BASE`, `CRIT_MAX`, `CRIT_PER_PERCEPTION`, `CRIT_PER_DEXTERITY` (`character.ts:853-855`), `critMult`, `soul_modules.json damage.critical`, `sigils.json grammar.critical`, Perception's "+3% critical damage" and Dexterity's "+2% critical damage" lines. Every perk, move and gear field that fed the critical (`crit_damage`, `ctx.critBonus`, `crit_taken`, the crit ranges) is restated on Margins by 07.
+
+#### T10. Margins: one Margin a full 4 over the Defense or TN, 2 more on a natural 20; each adds (0.25 + 0.01 x Perception) of the plain hit
+
+How many of the 20 faces give each count of Margins (a natural 1 always misses):
+
+| Defense | to hit | miss | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Soldier 11 | +0 | 10 | 4 | 4 | 1 | 0 | 1 | 0 | 0 | 0 |
+| Soldier 11 | +3 | 7 | 4 | 4 | 4 | 0 | 0 | 1 | 0 | 0 |
+| Soldier 11 | +6 | 4 | 4 | 4 | 4 | 3 | 0 | 1 | 0 | 0 |
+| Soldier 11 | +9 | 1 | 4 | 4 | 4 | 4 | 2 | 0 | 1 | 0 |
+| Soldier 11 | +12 | 1 | 1 | 4 | 4 | 4 | 4 | 1 | 0 | 1 |
+| Elite 14 | +0 | 13 | 4 | 2 | 0 | 1 | 0 | 0 | 0 | 0 |
+| Elite 14 | +3 | 10 | 4 | 4 | 1 | 0 | 1 | 0 | 0 | 0 |
+| Elite 14 | +6 | 7 | 4 | 4 | 4 | 0 | 0 | 1 | 0 | 0 |
+| Elite 14 | +9 | 4 | 4 | 4 | 4 | 3 | 0 | 1 | 0 | 0 |
+| Elite 14 | +12 | 1 | 4 | 4 | 4 | 4 | 2 | 0 | 1 | 0 |
+| Boss 15 | +0 | 14 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| Boss 15 | +3 | 11 | 4 | 4 | 0 | 0 | 1 | 0 | 0 | 0 |
+| Boss 15 | +6 | 8 | 4 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
+| Boss 15 | +9 | 5 | 4 | 4 | 4 | 2 | 0 | 1 | 0 | 0 |
+| Boss 15 | +12 | 2 | 4 | 4 | 4 | 4 | 1 | 0 | 1 | 0 |
+
+Expected worth of one attack, in plain hits (misses count 0; Perception 1, a Margin 0.26; in brackets Perception 10, 0.35):
+
+| to hit | Defense 8 (vermin) | 11 (Soldier) | 14 (Elite) | 15 (Boss) |
+| --- | --- | --- | --- | --- |
+| -2 | 0.71 (0.76) | 0.48 (0.50) | 0.29 (0.30) | 0.23 (0.24) |
+| -1 | 0.78 (0.84) | 0.55 (0.59) | 0.35 (0.37) | 0.29 (0.30) |
+| +0 | 0.87 (0.95) | 0.63 (0.67) | 0.41 (0.44) | 0.35 (0.37) |
+| +1 | 0.96 (1.05) | 0.71 (0.76) | 0.48 (0.50) | 0.41 (0.44) |
+| +2 | 1.05 (1.15) | 0.78 (0.84) | 0.55 (0.59) | 0.48 (0.50) |
+| +3 | 1.14 (1.25) | 0.87 (0.95) | 0.63 (0.67) | 0.55 (0.59) |
+| +4 | 1.24 (1.38) | 0.96 (1.05) | 0.71 (0.76) | 0.63 (0.67) |
+| +5 | 1.34 (1.49) | 1.05 (1.15) | 0.78 (0.84) | 0.71 (0.76) |
+| +6 | 1.44 (1.61) | 1.14 (1.25) | 0.87 (0.95) | 0.78 (0.84) |
+| +7 | 1.50 (1.68) | 1.24 (1.38) | 0.96 (1.05) | 0.87 (0.95) |
+| +8 | 1.56 (1.77) | 1.34 (1.49) | 1.05 (1.15) | 0.96 (1.05) |
+| +9 | 1.63 (1.86) | 1.44 (1.61) | 1.14 (1.25) | 1.05 (1.15) |
+| +10 | 1.69 (1.95) | 1.50 (1.68) | 1.24 (1.38) | 1.14 (1.25) |
+| +11 | 1.74 (2.02) | 1.56 (1.77) | 1.34 (1.49) | 1.24 (1.38) |
+| +12 | 1.81 (2.10) | 1.63 (1.86) | 1.44 (1.61) | 1.34 (1.49) |
+
+
+Against today: a +6 shooter against Defense 11 expects x0.83 a shot today (80% to hit, a 5% critical at x1.5); with Margins x1.14 (Perception 1). **Margins make a skilled attacker about a third faster against a weak foe and change little against an Elite or a Boss.** That is the reward Law 2 names; it is not taken back in the enemy HP column.
+
+## 10. The stack rule and the top of the scale (ruling A8; item 9)
+
+### 10.1 The stack rule, as a formula
+
+**dealt = max(1, floor( B x Lv x Stat x Gr x (C + per x m) x (1 + Σ) ) - armour)**
+
+| Term | What it is | Kind |
+| --- | --- | --- |
+| B | the base: the weapon row, the Subject, the school, the prayer, the plate (with its `flat` adds) | |
+| Lv | the level column of the amount's kind and dealer (section 3.1) | multiplies |
+| Stat | `k x (1 + 0.10 x (A - 1)) x (1 + 0.05 x S)`, one pair (4.3) | multiplies (the attribute and the skill) |
+| Gr | the grade of the weapon, the armour, the focus or the Devotion (section 8) | multiplies |
+| C | the cash-out factor: 1 for a plain hit; the door's own formula on a cash-out (each door file's, written on `S(n) = (1.2^n - 1) / 0.2`) | multiplies |
+| per x m | Margins: m of them, each `per` = 0.25 + 0.01 x Perception (section 9); **added to C**, so a Margin is a quarter of the plain hit whatever the cash-out | adds to C |
+| Σ | **one sum** of everything else on the sheet and the field: perks, class moves and passives, faith (Judged, Witnessed, a prayer's own bonus against a status), the target's conditions and position (Marked, Prone, an ambush, a Break's fresh-ambush +50%), boons, mods, Relic and Celestial properties, special rounds, a technique's own bonus, Weakened and Sharpened, wear; penalties are negative parts of the same sum | adds; held at -90% at least, **no top** |
+
+PROVISIONAL. *Reason a player sees: the five things that make a character bigger (its level, its two cards, its gear's grade and the counter it built) each multiply, so each is felt in full; everything else adds, so a seventh perk is worth what its card says and the sheet can never run away.* In code: `stackDamage` (`output.ts:131`) multiplies the terms of the five kinds and adds every other term into Σ; today's `ctx.mults` (Pain Eater, the ambush, Weakened, technique, ammunition) move into the sum. `VS_CAP` goes (A10).
+
+### 10.2 The top-of-scale check
+
+T11 computes, for each door, a level-20 specialist (door attribute and alpha 10; where the door rolls, Perception 10 too: two attributes at 10 are legal by B11), Celestial: the **plain hit**, the **full cash-out** at Reach 10 and Bite at 9 (no Margins, no sum), the **largest legal hit** (the door's Push, the most Margins a roll can give, no sum), and the same with **a squad's set-up** (07 section 5.4's sources, added as A8 says: +220%). Its last column is the **sum that door's largest hit can carry under 100,000**. Each door's Reach and Bite are read from the current 02, 03 and 04 drafts, as the "Sources used" table names.
+
+#### T11. The top of the scale: a level-20 specialist of each door (door attribute and alpha 10, Perception 10 where it rolls: two attributes at 10 are legal by B11), Celestial
+
+Margins at most: a natural 20 at +16 to hit (skill +9, Celestial +3, a foe four levels under +4) against a vermin's Defense 8: 9 Margins at 0.35 each = +3.15 plain hits. Against a same-level Soldier: 7 (+2.45). The squad's set-up is 07 section 5.4's list, added (A8): +220%.
+
+| door | plain hit | plain | full cash-out (Reach 10) | the same in Relic | Bite at 9 for five digits | largest hit, no sum (Push, most Margins) | with the squad's +220% | sum it may carry under 100,000 | flags |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Guard: Slam (per foe) | a ram plate blow | 4,124 | 6,400 | 5,486 | Bite 2.19 | 8,325 | 26,639 | +1101% | cash-out 4 digits |
+| Momentum: Coup | an Ork wreck saw blow | 6,414 | 35,411 | 30,352 | holds | 63,661 | 203,715 | +57% | - |
+| Pressure: Dead Centre | a long rifle shot | 4,968 | 16,060 | 13,766 | holds | 35,419 | 113,341 | +182% | - |
+| Shadow: the Break | a long rifle shot (the Break reads Perception and Ingenuity) | 4,968 | 43,789 | 37,534 | holds | 72,420 | 231,745 | +38% | six digits with the door's own sum |
+| Sigils: one Subject | a Line of 2 of STONE | 10,546 | 35,673 | 30,577 | holds | 61,983 | 198,345 | +61% | plain 5 digits |
+| Sigils: every glyph a Subject | a Line of 2 of STONE and FIRE | 15,066 | 86,635 | 74,259 | holds | 160,730 | 514,337 | +-38% | plain 5 digits; six digits with no sum |
+| Figments: Curtain | a beast's claws | 3,108 | 15,013 | 12,869 | holds | 30,602 | 97,926 | +227% | - |
+| Bonds: Snap All (total) | a lone Snap | 1,223 | 9,187 | 7,875 | Bite 1.52 | 12,736 | 40,756 | +685% | cash-out 4 digits |
+| Bonds: Snap All (per foe) | a lone Snap | 1,223 | 2,297 | 1,969 | Bite 6.10 | 2,547 | 8,151 | +3826% | cash-out 4 digits |
+| Outbursts: the Release | the Damage school at x1.0 | 4,401 | 14,982 | 12,842 | holds | 44,097 | 141,111 | +127% | - |
+| Prayer: a Hymn | Judgement (no Grace), Devotion 10 | 5,833 | 16,685 | 14,302 | holds | 16,685 | 53,393 | +499% | - |
+
+Sources used (each door drafter's current numbers):
+
+| door | Reach and Bite read from |
+| --- | --- |
+| Guard: Slam (per foe) | 02 1(b)-(d): Reach 6, Bite 140% at 9, Slam = plate x Bite x S(n), Overbrace +1 |
+| Momentum: Coup | 02 2(b)-(d): Reach x7, Bite 35% at 9, 1 + Bite x S(n), Overswing +1 |
+| Pressure: Dead Centre | 02 3(b)-(d): Reach 5, Bite 30% at 9, 1 + Bite x S(n), Overpress +1 |
+| Shadow: the Break | 03 1(b)-(d): Reach 5, Bite 1.05 at 9, 1 + Bite x S(n) (the fresh ambush +0.5 goes to the sum, A8), Last Shade +1 |
+| Sigils: one Subject | 03 2(b)-(d): Reach 5, Bite 1.05 at 9, Line = Bite x S(n), Overclock +1; the Line's base is STONE |
+| Sigils: every glyph a Subject | the same; the Line's base: the strongest Subject in full, every other half (rules.json output.systems.sigil_damage) |
+| Figments: Curtain | 03 3(b)-(d): Reach 4, Bite 0.9 at 9, Bite x S(n) Figment blows, Overhold +1 |
+| Bonds: Snap All (total) | 04 1(b)-(d): Reach 4, Bite x1.4 at 9, Bite x S(n) lone Snaps shared, Overbind +1 |
+| Bonds: Snap All (per foe) | the same, each Bond its share: Bite x S(n) / n |
+| Outbursts: the Release | 04 2(b)-(d): Reach 5, Bite 0.35 at 9, 0.8 + Bite x S(n); with four strong feelings about x6 (04 2(c)); Overdraw +1 |
+| Prayer: a Hymn | 04 3(b)-(d): Reach 5 Grace, Bite 25% at 9, 1 + Bite x S(n); the Push is a tier above (the Miracle, 90, x1) |
+
+The tightest door that can carry a sum at all: Momentum: Coup, +57%. 07 section 5.4's +220% must come down to that on its own doors' blows (section 10.3).
+
+
+### 10.3 What the check says (each item is for the file named)
+
+1. **Plain hits:** every door's plain hit is four digits at level 20 except the Sigil Line of two with STONE (10,546). **03:** a Line of two is four digits only up to a Subject of base 19 at Bite 1.05; 03 either holds the short Line's Bite under 0.99 at Brain Power 9 or keeps STONE's row at 19.
+2. **Full cash-outs:** seven reach five digits. **Guard (02):** Slam on one foe is 6,400; it needs **Bite 2.19 at Durability 9** (today's draft 1.40). **Bonds (04):** Snap All's total is 9,187; it needs **Bite 1.52 at Empathy 9** for five digits in total; per foe it would need 6.1, which no Bite should be, so I read Snap All's total as its cash-out (question 2). Pressure's Dead Centre reaches five digits (16,060) on the long rifle; on the service rifle (18) it is 10,320, just.
+3. **Six digits with nothing on the sheet:** **Sigils (03):** a Line whose every glyph is a Subject (Barrage, Twin Draw make it the Sigilist's own play) is 160,730 with Overclock and a natural 20, before any sum. The cause is the base rule "the strongest glyph in full, every other half" (`rules.json output.systems.sigil_damage.base`) multiplied by a Line multiplier that already pays for length. **Recommended to 03:** every Subject after the first adds its element and its condition, not its damage; then an all-Subject Line is a one-Subject Line, 61,983 at most.
+4. **Six digits with the door's own sum:** **Shadow (03):** the Break with Last Shade and a natural 20 is 72,420 before the sum, and its own fresh-ambush +50% (a position, so in Σ by A8) takes it to 108,630. **03 trims Bite at 9 from 1.05 to at most 0.93** for the Break to carry its own ambush, or to about 0.56 to carry the same +57% sum the Coup can.
+5. **The sum (07):** 07's squad set-up (+220%) puts five doors past 100,000. Each door's budget is T11's last column: **Coup +57%, Sigils (one Subject) +61%, Outbursts +127%, Pressure +182%**; Figments +227%, Prayer +499%, Guard and Bonds far above. 07 trims the sources that reach each door's blows until its largest legal sum is under that door's budget: the melee sources (Iron Grip II, Pain Eater, the maul's mods) by about 163 points, the Sigil sources by about 159, the Outburst sources by about 93, the gun sources by about 38. These are the largest legal hits (a natural 20 on a foe four levels under); against a same-level Soldier (seven Margins at most) each budget is larger, the Coup's +69%.
+6. **Nothing reaches six digits on a landed door:** a Hymn with five Grace is 16,685 and the Miracle 15,600 (Devotion as Celestial), before Σ.
+
+## 11. The enemy columns read back (item 10)
+
+T12 reads the columns back for six sample builds, each the stated attacker of its kind (gear one grade under the map's best, the ordinary sheet sum), against same-level foes at levels 1, 5, 10, 15 and 20. A star marks a count under two: a fight shorter than two exchanges.
+
+#### T12. The enemy columns read back: six builds against a same-level Soldier, Elite and Boss
+
+Each build is the stated attacker of its kind: gear one grade under the map's best, the ordinary sheet sum of its level. Kill: plain hits to drop one foe after armour (no Margins), and in brackets turns of 6 AP counting misses and Margins (Perception 1). Survive: that foe's rifle hits taken before 0 HP, after the build's armour. A star marks a count under two: a fight shorter than two exchanges.
+
+| build | L | attr/skill | grade | sheet sum | armour | plain hit | HP | hits to drop: Soldier (turns) | Elite | Boss | hits survived: Soldier | Elite | Boss |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Two-handed Strength specialist (maul, Momentum) | 1 | 7/7 | standard | +0% | Medium | 67 | 90 | 1.3* (0.6) | 2.4 (1.3) | 8.1 (5.0) | 7.5 | 4.9 | 4.1 |
+|  | 5 | 8/8 | standard | +8% | Medium | 173 | 215 | 1.4* (0.6) | 2.5 (1.3) | 8.7 (4.9) | 7.5 | 5.0 | 4.2 |
+|  | 10 | 9/9 | masterwork | +18% | Medium | 712 | 705 | 1.3* (0.4) | 2.2 (0.9) | 7.5 (3.3) | 9.5 | 6.1 | 5.1 |
+|  | 15 | 10/10 | masterwork | +28% | Heavy | 2,228 | 2,049 | 1.5* (0.5) | 2.6 (0.9) | 8.8 (3.5) | 12.6 | 7.3 | 5.9 |
+|  | 20 | 10/10 | relic | +38% | Heavy | 7,316 | 6,474 | 1.6* (0.5) | 2.8 (1.0) | 9.7 (3.6) | 15.0 | 8.4 | 6.8 |
+| Rifle Dexterity specialist (service rifle, Pressure) | 1 | 7/7 | standard | +0% | Light | 35 | 74 | 2.7 (0.8) | 5.0 (1.8) | 17.2 (7.0) | 5.0 | 3.5 | 3.0 |
+|  | 5 | 8/8 | standard | +8% | Light | 89 | 180 | 2.9 (0.8) | 5.3 (1.8) | 18.2 (6.7) | 5.1 | 3.6 | 3.1 |
+|  | 10 | 9/9 | masterwork | +18% | Light | 368 | 572 | 2.5 (0.5) | 4.5 (1.2) | 15.3 (4.4) | 5.9 | 4.2 | 3.6 |
+|  | 15 | 10/10 | masterwork | +28% | Light | 1,150 | 1,681 | 2.9 (0.6) | 5.2 (1.3) | 17.7 (4.6) | 6.0 | 4.2 | 3.6 |
+|  | 20 | 10/10 | relic | +38% | Light | 3,778 | 5,406 | 3.2 (0.7) | 5.7 (1.3) | 19.5 (4.7) | 6.8 | 4.8 | 4.1 |
+| Pistol and knife, mixed (Agility and Dexterity 5 at L1 to 8 at L20) | 1 | 5/5 | standard | +0% | Light | 19 | 74 | 5.4 (1.8) | 11.4 (4.9) | 38.8 (18.7) | 5.0 | 3.5 | 3.0 |
+|  | 5 | 6/6 | standard | +8% | Light | 49 | 171 | 5.6 (1.7) | 11.4 (4.5) | 38.9 (17.0) | 4.9 | 3.4 | 3.0 |
+|  | 10 | 6/6 | masterwork | +18% | Light | 183 | 508 | 5.3 (1.4) | 10.1 (3.3) | 34.4 (12.4) | 5.3 | 3.7 | 3.2 |
+|  | 15 | 7/7 | masterwork | +28% | Light | 581 | 1,595 | 6.0 (1.4) | 11.2 (3.4) | 38.3 (12.7) | 5.7 | 4.0 | 3.4 |
+|  | 20 | 8/8 | relic | +38% | Light | 2,103 | 4,673 | 5.9 (1.3) | 10.8 (2.8) | 37.0 (10.4) | 5.9 | 4.1 | 3.6 |
+| Sigilist (FIRE in a Line of two) | 1 | 7/7 | standard | +0% | Light | 89 | 60 | 1.0* (0.4) | 1.7* (1.0) | 6.0 (3.7) | 4.0 | 2.8 | 2.4 |
+|  | 5 | 8/8 | standard | +8% | Light | 229 | 139 | 1.1* (0.4) | 1.9* (1.0) | 6.4 (3.6) | 4.0 | 2.8 | 2.4 |
+|  | 10 | 9/9 | masterwork | +18% | Light | 1,041 | 481 | 0.9* (0.3) | 1.5* (0.6) | 5.1 (2.2) | 5.0 | 3.5 | 3.0 |
+|  | 15 | 10/10 | masterwork | +28% | Light | 3,256 | 1,349 | 1.0* (0.3) | 1.7* (0.6) | 5.9 (2.4) | 4.8 | 3.4 | 2.9 |
+|  | 20 | 10/10 | relic | +38% | Light | 10,693 | 4,435 | 1.1* (0.3) | 1.9* (0.7) | 6.6 (2.4) | 5.6 | 3.9 | 3.4 |
+| Channeler (the Damage school at x1.0) | 1 | 7/7 | standard | +0% | Light | 48 | 74 | 1.9* (1.6) | 3.5 (3.8) | 11.8 (14.6) | 5.0 | 3.5 | 3.0 |
+|  | 5 | 8/8 | standard | +8% | Light | 123 | 171 | 2.0 (1.6) | 3.7 (3.7) | 12.6 (14.1) | 4.9 | 3.4 | 3.0 |
+|  | 10 | 9/9 | masterwork | +18% | Light | 507 | 572 | 1.8* (1.2) | 3.2 (2.5) | 10.8 (9.3) | 5.9 | 4.2 | 3.6 |
+|  | 15 | 10/10 | masterwork | +28% | Light | 1,585 | 1,595 | 2.1 (1.3) | 3.7 (2.7) | 12.6 (9.9) | 5.7 | 4.0 | 3.4 |
+|  | 20 | 10/10 | relic | +38% | Light | 5,205 | 5,145 | 2.3 (1.4) | 4.1 (2.8) | 13.9 (10.2) | 6.5 | 4.6 | 3.9 |
+| Chaplain (three pistol shots at Agility 2, Dexterity 2, and a Smite) | 1 | 7/7 | standard | +0% | Medium | 23 | 101 | 3.7 (1.9) | 6.4 (4.3) | 21.8 (15.2) | 8.4 | 5.5 | 4.7 |
+|  | 5 | 8/8 | standard | +8% | Medium | 58 | 241 | 4.1 (2.1) | 7.0 (4.7) | 23.9 (16.9) | 8.4 | 5.6 | 4.7 |
+|  | 10 | 9/9 | masterwork | +18% | Medium | 240 | 738 | 3.6 (1.7) | 6.2 (3.7) | 21.3 (13.4) | 10.0 | 6.4 | 5.3 |
+|  | 15 | 10/10 | masterwork | +28% | Heavy | 750 | 2,142 | 4.3 (2.1) | 7.3 (4.5) | 25.0 (16.1) | 13.2 | 7.6 | 6.2 |
+|  | 20 | 10/10 | relic | +38% | Heavy | 2,464 | 6,708 | 4.8 (2.2) | 8.2 (4.7) | 28.0 (16.7) | 15.6 | 8.8 | 7.0 |
+
+The tiers on the new columns (HP x0.6 x hp_mult; armour x0.6 x deal; a service rifle of 18 x the tier's damage x1.28 x damage_mult):
+
+| tier | Defense | to hit | L1 | L5 | L10 | L15 | L20 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vermin | 8 | +0 | 9 HP, 0 armour, 12 a rifle hit | 25 HP, 0 armour, 27 a rifle hit | 94 HP, 0 armour, 76 a rifle hit | 343 HP, 0 armour, 218 a rifle hit | 1,260 HP, 0 armour, 622 a rifle hit |
+| minion | 9 | +1 | 42 HP, 0 armour, 23 a rifle hit | 119 HP, 0 armour, 53 a rifle hit | 436 HP, 0 armour, 152 a rifle hit | 1,602 HP, 0 armour, 435 a rifle hit | 5,880 HP, 0 armour, 1,244 a rifle hit |
+| soldier | 11 | +3 | 84 HP, 3 armour, 18 a rifle hit | 238 HP, 7 armour, 42 a rifle hit | 873 HP, 17 armour, 119 a rifle hit | 3,204 HP, 45 armour, 340 a rifle hit | 11,760 HP, 120 armour, 970 a rifle hit |
+| elite | 14 | +5 | 144 HP, 6 armour, 24 a rifle hit | 408 HP, 13 armour, 56 a rifle hit | 1,496 HP, 34 armour, 160 a rifle hit | 5,492 HP, 91 armour, 457 a rifle hit | 20,160 HP, 240 armour, 1,306 a rifle hit |
+| boss | 15 | +6 | 492 HP, 6 armour, 28 a rifle hit | 1,392 HP, 13 armour, 64 a rifle hit | 5,112 HP, 34 armour, 183 a rifle hit | 18,764 HP, 91 armour, 523 a rifle hit | 68,880 HP, 240 armour, 1,493 a rifle hit |
+
+
+What T12 says:
+
+1. **Fight length holds across the levels:** every build's hits to drop each tier stay within about a quarter of its level-1 count, and are about a fifth more at 20 (the room for the long cash-outs). Margins make the specialists faster as they level (the brackets), which is the reward.
+2. **Stars for 06:** the two-handed specialist drops a same-level Soldier in about one and a half blows at every level (a 3-AP blow at Strength and Raw Power 7 multiplied, against 84 HP), the Sigilist drops a Soldier with one Line of two and an Elite with under two at every level, and the Channeler's plain Bolt drops a Soldier in just under two at levels 1 and 10. Today the same Sigil Line is 2.3 rifle shots too; the multiplied cards make the 7/7 specialist a third harder than the normal share. Whether a Soldier is a one-blow foe for a specialist is 06's call on the tier rows; the columns do not cancel it, by A1's rule that only named changes move a count.
+3. **Survive:** no cell is under two. The frail Sigilist survives four Soldier hits or more at every level; the maul specialist 7.5 at level 1 in Medium armour and 15 at 20 in Heavy.
+4. **The mixed character** takes five to six hits on a Soldier and about 37 on a Boss alone: "more often and weaker" by the charter, and a Boss is a squad's fight.
+
+## 12. The engine's caps (ruling A10; item 11)
+
+#### T13. The engine's caps that limit a number, as data and code hold them today
 
 | cap | today |
 | --- | --- |
 | VS_CAP (target bonuses) | +100% (output.ts:129) |
 | CRIT_MAX | 2.0 (character.ts:853) |
 | SIGIL_CAP / SIGIL_CAP_CRIT | 350 / 500 (sigil.ts:329, dead) |
+| mending.cap_pct | 0.5 |
 | boon_cap.cap | 50 |
 | start_boon.max_worth | 6 |
 | shrine.token_max_worth | 8 |
@@ -873,73 +1083,140 @@ Structural rules a player sees (the Elite and Boss guard, the one-hit rule five 
 | rewards.ceiling | ['fine', 'masterwork', 'relic'] |
 | stage.elite_up | {'per': 2, 'max': 4} |
 | loadout.budget | 300 |
-| mending.cap_pct | 0.5 |
 | combat.elemental_taken_cap | 0.8 |
 
 
-## 10. Defects found on the way (for the lead; not the scale's to fix)
+| Cap | Ruling | Reason |
+| --- | --- | --- |
+| Target bonuses at most +100% (`VS_CAP`, `output.ts:129`; label `combat.ts:1558`) | **Remove** the top; keep the -90% floor | A8: one sum with no top; past the cap a seventh bonus was a point not felt |
+| The critical at most x2.0 (`CRIT_MAX`, `character.ts:853`) | **Replace** by Margins (section 9) | A7 |
+| `SIGIL_CAP` 350, `SIGIL_CAP_CRIT` 500 (`sigil.ts:329`, `magic.ts:646`) | **Remove** | dead (`capParts` returns its parts unchanged), and 350 means nothing on the new scale |
+| One heal at most half the target's max HP (`mending.cap_pct`, `output.ts:281`) | **Remove**; the per-round brake (`mending.brake`, x1.5 a give) **stays** | A10: a healer's full cash-out may save a friend outright; the brake already prices a stream |
+| Damage reduction at most 60% (`rules.json:23` `reduction_cap_pct`) | **Remove** | no reader in the engine |
+| `output.level.reference_hp` | **Remove** | no reader in the engine or the client |
+| The melee opener at most +50% (`techniques.json:285` `max_pct`) | **Replace** by the Momentum door's Reach (02) | a run is a counter; Reach is bought with points |
+| Elites and Bosses at most 4 levels up (`survival.json` `stage.elite_up`) | **Replace** by the map's own enemy levels (06, ruling 24) | an enemy's level comes from where it lives, never from the party |
+| The boon cap 50 (`survival.json boon_cap`, `run/power.ts:25`) | **Keep**, with 07's change (properties take no room) | a rule a player sees: how many boons a character carries |
+| Starting boon at most 6, shrine token at most 8 | **Keep** | which boons a node offers: a menu, not a held reward |
+| A variant at most 20 worth (`variants.json`) | **Keep** | it prices a variant and keeps it the same weapon |
+| The finds' grade ceiling (`survival.json rewards.ceiling`) | **Keep** (its list is 07's by ruling 25) | the chase: a higher grade is found by going deeper |
+| Fight budget bands, `max_foes` | **Keep** | the generator's shape: how "the stage changes" |
+| The camp budget 300 (`loadout.budget`) | **Keep** | credits, not HP |
+| Devotion XP caps (`patrons.json`) | **Keep** (05's numbers) | they pace the faith |
+| Elemental damage taken at most 80% resisted (`combat.elemental_taken_cap`); ambush damage taken at most 60% (`effects/damage.ts:81`) | **Keep** | rules a player sees: nothing is immune by stacking |
 
-1. **Two copies of the Damage school's base:** `soul_modules.json:112` `damage.base` 37 (read, `magic.ts:752`) and `:187` `schools[damage].damage` 40 (a fallback that is never reached). One goes.
-2. **Numbers typed in code:** max HP's 100, 15 and 5 and Pain Threshold's 2 (`character.ts:798`, `:801`); Max MP's 100, 75, 25 (`:860`); the critical's 1.5 / 2.0 / 0.03 / 0.02 (`:853`); "Bleeding: 5 damage a turn" (`character.ts:775`, the bleeding row's tick is in `conditions.json`); `armor_ignore_5` / `armor_ignore_10` read as 5 and 10 (`combat.ts:1562`).
-3. **Digits typed in data texts:** Judgement's "takes 56 Soul damage" and the other prayer texts with numbers (`patrons.json`); they must read `{=effects.N.value}` or they lie after the rescale.
-4. **Item ids in code:** `tactics.ts:420-428` switches on `smoke_grenade`, `flashbang`, `bot_scrambler`.
+Structural rules a player sees (the Elite and Boss guard, the one-hit rule five levels down, the gap to 5 levels, AP 2 to 9, the Attribute and skill caps, Echo 3, the Strain limit, Light armour's cap) all **stay**.
+
+## 13. Migration: what the scale moves in a save (item 12)
+
+- **Saved characters.** HP moves once by a new `HP_REV` through the existing `migrateCharacterHp` (`character.ts:810-816`): a character keeps **the same share of its new max HP** as it held of the old one. MP the same by a new `MP_REV` through `migrateCharacterMp` (`character.ts`, `MP_REV` 124 today): the same share of the new pool. Nothing else in a sheet holds a number on the scale (damage, armour, soak and heals are derived). Ceilings, ranks and Devotion are 05's and 06's migrations (ruling 15: nothing is taken from a live character).
+- **Saved runs between nodes** are safe: a run holds no unit; the next fight is built on the new columns, with the map's own enemy levels (06).
+- **A room saved in the middle of a fight before 0.34** (`apps/server/src/index.ts:99-100`: the host's `save` is the whole state). Today's mid-fight move (`migrateCombatHp`, `game.ts:508-518`, run from `apply`, `game.ts:655`) scales **every** unit's HP, max, shield and armour by `scale` at its own level and the objects' HP at the fight's level (the first critic's "characters only" misread it). The two options of ruling E, for the builder to propose and the lead to approve before it is built:
+  1. **Rescale on load:** every unit's HP, max, shield and armour x (new column / old column) at its level x0.6, a character's by the share of its new max; enemy damage follows from the new table (it is read live through `lvlDmg`, set at the unit's making: the move recomputes it); held counters clamp to the new Reach. Cheap, but a fight half fought on the old cards ends on the new ones.
+  2. **The fight reopens from its start:** the node's fight is built again on load (its seed and its foes), characters at the HP share they entered with. Clean, and the replay guard sees one fight; but the turns played are lost.
+- **Replays and event logs** re-run the reducer: every number in them moves (the re-record list).
+
+## 14. Defects found on the way (for the lead; not the scale's to fix)
+
+1. **Two copies of the Damage school's base:** `soul_modules.json damage.base` 37 (read, `magic.ts:752`) and `schools[damage].damage` 40 (a fallback never reached). One goes.
+2. **Numbers typed in code:** max HP's 100, 15, 5 and Pain Threshold's 2 (`character.ts:798`, `:801`); Max MP's 100, 75, 25 (`:860`); `syphonMult`'s 0.1 and 0.1 (`:903`); the critical's 1.5, 2.0, 0.03, 0.02 (`:853`); "Bleeding: 5 damage a turn" (`character.ts:775`); `armor_ignore_5` and `armor_ignore_10` read as 5 and 10 (`combat.ts:1562`); the glossary's Strain line types "limit 3 + half Will Power" and the burn (`glossary.ts:99`).
+3. **Digits typed in data texts:** Judgement's "takes 56 Soul damage" and the other prayer texts with numbers (`patrons.json`); `rules.json:1486` "8 true damage per point over the limit"; they must read their rows or they lie after the rescale.
+4. **Item ids in code:** `tactics.ts:420-428` switches on `smoke_grenade`, `flashbang`, `bot_scrambler`, on the thrown path the rescale moves to `deal()`.
 5. **A stale comment:** `output.ts:15` says the `deal` column is "x1 at every level today"; it has been x7.5 at 20 since rules 1.36.
+6. **The attribute cards' texts disagree with the engine today:** Determination's formula reads "0.05 x (Determination - 1) + 0.1 x Will Power" while its card promises +10%, and Intelligence's "+10% x Brain Power" is on the attribute's line (`attributes.json`); they are rewritten from section 4.2.
 
 ## Questions for the lead
 
-1. **One factor x0.6 for everything (a rifle shot 28 at level 1), or the charter's x0.45 on what characters deal (18) with x0.6 on bars?** Recommended: x0.6, for the working in 3.1 (every shared number keeps its side, every count of hits stays, the digits hold).
-2. **Enemy HP written for the expected specialist (x90 at 20), so a character who skipped its points or its grades takes about twice as many hits at level 20 as at level 1?** Recommended: yes; it is "effort is always rewarded" seen from the other side, and Margins are kept out of it so skill is never taken back.
-3. **Virtue gains "+5% Blessing power"** (today its card promises only that Hymns return sooner, while the profile reads it at +6%)? Recommended: yes, so every attribute's card makes its door bigger, as Determination's does for the Soul.
-4. **Remove the half-bar heal cap** (`mending.cap_pct` 0.5)? Recommended: yes; the per-round brake already prices repeated heals, and a healer's built-up cash-out should be able to bring a friend back from the edge.
-5. **Magic and prayer take a grade** (the Evoker, the Emanator, Devotion), one new general piece? Recommended: yes; without it every caster falls x1.75 behind every gunner by level 20 for nothing the player chose.
+1. **One pair to a hit (4.3):** a hit two doors deal (a Break with a gun) reads the pair of the door that cashes it out (Perception and Ingenuity), not both? Recommended: yes; otherwise a Shadow specialist's Break carries its two cards twice and shows six digits with nothing on the sheet.
+2. **Snap All's five digits counted in total (10.3 item 2):** the cash-out that shares one pool across its Bonds is tested as its total, and Slam (a full blow on each foe) per foe? Recommended: yes; per foe Snap All would need a Bite of 6.
+
+## Critics' findings
+
+| Finding | Status | How, or why not |
+| --- | --- | --- |
+| consistency S1 (x0.6 against x0.45) | FIXED | x0.6 is ruled (A1) and stated once, with every key it touches (T2); the other files re-derive from it |
+| consistency S2 (two enemy tables) | FIXED | one table: T4, smooth columns, level-free Defense and to-hit; 06 quotes it |
+| consistency S3 (tier rows) | FIXED | x0.6 HP and armour, x1.28 damage, 06's Defense 8 / 9 / 11 / 14 / 15 (3.4, T12); T12 re-run on it |
+| consistency S4 (five slope rules) | FIXED | A4's one rule, multiplied (4.1, T5); `k` re-pinned |
+| consistency S5 (Max MP) | FIXED | 04's pool and the `mp` column in `output.level` (3.1, T7a) |
+| consistency S6 (Strain's burn) | FIXED | 6% of max HP a point (section 6); the x0.6 row dropped |
+| consistency S7 (Pain Threshold) | FIXED | A5's formula (section 5, T6); the traits' per-level numbers go to 07 as shares |
+| consistency S8 (a plate) | FIXED | 3.6 x Stat(Endurance, Durability) x deal x grade, then 02's feed (section 7, T8); differs from the critic's form only by Durability's +5% (A4) and the normal-share pin |
+| consistency S9 (the critical's feeders) | FIXED | A7: Perception's point on a Margin's worth; Dexterity's line becomes +5% damage; the constants go; `crit_taken` and the ranges are 07's restatement |
+| consistency S13 (add or multiply) | FIXED | by ruling A4: the attribute and skill terms multiply (the critic recommended adding; the ruling decides) |
+| consistency S14 (six digits at the top) | FIXED | the stack rule (10.1), Margins added to the cash-out factor, the check computed (T11) with each door's budget for 07 |
+| consistency M1 (06's columns cancel growth) | FIXED | smooth hp_mult, level-free Defense (3.1, 3.3) |
+| consistency M2 (four-digit cash-outs) | FIXED | T11 gives each door's Bite at 9 for five digits (Guard 2.19, Bonds 1.52 in total); the Bites are 02's and 04's to set |
+| consistency M3 (three-digit tubes) | FIXED | the rows that break level 1 take a computed factor of their own (section 2): tubes x0.3, satchel x0.45, arbalest x0.55 |
+| consistency M4 (old-magnitude numbers) | FIXED for 01's part | every flat number has its x0.6 value in T2b; the trait rows are marked for 07; the `rules.json:1486` text is listed to read its row (defect 3). 02's soak, 03's Rig, 06's `attack_plus` and 07's traits are those files' |
+| consistency M5 (two heal columns) | FIXED | `mend` is defined from A5's HP formula (3.1); `gate.hp` 112 |
+| consistency M6 (Devotion's curve) | FIXED | 01 no longer states a curve; it is 05's, Devotion starts at 0 (ruling 19); the grade steps read standing (section 8) |
+| consistency M7 (the intervention) | FIXED | `patrons.json prayer.intervention.amount` 12 + 2.4 x Devotion (data, x0.6) on the blessing profile, `deal` and the Devotion grade: the same number as 04's multiple, no typed 12 in code |
+| consistency minor 4 (enemy door amounts) | FIXED | an amount reads its dealer's column: an enemy's `damage_mult` (3.1) |
+| consistency minor 5 (a column naming a column) | FIXED | dropped: `scaleOf` reads `deal`, the `scale` array goes |
+| consistency minor 6 (the boon cap) | NOT FIXED here | kept with 07's change (section 12); turning it into slots is the Survival drafter's |
+| consistency section 4 (01's primitives 2 and 3) | FIXED | the grade on magic is 07's `with_this` rarity rows; only Devotion's standing predicate is new; primitive 3 dropped |
+| consistency section 5 item 5 (literals in code) | FIXED for 01's | max HP, Max MP, `syphonMult`, the critical's constants and `MELEE_FACTOR` move to data in the same change (Built from) |
+| consistency M-6, M-8 (HP and MP revisions; a fight saved mid-way) | FIXED | section 13: `HP_REV`, `MP_REV` by share; ruling E's two options stated, and the critic's "characters only" corrected from the code |
+| player 1 (the files on two scales) | FIXED for 01 | this file is complete and owns every shared number; the other files' re-derivation is theirs |
+| player 7, 8 (Pain Threshold's dead points) | FIXED | +6% max HP a point from the first (A5) |
+| player 10 (Retort, Slam, Rig not worth pressing on 01's numbers) | FIXED for 01's part | the plate is set (section 7); T11 says the Bite Guard needs; Retort's and Rig's numbers are 02's and 03's |
+| player 12 (the frail's Soldier hits from five to four) | NOT FIXED | deliberate and named (3.4): the charter asks three to four hits for the frail |
+| player 13 (06 cancels the to-hit) | FIXED | level-free Defense (3.3) |
+| player 15 (the boon cap) | NOT FIXED here | as consistency minor 6 |
+| player 16 ("I levelled, the Soldier didn't get easier") | NOT FIXED here | the columns are meant so (a same-level foe grows too); the level-up screen's "against a foe of your level" is the client's text, not the scale's |
+| player 17 (damage that swings by ten) | FIXED for 01's part | one sum with no kinds (A8) and Margins added, not multiplied, narrow the swing; naming the Margins on the damage line is the client's |
 
 ## Built from
 
 | Rule or number | The existing piece and data key that carries it (file) | What must change |
 | --- | --- | --- |
+| x0.6 on every flat number (A1) | each file's own keys (T2, T3) | the numbers; the four rows' own factor; the two draw bows' `phys.also_scales` |
 | The level column x40 | `levelFactor` (`effects/output.ts:111-117`); `rules.json output.level.deal` | values `40^((L-1)/19)` |
-| `scale` is `deal` | `scaleOf` (`output.ts:120`), read by max HP, armour, soak, objects, pierce | `output.level.scale: "deal"` (a column naming a column: new piece 3); every profile that reads `scale` reads `deal` |
-| Heals and shields x65 | `mendFactor` (`effects/mending.ts:20`); `output.level.mend` | values `deal x (90 + 3(L-1))/90`; `mendGate` (`output.ts:264`) counts `gate.hp` x `mend`, not x `scale`; `mending.gate.hp` 145 to 90 |
-| Enemy columns | `levelled` (`data.ts:116-119`), `combat.ts:711`; `enemies.json levels.table` | `hp_mult` 90^t, `armour_mult` 40^t, `damage_mult` 60^t, `defense_plus` 0, `attack_plus` 0 |
-| Tier damage x1.28, HP and armour x0.6 | `enemies.json items[]` | the numbers |
-| Figment HP by what hits it | `figments.json level.hp` (its reader of enemy columns) | `["damage_mult"]` |
-| The gap rule | `combat.ts:736-742`; `enemies.json levels.gap` | nothing |
-| Every flat number x0.6 | the amounts' readers (`effects/amounts.ts`, `openAmount`); each file's own keys (T4) | the numbers; per-level HP numbers x0.25 |
-| Weapons x0.6 | `weaponDamage` (`combat.ts:1527`); `weapons.json items[].damage`, `splash_damage` | the numbers; guns' `phys.scales_with: []`; light blades `phys.profile: "blade"`, `scales_with: []`; thrown `phys.profile: "thrown"` |
-| Thrown blast, barrel, trap, hazard on the column | `deal()` (`output.ts:235`) with the `thrown` or `flat` profile and `level` = the thrower's or `cb.level` | `tactics.ts:433-435`, `perks/c.ts:485`, `combat.ts:889-893` and the trap and hazard callers of `hurtUnit` go through `deal()`; `factorOf('thrown')` goes |
-| The cards' slopes and `k` | `statTerm` (`output.ts:87-92`), `weaponMult` (`character.ts:833-837`); `output.profiles` | the numbers; new rows `blade`, `thrown` (data); delete `output.factors.melee`, `.thrown`, `.figment` and `MELEE_FACTOR` (`combat.ts:46`, `:1537`); the "pin" notes |
-| Card texts | `skills.json` per-point rows, `attributes.json` `player` and `derived` | Dexterity's line; Endurance's and Virtue's new lines; Expression's formula; Perception's |
-| Grades on damage and armour | `att.dmgMult` 'rarity' (`combat.ts:1536`); `bodyArmourValue` x `armOf` (`character.ts:796`); `rules.json rarity` | `dmg`, `arm`, `acc` values; the rarity text (`rules.json:1603`) |
-| Grades on magic and prayer | none | new piece 2 |
-| Character HP | `maxHp`, `hpPerLevel` (`character.ts:798-801`), `fx('hp')`, `fx('hp_per_level')` | the formula's numbers into `attributes.json` and `skills.json`; `HP_REV` and `migrateCharacterHp` move by share of the old max |
-| Margins | `rolls.ts:78` judge; `attack_roll` (`combat.ts:1644-1648`); the critical term sites (`combat.ts:1542-1544`, `sigil.ts:334-339`, `classes/soul.ts:36-39`) | new piece 1; `rules.json rolls.margins`; remove `CRIT_*` (`character.ts:853-855`) |
-| Perception's critical Margins; items' critical bonus | `critMult`'s stat `crit_damage`; `ctx.critBonus` | read as a critical's added worth |
-| Max MP into data | `maxMp` (`character.ts:860-861`) | the three numbers into `attributes.json` |
-| Guard soak | `guardSoak` (`physical/core.ts:121`); `techniques.json rules.guard.soak` | 3.6 |
-| Caps removed | `VS_CAP` (`output.ts:129`), `SIGIL_CAP` (`sigil.ts:329`), `mending.cap_pct`, `reduction_cap_pct`, `reference_hp` | delete; `stackDamage` keeps the floor |
+| `scale` is `deal` | `scaleOf` (`output.ts:120`): max HP, armour, soak, objects, cover | `scaleOf` reads `deal`; the `scale` array and every profile's `level: scale` go |
+| Heals and shields on `mend` | `levelFactor`; `mendGate` (`output.ts:264`); `rules.json output.level.mend`, `mending.gate.hp` | values from A5's normal bar; `gate.hp` 112 counted x `mend` |
+| The `mp` column | `levelFactor` reads any array in `output.level` (`output.ts:106`); `maxMp` (`character.ts:860`) | `output.level.mp`; `maxMp` reads the pool from `attributes.json` and the column |
+| An amount's column by kind and dealer | `openAmount` (`effects/amounts.ts`), `levelOf` (`output.ts`) | a damage amount reads `deal` (an enemy's: `damage_mult`), a heal or shield `mend`; the thrown, barrel, trap and hazard paths (`tactics.ts:433-435`, `perks/c.ts:485`, `combat.ts:889-893`) go through `deal()` |
+| Enemy columns and tier rows | `levelled` (`data.ts:116-120`); `enemies.json levels.table`, `items[]` | `hp_mult` 140^t, `damage_mult` 54^t, `armour_mult` = deal, `defense_plus` and `attack_plus` 0; tier HP and armour x0.6, `damage` x1.28, `defense` 8 / 9 / 11 / 14 / 15 |
+| Figment HP | `figments.json level.hp` | `["damage_mult"]`; `figment_hp` on the card rule |
+| The cards (A4) | `statTerm`, `normalShareTerm` (`output.ts:87-100`), `weaponMult` (`character.ts:833-837`); `output.profiles` | the attribute bracket times the skill bracket; slopes 0.10 and 0.05; `k` re-pinned (T5); new rows `bow`, `thrown`, `guard`; `output.factors` and `MELEE_FACTOR` go; card texts (4.2) |
+| One pair to a hit (4.3) | `statOf(profile, c, pair)` takes a pair today | the cash-out's action names its door's pair (Needs a new primitive, extension 1) |
+| Character HP (A5) | `maxHp`, `hpPerLevel` (`character.ts:798-801`), `fx('hp')` | numbers into `attributes.json endurance.derived` and `skills.json pain_threshold numbers.hp_pct`; `HP_REV` |
+| MP and costs (A6) | `maxMp`, `syphonMult`, `pumpMp` (`magic.ts:793-807`), the cost site (`effects/cost.ts`), `STRAIN_BURN` (`magic.ts:734`) | the pool's numbers into data; MP prices x `mp`; the burn and the self-paid prices as shares; `MP_REV` |
+| A plate | `guardSoak` (`physical/core.ts:121`); `techniques.json rules.guard.soak` | 3.6 on the `guard` profile, `deal`, the armour's grade |
+| Grades (A9) | `att.dmgMult` (`combat.ts:1536`), `bodyArmourValue` x `armOf` (`character.ts:796`), `focusRarity` (`character.ts:1086`), `with_this` (collect.ts:220); `rules.json rarity` | `dmg`, `arm`, `acc` values; each row's `with_this` effects for the foci; the rarity text (`rules.json` rarity `rules`) rewritten |
+| Devotion as a grade | `devotionOf` (`tactics.ts:449`); `patrons.json devotion` | `devotion.grade_at` [3, 5, 7, 10] read by a standing predicate (Needs a new primitive) |
+| Margins (A7) | the roll judge (`rolls.ts:78`); the critical term sites (`combat.ts:1542-1544`, `sigil.ts:334-339`, `classes/soul.ts:36-39`) | S1; `rules.json rolls.margins`; `CRIT_*` and `critMult` go |
+| The stack rule (A8) | `stackDamage` (`output.ts:131-134`), `ctx.mults`, `ctx.vs` | S12 in two kinds; `VS_CAP` goes; Margins add to the cash-out term |
+| Caps (A10) | `VS_CAP`, `SIGIL_CAP` (`sigil.ts:329`), `mending.cap_pct`, `reduction_cap_pct`, `reference_hp`, `max_pct`, `elite_up` | as section 12 |
+| Migration | `migrateCharacterHp`, `migrateCharacterMp`, `migrateCombatHp` (`game.ts:508`) | new `HP_REV`, `MP_REV`; ruling E's option, once approved |
 
 ## Needs a new primitive
 
+Names from critic-consistency's merged list where one exists. General pieces only.
+
 | Piece | Smallest form | Why nothing existing does it |
 | --- | --- | --- |
-| 1. **Margins** on a judged roll | `rolls.ts` judge returns `margins = max(0, floor((total - tn) / step))` (+ `critical` on a critical, + Perception's steps); the attack and spell roll contexts carry it; one own multiplier `1 + per x margins` pushed where the critical term is pushed today; numbers in `rules.json rolls.margins` | the roll knows only `nat` (`rolls.ts:58`) and the attack only `crit` (`combat.ts:1647`); nothing counts how far a roll beat its target |
-| 2. **A profile's grade source** | `output.profiles.<id>.grade: "weapon" \| "focus:evoker" \| "focus:emanator" \| "devotion"`, read in `openAmount` as one own multiplier from `rules.json rarity.<grade>.dmg`; Devotion's steps in `patrons.json devotion.grade_at` [3, 5, 7, 10] | the grade is read only on a weapon attack (`att.dmgMult`, `combat.ts:1536`); `sigil.ts` and `magic.ts` read no rarity; Devotion is read only as an additive per-point part (`per: devotion`) |
-| 3. **A level column that names another** | `output.level.<name>` may be a string naming a column; `levelFactor` (`output.ts:106-117`) follows it | `LEVEL_COLS` keeps only arrays and a missing column throws (`output.ts:106`, `:116`); without it `scale` stays a second copy of `deal` |
+| **S1. Margins** | the roll judge returns `margins = max(0, floor((total - tn) / step))` (+ `critical` on a critical); the attack and spell contexts carry it; its term is added to the cash-out term (S12); numbers in `rules.json rolls.margins` | nothing counts how far a roll beat its target (`rolls.ts:58` knows only `nat`; the attack only `crit`, `combat.ts:1647`) |
+| **S12. Stack kinds, in two** | `Term.kind`: one of the five multiplying kinds (`level`, `attribute`, `skill`, `grade`, `door`, with `margin` adding into `door`) or the sum; `stackDamage` multiplies the first and adds the rest | today two buckets by where a term is pushed (`ctx.mults` multiply, `ctx.vs` add), not by what it is (critic S12, reduced to A8's two kinds) |
+| **A standing predicate** (`self_devotion`, min standing) | one predicate in the predicate list, read by the rarity rows' Devotion effects | no predicate reads Devotion's standing (ENGINE-HOOKS: only the stat `devotion_xp`) |
+| Extension 1: **an action's pair** | an amounts block or a cash-out row may name `pair` (`{attrs, skills}`), passed to `statOf` in place of the weapon's | `weaponMult` reads only the row's pair; `statOf` already takes a pair, so this is one parameter |
 
 ## What re-records
 
 | What | Why |
 | --- | --- |
-| Every golden damage table: `packages/engine/test/golden/builds-allin.json`, `builds-normal.json` and the tables behind `golden-damage.test.ts`, `golden-damage-builds-allin`, `-builds-normal`, `-magic`, `-perks`, `-shelved`, `-techniques`, `-traits-classes` | every base x0.6, every Stat term (slopes, `k`), the level column, the grades on damage, Margins in place of the critical |
-| `golden-conditions.test.ts` (`golden/conditions.json`, `conditions.log.json`) | ticks x0.6 and on the column |
-| `golden-costs*.test.ts` (`golden/costs-*.json`) | HP prices (Strain burn, feelings, Overclock, Flux overload) x0.6; MP and counts unchanged, so only the HP lines move |
-| `golden-itemops`, `golden-mods`, `golden-rules` | amounts x0.6; the bayonet's `melee_damage`; the rarity rows |
-| `enemy-levels.test.ts`, `level-gains.test.ts`, `levelup-revert.test.ts`, `fx-hp-stamp.test.ts` | the enemy table, max HP by level, the HP a level gives |
-| `heal-pct.test.ts`, `rules120-heal-shield.test.ts`, `bond-heal-shown.test.ts` | the `mend` column, `gate.hp` 90, the heal cap removed |
-| `figments*.test.ts` | forms' HP and armour x0.6, `level.hp` on `damage_mult`, the figment factor folded |
-| `sigil-balance.test.ts` | it asserts `SIGIL_CAP` (removed) |
-| `outburst20*`, `outburst40*`, `rules119-outburst.test.ts`, the `sigil14*` and `sigil15*` suites that assert a number | bases x0.6, the soul and sigil slopes, Margins |
-| The balance measures in `packages/engine/test/balance/` (`guns-`, `melee-`, `magic-`, `shadow-`, `faith-`, `heal-`, `tank-`, `figments-`, `tending-`, `outburst-`, `items2-`, `mp-`, `syphon-measure`, `survival-run*`, `balance-sim`, `party-fit`) | they are readings: every number they print moves; `survival-run`'s bars were set to measured shares and are read again on the new scale |
-| `tools/check_spec_tables.py` against the spec's tables | the spec's HP, damage and enemy tables are rewritten first (spec, then data) |
-| Saved fights and replays (event logs) and `npm run try` scenarios | a replay re-runs the reducer: every number in it moves; saves migrate once by `HP_REV` |
-| The e2e suites that read a number on screen | HP bars, damage lines and the critical's label |
+| Every golden damage table (`test/golden/builds-allin.json`, `builds-normal.json` and the tables behind `golden-damage*.test.ts`) | every base x0.6, the multiplied cards and `k`, the level column, grades on damage, Margins in place of the critical, the stack rule |
+| `golden-conditions.test.ts` | ticks x0.6 and on the dealer's column |
+| `golden-costs*.test.ts` | MP prices on the new pool and `mp`; the self-paid HP prices as shares |
+| `golden-itemops`, `golden-mods`, `golden-rules`, `rules-enemies` | amounts x0.6; the rarity rows; the enemy table and tier rows |
+| `enemy-levels.test.ts`, `level-gains.test.ts`, `levelup-revert.test.ts`, `fx-hp-stamp.test.ts` | the enemy table; max HP by level |
+| `heal-pct.test.ts`, `rules120-heal-shield.test.ts`, `bond-heal-shown.test.ts` | the `mend` column, `gate.hp` 112, the heal cap removed |
+| `figments*.test.ts` | forms x0.6, `level.hp` on `damage_mult`, the figment factor folded, Expression's card |
+| `sigil-balance.test.ts` | it asserts `SIGIL_CAP` (removed): deleted with it |
+| `outburst20*`, `outburst40*`, `rules119-outburst.test.ts`, the `sigil14*` and `sigil15*` suites that assert a number; the faith suites | bases x0.6, the multiplied cards, Margins, the grades on foci and Devotion |
+| `test/old-save.test.ts` and its fixtures | `HP_REV`, `MP_REV`, and ruling E's mid-fight move (a fixture each) |
+| `test/replay-hash.test.ts`, `golden/replays.json` | every seeded game |
+| The balance measures in `packages/engine/test/balance/` | readings: every number they print moves |
+| `tools/check_spec_tables.py`; `tools/text_numbers.py` and `test/datatext.test.ts` | the spec's tables are rewritten first (spec, then data); every text that typed a digit reads its row |
+| The web and e2e suites that read a number on screen | HP bars, damage lines, the critical's label (now Margins) |

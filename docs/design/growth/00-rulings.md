@@ -1,0 +1,49 @@
+# The growth bible: the lead's rulings on the first draft (21 Nov 2026)
+
+Binding on every file in this folder. The first drafts (01 to 07) disagreed with each other; two critics listed where (`critic-consistency.md`, 35 findings; `critic-player.md`, 18). These rulings settle every cross-file question. **01-scale.md owns every shared number**; the other files read them from it and type none of their own. Where a ruling below and a draft disagree, the ruling wins. Leon's rulings and the charter (`../proposals/2026-11-21-the-curve.md`, sections 10 to 18) stay above all of this. Everything is PROVISIONAL until played; nothing is fitted to a percentage or a line.
+
+## A. The scale
+
+1. **One factor, x0.6, on every flat number in the game** (damage, HP, healing, shields, armour, soak, plates, cover, hazards, damage over time, enemy HP, items): 01's proposal, not the charter's x0.45. Reason: many numbers hit both sides, and one factor keeps every "hits to drop" count exactly as players know it today; only the changes named in this bible move anything. A hit at level 1 is still one or two digits.
+2. **One level column for what characters deal, x1.214 a level (x40 at level 20).** Character HP, armour, soak and plates ride it. Heals and shields ride their own column (01's x65) so a heal stays the same share of a bar. Enemy HP and enemy damage have their own columns, written in 01 and used by 06.
+3. **The roll is bounded.** Defense and to-hit do not grow with level, for characters or enemies. The engine's "+1 to hit per level of difference, up to 5" stays as the only way level touches the roll. An Elite's Defense is 14 and a Boss's 15 (06), fixed.
+4. **The cards: one rule for all nine.** Each attribute gives +10% a point to everything its door deals or mends (and what else its card says); each alpha skill gives +5% a point. Agility gives its +10% to Dexterity weapons (guns, light blades, thrown); the hidden "pin" goes. Virtue's card gains Blessing power. The attribute term and the skill term multiply each other.
+5. **Character HP = (60 + 10 x (Endurance - 1) + (level - 1)) x (1 + 0.06 x Pain Threshold) x the level column.** About 60 and 120 at level 1 (Endurance 1 and 7), about 3,160 at level 20 for Endurance 1 and above 9,000 for Endurance 10 with Pain Threshold 10. Pain Threshold's card: +6% max HP a point (02's), in place of +2 HP a level.
+6. **MP is a choice (04's proposal):** pools hold about four full cash-outs and ride an `mp` column; Pumps cost a tenth of the Begin; Syphon and Tending costs are restated on it. Strain's burn is a share of max HP (6% a point), not a flat number.
+7. **Margins replace the critical entirely.** Every full 4 over the Defense or TN is a Margin; a natural 20 adds two. A Margin adds a quarter **of the plain hit's own damage** (the weapon or spell before the cash-out's multiplier), plus one percentage point for each point of Perception (25% to 35%). `CRIT_MAX`, the critical multiplier and Dexterity's "+2% critical damage" go; every perk, move and gear field that fed the critical is restated on Margins in 07.
+8. **How bonuses combine, and the top of the scale.** Level, attribute, skill, grade and the cash-out each multiply. **Everything else on the sheet (perks, class moves and passives, faith, the target's conditions and position, boons, mods) adds into one sum** before it multiplies. Leon's rule is the test: four digits a hit at level 20, **five for something super, never six**. 01 prints the largest legal turn of a level-20 specialist of each door with a squad's set-up; if any reaches 100,000 the sum's sources are trimmed in 07 until none does. Every door's full cash-out at level 20 must reach five digits (raise that door's Bite at 9 where it does not).
+9. **Magic and prayer take a grade:** Sigils the Evoker's, Outbursts the Emanator's, prayer from Devotion (3 / 5 / 7 / 10 as Fine / Masterwork / Relic / Celestial). The grade ladder: Fine +1 to hit and x1.15, Masterwork +2 and x1.3 with a mod slot, Relic +3 and x1.5 with one property, Celestial +3 and x1.75 with two. Armour takes the same steps on its armour value. Relic and Celestial properties cost no boon room.
+10. **Caps that only held a reward down go:** the pooled +100% on target bonuses, the critical cap, the half-bar heal cap (the per-round brake stays), the dead Sigil cap. Caps a player sees as rules stay (01's list).
+
+## B. Points and gates
+
+11. **A career is 38 Skill points and 20 Attribute points, creation included** (the data; the lead's "48 and 30" to Leon was wrong). Every spend table uses 38 and 20. So a capped character can hold two attributes at 10.
+12. **Gates:** attribute ceiling 7 at creation, 8 at level 5, 9 at 10, 10 at 15; class at 3, rank II at 5, rank III at 15 (needs the class's attribute at 8). **Levels 5 and 15 give 1 Skill and 1 Attribute point, and levels 4 and 14 give 2 Skill points** (a swap; totals unchanged), so the gate and the point that uses it land together.
+13. **The specialist's edge: a door's top Reach needs its family.** Reach's step at 7 needs the door's beta skill at 4; the step at 10 needs the beta at 7 and the gamma at 4. With 38 points a character can take one door to its top and hold a second at the step below; two doors at the top is not affordable. PROVISIONAL, flagged for Leon.
+14. **A wide character** (four doors at 4 to 5) gets no rank III and no Push in 0.34: its things are many small cash-outs and the tags. Leon's unique advanced classes are where it gets something of its own. Flagged for Leon; not solved here.
+15. **Nothing is taken from a live character.** A 0.33 character above a new ceiling keeps its points, and one holding rank III before level 15 keeps it (06 and 05 write the migration; both are tested through the real load path).
+
+## C. Doors
+
+16. **Reach is bought.** Where everyone has the top today (Outburst stage 4, the Breaker's chain, the Operative's Shadow), it moves onto the skill's ladder. What a class had as a bigger counter becomes something only the class can use (each door file names it).
+17. **The Push arrives at skill 8 on every door.** Overclock moves from Brain Power 2 to 8 (03 says what Brain Power 2 gives in its place); praying above your standing becomes Faith's Push; Overdraw past the top is Will Power's.
+18. **Every door has a cash-out from point 1**, and its Marks are earned by using the door (Guard's by plates soaked as well as by Slam).
+19. **A Pressure target's cap** is the best Reach anyone laid on it, less 1 for an Elite and 2 for a Boss. **A heal that Bonds** (04) and **Grace** as prayer's in-fight counter (04): accepted. **Line length rides Brain Power** and words held are 4 + 3 x Brain Power (03): accepted. **Devotion starts at 0** and follows 05's curve; live characters keep what they have.
+20. **Every beta point counts from the first** (a flat term in the beta's formula; Athletics gives Defense from 1).
+21. **Story perks get fight halves now** (07): this is the last pass on skills content, so no perk is dead in Survival.
+
+## D. Pacing and the world
+
+22. **05-pacing owns every rate**: the XP table, drill (per kill 20 / 35 / 70 / 180 / 360, the martial classes x1.5, thresholds as 05 states), door Marks, study, modules, feelings, Devotion, credits. 02, 03 and 04 quote 05.
+23. **The 80%** counts each system the character's doors open; techniques count against all 66.
+24. **Survival:** five maps, two levels a map, each map's Boss at 2m + 1, the final boss at level 11; then endless at one level a map to level-20 foes at about hour 40, each map adding a kit. An enemy's level comes from the map and the row, never from the party. Hard, deadly and final fights press harder a round as well as lasting longer (06's rows).
+25. **Grades by map (07's split):** Fine on maps 1 and 2, Masterwork on 3 and 4; Relic is found on map 5 and sold only in endless; Celestial is found only, from endless map 10 (the vault and one Boss pick in four). No Celestial before then.
+26. **One price for a grade step** (05's formula), read by the shop and the Forge.
+27. **Co-op pace:** an `xp.party_pace` row (1 / 1.6 / 2.2 / 2.8 for squads of 1 to 4), PROVISIONAL until a co-op playtest.
+28. **A campaign states its tier**; the party's level is only a last fallback for a file with no level anywhere, with a validator warning.
+
+## E. Known and left open (on the roadmap, not solved in 0.34)
+
+- A character with two doors that each need a focus in a hand: Survival gives one free focus. The camp sells a second; the two-door tables count the 1 AP hand swap.
+- A room saved in the middle of a fight before 0.34: the builder proposes the migration (rescale on load, or the fight reopens from its start) and the lead approves it before it is built.
+- Named Crossings, advanced classes, the fallen form, Weapon Arts, Scars and Deeds, the account's upgrade.
