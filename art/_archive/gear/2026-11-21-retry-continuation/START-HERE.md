@@ -1,3 +1,7 @@
+# Expanded21November retry continuation
+
+536/871 pushed. Same run sole-20261121-0109, samebranch. Exact queue now41grades:23delivered,18pending (3flamer+15newpeergrades). Expanded claim comment7055981184. First new job weapon-war_pick--fine. Alloriginalpeerprompts/errors preserved in coordination; current issue3+allcomments and remotecatalogs govern beforeeveryrender. Allcandidate flagsfalse. Actualquota notyetreturned. Userretryauthorization persists;0.30holds remain, authorizedScrapSentinel replacementdelivered.
+
 #21November renewed grade production
 
 Run sole-20261121-0109, same sole artist andbranch art/2026-11-20-reset-continuation.512/871 prior selected candidates fully integrated, original/shared files preserved.26 exact pending grade IDs in claim.json; first LegionSpear Masterwork, then Relic/Celestial; other pending families follow. User expressly authorized renewed fictional-art attempts after old service errors; see AUTHORIZATION.md. Old lane manifests, sources, alpha-cleaned imports, exact nativebytes and failures stay untouched.

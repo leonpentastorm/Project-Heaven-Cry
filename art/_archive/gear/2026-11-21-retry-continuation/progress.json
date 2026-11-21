@@ -30,7 +30,22 @@
   "remaining": [
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
-    "weapon-purifier_flamer--celestial"
+    "weapon-purifier_flamer--celestial",
+    "weapon-ork_machete--masterwork",
+    "weapon-ork_machete--relic",
+    "weapon-ork_machete--celestial",
+    "weapon-war_axe--fine",
+    "weapon-war_axe--masterwork",
+    "weapon-war_axe--relic",
+    "weapon-war_axe--celestial",
+    "weapon-war_pick--fine",
+    "weapon-war_pick--masterwork",
+    "weapon-war_pick--relic",
+    "weapon-war_pick--celestial",
+    "weapon-war_hammer--fine",
+    "weapon-war_hammer--masterwork",
+    "weapon-war_hammer--relic",
+    "weapon-war_hammer--celestial"
   ],
   "baseline_project_pictures": 512,
   "project_total": 871,
@@ -46,5 +61,6 @@
     }
   ],
   "updated_utc": "2026-11-21T02:28:07.617647+00:00",
-  "project_distinct_count": 536
+  "project_distinct_count": 536,
+  "total": 41
 }

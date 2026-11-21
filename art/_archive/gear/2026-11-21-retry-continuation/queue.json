@@ -3,7 +3,7 @@
     "id": "weapon-legion_spear--masterwork",
     "standard_id": "weapon-legion_spear",
     "grade": "masterwork",
-    "label": "Legion Spear — Masterwork",
+    "label": "Legion Spear \u2014 Masterwork",
     "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -42,7 +42,7 @@
     "id": "weapon-legion_spear--relic",
     "standard_id": "weapon-legion_spear",
     "grade": "relic",
-    "label": "Legion Spear — Relic",
+    "label": "Legion Spear \u2014 Relic",
     "path": "art/icons/gear/weapon-legion_spear--relic.png",
     "kind": "weapon",
     "references": [
@@ -76,7 +76,7 @@
     "id": "weapon-legion_spear--celestial",
     "standard_id": "weapon-legion_spear",
     "grade": "celestial",
-    "label": "Legion Spear — Celestial",
+    "label": "Legion Spear \u2014 Celestial",
     "path": "art/icons/gear/weapon-legion_spear--celestial.png",
     "kind": "weapon",
     "references": [
@@ -120,7 +120,7 @@
     "id": "weapon-short_draw--fine",
     "standard_id": "weapon-short_draw",
     "grade": "fine",
-    "label": "Short Draw — Fine",
+    "label": "Short Draw \u2014 Fine",
     "path": "art/icons/gear/weapon-short_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -156,7 +156,7 @@
     "id": "weapon-long_draw--fine",
     "standard_id": "weapon-long_draw",
     "grade": "fine",
-    "label": "Long Draw — Fine",
+    "label": "Long Draw \u2014 Fine",
     "path": "art/icons/gear/weapon-long_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -192,7 +192,7 @@
     "id": "weapon-purifier_flamer--masterwork",
     "standard_id": "weapon-purifier_flamer",
     "grade": "masterwork",
-    "label": "Purifier Flamer — Masterwork",
+    "label": "Purifier Flamer \u2014 Masterwork",
     "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -237,7 +237,7 @@
     "id": "weapon-dock_cutter--masterwork",
     "standard_id": "weapon-dock_cutter",
     "grade": "masterwork",
-    "label": "Dock Cutter — Masterwork",
+    "label": "Dock Cutter \u2014 Masterwork",
     "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -275,7 +275,7 @@
     "id": "weapon-short_draw--masterwork",
     "standard_id": "weapon-short_draw",
     "grade": "masterwork",
-    "label": "Short Draw — Masterwork",
+    "label": "Short Draw \u2014 Masterwork",
     "path": "art/icons/gear/weapon-short_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -332,7 +332,7 @@
     "id": "weapon-long_draw--masterwork",
     "standard_id": "weapon-long_draw",
     "grade": "masterwork",
-    "label": "Long Draw — Masterwork",
+    "label": "Long Draw \u2014 Masterwork",
     "path": "art/icons/gear/weapon-long_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -365,7 +365,7 @@
     "id": "weapon-kemizuchi_side_sword--masterwork",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "masterwork",
-    "label": "Kemizuchi Side Sword — Masterwork",
+    "label": "Kemizuchi Side Sword \u2014 Masterwork",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -403,7 +403,7 @@
     "id": "weapon-ork_cleaver_glaive--masterwork",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "masterwork",
-    "label": "Ork Cleaver Glaive — Masterwork",
+    "label": "Ork Cleaver Glaive \u2014 Masterwork",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -447,7 +447,7 @@
     "id": "weapon-purifier_flamer--relic",
     "standard_id": "weapon-purifier_flamer",
     "grade": "relic",
-    "label": "Purifier Flamer — Relic",
+    "label": "Purifier Flamer \u2014 Relic",
     "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
     "kind": "weapon",
     "references": [
@@ -478,7 +478,7 @@
     "id": "weapon-dock_cutter--relic",
     "standard_id": "weapon-dock_cutter",
     "grade": "relic",
-    "label": "Dock Cutter — Relic",
+    "label": "Dock Cutter \u2014 Relic",
     "path": "art/icons/gear/weapon-dock_cutter--relic.png",
     "kind": "weapon",
     "references": [
@@ -512,7 +512,7 @@
     "id": "weapon-broadback_sabre--relic",
     "standard_id": "weapon-broadback_sabre",
     "grade": "relic",
-    "label": "Broadback Sabre — Relic",
+    "label": "Broadback Sabre \u2014 Relic",
     "path": "art/icons/gear/weapon-broadback_sabre--relic.png",
     "kind": "weapon",
     "references": [
@@ -551,7 +551,7 @@
     "id": "weapon-short_draw--relic",
     "standard_id": "weapon-short_draw",
     "grade": "relic",
-    "label": "Short Draw — Relic",
+    "label": "Short Draw \u2014 Relic",
     "path": "art/icons/gear/weapon-short_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -584,7 +584,7 @@
     "id": "weapon-long_draw--relic",
     "standard_id": "weapon-long_draw",
     "grade": "relic",
-    "label": "Long Draw — Relic",
+    "label": "Long Draw \u2014 Relic",
     "path": "art/icons/gear/weapon-long_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -617,7 +617,7 @@
     "id": "weapon-kemizuchi_side_sword--relic",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "relic",
-    "label": "Kemizuchi Side Sword — Relic",
+    "label": "Kemizuchi Side Sword \u2014 Relic",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
     "kind": "weapon",
     "references": [
@@ -651,7 +651,7 @@
     "id": "weapon-ork_cleaver_glaive--relic",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "relic",
-    "label": "Ork Cleaver Glaive — Relic",
+    "label": "Ork Cleaver Glaive \u2014 Relic",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
     "kind": "weapon",
     "references": [
@@ -685,7 +685,7 @@
     "id": "weapon-hellraiser_rotary--celestial",
     "standard_id": "weapon-hellraiser_rotary",
     "grade": "celestial",
-    "label": "Hellraiser Rotary — Celestial",
+    "label": "Hellraiser Rotary \u2014 Celestial",
     "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
     "kind": "weapon",
     "references": [
@@ -728,7 +728,7 @@
     "id": "weapon-purifier_flamer--celestial",
     "standard_id": "weapon-purifier_flamer",
     "grade": "celestial",
-    "label": "Purifier Flamer — Celestial",
+    "label": "Purifier Flamer \u2014 Celestial",
     "path": "art/icons/gear/weapon-purifier_flamer--celestial.png",
     "kind": "weapon",
     "references": [
@@ -759,7 +759,7 @@
     "id": "weapon-dock_cutter--celestial",
     "standard_id": "weapon-dock_cutter",
     "grade": "celestial",
-    "label": "Dock Cutter — Celestial",
+    "label": "Dock Cutter \u2014 Celestial",
     "path": "art/icons/gear/weapon-dock_cutter--celestial.png",
     "kind": "weapon",
     "references": [
@@ -793,7 +793,7 @@
     "id": "weapon-broadback_sabre--celestial",
     "standard_id": "weapon-broadback_sabre",
     "grade": "celestial",
-    "label": "Broadback Sabre — Celestial",
+    "label": "Broadback Sabre \u2014 Celestial",
     "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
     "kind": "weapon",
     "references": [
@@ -828,7 +828,7 @@
     "id": "weapon-short_draw--celestial",
     "standard_id": "weapon-short_draw",
     "grade": "celestial",
-    "label": "Short Draw — Celestial",
+    "label": "Short Draw \u2014 Celestial",
     "path": "art/icons/gear/weapon-short_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -861,7 +861,7 @@
     "id": "weapon-long_draw--celestial",
     "standard_id": "weapon-long_draw",
     "grade": "celestial",
-    "label": "Long Draw — Celestial",
+    "label": "Long Draw \u2014 Celestial",
     "path": "art/icons/gear/weapon-long_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -894,7 +894,7 @@
     "id": "weapon-kemizuchi_side_sword--celestial",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "celestial",
-    "label": "Kemizuchi Side Sword — Celestial",
+    "label": "Kemizuchi Side Sword \u2014 Celestial",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
     "kind": "weapon",
     "references": [
@@ -928,7 +928,7 @@
     "id": "weapon-ork_cleaver_glaive--celestial",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "celestial",
-    "label": "Ork Cleaver Glaive — Celestial",
+    "label": "Ork Cleaver Glaive \u2014 Celestial",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
     "kind": "weapon",
     "references": [
@@ -957,5 +957,511 @@
     "original_prompt_sha256": "a5dea3da683c0efa824d46a42af0c4099b0fd02b348069bef0e4c823552d470d",
     "run": "sole-20261121-0109",
     "standard_sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+  },
+  {
+    "id": "weapon-ork_machete--masterwork",
+    "standard_id": "weapon-ork_machete",
+    "grade": "masterwork",
+    "label": "Ork Machete \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-ork_machete--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_machete",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST attached image is the exact Standard shape and registration master. Preserve its entire alpha outline, empty holes, scale, original margins and45degree diagonal. Supporting portrait reference is brushwork only; never copy a person or scene. The second image is the preceding grade candidate: keep its surface additions while stepping its finish as specified. Full transparency; no ground, cast shadow, labels or decorative frame.",
+    "keep_line": "the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-ork_machete--fine",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "b05b3d4f767269a81bd4665d49e00ebbd8bfe5914cd324f3c315003a7fa7c644",
+    "standard_sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json",
+      "response": {
+        "id": "weapon-ork_machete--masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID a7119952-823e-49ce-8047-04ff6ef4903d. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  {
+    "id": "weapon-ork_machete--relic",
+    "standard_id": "weapon-ork_machete",
+    "grade": "relic",
+    "label": "Ork Machete \u2014 Relic",
+    "path": "art/icons/gear/weapon-ork_machete--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_machete",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST attached image is the exact Standard shape and registration master. Preserve its entire alpha outline, empty holes, scale, original margins and45degree diagonal. Supporting portrait reference is brushwork only; never copy a person or scene. The second image is the preceding grade candidate: keep its surface additions while stepping its finish as specified. Full transparency; no ground, cast shadow, labels or decorative frame.",
+    "keep_line": "the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-ork_machete--masterwork",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "32b5f8e7ba1b3829902bdc6500349be4f4867c3ffc2633a6bf02beb337076455",
+    "standard_sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-ork_machete--celestial",
+    "standard_id": "weapon-ork_machete",
+    "grade": "celestial",
+    "label": "Ork Machete \u2014 Celestial",
+    "path": "art/icons/gear/weapon-ork_machete--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_machete",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST attached image is the exact Standard shape and registration master. Preserve its entire alpha outline, empty holes, scale, original margins and45degree diagonal. Supporting portrait reference is brushwork only; never copy a person or scene. The second image is the preceding grade candidate: keep its surface additions while stepping its finish as specified. Full transparency; no ground, cast shadow, labels or decorative frame.",
+    "keep_line": "the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-ork_machete--relic",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "cb3570d50335b6634821e214f2df1b47361605c34fb8c265e6cb075bee5b482e",
+    "standard_sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_axe--fine",
+    "standard_id": "weapon-war_axe",
+    "grade": "fine",
+    "label": "War Axe \u2014 Fine",
+    "path": "art/icons/gear/weapon-war_axe--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. Full transparency, no cast shadow or decorative frame.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "feea828f46795a170aa17c8ba3d85de618bacd42f731fb41870bde0fdb702468",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json",
+      "response": {
+        "id": "weapon-war_axe--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 6b40d708-2cac-4760-9ab8-64ae9fb5d3c8. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  {
+    "id": "weapon-war_axe--masterwork",
+    "standard_id": "weapon-war_axe",
+    "grade": "masterwork",
+    "label": "War Axe \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-war_axe--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/icons/gear/weapon-war_axe--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-war_axe--fine",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "5a354ffeae42974ab17d9b342fc6f04d22e0efd757835e13d3013b6f501d6be3",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_axe--relic",
+    "standard_id": "weapon-war_axe",
+    "grade": "relic",
+    "label": "War Axe \u2014 Relic",
+    "path": "art/icons/gear/weapon-war_axe--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/icons/gear/weapon-war_axe--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-war_axe--masterwork",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "e443da578a5b77abf341d137a42876d05f216317f3d6862b8ef4c7dd36e6e7e9",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_axe--celestial",
+    "standard_id": "weapon-war_axe",
+    "grade": "celestial",
+    "label": "War Axe \u2014 Celestial",
+    "path": "art/icons/gear/weapon-war_axe--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/icons/gear/weapon-war_axe--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-war_axe--relic",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "e9ed641b9367aef4d732b57389d445e860de639f071261ef2c13fb5b8562d76f",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_pick--fine",
+    "standard_id": "weapon-war_pick",
+    "grade": "fine",
+    "label": "War pick \u2014 Fine",
+    "path": "art/icons/gear/weapon-war_pick--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_pick.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_pick",
+    "family_references": [
+      "art/icons/gear/weapon-war_pick.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 13,
+    "keep_line": "the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. Add only ONE uncoloured thin engraved contour inside the existing head cheek; no inlay colour, ornament, motif, repair or new metal part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json",
+      "request_id": "4cd33425-c230-4758-b1ad-253a6b514cfa"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "0b47cbfbe12c7ecdb0f1dc1d73a6d7b2e0afbef5f29672e1b803c2b9e8752ef4",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json",
+      "response": {
+        "id": "weapon-war_pick--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 4cd33425-c230-4758-b1ad-253a6b514cfa. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  {
+    "id": "weapon-war_pick--masterwork",
+    "standard_id": "weapon-war_pick",
+    "grade": "masterwork",
+    "label": "War pick \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-war_pick--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_pick.png",
+      "art/icons/gear/weapon-war_pick--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_pick",
+    "family_references": [
+      "art/icons/gear/weapon-war_pick.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 13,
+    "keep_line": "the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. No coloured maker accent exists: bright brass inlay follows the prior thin cheek contour. Keep original straps/bands in place; two flat haft strips are surface-flush and entirely within the original haft silhouette. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_pick--fine",
+    "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "5221fbc72f18ceaf9b1a08d2cdfadff68fab285353fd03ca67a8f25527c78d0b",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_pick--relic",
+    "standard_id": "weapon-war_pick",
+    "grade": "relic",
+    "label": "War pick \u2014 Relic",
+    "path": "art/icons/gear/weapon-war_pick--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_pick.png",
+      "art/icons/gear/weapon-war_pick--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_pick",
+    "family_references": [
+      "art/icons/gear/weapon-war_pick.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 13,
+    "keep_line": "the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. ONE small flush gilt ornament ring at the existing socket, no projecting collar or new part. ONE old repair in the existing grip wrap: one short contrasting older cord section wound in the same original outline. Preserve the original haft strips, bands and rivets; head cheek inlay alone becomes dull old gold. No rust.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_pick--masterwork",
+    "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "28a7a53550251cd2bd0c0ad192dcec5f57f32d4192a1ca2173afc286ac11638c",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_pick--celestial",
+    "standard_id": "weapon-war_pick",
+    "grade": "celestial",
+    "label": "War pick \u2014 Celestial",
+    "path": "art/icons/gear/weapon-war_pick--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_pick.png",
+      "art/icons/gear/weapon-war_pick--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_pick",
+    "family_references": [
+      "art/icons/gear/weapon-war_pick.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 13,
+    "keep_line": "the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. Retain the ONE socket ornament and ONE grip repair in exactly their preceding Relic positions/outline, now clean pale material and subtle cord seams. Keep dark cross-cut grooves and lanyard hole; no light spilling outside. All original parts remain; no new gems or fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_pick--relic",
+    "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "976713a38dc12ac70195c3e8925e0adf8c56fb211523c3a0e8bf03e4ae2bd9f3",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_hammer--fine",
+    "standard_id": "weapon-war_hammer",
+    "grade": "fine",
+    "label": "War hammer \u2014 Fine",
+    "path": "art/icons/gear/weapon-war_hammer--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_hammer.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_hammer",
+    "family_references": [
+      "art/icons/gear/weapon-war_hammer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 14,
+    "keep_line": "the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. Add only ONE uncoloured thin engraved contour inside the existing head cheek; no inlay colour, ornament, motif, repair or new metal part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+      "request_id": "1ce25817-1d39-4828-a9cb-f558f3673032"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "f0996e2fce14dca42301e6412fbb019d32240825f6c6612a9be83a365380889c",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+      "response": {
+        "id": "weapon-war_hammer--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1ce25817-1d39-4828-a9cb-f558f3673032. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  {
+    "id": "weapon-war_hammer--masterwork",
+    "standard_id": "weapon-war_hammer",
+    "grade": "masterwork",
+    "label": "War hammer \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-war_hammer--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_hammer.png",
+      "art/icons/gear/weapon-war_hammer--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_hammer",
+    "family_references": [
+      "art/icons/gear/weapon-war_hammer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 14,
+    "keep_line": "the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. No coloured maker accent exists: bright brass inlay follows the prior thin cheek contour. Keep original straps/bands in place; two flat haft strips are surface-flush and entirely within the original haft silhouette. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_hammer--fine",
+    "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "bd003f5d0aa2f3067d412caa3d28dedd9b187c9d4d6a64e5d5b870a8e54d1f2f",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_hammer--relic",
+    "standard_id": "weapon-war_hammer",
+    "grade": "relic",
+    "label": "War hammer \u2014 Relic",
+    "path": "art/icons/gear/weapon-war_hammer--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_hammer.png",
+      "art/icons/gear/weapon-war_hammer--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_hammer",
+    "family_references": [
+      "art/icons/gear/weapon-war_hammer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 14,
+    "keep_line": "the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. ONE small flush gilt ornament ring at the existing socket, no projecting collar or new part. ONE old repair in the existing grip wrap: one short contrasting older cord section wound in the same original outline. Preserve the original haft strips, bands and rivets; head cheek inlay alone becomes dull old gold. No rust.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_hammer--masterwork",
+    "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "f5393ad1d6d7391267b0ef7819e7f29849bcd8780357210aa1c35a2ae3672062",
+    "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-war_hammer--celestial",
+    "standard_id": "weapon-war_hammer",
+    "grade": "celestial",
+    "label": "War hammer \u2014 Celestial",
+    "path": "art/icons/gear/weapon-war_hammer--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_hammer.png",
+      "art/icons/gear/weapon-war_hammer--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_hammer",
+    "family_references": [
+      "art/icons/gear/weapon-war_hammer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 14,
+    "keep_line": "the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. Retain the ONE socket ornament and ONE grip repair in exactly their preceding Relic positions/outline, now clean pale material and subtle cord seams. Keep dark cross-cut grooves and lanyard hole; no light spilling outside. All original parts remain; no new gems or fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_hammer--relic",
+    "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "cd63c6b4b66f873e9b81ae98718ad25b006cdf8c20f7be75631c5d701b340a22",
+    "retry_authorized_by_user": true
   }
 ]

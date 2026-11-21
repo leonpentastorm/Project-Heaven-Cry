@@ -1,3 +1,7 @@
+## Expanded15gradeclaim
+
+Run sole-20261121-0109, issuecomment7055981184: OrkMachete Masterwork/Relic/Celestial; WarAxe,WarPick,WarHammer all4grades. Exactids/refs/prompts in current41queue.23selected/18pending, total536/871.3flamergrades retainreservation.
+
 ##21November explicit replacement claim
 
 Run sole-20261121-0109 exclusively claims figment-scrap-sentinel at art/portraits/figments/figment-scrap-sentinel.png, replacing retired File01#009 only. User answer: "Yes, replace that slot with Scrap Sentinel". ExistingSentinel unchanged; exact queue/claim in art/_archive/figments/2026-11-21-scrap-sentinel. Current526/871. Existing26grade claim remains active with14delivered,12pending.
