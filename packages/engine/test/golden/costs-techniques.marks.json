@@ -362,7 +362,7 @@
 "tech/heavy_bolt/smetanita_thumper/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "tech/heavy_bolt/smetanita_thumper/soldier": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "tech/last_round/crossbow/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 tech._take.t0>1.1",
-"tech/last_round/crossbow/soldier": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 tech._take.t0>1.1",
+"tech/last_round/crossbow/soldier": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true freeReload0>true shotsThisTurn0>1 tech._take.t0>1.1",
 "tech/lob/blackpoint_700/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "tech/lob/blackpoint_700/soldier": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "tech/lob/core_rifle/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",

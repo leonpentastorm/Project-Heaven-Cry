@@ -5,7 +5,7 @@
 "shelved/advanced/adamantile_knight/defender.brace/interpose_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:defender.brace.policy0>off",
 "shelved/advanced/adamantile_knight/defender.shrug_it_off/shrug_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:defender.shrug_it_off.policy0>off",
 "shelved/advanced/adamantile_knight/taken": "P1 ps.class:adamantile_knight.adamantile_plate.lost0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
-"shelved/advanced/adamantile_knight/taken-blast": "P1 ps.class:adamantile_knight.adamantile_plate.lost0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1",
+"shelved/advanced/adamantile_knight/taken-blast": "P1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1",
 "shelved/advanced/adamantile_knight/taken-blow": "P1 ps.class:adamantile_knight.adamantile_plate.lost0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true",
 "shelved/advanced/adamantile_knight/taken-crit": "P1 ps.class:adamantile_knight.adamantile_plate.lost0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/advanced/adamantile_knight/taken-fire": "P1 ps.class:adamantile_knight.adamantile_plate.lost0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1",

@@ -121,7 +121,7 @@ describe('Raise Shield', () => {
     expect(f.tech('raise_shield')).toBe('Your shield is already raised.');
     const one = fight({ m: 3, guard: 0 }); expect(one.pv('raise_shield', { opt: '1' }).guard).toEqual({ now: 0, after: 1 });
     expect(one.tech('raise_shield', { opt: '1' })).toBeNull(); expect([one.momentum(one.pc), guard(one)]).toEqual([2, 1]);
-    const top = fight().pc.resMax!.guard!, full = fight({ m: 3, guard: top - 1 }); // rules 1.97 item 8340: the pool is Durability's Reach expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, top]); // the pool's cap (4 since rules 1.55 item 74)
+    const top = fight().pc.resMax!.guard!, full = fight({ m: 3, guard: top - 1 }); /* rules 1.97 item 8340: the pool is Durability's Reach */ expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, top]); // the pool's cap
     const none = fight({ m: 2, dur: 0 }); expect(none.tech('raise_shield')).toBeNull(); expect(none.momentum(none.pc)).toBe(2); // no pool: nothing is turned, the shield is still raised
   });
   it('ranged attacks from the front are at −2 until your next turn; melee and shots from behind are not', () => {

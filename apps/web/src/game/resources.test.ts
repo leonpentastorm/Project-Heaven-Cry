@@ -1,7 +1,7 @@
 // The RESOURCES block (game/resources.ts): each class archetype sees its own rows, in words, with the warnings that
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL, SOUL_RULES, CLASS } from '@engine';
+import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL, SOUL_RULES, CLASS, momentumTop, guardPool } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule, sigilChip, RES_INK } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
@@ -142,14 +142,14 @@ describe('the Soul caster: MP, Strain vs its limit, the held Outburst', () => {
 });
 
 describe('class resources, named from the data', () => {
-  it('a Breaker (fighter) sees Momentum / 5 (pips, Body amber), with the moves that spend it', () => {
+  it('a Breaker (fighter) sees Momentum / its Reach (pips, Body amber), with the moves that spend it', () => {
     const { u, c, g } = fight((c) => { c.classId = 'fighter'; });
-    expect(u.resMax?.momentum).toBe(5);
-    u.res.momentum = 3;
+    const top = momentumTop(c); expect(u.resMax?.momentum).toBe(top); // rules 1.97 item 8340: Raw Power's Reach (the Breaker's 5 retired)
+    u.res.momentum = Math.min(2, top);
     const r = row(resourcesOf(u, c, g), 'res-momentum');
-    expect(r).toMatchObject({ label: 'Momentum', value: '3 / 5', kind: 'pips', colour: '#F2A54A' });
+    expect(r).toMatchObject({ label: 'Momentum', value: Math.min(2, top) + ' / ' + top, kind: 'pips', colour: '#F2A54A' });
     expect(r.hint).toMatch(/Barrel In/); // rules 1.60 item 4622: the class's Lunge is Barrel In
-    u.res.momentum = 5;
+    u.res.momentum = top;
     expect(row(resourcesOf(u, c, g), 'res-momentum')).toMatchObject({ warn: 'FULL', level: 'ready' });
   });
   it('a Storm Hand sees Charges, labelled by the move that gives them (from the data), in Soul violet', () => {
@@ -183,7 +183,7 @@ describe('class resources, named from the data', () => {
   it('a Bulwark (defender) sees Guard; a Mender (bard) has no Supplies (rules 1.33: they left the class)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
     expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / ' + (d.u.resMax?.guard ?? 0) }); // Classes 3.0: a fight starts with the Bulwark's Guard; the pool is the Bulwark's own by rank (rules 1.59 item 4541: classes.json resource.max_by_rank)
-    expect(d.u.resMax?.guard).toBe((CLASS as any).defender.resource.max_by_rank['1']); expect(d.u.resMax!.guard).toBeGreaterThan(phys.PHYS_RULES.guard.max);
+    expect(d.u.resMax?.guard ?? 0).toBe(guardPool(d.c)); expect((CLASS as any).defender.resource.max_by_rank).toBeUndefined(); void phys; // rules 1.97 item 8340: Durability's Reach
     const m = fight((c) => { c.classId = 'bard'; });
     const story = resourcesOf(null, m.c, { phase: 'story', story: { magic: {} } });
     expect(row(story, 'res-supplies')).toBeUndefined();

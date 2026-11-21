@@ -775,7 +775,7 @@
 "tech/half_sword/sabre": "P1 attackedTurn0>true chain.last0>half_sword chain.n0>1 chain.t0>1.4 faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-0|per_turn.n0>1 uses.skill:dexterity.1>foe-0|per_turn.s0>t1.4",
 "tech/hamstring/sabre": "P1 attackedTurn0>true chain.last0>hamstring chain.n0>1 chain.t0>1.4 faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-0|per_turn.n0>1 uses.skill:dexterity.1>foe-0|per_turn.s0>t1.4",
 "tech/heavy_bolt/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>5 faith.lastKey0>combat/technique:heavy_bolt faith.lastRound0>1 faith.lastSpent0>1 firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
-"tech/last_round/crossbow": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 tech._take.t0>1.1",
+"tech/last_round/crossbow": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true freeReload0>true shotsThisTurn0>1 tech._take.t0>1.1",
 "tech/lob/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "tech/lunge/sabre": "P1 attackedTurn0>true chain.last0>lunge chain.n0>1 chain.t0>1.4 faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true openerUsed0>true uses.skill:dexterity.1>foe-0|per_turn.n0>1 uses.skill:dexterity.1>foe-0|per_turn.s0>t1.4",
 "tech/mag_dump/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>5 faith.lastKey0>combat/technique:mag_dump faith.lastRound0>1 faith.lastSpent0>1 firstShotDone0>true firstShotTurn0>true shotsThisTurn0>3",

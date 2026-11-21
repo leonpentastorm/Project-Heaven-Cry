@@ -14978,7 +14978,8 @@ As played after this revision:
       Dexterity Reach (2 at Dexterity 1, 3 at 4, 4 at 7 with Athletics 4, 5 at 10 with Athletics 7 and Reaction Speed
       4); the foe's pips stop at the best Reach laid on it this fight, less its tier row's `pressure_off` (an Elite 1,
       a Boss 2: ruling 19). A character with no Dexterity lays none. A player still stops at the rules row's
-      `player_max` (3); a unit with no sheet (an enemy) lays up to the rules row's `max` (4). So a Dexterity-10
+      `player_max` (3); a unit with no sheet (an enemy), and a pip no unit lays (an item's own), lays up to the rules
+      row's `max` (4). So a Dexterity-10
       shooter's fifth pip Breaks an Elite and Suppresses a Boss, and a foe at 5 is still Broken after its turn's fall.
       Supersedes the fixed caps of rules 1.12 (4, an Elite 3, a Boss 2).
 8342. **Every Finisher and every Take spends all, and pays on the cash-out sum** of its door at the user's own Bite:
@@ -14995,8 +14996,8 @@ As played after this revision:
       2). Pain Threshold feeds a plate's soak by 1 + 0.02 a point + 0.005 x Durability x Pain Threshold; Athletics feeds
       the Pressure shed from you by 1 + 0.02 a point + 0.01 x Dexterity x Athletics. Guts no longer feeds a share of the
       chain's wear: from Guts 4 the first damaging hit you take each round wears no step, and from Guts 7 walking wears
-      a step every two tiles, not every tile; Guts also adds its points to saves against Fear. Supersedes rules 1.60
-      items 4604 to 4606 (the 0.01 products, Guts' kept share).
+      a step every two tiles, not every tile (the first damaging hit that would wear the chain is the one that is free).
+      Supersedes rules 1.60 items 4604 to 4606 (the 0.01 products, Guts' kept share).
 8345. **Brace fills the wall** (the Bulwark's): Brace raises your plates to your Reach. Supersedes rules 1.13's flat 2
       (3 with a shield).
 8346. **Enemies' Margins by tier** (ruling 69; `enemies.json` tier rows `margins_max`): vermin and minions count no
@@ -15005,5 +15006,6 @@ As played after this revision:
 8347. **Not in this revision** (for the lead, listed in `docs/design/handoffs/0.34-REBALANCE-STEP-2B.md`): Slam's and
       Retort's damage (a no-roll shield blow plus the plates' weight), the three Pushes (Overbrace, Overswing,
       Overpress), the gammas' landed calls that feed their door (Warn's plates, Threaten's Momentum, a Cued shot's pip)
-      and their solo forms, the classes' rank moves beyond Brace, the keeps tags beyond today's, and the door Marks
-      (step 3). Until each is built it keeps its 0.33 rule.
+      and their solo forms, Guts' +1 on saves against Fear (its point 1), the classes' rank moves beyond Brace, the
+      keeps tags beyond today's, the Momentum and Pressure Marks (step 3), and an enemy caster's spell Margins by its
+      tier. Until each is built it keeps its 0.33 rule.

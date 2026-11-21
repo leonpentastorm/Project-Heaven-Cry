@@ -85,7 +85,8 @@ describe('the road map of every skill', () => {
     expect(roadMap('pain_threshold').steps[pt[pj] - 1].lines.some((l: any) => /elemental resistance \(max\)$/.test(l.text))).toBe(true);
     expect(roadMap('pain_threshold').steps.slice(0, pt[pj] - 1).every((t: any) => !t.lines.some((l: any) => /\(max\)$/.test(l.text)))).toBe(true);
     const pool = ladderCaps('durability', null), j = Number(Object.keys(pool)[0]);
-    expect(shown('durability', /Guard plate held/)).toEqual(Array.from({ length: pool[j] }, (_, i) => i + 1));
+    expect(shown('durability', /Guard plates held/)).toEqual( // rules 1.97 item 8340: the plates held are the door's Reach
+     Array.from({ length: pool[j] }, (_, i) => i + 1));
     const hw = ladderCaps('faith', null), h = Number(Object.keys(hw)[0]);
     expect(shown('faith', /^Hymns return/)).toEqual(Array.from({ length: hw[h] }, (_, i) => i + 1));
     // a character with a higher Virtue reaches the floor sooner: the page reads the character

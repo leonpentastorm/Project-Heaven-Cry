@@ -1,6 +1,6 @@
 {
-"sigil-enemy/boss/L1": "o:elemental/spell:18+0x11.52v0 i:P1:elemental/fire:203 => P1 hp90>0 Downed, F2 new hp492",
-"sigil-enemy/boss/L12": "o:elemental/spell:18+0x115.988v0 i:P1:elemental/fire:2050 => P1 hp855>0 Downed, F2 new hp8599",
+"sigil-enemy/boss/L1": "o:elemental/spell:18+0x11.136v0 i:P1:elemental/fire:196 => P1 hp90>0 Downed, F2 new hp492",
+"sigil-enemy/boss/L12": "o:elemental/spell:18+0x112.121v0 i:P1:elemental/fire:1980 => P1 hp855>0 Downed, F2 new hp8599",
 "sigil-enemy/elite/L1": "o:elemental/spell:18+0x9.744v0 i:P1:elemental/lightning:171 => P1 hp90>0 Downed, F2 new hp144",
 "sigil-enemy/elite/L12": "o:elemental/spell:18+0x98.107v0 i:P1:elemental/lightning:1728 => P1 hp855>0 Downed, F2 new hp2517",
 "sigil-enemy/soldier/L1": "o:elemental/spell:18+0x7.236v0 i:P1:elemental/fire:126 => P1 hp90>0 Downed, F2 new hp84",

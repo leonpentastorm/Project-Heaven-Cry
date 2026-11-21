@@ -32,7 +32,7 @@ const pvLine = (pv: any) => (!pv.ok ? 'NO ' + String(pv.why || '').slice(0, 70) 
 const attackMode = (wid: string) => (isMeleeW(wid) ? 'melee' : 'shot');
 /** The actor at 3,5 (a gun, a spell) or 6,5 (a blade), the target at 7,5; everyone else out of the way. */
 function face(g: any, u: any, t: any, melee: boolean) { place(g, [[u, melee ? '6,5' : '3,5'], [t, '7,5']]); }
-const meters = (g: any, u: any, t: any) => { if (u.resMax?.momentum != null) { u.res ||= {}; u.res.momentum = u.resMax.momentum; } try { t.pressure = W(g, () => A.pressureCap(t)); } catch { /* no Pressure on this unit */ } };
+const meters = (g: any, u: any, t: any) => { if (u.resMax?.momentum != null) { u.res ||= {}; u.res.momentum = u.resMax.momentum; } try { t.pressure = W(g, () => A.pressureCap(t, u)); /* rules 1.97 item 8341: the cap the attacker's Reach gives */ } catch { /* no Pressure on this unit */ } };
 
 // ---------------------------------------------------------------------------------------------- plain attacks
 /** A plain attack by unit uId on unit tId in g (already placed, uId's turn): the preview, a hit and (crit) a critical. */
