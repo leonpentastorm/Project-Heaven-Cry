@@ -141,3 +141,11 @@ Step 1 (the scale) is green at `31d900923`; lane 2a (the pieces: Margins, the do
 69. **Enemies and Margins:** an enemy's Margins are limited by its tier, as data on the tier row: vermin and minions take none (a natural 20 still adds its two), a Soldier at most one, an Elite two, a Boss as many as it rolls. A frail character with Defense 10 is hit, not deleted.
 70. **Door ids are the data's** (`sigil`, `outburst`, `bond`); the bible's plural names are aliases the checker resolves.
 71. **Every flat number an effect op carries outside the factor's walk** (armour_bonus, a mod's damage_mod, Lightning Rod's jump and the like) and **the texts that still hold an unbound old-scale number** are brought to the new scale in step 5 (data and the {=placeholder} rule), and step 7 proves none is left.
+
+## M. Rulings after lane 2b (21 Nov 2026)
+
+Lane 2b (Body) is partly built and green at `884e81b96`. A whole Core is too much for one builder: from here **one door is one lane**.
+
+72. The exports lane 2b added (`reachOfRes`, `keepsOf`, `doorBeta`, `techCash`, `cashSteps`, `takePips`, `takeLeaves`, `layReach`, `pressureCap(u, by)`, `momentumTop`, `tierMargins`) stand and are read at the consolidation step.
+73. **Slam and Retort deal damage as technique rows**, their numbers read from the shield's own blow and one plate's soak through the existing number sources (a `soak:` source is allowed as one more namespace of the source reader if nothing existing gives a plate's soak); no per-move code.
+74. The defaults stay as built: a chain of 3 for a character with no Raw Power, and an enemy with no sheet lays pips to the rules' own top.
