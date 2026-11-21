@@ -33671,6 +33671,42 @@
         "different_pixels_32": 10,
         "different_pixels_64": 40
       }
+    },
+    "weapon-kemizuchi_side_sword--relic": {
+      "label": "Kemizuchi Side Sword — Relic",
+      "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
+      "sha256": "aa5089a9fc9ba1867e514622a8d7dd6580c5bea55041b7435b665d6d1b078ce9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-21-retry-continuation",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-kemizuchi_side_sword",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9505629227028463,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 12
+      }
     }
   },
   "survival_art": {
