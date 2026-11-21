@@ -1,7 +1,7 @@
 {
-  "selected": 574,
+  "selected": 575,
   "requested": 871,
-  "remaining": 297,
+  "remaining": 296,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 414,
+      "selected": 415,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 242,
+    "grade": 241,
     "unique": 4
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 38,
+    "service-blocked-or-preceding-grade-dependent": 37,
     "awaits-missing-requested-standard": 208
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
@@ -548,14 +548,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-drifter_revolver--celestial.png",
       "standard": "weapon-drifter_revolver",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-lever_carbine--fine",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-lever_carbine--fine.png",
-      "standard": "weapon-lever_carbine",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2470,7 +2462,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-short_bow--celestial",
+  "last_delivered": "weapon-lever_carbine--fine",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

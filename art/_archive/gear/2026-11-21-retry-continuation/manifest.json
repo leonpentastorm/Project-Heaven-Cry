@@ -3573,6 +3573,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lever_carbine--fine",
+      "path": "art/icons/gear/weapon-lever_carbine--fine.png",
+      "sha256": "5272009720af7776011d5893bfa71539d9af78d6a4b168f486009c35874adbf3",
+      "label": "Lever Carbine — Fine",
+      "family": "weapon-lever_carbine",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-lever_carbine--fine.png",
+        "sha256": "0e625a147b9720f26050e5a8eb7fcceb4b9245f84ac8c6eef3852e08c21f504b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-lever_carbine--fine.png",
+        "sha256": "5272009720af7776011d5893bfa71539d9af78d6a4b168f486009c35874adbf3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-lever_carbine--fine.txt",
+        "sha256": "c6fc7b466aef8355c8e22552ced9183c79f8df02b935fc102956def515a02db8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lever_carbine.png",
+          "sha256": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lever_carbine--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lever_carbine--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lever_carbine--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lever_carbine--fine.png"
+      },
+      "export_hashes": {
+        "256": "d7c6b6d7a23737d822a947ec0874f6c6f6f69e3caf4d5b5e14119c0958a1b17a",
+        "128": "45db99af8dea953150ea925e4f52ab0a3dae663171ad0de4ef9aa9f5ca784ffa",
+        "64": "e2d405f0985e342ac263330cb15170efc59b5bfe0e4eb77ad4bec8b923bcf34d",
+        "32": "77b09ac6827f307516a84d8d80c8ab4a4df1fd6fbb6e4c8fad7a78520960c853"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-lever_carbine",
+      "outline": {
+        "solid_alpha_iou": 0.9769779148106192,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

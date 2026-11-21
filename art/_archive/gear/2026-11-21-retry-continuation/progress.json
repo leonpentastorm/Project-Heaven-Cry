@@ -53,6 +53,7 @@
     "weapon-crossbow--celestial",
     "weapon-repeating_crossbow--relic",
     "weapon-repeating_crossbow--celestial",
+    "weapon-lever_carbine--fine",
     "weapon-coach_gun--fine",
     "weapon-coach_gun--masterwork",
     "weapon-coach_gun--relic",
@@ -65,7 +66,6 @@
     "weapon-parlour_pistol--masterwork",
     "weapon-parlour_pistol--relic",
     "weapon-parlour_pistol--celestial",
-    "weapon-lever_carbine--fine",
     "weapon-lever_carbine--masterwork",
     "weapon-lever_carbine--relic",
     "weapon-lever_carbine--celestial",
@@ -527,8 +527,8 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T16:06:29.658794+00:00",
-  "project_distinct_count": 574,
+  "updated_utc": "2026-11-21T16:14:39.040985+00:00",
+  "project_distinct_count": 575,
   "total": 94,
   "service_block": {
     "returned_code": "moderation_blocked",
