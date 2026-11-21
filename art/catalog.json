@@ -34715,6 +34715,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 32
       }
+    },
+    "weapon-purifier_flamer--relic": {
+      "label": "Purifier Flamer — Relic",
+      "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
+      "sha256": "d2300db7fde2209025b54a8975329b6b0290663e2d9b7e6b238b3a7d08d35fca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-purifier_flamer--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-purifier_flamer--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-purifier_flamer--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-purifier_flamer--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-purifier_flamer--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-21-retry-continuation",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-purifier_flamer",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9536056680806542,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 30
+      }
     }
   },
   "survival_art": {

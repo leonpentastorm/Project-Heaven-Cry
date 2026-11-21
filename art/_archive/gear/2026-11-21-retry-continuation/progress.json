@@ -14,6 +14,7 @@
     "weapon-long_draw--masterwork",
     "weapon-kemizuchi_side_sword--masterwork",
     "weapon-ork_cleaver_glaive--masterwork",
+    "weapon-purifier_flamer--relic",
     "weapon-dock_cutter--relic",
     "weapon-broadback_sabre--relic",
     "weapon-short_draw--relic",
@@ -49,7 +50,6 @@
     "weapon-repeating_crossbow--celestial"
   ],
   "remaining": [
-    "weapon-purifier_flamer--relic",
     "weapon-purifier_flamer--celestial",
     "weapon-short_bow--fine",
     "weapon-short_bow--masterwork",
@@ -69,7 +69,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T10:28:41.462939+00:00",
-  "project_distinct_count": 557,
+  "updated_utc": "2026-11-21T10:30:20.477552+00:00",
+  "project_distinct_count": 558,
   "total": 50
 }

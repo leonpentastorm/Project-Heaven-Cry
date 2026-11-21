@@ -2841,6 +2841,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-purifier_flamer--relic",
+      "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
+      "sha256": "d2300db7fde2209025b54a8975329b6b0290663e2d9b7e6b238b3a7d08d35fca",
+      "label": "Purifier Flamer — Relic",
+      "family": "weapon-purifier_flamer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-purifier_flamer--relic.png",
+        "sha256": "3d894eab41b5fe065ba129fb773a46f082db0f13dbd9158daa218f6cc924510d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-purifier_flamer--relic.png",
+        "sha256": "d2300db7fde2209025b54a8975329b6b0290663e2d9b7e6b238b3a7d08d35fca"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-purifier_flamer--relic.txt",
+        "sha256": "49265bb5b22f08e889de647d3f3448b3032f2e656f9a11ddf81346c4e15a893f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer.png",
+          "sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f"
+        },
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
+          "sha256": "1fb290efab8b4835508d821eecf8fcc7f6d3170ced795742f6823e1617e26fec"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-purifier_flamer--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-purifier_flamer--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-purifier_flamer--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-purifier_flamer--relic.png"
+      },
+      "export_hashes": {
+        "256": "7e61bbf024c4951db3a783808feca7314a51402f9aaa8758f2cd5aa799302b2e",
+        "128": "df9e3b3d130260a5e30fdd5b2a3a591e0c35d93ca4bf71132bce2e9f192fffbc",
+        "64": "c4c080655bcac972b230ff587dab61625c059ffd53b4e325fd38fc34acac80e1",
+        "32": "5a36c8d9b589bac713d4d7f784c3782c0778ed422c921c10167588465a75c06d"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-purifier_flamer",
+      "outline": {
+        "solid_alpha_iou": 0.9536056680806542,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
