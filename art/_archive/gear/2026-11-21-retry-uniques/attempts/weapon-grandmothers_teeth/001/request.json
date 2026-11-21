@@ -1,0 +1,68 @@
+{
+  "head": "21c503ea878511b103e2dff864d654eb994fbb0f",
+  "job": {
+    "id": "weapon-grandmothers_teeth",
+    "data_id": "grandmothers_teeth",
+    "label": "Grandmother's Teeth (scrap cutter)",
+    "path": "art/icons/gear/weapon-grandmothers_teeth.png",
+    "refs": [
+      "art/icons/gear/weapon-afterword.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/weapons/ork_machete.svg"
+    ],
+    "reference_sources": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/weapons/ork_machete.svg"
+    ],
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. A blade, a bow, a shield or a piece of armour is invented, never a recognisable real-world make or emblem; a gun keeps the real-world pattern of its family exactly as described (layout, proportions, magazine, sights, stock and furniture) but carries no real name, logo, rollmark or marking. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique Ork machete, on the 45 degree diagonal, handle bottom-left: a wide, uneven cleaver blade with a jagged back and a belly, a grip of oily leather with nails driven through it, rust and dirty ochre paint daubs. Instead of an edge, the belly of the blade is set with a row of big curved teeth hammered in like nails. The impossible material: the teeth are still growing; the one at the tip is longer than the rest, and at the back of the blade the pale roots of two teeth push through the steel like new shoots. The story detail: one tooth near the grip is missing, replaced by a bent iron bolt wired into the gap with care no Ork admits to. Ugly, heavy, a family heirloom. Accent: dirty ochre daubs.\nAvoid: gore or blood, a skull, a jaw or a mouth shape, a chainsaw, anything that leaves the blade's silhouette.\n\nProduction framing: one complete object or the specified pair as one inventory object on full transparency;50px minimum clear margin in1024square. Afterword establishes richness only, Orren establishes brushwork only. Match this entry’s own family painting and line icon for its silhouette; do not copy unrelated objects, figures, backgrounds or camera views from supporting references.",
+    "status": "pending",
+    "kind": "weapon",
+    "grade": "unique",
+    "references": [
+      "art/icons/gear/weapon-afterword.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/ork_machete.png"
+    ],
+    "family": "unique-grandmothers_teeth",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": 2,
+    "original_queue": "art/_archive/gear/2026-11-19-unique-melee-bow/queue.json",
+    "original_prompt_sha256": "b39d43ee1105a4f755fd17f103f1b53e7578798ee13a6b16bd39074918b16361",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-unique-melee-bow/generation-failures/weapon-grandmothers_teeth.json",
+      "response": {
+        "id": "weapon-grandmothers_teeth",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 505eb648-7992-4148-9d70-26db94b98176. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "reference_catalog_hashes": {
+      "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+      "art/icons/gear/weapon-ork_machete.png": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/icons/gear/weapon-ork_machete.png": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/ork_machete.png": "12e483cf976f777e872a97f7723a4740c2d8d458c90c0368cac04a32cdb1c6d8"
+  },
+  "reference_source_hashes": {
+    "art/icons/gear/weapon-ork_machete.png": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "art/icons/weapons/ork_machete.svg": "ae56c1077f123b2f76b5b8a2e5a9c15526ec4ad8c7698440b7ca33535a724082"
+  },
+  "attempt": 1,
+  "claim_comment": 7061559992,
+  "clock": {
+    "current_time": "2026-11-21 10:59:17 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061559992,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

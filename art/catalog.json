@@ -34967,6 +34967,33 @@
         "different_pixels_32": 4,
         "different_pixels_64": 25
       }
+    },
+    "weapon-grandmothers_teeth": {
+      "label": "Grandmother's Teeth (scrap cutter)",
+      "path": "art/icons/gear/weapon-grandmothers_teeth.png",
+      "sha256": "b73567e831e2b46319f12e89f840f86bbfe1f0f0d679770c2556117458cc94c5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-grandmothers_teeth.png",
+        "128": "art/icons/gear/exports/128/weapon-grandmothers_teeth.png",
+        "64": "art/icons/gear/exports/64/weapon-grandmothers_teeth.png",
+        "32": "art/icons/gear/exports/32/weapon-grandmothers_teeth.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-grandmothers_teeth.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 2,
+      "collection": "2026-11-21-retry-uniques",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

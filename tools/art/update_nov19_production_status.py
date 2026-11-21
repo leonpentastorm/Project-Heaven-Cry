@@ -37,7 +37,7 @@ table='\n'.join('| '+name+' | '+str(c['selected'])+' | '+str(c['total'])+' |' fo
     +'Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.\n\n'
     +'| Requested work | Selected | Total |\n| --- | ---: | ---: |\n'+table+'\n\n'
     +'Active run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Shared live ledger: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . '
-    +'Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.\n\n'
+    +'Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. Unique retry lane: art/_archive/gear/2026-11-21-retry-uniques/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.\n\n'
     +'Leon expressly replaced the earlier no-retry restriction: "Try until approve, unlimited attempt, fictional work have no reason to be reject". '
     +'Continue faithful fictional-art briefs, preserve exact responses and do not alter content to circumvent moderation.0.30 content holds remain. Leon approved replacing the retiredScrapTurret slot with a new ScrapSentinel portrait rising from wreckage, based on the existing Sentinel; target stays871. '
     +'Stop on an actual image usage limit and record its exact reset. No invented approvals, quota or completed-picture count.\n\n'
@@ -48,6 +48,9 @@ table='\n'.join('| '+name+' | '+str(c['selected'])+' | '+str(c['total'])+' |' fo
 lane=ROOT/'art/_archive/gear/2026-11-21-retry-continuation/progress.json'
 if lane.exists():
     progress=json.loads(lane.read_text());progress['project_distinct_count']=state['selected'];lane.write_text(json.dumps(progress,indent=2)+'\n')
+unique_lane=ROOT/'art/_archive/gear/2026-11-21-retry-uniques/progress.json'
+if unique_lane.exists():
+    unique_progress=json.loads(unique_lane.read_text());unique_progress['project_distinct_count']=state['selected'];unique_lane.write_text(json.dumps(unique_progress,indent=2)+'\n')
 main=ROOT/'art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md'
 history=main.read_text().split('# Historical20November handoff',1)[-1]
 main.write_text('# Current21November continuation\n\n'+str(state['selected'])+'/871 selected. Active lane art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md, run sole-20261121-0109. '

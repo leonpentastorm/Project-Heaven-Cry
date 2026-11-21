@@ -41,8 +41,7 @@ def validate(selected=None, complete=False):
         assert a['id'] in expected and entry['path'] == a['path'] == f'art/icons/gear/{a["id"]}.png'
         assert entry['status'] == a['status'] == 'review-candidate'
         assert entry['production_approved'] is a['production_approved'] is False
-        if BASE.name=='2026-11-20-sole-uniques':
-            assert entry['implementation_ready'] is a['implementation_ready'] is False
+        assert entry['implementation_ready'] is a['implementation_ready'] is False
         assert entry['grade'] == a['grade'] == 'unique'
         assert entry['source_path'] == a['source']['path'] and entry['native_dimensions'] == a['native_dimensions']
         assert entry['exports'] == a['exports'] and set(a['exports']) == {'256','128','64','32'}

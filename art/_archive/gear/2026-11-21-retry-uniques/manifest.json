@@ -1,1 +1,71 @@
-{"assets": []}
+{
+  "assets": [
+    {
+      "id": "weapon-grandmothers_teeth",
+      "path": "art/icons/gear/weapon-grandmothers_teeth.png",
+      "sha256": "b73567e831e2b46319f12e89f840f86bbfe1f0f0d679770c2556117458cc94c5",
+      "label": "Grandmother's Teeth (scrap cutter)",
+      "family": "unique-grandmothers_teeth",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-grandmothers_teeth.png",
+        "sha256": "1f4f002fff9ea27b8c29fb28772d5632822ef3c8f4c61d8dfd044944a04d818d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-grandmothers_teeth.png",
+        "sha256": "b73567e831e2b46319f12e89f840f86bbfe1f0f0d679770c2556117458cc94c5"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-grandmothers_teeth.txt",
+        "sha256": "c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/ork_machete.png",
+          "sha256": "12e483cf976f777e872a97f7723a4740c2d8d458c90c0368cac04a32cdb1c6d8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        },
+        {
+          "path": "art/icons/weapons/ork_machete.svg",
+          "sha256": "ae56c1077f123b2f76b5b8a2e5a9c15526ec4ad8c7698440b7ca33535a724082"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-grandmothers_teeth.png",
+        "128": "art/icons/gear/exports/128/weapon-grandmothers_teeth.png",
+        "64": "art/icons/gear/exports/64/weapon-grandmothers_teeth.png",
+        "32": "art/icons/gear/exports/32/weapon-grandmothers_teeth.png"
+      },
+      "export_hashes": {
+        "256": "b9b357a296e556b518d061194d8aed213f77e0ffd705b4cbd3b826340953c0d1",
+        "128": "a5184ad26c02f94f1764f3ec19e5283bc5d15744f67623e4228a6102574ed8be",
+        "64": "d1692bde41c4239daff1b8c2960d35dfd3f893bae2c5204da49d60c2cf9a0bc6",
+        "32": "0b0d965a70b83d0f2430fcd4a74ada0996e153324c0ab2878a2a9b65ddd9e754"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  ]
+}
