@@ -284,8 +284,9 @@
     }
   ],
   "expected_count": 94,
-  "producer_status": "stopped-service-blocked",
-  "ownership": "Retained by sole-20261121-0109; explicit resume required, no parallel producer, no implicit release.",
+  "producer_status": "active",
+  "ownership": "Retained and explicitly resumed by sole-20261121-0109; no concurrent producer.",
   "quota_exhausted": false,
-  "reset": null
+  "reset": null,
+  "resume_comment": 7065154530
 }

@@ -3530,7 +3530,7 @@ e0ca4ec468fb8582b7be239bdb55cd21a034954333e4f898c0262574d59b2bd2  art/_archive/g
 049c3d37a67e3b7cecc4e6da18c2683f243e71fd02745068beb5a499b17d1c6a  art/_archive/gear/2026-11-21-retry-continuation/AUTHORIZATION.md
 26bfde5e2b99622d661d31cfe1d539e0b7e0db8927179f0b53626bd50023f16c  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
 3324981a049df84cd5302e0eabea69caae5ff816b64868eafbfb6c5708882bf7  art/_archive/gear/2026-11-21-retry-continuation/SERVICE-BLOCK-HANDOFF-2026-11-21.md
-4849bf6c45496febd575861eeab9cca0b5b25d9988f5413ed2009ea0533b237c  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
+de8f93bb49cd316b7414af5c300e5aaf75d6e639cad22475c1ca60f2024ea179  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
 f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/native.png
 4125c6a21dede181bd8563bbaf4fb853f5fddd2592cbae26b225f90b1a4ee706  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/request.json
 bba3b5967587a54a0d9c00e6b99f67ac2a3be574cfcf3a747c58285f99a4cfdf  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/review.json
@@ -3857,7 +3857,7 @@ dc7095c7e032d645c49e0563a1c384a5498eb2958946b38fa323a341ce32e9ca  art/_archive/g
 5f8724f8eaabc9c5a5c554177b31894039f8e3470c5377cc31c044c9f803891e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/003/request.json
 2d49f4ce40d123471646255e4a3ce907b1b96693ccd3ad84da5c99437af83755  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/004/error.json
 807e2971efc4b006c2dfeb6178003c9ab690fe2fa6544c7292733bc9f539fa83  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/004/request.json
-560dcad174a27d2730856807eb0f049b8b1be9e9aa203e5b6ef39fc783d53f6d  art/_archive/gear/2026-11-21-retry-continuation/claim.json
+9d36e9d1c80a85b6fc9ebe39df5fee1cfe344b363b93f452fc461df305c1514e  art/_archive/gear/2026-11-21-retry-continuation/claim.json
 bb29384ef761350597a68f3b3ae11e41fc1ee44505284c66710ec001c04b53bc  art/_archive/gear/2026-11-21-retry-continuation/coordination/FREE-UNCLAIMED-WORK.json
 ec37ffd1a8ac25ed1e3626c86b0d2b41d9a2094c28bea2c688f85b953919ce82  art/_archive/gear/2026-11-21-retry-continuation/coordination/bow-expansion.json
 b9d18a7eba5dac1b819b1457dfbef1b538589dec789f3ebca738d12c6e7b9dd6  art/_archive/gear/2026-11-21-retry-continuation/coordination/current-continuation-service-result.json
@@ -3942,7 +3942,7 @@ aa9fb3aa1790fc110c089ffa1376d239677dbff535eadd1815120ab5a41cb8e4  art/_archive/g
 d2d630bd80da3119bb73609f1a580a50cfc1bc440f410e4fd554f1c0bdcd3d34  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--masterwork.png
 f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--relic.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-31704f6f3fce17c37ae71143a622b2fafd42cdc650f4ba40e8a7aaa625a0bc06  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+b65eaa3bc2185a51c6616e7a2e402557682e4122f9d645eda3904b748bf5ba71  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt
 11ccde30be710af79c602ced16bf0e2b7cf1592c8a43521c4582b32125fed74a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--relic.txt
 067c9b66ea3e963d10b30d7a7b9519295ae13ae094bbee7de3a17691ab6bfc08  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--celestial.txt
@@ -4155,7 +4155,7 @@ d9bed7037acc7cc146cad7ce2b6169c6dca73a1b9bdd58a28878fcd9aa9f7396  art/_archive/g
 4d36e2e1712ef9700f8ddb28bda565b63b4ea2b5865b8be7cd41faeb20c75570  art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-lumeri_scattergun.json
 e2b05daedb4e4ece55bc1e1654d4afa27a93741b0e3b87125023e0222964171b  art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-mandestra_drum_gun.json
 db47eb233b44062b8f745d549862e64f6c452e2a054a5e8b63e8aaf27e16bc43  art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-smetanita_thumper.json
-3be7649b9007a4bcbc6cea2dbe30c2e72bd956ca2b5cae52fac4b8a80db99092  art/_archive/gear/2026-11-21-retry-standards/claim.json
+e219aa561773f50782e0560b91640725b4b4917ab1c649293736375b657baf71  art/_archive/gear/2026-11-21-retry-standards/claim.json
 176c9768cbc35fb03c7e7c7ec5f6d57e65c1e25c56edd998593c2433ec9a1b1d  art/_archive/gear/2026-11-21-retry-standards/fowling-prepared-job.json
 9b21b506f2f7f51e792b66adcdcc567316adbb4cdc1fe81d79c81b7787c235f2  art/_archive/gear/2026-11-21-retry-standards/functions-delivery.js
 6eaf8802831949617084770565c5582550f2579daf3cea40154055399b0c314f  art/_archive/gear/2026-11-21-retry-standards/functions-driver.js
@@ -4164,7 +4164,7 @@ a9695299f4b77360e6213dfe029098a46d047874225b0fdc184695bb1728efc4  art/_archive/g
 4b4c9d470950e4779437b1c3e06220cd3fc6d20974728f5419f34c761627ec45  art/_archive/gear/2026-11-21-retry-standards/original-repaint9-source-rows.json
 fd89c4afff7bde7a9629271006847c36b3670b5189bc66acfb5b53113fde90b7  art/_archive/gear/2026-11-21-retry-standards/original-source-queue.json
 5c9ba09bd6aea3040c821b8876c0ad26870419bd5d60fc3c1f187a4496066f07  art/_archive/gear/2026-11-21-retry-standards/pack-material-references.py
-7851a3a4f7c42e970242faad5a9ca2e0938caffbb44946a17b8e27071cf7d95c  art/_archive/gear/2026-11-21-retry-standards/progress.json
+3b95b44311d8053e8a86c67d19a6fd677228beeb186629549e6168c340595088  art/_archive/gear/2026-11-21-retry-standards/progress.json
 acbadc5c500707480ffc6150ca2833002aaa4a9ac8a95426fd4dad3e9e049fb4  art/_archive/gear/2026-11-21-retry-standards/queue.json
 61c7cfa727a1d80d988a4330074ec7aff7aec2192abbf1a153067072997083ea  art/_archive/gear/2026-11-21-retry-standards/references/before/repaint9-contact.png
 5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7  art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png

@@ -1,3 +1,7 @@
+# Current ACTIVE RESUME
+
+Leon requested continue until complete. Same sole run sole-20261121-0109 resumed at569/871,302remaining. Exact60pending reservations retained; no otherproducer. Issue3 resumecomment7065154530. First Fowling Standard attempt002; no quota/reset. Historical service-block evidence below stays preserved. Check liveledger/allcomments/remoteheads beforeeveryrender; inspect/export/validate/push eachselectedpicture.
+
 # Current STOP/SERVICE-BLOCKED checkpoint
 
 569/871 selected,302remaining.43 requests this continuation:1 new selected Encore,42 actual moderation errors. No usage_limit_reached or reset. Ownership60 pending IDs retained, no concurrent producer. Read SERVICE-BLOCK-HANDOFF-2026-11-21.md, liveissue3+ALLcomments and current remote deliveries before explicitRESUME. Grade94:51selected/43pending; Standard17pending; unique5complete.242othermissingIDs in coordination/FREE-UNCLAIMED-WORK.json. All approvalsfalse. User faithful retry authorization persists.
