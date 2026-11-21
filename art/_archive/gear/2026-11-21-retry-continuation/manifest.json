@@ -2651,6 +2651,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-repeating_crossbow--celestial",
+      "path": "art/icons/gear/weapon-repeating_crossbow--celestial.png",
+      "sha256": "37cb2e8e210d41729d4267579e0b25935c476776ff84c80f75b9b205c3a59257",
+      "label": "Repeating Crossbow — Celestial",
+      "family": "weapon-repeating_crossbow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-repeating_crossbow--celestial.png",
+        "sha256": "925712b2e9d8fd3c28b6e67cb905bb00a27fe8856904233953db5385a78b06bc"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-repeating_crossbow--celestial.png",
+        "sha256": "37cb2e8e210d41729d4267579e0b25935c476776ff84c80f75b9b205c3a59257"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-repeating_crossbow--celestial.txt",
+        "sha256": "99fef0e5678adacc20483f186467591df59f6a9b5b56baa9ab29e87be94707e9"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-repeating_crossbow.png",
+          "sha256": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68"
+        },
+        {
+          "path": "art/icons/gear/weapon-repeating_crossbow--relic.png",
+          "sha256": "28517e7e4b75f28be7a97067fdc6acefbb5f7153a4e6179562c608df3b3587b2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--celestial.png"
+      },
+      "export_hashes": {
+        "256": "68bdbaf2f5a65bac0de5e52cadfe065005543cb25d904876b626291c8b3a8282",
+        "128": "4a1259b25d13b0577529fa0917234a45747f8611b1282aa67b01f0ce862d4ada",
+        "64": "de4352bcab84811a5d42cebfbb3f0ca7c5997885eae69150abeef8871a1ad052",
+        "32": "500b7bb2ddc7f9a8cfd35b961c60390b797bbf81cd1ccb2dab8ea49d7a871227"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-repeating_crossbow",
+      "outline": {
+        "solid_alpha_iou": 0.9444432367806097,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 39
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
