@@ -2713,6 +2713,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-crossbow--celestial",
+      "path": "art/icons/gear/weapon-crossbow--celestial.png",
+      "sha256": "3239f5298a91cd2ebaa210296f6f6942f2d1c5044b97a3b1f6e2505853529a0f",
+      "label": "Crossbow — Celestial",
+      "family": "weapon-crossbow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--celestial.png",
+        "sha256": "57a193eaec38bd312fda396ed949ac4db50b4dd2794e1ec02de78cad7f78952a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--celestial.png",
+        "sha256": "3239f5298a91cd2ebaa210296f6f6942f2d1c5044b97a3b1f6e2505853529a0f"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--celestial.txt",
+        "sha256": "d865f21b0816a35e3bf32d499e524604dbfffb6f90ecd7001386e69bb275af10"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-crossbow.png",
+          "sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b"
+        },
+        {
+          "path": "art/icons/gear/weapon-crossbow--relic.png",
+          "sha256": "92634f743d9f5079497be0ffe4254e150e4ae38e0b77661d3dfc608f6775f626"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/native.png",
+          "sha256": "8681ffd0927d72b8c4f71530daaa2e4263485469a3ac6102b6cc177f53c23ee7"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-crossbow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-crossbow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-crossbow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-crossbow--celestial.png"
+      },
+      "export_hashes": {
+        "256": "cd5d01a2856ee9a83a215f2d78da07b7e6e719f366f48579e18e2194e07d0db2",
+        "128": "5a317c5d6bc2df42d9fe7ee4425a8a53528a2cc91d7dc915f374f2f3637f307b",
+        "64": "023d70646d6a2b90154c30ccbe3f8f7aeccdc5ae782a32f2ad6284aaa91a87fb",
+        "32": "4ecb83114c9b0e1cd98e45252308679c3ee3c39a90407724f4c8b323c87d191a"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-crossbow",
+      "outline": {
+        "solid_alpha_iou": 0.9093998501186561,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 72
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

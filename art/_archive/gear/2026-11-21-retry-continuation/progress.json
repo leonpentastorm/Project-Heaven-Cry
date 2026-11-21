@@ -43,6 +43,7 @@
     "weapon-war_hammer--celestial",
     "weapon-crossbow--masterwork",
     "weapon-crossbow--relic",
+    "weapon-crossbow--celestial",
     "weapon-repeating_crossbow--relic",
     "weapon-repeating_crossbow--celestial"
   ],
@@ -53,8 +54,7 @@
     "weapon-short_bow--fine",
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
-    "weapon-short_bow--celestial",
-    "weapon-crossbow--celestial"
+    "weapon-short_bow--celestial"
   ],
   "baseline_project_pictures": 512,
   "project_total": 871,
@@ -69,7 +69,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T03:23:08.382248+00:00",
-  "project_distinct_count": 555,
+  "updated_utc": "2026-11-21T03:25:24.814299+00:00",
+  "project_distinct_count": 556,
   "total": 50
 }

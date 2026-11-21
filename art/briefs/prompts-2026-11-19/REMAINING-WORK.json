@@ -1,7 +1,7 @@
 {
-  "selected": 555,
+  "selected": 556,
   "requested": 871,
-  "remaining": 316,
+  "remaining": 315,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 400,
+      "selected": 401,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 256,
+    "grade": 255,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 52,
+    "service-blocked-or-preceding-grade-dependent": 51,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -2097,14 +2097,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-crossbow--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-crossbow--celestial.png",
-      "standard": "weapon-crossbow",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-short_bow--fine",
       "kind": "grade",
       "path": "art/icons/gear/weapon-short_bow--fine.png",
@@ -2623,7 +2615,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-repeating_crossbow--celestial",
+  "last_delivered": "weapon-crossbow--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

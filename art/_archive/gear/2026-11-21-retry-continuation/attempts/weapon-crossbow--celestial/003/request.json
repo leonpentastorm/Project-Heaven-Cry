@@ -1,0 +1,57 @@
+{
+  "head": "9f2e77b2e44a116945d83464ec16f33f8cfa296f",
+  "job": {
+    "id": "weapon-crossbow--celestial",
+    "standard_id": "weapon-crossbow",
+    "grade": "celestial",
+    "label": "Crossbow — Celestial",
+    "path": "art/icons/gear/weapon-crossbow--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-crossbow--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/native.png"
+    ],
+    "family": "weapon-crossbow",
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.4",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same brass-and-wood stock, squared shoulder butt, upper-left winding crank and geared central winch, long rail and single existing loaded bolt with pale fletching, dark hanging rectangular trigger/box structure and its openings, the same curved vertical prod and taut string routing at the right, and open angular forward stirrup. Preserve all bands, gears, loops, rivets, exact string endpoints and existing ammunition count. No new bolt or moving part.\n\nGrade: Celestial. Keep the shape, the inlay and the ferrule's place. The wood becomes a pale ivory wood with no grain flaw, leather a pale hide, a string pale silk, the metal pearl-ivory. The inlay line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image locks Standard geometry, exact parts, pose, framing, scale and all negative spaces. SECOND image supplies the preceding selected grade; keep its earlier surface additions, repair and ornament locations. The portrait supplies Heavenprint brushwork only. No figures or scene, no letters, new ammunition, new mechanism or external glow. All additions remain flush inside original surfaces.\n\nQUALITY CORRECTION: FOURTH reference is an unselected Celestial draft; its bare lower-rear wooden stock is incorrect. Restore the same spiral leather GRIP WRAP seen on the concave lower-left grip region in the SECOND Relic reference, now PALE IVORY HIDE with clearly visible overlapping spiral seams. Restore the ONE small flush gilt ferrule at that wrap's lower rear endpoint, at exactly its Relic location beside the butt. Preserve the one ivory sinew repair around the upper prod at its Relic location, pale silk main string, original single loaded bolt, crank/winch, segmented hanging box and forward open stirrup. Keep every original part and prior-grade addition. No buckle or strap on hanging box, no extra repair, no new external part. The pale grip wrap and its ferrule must not disappear into bare wood; show both clearly, matching the preceding grade positions.",
+    "keep_line": "the same brass-and-wood stock, squared shoulder butt, upper-left winding crank and geared central winch, long rail and single existing loaded bolt with pale fletching, dark hanging rectangular trigger/box structure and its openings, the same curved vertical prod and taut string routing at the right, and open angular forward stirrup. Preserve all bands, gears, loops, rivets, exact string endpoints and existing ammunition count. No new bolt or moving part.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-crossbow--relic",
+    "prompt_assembly": "File08 exact BaseG+A3.4 grade block, keep line from actual Standard; prior rejected full prompt was not retained in original error record. No content reduction or evasion wording.",
+    "prior_generation_error": null,
+    "original_prompt_sha256": "18d56a391a0a6194feffecca931af22e00b35a68ea0e08f703b0e0aff778e8a8",
+    "standard_sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "retry_authorized_by_user": true,
+    "family_references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-crossbow--fine.png"
+    ],
+    "prompt_revisions": [
+      {
+        "previous_prompt": "This is a fictional Project Heaven Cry RPG inventory painting.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same brass-and-wood stock, squared shoulder butt, upper-left winding crank and geared central winch, long rail and single existing loaded bolt with pale fletching, dark hanging rectangular trigger/box structure and its openings, the same curved vertical prod and taut string routing at the right, and open angular forward stirrup. Preserve all bands, gears, loops, rivets, exact string endpoints and existing ammunition count. No new bolt or moving part.\n\nGrade: Celestial. Keep the shape, the inlay and the ferrule's place. The wood becomes a pale ivory wood with no grain flaw, leather a pale hide, a string pale silk, the metal pearl-ivory. The inlay line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image locks Standard geometry, exact parts, pose, framing, scale and all negative spaces. SECOND image supplies the preceding selected grade; keep its earlier surface additions, repair and ornament locations. The portrait supplies Heavenprint brushwork only. No figures or scene, no letters, new ammunition, new mechanism or external glow. All additions remain flush inside original surfaces.",
+        "previous_prompt_sha256": "18d56a391a0a6194feffecca931af22e00b35a68ea0e08f703b0e0aff778e8a8",
+        "reason": "Quality correction: Celestial draft lost earlier grip wrap and ferrule; restore in pale materials."
+      }
+    ],
+    "active_prompt_sha256": "3f554ec58c505d1ab137c1b28d51b46a9a4ca3f36207e98c74c0eff7b096bbbf"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "art/icons/gear/weapon-crossbow--relic.png": "92634f743d9f5079497be0ffe4254e150e4ae38e0b77661d3dfc608f6775f626",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/native.png": "8681ffd0927d72b8c4f71530daaa2e4263485469a3ac6102b6cc177f53c23ee7"
+  },
+  "attempt": 3,
+  "claim_comment": 7056379228,
+  "clock": {
+    "current_time": "2026-11-21 03:24:07 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056572039,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "b9f2d29f1cb81fa5a7d29148bbef44ca5595eaff"
+}
