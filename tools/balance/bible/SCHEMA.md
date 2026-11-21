@@ -348,3 +348,25 @@ Filled example:
 | (e) CLOCK | pacing (`clock.time_model`, `clock.route`, `clock.maps`, `levels`, `xp`), world (`levels`, `maps`, `endless`), `data/survival.json rounds` | a map's typed hours more than `tolerance_h` from the time model's, a squad level against `levels.lands`, a map's worthy fights against the route, `levels.xp_total` against the route's XP summed |
 | (f) SOLO | the core files, gear_perks | a `needs_ally` move with no `solo` |
 | (g) MIGRATION | every file | more or fewer than one `revision`, or one without `owner`, or a `migration` key that is not `@pacing.migration` |
+| (h) COSTS | each door's `resource_use`, `scale.costs.fight_check`, the plans | a caster that cannot pay for one full cash-out at level 1, 10 or 20, or that at level 20 can pay for everything pressed every turn of a standard fight |
+
+---
+
+## 8. Pass 4 extensions (section G of `00-rulings.md`), read by `check.py`
+
+| Where | Key | Meaning |
+| --- | --- | --- |
+| a door's `plain` | `rolls` (required) | the plain hit rolls (its Margins read from the same to-hit as the cash-outs) or lands |
+| a cash-out | `per_hit` | the C of its largest single hit when the total is not one hit times the foes (Slam's ring: the faced foe; Snap All: one Bond's share) |
+| a cash-out | `spread: true` | the floor (five digits at 20) counts its total, not a hit (Snap All, Slam; ruling 40) |
+| a cash-out | `struck` | the foes or Bonds struck, printed, when `targets` does not say it |
+| a cash-out | `margins: false` | it rolls but takes no Margins (Cleave's sweep) |
+| a cash-out | `source` | it is not the ladder's own (a Mastered row, a patron's Miracle): read for the cap, never for the floor |
+| a class move | `cashout` | read as one of its door's hits, on the door's env (Launch, Retort, Storm Front's arcs, Verdict, the Ledger) |
+| anywhere in scale, the cores, gear_perks | `"mark": {name, kind, value, today?}` / `"gift": {...}` | ruling 41: kind `damage` (a share in the sum), `to_hit`, `defense` (read as to-hit) or `both` (`value` and `to_hit`); the best mark and the best gift count on every door's largest hit. The squad's sizes are `scale.stack.squad.mark` and `.gift` |
+| a door | `resource_use` | ruling 49, check (h): `{res, plan, carries, cost, press}` formulas over `L, A, S, B, n, rounds, ap` and every attribute and skill id, at `scale.costs.fight_check.levels` on the plan's walk |
+| a door's `counter` | `broken_by: [door ids]` | a plan naming one of these doors cannot hold this counter: check (d) fails it |
+| `pacing.spend_plans.<id>.doors` | every door the plan buys | check (d) fails a first point in a door the plan does not name |
+| `pacing.calendar.map_events[]` | `buys` (shop or forge), `every`, `first` | a visit is a gain only when the gear share of the credits pays its cheapest grade step (`visit_price`); a node on every n-th map from `first` |
+| `pacing.calendar.characters.<id>` | `gear_share` | the character's own share of credits for gear (else `credits.gear_share.reading`) |
+| a perk with `own_door` | `plain_by_ruling` | the ruling that makes its term plain-only (Iron Grip, 44); check refs (OWN DOOR) fails any other |

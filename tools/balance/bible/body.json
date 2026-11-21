@@ -40,24 +40,27 @@
         "wears": [
           {"by": "Pressure laid on you, a plate a pip", "units": 1}
         ],
-        "plain": {"name": "a ram plate shield blow", "weapon": "ram_plate"},
+        "plain": {"name": "a ram plate shield blow", "weapon": "ram_plate", "rolls": true},
         "cashouts": {
           "slam": {
-            "name": "Slam (one foe beside you)", "from_point": 1, "ap": 2, "spends": "all", "min": 1, "rolls": false,
+            "name": "Slam (one foe beside you)", "from_point": 1, "ap": 2, "spends": "all", "min": 1, "rolls": false, "spread": true,
             "formula": "1 + plate(L, A, S, G) * bite * cash(n) / plain",
             "terms": ["bite", "cash"],
             "why": "Ruling 34: a plain shield blow plus the plates' weight (one plate's soak, read before Pain Threshold's feed, x Bite x the cash-out sum); no roll, no Margins. The wall that stood and took it hits back with everything it stood for."
           },
           "slam_ring": {
-            "name": "Slam (every foe beside you)", "reading_of": "slam", "from_point": 1, "ap": 2, "spends": "all", "min": 1, "rolls": false,
+            "name": "Slam (the foes beside you)", "reading_of": "slam", "from_point": 1, "ap": 2, "spends": "all", "min": 1, "rolls": false, "spread": true,
             "most_foes": 8,
-            "formula": "@body.attributes.endurance.door.cashouts.slam_ring.most_foes + plate(L, A, S, G) * bite * cash(n) / plain",
+            "formula": "min(@body.attributes.endurance.door.cashouts.slam_ring.most_foes, 1 + floor(cash(n))) + plate(L, A, S, G) * bite * cash(n) / plain",
+            "per_hit": "1 + plate(L, A, S, G) * bite * cash(n) / plain",
+            "struck": "min(@body.attributes.endurance.door.cashouts.slam_ring.most_foes, 1 + floor(cash(n)))",
             "terms": ["bite", "cash"],
-            "why": "Ruling 29 counts Slam's total across the foes it touches: every foe beside you (at most 8 tiles) takes the plain blow and the shove; the plates' weight lands on the one you face, so a crowd is shoved and the wall still falls on one."
+            "why": "Ruling 45: the ring strikes as many foes beside you as Cleave's rule gives for the plates spent (1 + S(n) rounded down: one plate strikes 2, three plates 4, five or more every foe beside you), each a plain blow and the shove; the plates' weight lands on the one you face. The other foes beside you take the shove only. Ruling 40: capped a hit (the faced foe's), the total printed; the floor counts the total (a spread cash-out)."
           }
         },
-        "push": {"point": 8, "name": "Overbrace", "reach_plus": 1, "price": "Bleeding on yourself (skip_save)", "price_kind": "condition",
-                 "why": "Ruling 34: the plate past your last is your own body, and it opens; Endurance does not resist it, so the wall pays as everyone pays."},
+        "push": {"point": 8, "name": "Overbrace", "reach_plus": 1, "price": "a share of your max HP at the start of your next turn when the extra plate was spent (nothing soaks it)", "price_kind": "share",
+                 "numbers": {"hp_share": 0.1},
+                 "why": "Ruling 45: a tenth of your own bar (Overbind's shape, soul.json insight door.push; scale.costs.rules.share), not Bleeding, which did not stack, lasted 3 rounds, ended with a stim and cost about 6 of a 414 bar at level 5 (critic-player-3 2): the plate past your last is your own body, and the wall feels it every time."},
         "marks": {
           "unit": "a plate spent (Slam, Retort, Challenge, Interpose, Shield Bash) or soaking part of a worthy foe's blow",
           "rate": "@pacing.door_marks.guard",
@@ -65,7 +68,7 @@
             "I": {"text": "each fight starts with 1 plate (stacks with Brace's start plate)", "op": "resource guard +1 on combat_start"},
             "II": {"text": "Pressure laid on you no longer strips your plates", "op": "wear:guard 0 at the Pressure site"},
             "middle": {"text": "the Guard technique gives 1 more plate", "op": "resource guard +1 on the Guard technique"},
-            "III": {"text": "Overbrace costs no Bleeding once a fight"}
+            "III": {"text": "Overbrace costs no HP once a fight"}
           },
           "why": "C18: a player who only wants to be a wall fills its bar by being one"
         },
@@ -102,9 +105,9 @@
             "5": {"exists": "Slam's shove (today's Slam, kept at its point): every foe it strikes is pushed 1 tile and saves (Body) or is Off Balance", "felt": "your Slam starts moving them"},
             "6": {"exists": "perk step", "bite": 1.75, "felt": "every plate thrown back lands harder"},
             "7": {"exists": "perk step", "reach": 4, "needs": {"pain_threshold": 4}, "felt": "a fourth plate, if your body can take the weight"},
-            "8": {"exists": "fork: Stand Fast or Drive", "new": "the Push: Overbrace", "felt": "one plate past your last, paid in your own blood"},
+            "8": {"exists": "fork: Stand Fast or Drive", "new": "the Push: Overbrace", "felt": "one plate past your last, paid with a tenth of your own bar"},
             "9": {"exists": "perk step", "bite": 2.0, "felt": "a full wall thrown back is five digits on one foe at level 20"},
-            "10": {"exists": "Mastered: Last Wall", "reach": 6, "needs": {"pain_threshold": 7, "sensory": 4}, "felt": "six plates: half again what a 7 holds"}
+            "10": {"exists": "Mastered: Last Wall", "reach": 6, "needs": {"pain_threshold": 7, "sensory": 4}, "felt": "six plates once your Pain Threshold is 7 and your Sensory 4: half again what a 7 holds"}
           }
         },
         "pain_threshold": {
@@ -201,7 +204,7 @@
           {"by": "each tile walked", "units": 1},
           {"by": "each damaging hit taken, unless Guard is up, it was Parried or a plate soaked part of it", "units": 1}
         ],
-        "plain": {"name": "an Ork wreck saw blow", "weapon": "ork_wreck_saw"},
+        "plain": {"name": "an Ork wreck saw blow", "weapon": "ork_wreck_saw", "rolls": true},
         "cashouts": {
           "coup": {"name": "Coup", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 2, "rolls": true,
                    "formula": "1 + bite * cash(n)", "terms": ["bite", "cash"],
@@ -213,10 +216,14 @@
                           "bite_less": 0.05,
                           "formula": "1 + (bite - @body.attributes.strength.door.cashouts.run_through.bite_less) * cash(n)", "terms": ["bite", "cash"],
                           "why": "it pins as well, so each step bites a twentieth less"},
-          "cleave": {"name": "Cleave", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 2, "rolls": false,
+          "cleave": {"name": "Cleave", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 2, "rolls": true, "margins": false,
                      "most_foes": 8,
                      "formula": "1", "targets": "min(@body.attributes.strength.door.cashouts.cleave.most_foes, 1 + floor(cash(n)))", "terms": ["cash"],
-                     "why": "the sweep rolls once, against the first foe, and has no Margins; it strikes S(n) rounded down more foes beside you, each a full plain blow (x3 4 foes, x4 6, x5 every foe beside you)"},
+                     "why": "the sweep rolls once, against the first foe, and has no Margins (critic-player-3 10: rolls, no Margins); it strikes S(n) rounded down more foes beside you, each a full plain blow (x3 4 foes, x4 6, x5 every foe beside you)"},
+          "earthbreaker": {"name": "Earthbreaker (Raw Power's Mastered perk)", "source": "Mastered: gear_perks.mastered.raw_power", "from_point": 10, "ap": "the weapon's", "spends": "all", "min": 2, "rolls": true,
+                           "most_foes": 9,
+                           "formula": "1 + bite * cash(n)", "targets": "@body.attributes.strength.door.cashouts.earthbreaker.most_foes", "terms": ["bite", "cash"],
+                           "why": "once a fight the whole chain on every unit in the 3x3: each takes the Finisher's cash-out for the steps spent (the one Finisher rule). Ruling 40: capped a hit (the Coup's own), the total printed"},
           "break": {"name": "Break", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 2, "rolls": true,
                     "formula": "1", "save_harder": "floor(cash(n))", "terms": ["cash"],
                     "why": "a plain blow whose Body save is harder by S(n) rounded down (x3 -3, x5 -7, x7 -12), or Stunned; a Boss is Dazed as today"}
@@ -264,24 +271,26 @@
             "4": {"exists": "fork: Rolling Start or Grindstone", "reach": 4, "felt": "x4, and the way your chain builds chosen"},
             "5": {"exists": "Throw Down", "felt": "a Finisher that floors a held foe"},
             "6": {"exists": "perk step", "bite": 0.30, "felt": "every step spent bites a fifth harder"},
-            "7": {"exists": "perk step", "reach": 5, "needs": {"guts": 4}, "felt": "x5: a Coup worth three blows"},
+            "7": {"exists": "perk step", "reach": 5, "needs": {"guts": 4}, "felt": "x5 once your Guts is 4: a Coup worth three blows"},
             "8": {"exists": "fork: Spill or Headlong", "new": "the Push: Overswing", "felt": "one step past your Reach, and you stagger for it"},
             "9": {"exists": "perk step", "bite": 0.35, "felt": "the whole chain hits a step harder again"},
-            "10": {"exists": "Mastered: Earthbreaker (restated by gear_perks as a Finisher row on the cash-out source)", "reach": 7, "needs": {"guts": 7, "intimidation": 4}, "felt": "x7: a different machine from a 5"}
+            "10": {"exists": "Mastered: Earthbreaker (restated by gear_perks as a Finisher row on the cash-out source)", "reach": 7, "needs": {"guts": 7, "intimidation": 4}, "felt": "x7 once your Guts is 7 and your Intimidation 4: a different machine from a 5"}
           }
         },
         "guts": {
           "role": "beta",
-          "feed": {"formula": "1 + feed_flat * B + feed * A_alpha * B", "feed_flat": 0.02, "feed": 0.01, "feeds": "the chain's wear (walking and hits taken)"},
+          "feed": {"formula": "none: whole-number rules on the chain's wear (a step is a whole step)", "feed_flat": 0, "feed": 0, "feeds": "the chain's wear (walking and hits taken)",
+                   "wear_rules": {"first_hit_free_from": 4, "walk_every_two_from": 7},
+                   "why": "critic-player-3 8: a share of a whole step had no reading; from Guts 4 the first damaging hit you take each round wears no step, from Guts 7 walking wears a step every two tiles, not every tile (the wear site, wear:momentum, S6)"},
           "points": {
-            "1": {"exists": "the feed; +1 on Body saves", "new": "+1 on saves against Fear (save_mod with context fear)", "felt": "the chain lasts a little longer and you shrug off a shove and a scare"},
-            "2": {"exists": "the point's saves and feed", "felt": "+2 on two kinds of save"},
+            "1": {"exists": "+1 on Body saves", "new": "+1 on saves against Fear (save_mod with context fear)", "felt": "you shrug off a shove and a scare"},
+            "2": {"exists": "the point's saves", "felt": "+2 on two kinds of save"},
             "3": {"exists": "perk step (Into the Dark)", "felt": "a perk"},
-            "4": {"new": "opens Raw Power's Reach at 7", "felt": "your x5 opens"},
+            "4": {"new": "opens Raw Power's Reach at 7; the first damaging hit you take each round wears no step of the chain", "felt": "your x5 opens, and one blow a round no longer breaks your stride"},
             "5": {"exists": "perk step (Steady)", "felt": "a perk"},
-            "6": {"exists": "the point's saves and feed", "felt": "+6 on Body and Fear saves"},
-            "7": {"exists": "perk step (Point Man)", "new": "opens Raw Power's Reach at 10 (with Intimidation 4)", "felt": "a perk, and the way to x7"},
-            "8": {"exists": "the point's saves and feed", "felt": "+8 on Body and Fear saves"},
+            "6": {"exists": "the point's saves", "felt": "+6 on Body and Fear saves"},
+            "7": {"exists": "perk step (Point Man)", "new": "opens Raw Power's Reach at 10 (with Intimidation 4); walking wears a step every two tiles", "felt": "a perk, the way to x7, and you can cross the room with the chain"},
+            "8": {"exists": "the point's saves", "felt": "+8 on Body and Fear saves"},
             "9": {"exists": "perk step (Unflinching)", "felt": "a perk"},
             "10": {"exists": "Mastered: Nothing Left to Fear", "new": "a Finisher keeps 1 step (critic-player-2 6)", "felt": "after a Finisher the chain is already rolling"}
           }
@@ -366,7 +375,7 @@
           {"by": "the end of the holder's turn (2 in cover and unseen, 2 closing in), then Athletics' feed", "units": 1},
           {"by": "a melee hit sheds the attacker's own", "units": 1}
         ],
-        "plain": {"name": "a long rifle shot (a Take costs the gun's shot, so the slowest gun's Take is the largest)", "weapon": "long_rifle"},
+        "plain": {"name": "a long rifle shot (a Take costs the gun's shot, so the slowest gun's Take is the largest)", "weapon": "long_rifle", "rolls": true},
         "cashouts": {
           "dead_centre": {"name": "Dead Centre", "from_point": 1, "ap": "the gun's shot", "spends": "all", "min": 2, "rolls": true,
                           "formula": "1 + bite * cash(n)", "terms": ["bite", "cash"],
@@ -423,11 +432,11 @@
             "4": {"exists": "fork: Converging Fire or Walk It In", "reach": 3, "felt": "you can pin a foe down (Suppressed)"},
             "5": {"exists": "Flush Out", "felt": "you drive them from cover"},
             "6": {"exists": "perk step", "bite": 0.28, "felt": "every pip spent bites harder"},
-            "7": {"exists": "perk step", "reach": 4, "needs": {"athletics": 4}, "felt": "you Break a foe alone"},
+            "7": {"exists": "perk step", "reach": 4, "needs": {"athletics": 4}, "felt": "you Break a foe alone, once your Athletics is 4"},
             "8": {"exists": "fork: Through the Gap or Lockdown", "new": "the Push: Overpress", "felt": "one pip past the cap, with your gun hot and you Seen"},
             "9": {"exists": "perk step", "bite": 0.36, "felt": "a full Take with any rifle is five digits at level 20"},
             "10": {"exists": "Mastered: Trick Shot", "reach": 5, "needs": {"athletics": 7, "reaction_speed": 4}, "new": "Broken lasts: a foe at 5 is still Broken after its turn's fall",
-                   "felt": "your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can"}
+                   "felt": "once your Athletics is 7 and your Reaction Speed 4, your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can"}
           }
         },
         "athletics": {
@@ -437,7 +446,7 @@
             "1": {"exists": "the feed", "new": "+1 Defense from point 1 (defense_from 2 becomes 1, C20)", "numbers": {"defense_from": 1}, "felt": "every foe hits you a twentieth less often, from the first point"},
             "2": {"exists": "the point's Defense and feed", "felt": "+2 Defense"},
             "3": {"exists": "perk step (Wall Run)", "felt": "a perk, +3 Defense"},
-            "4": {"new": "opens Dexterity's Reach at 7", "felt": "you can Break a foe alone"},
+            "4": {"new": "opens Dexterity's Reach at 7", "felt": "your Break alone opens: it is yours at Dexterity 7"},
             "5": {"exists": "perk step (Roll With It)", "felt": "a perk, +5 Defense"},
             "6": {"exists": "the point's Defense and feed", "felt": "+6 Defense"},
             "7": {"exists": "perk step (Untouchable)", "new": "opens Dexterity's Reach at 10 (with Reaction Speed 4)", "felt": "a perk, and the way to the fifth pip"},

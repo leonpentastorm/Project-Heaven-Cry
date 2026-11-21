@@ -522,9 +522,9 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 5 |  |  |  |  | your Slam starts moving them |
 | 6 |  |  | 1.75 |  | every plate thrown back lands harder |
 | 7 | 4 | {'pain_threshold': 4} |  |  | a fourth plate, if your body can take the weight |
-| 8 |  |  |  | the Push: Overbrace | one plate past your last, paid in your own blood |
+| 8 |  |  |  | the Push: Overbrace | one plate past your last, paid with a tenth of your own bar |
 | 9 |  |  | 2.0 |  | a full wall thrown back is five digits on one foe at level 20 |
-| 10 | 6 | {'pain_threshold': 7, 'sensory': 4} |  |  | six plates: half again what a 7 holds |
+| 10 | 6 | {'pain_threshold': 7, 'sensory': 4} |  |  | six plates once your Pain Threshold is 7 and your Sensory 4: half again what a 7 holds |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -533,9 +533,9 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | slam | 10 | 9/9 | masterwork | 403 | 4 | 885 |
 | slam | 20 | 10/10 | relic | 3,534 | 6 | 11,371 |
 | slam | 20 | 10/10 | celestial | 4,124 | 6 | 13,267 |
-| slam_ring | 1 | 7/1 | standard | 35 | 2 | 291 |
-| slam_ring | 1 | 7/7 | fine | 51 | 4 | 465 |
-| slam_ring | 10 | 9/9 | masterwork | 403 | 4 | 3,703 |
+| slam_ring | 1 | 7/1 | standard | 35 | 2 | 117 |
+| slam_ring | 1 | 7/7 | fine | 51 | 4 | 362 |
+| slam_ring | 10 | 9/9 | masterwork | 403 | 4 | 2,898 |
 | slam_ring | 20 | 10/10 | relic | 3,534 | 6 | 36,113 |
 | slam_ring | 20 | 10/10 | celestial | 4,124 | 6 | 42,132 |
 
@@ -549,10 +549,10 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 4 | 4 |  |  |  | x4, and the way your chain builds chosen |
 | 5 |  |  |  |  | a Finisher that floors a held foe |
 | 6 |  |  | 0.3 |  | every step spent bites a fifth harder |
-| 7 | 5 | {'guts': 4} |  |  | x5: a Coup worth three blows |
+| 7 | 5 | {'guts': 4} |  |  | x5 once your Guts is 4: a Coup worth three blows |
 | 8 |  |  |  | the Push: Overswing | one step past your Reach, and you stagger for it |
 | 9 |  |  | 0.35 |  | the whole chain hits a step harder again |
-| 10 | 7 | {'guts': 7, 'intimidation': 4} |  |  | x7: a different machine from a 5 |
+| 10 | 7 | {'guts': 7, 'intimidation': 4} |  |  | x7 once your Guts is 7 and your Intimidation 4: a different machine from a 5 |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -576,6 +576,11 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | cleave | 10 | 9/9 | masterwork | 626 | 5 | 5,009 |
 | cleave | 20 | 10/10 | relic | 5,498 | 7 | 43,985 |
 | cleave | 20 | 10/10 | celestial | 6,414 | 7 | 51,315 |
+| earthbreaker | 1 | 7/1 | standard | 54 | 3 | 929 |
+| earthbreaker | 1 | 7/7 | fine | 80 | 5 | 2,324 |
+| earthbreaker | 10 | 9/9 | masterwork | 626 | 5 | 20,313 |
+| earthbreaker | 20 | 10/10 | relic | 5,498 | 7 | 273,172 |
+| earthbreaker | 20 | 10/10 | celestial | 6,414 | 7 | 318,701 |
 | break | 1 | 7/1 | standard | 54 | 3 | 54 |
 | break | 1 | 7/7 | fine | 80 | 5 | 80 |
 | break | 10 | 9/9 | masterwork | 626 | 5 | 626 |
@@ -592,10 +597,10 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 4 | 3 |  |  |  | you can pin a foe down (Suppressed) |
 | 5 |  |  |  |  | you drive them from cover |
 | 6 |  |  | 0.28 |  | every pip spent bites harder |
-| 7 | 4 | {'athletics': 4} |  |  | you Break a foe alone |
+| 7 | 4 | {'athletics': 4} |  |  | you Break a foe alone, once your Athletics is 4 |
 | 8 |  |  |  | the Push: Overpress | one pip past the cap, with your gun hot and you Seen |
 | 9 |  |  | 0.36 |  | a full Take with any rifle is five digits at level 20 |
-| 10 | 5 | {'athletics': 7, 'reaction_speed': 4} |  | Broken lasts: a foe at 5 is still Broken after its turn's fall | your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can |
+| 10 | 5 | {'athletics': 7, 'reaction_speed': 4} |  | Broken lasts: a foe at 5 is still Broken after its turn's fall | once your Athletics is 7 and your Reaction Speed 4, your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -638,7 +643,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 7 | 4 | {'analysis': 4} |  |  | four Shadow, once your Analysis reads the room: a Break worth five shots and more |
 | 8 |  |  |  | the Push: Last Shade | one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it |
 | 9 |  |  | 0.5 |  | the last Shadow of a full meter is worth more than a shot on its own |
-| 10 | 5 | {'analysis': 7, 'vigilant': 4} |  |  | five Shadow: a different machine from a 5, a Break that ends a fight's worst foe |
+| 10 | 5 | {'analysis': 7, 'vigilant': 4} |  |  | five Shadow once your Analysis is 7 and your Vigilant 4: a different machine from a 5, a Break that ends a fight's worst foe |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -661,7 +666,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 7 | 4 | {'rumination': 4} |  |  | Lines of four, once your Rumination holds the Flux they cost |
 | 8 |  |  |  | the Push: Overclock (moved from 2) | one glyph past your Reach, and the hand that wrote it burns |
 | 9 |  |  | 0.85 |  | the longest Line you write is worth a tenth more than at 1, a Line of five over six glyphs |
-| 10 | 5 | {'rumination': 7, 'eloquence': 4} |  |  | Lines of five: a different machine from a 5, and nobody else writes them |
+| 10 | 5 | {'rumination': 7, 'eloquence': 4} |  |  | Lines of five once your Rumination is 7 and your Eloquence 4: a different machine from a 5, and nobody else writes them |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -670,6 +675,11 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | evoke | 10 | 9/9 | masterwork | 446 | 4 | 2,033 |
 | evoke | 20 | 10/10 | relic | 3,913 | 5 | 24,753 |
 | evoke | 20 | 10/10 | celestial | 4,565 | 5 | 28,878 |
+| evoke_area | 1 | 7/1 | standard | 38 | 2 | 406 |
+| evoke_area | 1 | 7/7 | fine | 57 | 4 | 1,501 |
+| evoke_area | 10 | 9/9 | masterwork | 446 | 4 | 12,201 |
+| evoke_area | 20 | 10/10 | relic | 3,913 | 5 | 148,517 |
+| evoke_area | 20 | 10/10 | celestial | 4,565 | 5 | 173,270 |
 
 #### figments (expression, alpha visualization): the ladder and the cash-outs
 
@@ -684,7 +694,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 7 | 3 | {'proficiency': 4} |  |  | three held, once your Proficiency can feed them: a Curtain of three |
 | 8 |  |  |  | the Push: Overhold | one past your Reach, and it drinks your charge every turn it stands |
 | 9 |  |  | 0.85 |  | every form there is, and the Curtain at its fullest bite |
-| 10 | 4 | {'proficiency': 7, 'charisma': 4} |  |  | four held: a stage nobody else can fill |
+| 10 | 4 | {'proficiency': 7, 'charisma': 4} |  |  | four held once your Proficiency is 7 and your Charisma 4: a stage nobody else can fill |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -704,23 +714,23 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 4 | 2 |  |  |  | two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps |
 | 5 |  |  |  |  | a shield that holds through the enemy's turn |
 | 6 |  |  | 1.4 |  | every Bond you Snap is worth two fifths more, and you tie from further off |
-| 7 | 3 | {'camaraderie': 4} |  |  | a web of three: Snap All of three is worth more than four lone Snaps |
+| 7 | 3 | {'camaraderie': 4} |  |  | a web of three once your Camaraderie is 4: Snap All of three is worth more than four lone Snaps |
 | 8 |  |  |  | the Push: Overbind | one Bond past your Reach, and the tear hurts you next turn |
-| 9 |  |  | 1.8 | Mend and Shield cost a quarter less MP (in place of the flat cut, tending.json res.mp.steps) | a full Snap All reaches five digits at level 20, and your Mends are cheaper |
-| 10 | 4 | {'camaraderie': 7, 'implication': 4} |  |  | the fourth Bond: a web nobody without the whole family can hold |
+| 9 |  |  | 1.8 | Mend and Shield cost 15% less MP (in place of the flat cut, tending.json res.mp.steps) | a full Snap All reaches five digits at level 20, and your Mends are cheaper |
+| 10 | 4 | {'camaraderie': 7, 'implication': 4} |  |  | the fourth Bond once your Camaraderie is 7 and your Insinuation 4: a web nobody without the whole family can hold |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
-| snap | 1 | 7/1 | standard | 10 | 1 | 10 |
-| snap | 1 | 7/7 | fine | 15 | 3 | 21 |
-| snap | 10 | 9/9 | masterwork | 119 | 3 | 215 |
-| snap | 20 | 10/10 | relic | 1,048 | 4 | 1,886 |
-| snap | 20 | 10/10 | celestial | 1,223 | 4 | 2,201 |
-| snap_all | 1 | 7/1 | standard | 10 | 1 | 10 |
-| snap_all | 1 | 7/7 | fine | 15 | 3 | 78 |
-| snap_all | 10 | 9/9 | masterwork | 119 | 3 | 782 |
-| snap_all | 20 | 10/10 | relic | 1,048 | 4 | 10,125 |
-| snap_all | 20 | 10/10 | celestial | 1,223 | 4 | 11,812 |
+| snap | 1 | 7/1 | standard | 15 | 1 | 15 |
+| snap | 1 | 7/7 | fine | 23 | 3 | 32 |
+| snap | 10 | 9/9 | masterwork | 179 | 3 | 322 |
+| snap | 20 | 10/10 | relic | 1,572 | 4 | 2,829 |
+| snap | 20 | 10/10 | celestial | 1,834 | 4 | 3,301 |
+| snap_all | 1 | 7/1 | standard | 15 | 1 | 15 |
+| snap_all | 1 | 7/7 | fine | 23 | 3 | 116 |
+| snap_all | 10 | 9/9 | masterwork | 179 | 3 | 1,173 |
+| snap_all | 20 | 10/10 | relic | 1,572 | 4 | 15,187 |
+| snap_all | 20 | 10/10 | celestial | 1,834 | 4 | 17,719 |
 
 #### outbursts (determination, alpha will_power): the ladder and the cash-outs
 
@@ -732,10 +742,10 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 4 | 3 |  |  |  | stage 3: a full Release is worth most of two plain ones |
 | 5 |  |  |  |  | a second school rides the same Release |
 | 6 |  |  | 0.3 |  | every Pump is worth a fifth more |
-| 7 | 4 | {'composure': 4} |  |  | stage 4: what everyone had, now earned and compounding |
+| 7 | 4 | {'composure': 4} |  |  | stage 4 once your Composure is 4: what everyone had, now earned and compounding |
 | 8 |  |  |  | the Push: Overdraw past the top | one stage past your top, and the heart stays hot |
 | 9 |  |  | 0.35 |  | a full Release reaches five digits at level 20 |
-| 10 | 5 | {'composure': 7, 'lore_master': 4} |  |  | stage 5: a stage nobody without the whole family can hold |
+| 10 | 5 | {'composure': 7, 'lore_master': 4} |  |  | stage 5 once your Composure is 7 and your Lore Master 4: a stage nobody without the whole family can hold |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -749,6 +759,16 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | release_felt | 10 | 9/9 | masterwork | 430 | 4 | 1,833 |
 | release_felt | 20 | 10/10 | relic | 3,772 | 5 | 20,027 |
 | release_felt | 20 | 10/10 | celestial | 4,401 | 5 | 23,365 |
+| release_burst | 1 | 7/1 | standard | 37 | 2 | 551 |
+| release_burst | 1 | 7/7 | fine | 55 | 4 | 1,473 |
+| release_burst | 10 | 9/9 | masterwork | 430 | 4 | 11,546 |
+| release_burst | 20 | 10/10 | relic | 3,772 | 5 | 126,173 |
+| release_burst | 20 | 10/10 | celestial | 4,401 | 5 | 147,201 |
+| release_wave | 1 | 7/1 | standard | 37 | 2 | 367 |
+| release_wave | 1 | 7/7 | fine | 55 | 4 | 982 |
+| release_wave | 10 | 9/9 | masterwork | 430 | 4 | 7,697 |
+| release_wave | 20 | 10/10 | relic | 3,772 | 5 | 84,115 |
+| release_wave | 20 | 10/10 | celestial | 4,401 | 5 | 98,134 |
 
 #### prayer (virtue, alpha faith): the ladder and the cash-outs
 
@@ -760,10 +780,10 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 4 | 3 |  |  |  | three Grace: a Hymn half again its size |
 | 5 |  |  |  |  | your patron watches the fight, and may act in it |
 | 6 |  |  | 0.2 |  | every step of Grace is worth a third more |
-| 7 | 4 | {'conscience': 4} |  |  | four Grace: a Hymn about twice its size |
+| 7 | 4 | {'conscience': 4} |  |  | four Grace once your Conscience is 4: a Hymn about twice its size |
 | 8 |  |  |  | the Push: pray above your standing (moved here from every Faithful, ruling C17) | a Hymn your god has not yet given you, at a price in standing |
 | 9 |  |  | 0.25 |  | a full Hymn reaches five digits at level 20 |
-| 10 | 5 | {'conscience': 7, 'authority': 4} |  |  | five Grace: a saint's litany nobody without the whole family can hold |
+| 10 | 5 | {'conscience': 7, 'authority': 4} |  |  | five Grace once your Conscience is 7 and your Authority 4: a saint's litany nobody without the whole family can hold |
 
 | cash-out | level | attribute/alpha | grade | plain hit | units (Reach) | full cash-out |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -777,6 +797,11 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | hymn | 10 | 9/9 | masterwork | 569 | 4 | 1,334 |
 | hymn | 20 | 10/10 | relic | 5,000 | 5 | 14,302 |
 | hymn | 20 | 10/10 | celestial | 5,833 | 5 | 16,685 |
+| miracle | 1 | 7/1 | standard | 49 | 2 | 1,316 |
+| miracle | 1 | 7/7 | fine | 73 | 4 | 1,945 |
+| miracle | 10 | 9/9 | masterwork | 569 | 4 | 15,252 |
+| miracle | 20 | 10/10 | relic | 5,000 | 5 | 133,925 |
+| miracle | 20 | 10/10 | celestial | 5,833 | 5 | 156,245 |
 
 #### The stated attacker and the stated defenders, same-level foes
 
@@ -811,7 +836,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 2 | pain_threshold 4: your fourth plate opens | 0 / 0 |
 | 3 | pain_threshold 5: a perk, and the bar grows again; pain_threshold 6: +36% of your bar | 0 / 0 |
 | 4 | pain_threshold 7: a perk, and the way to six plates; sensory 1: you read the blow before it comes, for a friend or for yourself | 0 / 0 |
-| 5 | durability 8: one plate past your last, paid in your own blood | 0 / 0 |
+| 5 | durability 8: one plate past your last, paid with a tenth of your own bar | 0 / 0 |
 | 6 | sensory 2: reading the blow raises your guard | 0 / 0 |
 | 7 | sensory 3: a perk, and you sense a tile further; sensory 4: the Warn moves further, and your sixth plate opens | 0 / 0 |
 | 8 | pain_threshold 8: +48% of your bar | 0 / 0 |
@@ -820,33 +845,33 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 11 | pain_threshold 9: a perk, and the bar grows again; athletics 3: a perk, +3 Defense | 0 / 0 |
 | 12 | sensory 5: the Warn is cheaper | 0 / 0 |
 | 13 | sensory 6: a Warn raises two plates; sensory 7: a perk | 0 / 0 |
-| 14 | sensory 8: a Warned blow lands worse; raw_power 1: a x3 Coup is about two blows in one | 0 / 0 |
-| 15 | durability 10: six plates: half again what a 7 holds | 0 / 0 |
+| 14 | sensory 8: a Warned blow lands worse; sensory 9: the Warn is a single AP | 0 / 0 |
+| 15 | durability 10: six plates once your Pain Threshold is 7 and your Sensory 4: half again what a 7 holds | 0 / 0 |
 | 16 | pain_threshold 10: after a Slam the wall is already rising | 0 / 0 |
-| 17 | raw_power 2: you can hold them where you want them; raw_power 3: the chain's first perk | 0 / 0 |
-| 18 | ingenuity 1: your first Break spends two Shadow from the dark: about three shots in one, and you were never targeted while you built it | 0 / 0 |
-| 19 | ingenuity 2: you empty a foe's pockets and throw a sound where you are not; ingenuity 3: a kill nobody saw puts you straight back in the dark | 0 / 0 |
-| 20 | ingenuity 4: three Shadow: a Break worth four shots | 0 / 0 |
+| 17 | sensory 10: you feel every blow in the room; athletics 4: your Break alone opens: it is yours at Dexterity 7 | 0 / 0 |
+| 18 | athletics 5: a perk, +5 Defense | 0 / 0 |
+| 19 | guts 1: you shrug off a shove and a scare; guts 2: +2 on two kinds of save | 0 / 0 |
+| 20 | guts 3: a perk | 0 / 0 |
 
 #### Spend: breaker_who_prays
 
 | level | bought (skill to point: what is felt) | unspent S / A |
 | --- | --- | --- |
-| 1 | raw_power 1: a x3 Coup is about two blows in one; raw_power 2: you can hold them where you want them; raw_power 3: the chain's first perk; raw_power 4: x4, and the way your chain builds chosen; raw_power 5: a Finisher that floors a held foe; raw_power 6: every step spent bites a fifth harder; raw_power 7: x5: a Coup worth three blows; guts 1: the chain lasts a little longer and you shrug off a shove and a scare; guts 2: +2 on two kinds of save; guts 3: a perk | 0 / 0 |
-| 2 | guts 4: your x5 opens | 0 / 0 |
+| 1 | raw_power 1: a x3 Coup is about two blows in one; raw_power 2: you can hold them where you want them; raw_power 3: the chain's first perk; raw_power 4: x4, and the way your chain builds chosen; raw_power 5: a Finisher that floors a held foe; raw_power 6: every step spent bites a fifth harder; raw_power 7: x5 once your Guts is 4: a Coup worth three blows; guts 1: you shrug off a shove and a scare; guts 2: +2 on two kinds of save; guts 3: a perk | 0 / 0 |
+| 2 | guts 4: your x5 opens, and one blow a round no longer breaks your stride | 0 / 0 |
 | 3 | faith 1: two Grace saved make one Whisper a third bigger; faith 2: you name the foe, and your god hits it harder | 0 / 0 |
 | 4 | faith 3: a perk, and Hymns the day your patron trusts you; guts 5: a perk | 0 / 0 |
 | 5 | raw_power 8: one step past your Reach, and you stagger for it | 0 / 0 |
 | 6 | guts 6: +6 on Body and Fear saves | 0 / 0 |
-| 7 | guts 7: a perk, and the way to x7; intimidation 1: you can make a foe hesitate | 0 / 0 |
+| 7 | guts 7: a perk, the way to x7, and you can cross the room with the chain; intimidation 1: you can make a foe hesitate | 0 / 0 |
 | 8 | intimidation 2: they flinched; you are already moving | 0 / 0 |
 | 9 | intimidation 3: a perk; intimidation 4: a Threatened foe stays put, and x7 opens | 0 / 0 |
 | 10 | raw_power 9: the whole chain hits a step harder again | 0 / 0 |
 | 11 | faith 4: three Grace: a Hymn half again its size; faith 5: your patron watches the fight, and may act in it | 0 / 0 |
 | 12 | faith 6: every step of Grace is worth a third more | 0 / 0 |
-| 13 | faith 7: four Grace: a Hymn about twice its size; conscience 1: your god's shield holds a little longer | 0 / 0 |
+| 13 | faith 7: four Grace once your Conscience is 4: a Hymn about twice its size; conscience 1: your god's shield holds a little longer | 0 / 0 |
 | 14 | conscience 2: you saw where it led and stopped; conscience 3: your first Conscience perk | 0 / 0 |
-| 15 | raw_power 10: x7: a different machine from a 5 | 0 / 0 |
+| 15 | raw_power 10: x7 once your Guts is 7 and your Intimidation 4: a different machine from a 5 | 0 / 0 |
 | 16 | conscience 4: the believer's calm holds through one quiet turn, and Grace 4 opens | 0 / 0 |
 | 17 | guts 8: +8 on Body and Fear saves; guts 9: a perk | 0 / 0 |
 | 18 | guts 10: after a Finisher the chain is already rolling | 0 / 0 |
@@ -871,7 +896,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 12 | eloquence 8: Brief's third step: the discount lasts | 0 / 0 |
 | 13 | eloquence 9: a perk, study, and Brief is cheaper still; pain_threshold 1: more HP and thicker plates from the first point | 0 / 0 |
 | 14 | pain_threshold 2: +12% of your bar; pain_threshold 3: a perk, and the bar grows again | 0 / 0 |
-| 15 | brain_power 10: Lines of five: a different machine from a 5, and nobody else writes them | 0 / 0 |
+| 15 | brain_power 10: Lines of five once your Rumination is 7 and your Eloquence 4: a different machine from a 5, and nobody else writes them | 0 / 0 |
 | 16 | rumination 10: the next Line starts one glyph written | 0 / 0 |
 | 17 | eloquence 10: the last word, a free word, and a Brief on their turn; pain_threshold 4: your fourth plate opens | 0 / 0 |
 | 18 | ingenuity 1: your first Break spends two Shadow from the dark: about three shots in one, and you were never targeted while you built it | 0 / 0 |
@@ -882,22 +907,22 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 
 | level | bought (skill to point: what is felt) | unspent S / A |
 | --- | --- | --- |
-| 1 | empathy 1: you tie a foe and pull the thread the same turn; empathy 2: the friend you keep up is tied to you without spending a turn on it; empathy 3: your first Empathy perk; empathy 4: two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps; empathy 5: a shield that holds through the enemy's turn; empathy 6: every Bond you Snap is worth two fifths more, and you tie from further off; empathy 7: a web of three: Snap All of three is worth more than four lone Snaps; camaraderie 1: the friend beside you takes less, or the foe you are tied to takes your pain; camaraderie 2: you take a bigger share, and heals land harder on you; camaraderie 3: your first Camaraderie perk | 0 / 0 |
+| 1 | empathy 1: you tie a foe and pull the thread the same turn; empathy 2: the friend you keep up is tied to you without spending a turn on it; empathy 3: your first Empathy perk; empathy 4: two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps; empathy 5: a shield that holds through the enemy's turn; empathy 6: every Bond you Snap is worth two fifths more, and you tie from further off; empathy 7: a web of three once your Camaraderie is 4: Snap All of three is worth more than four lone Snaps; camaraderie 1: the friend beside you takes less, or the foe you are tied to takes your pain; camaraderie 2: you take a bigger share, and heals land harder on you; camaraderie 3: your first Camaraderie perk | 0 / 0 |
 | 2 | camaraderie 4: your web of three opens | 0 / 0 |
 | 3 | dexterity 1: you can make a foe flinch and cash it in; dexterity 2: you shed the Pressure laid on you | 0 / 0 |
 | 4 | dexterity 3: the shooter's first perk; dexterity 4: you can pin a foe down (Suppressed) | 0 / 0 |
 | 5 | empathy 8: one Bond past your Reach, and the tear hurts you next turn | 0 / 0 |
 | 6 | camaraderie 5: the thread carries the hit across the room | 0 / 0 |
 | 7 | camaraderie 6: the one you are tied to never waits for your reflexes; camaraderie 7: the fourth Bond's beta gate | 0 / 0 |
-| 8 | implication 1: a foe comes at you and not at the friend behind you | 0 / 0 |
+| 8 | implication 1: a foe comes at you and not at the friend behind you; alone, the barb opens it a little for your thread | 0 / 0 |
 | 9 | implication 2: the barb opens the heart for the thread; implication 3: your first Insinuation perk | 0 / 0 |
 | 10 | empathy 9: a full Snap All reaches five digits at level 20, and your Mends are cheaper | 0 / 0 |
 | 11 | implication 4: a sharper Taunt, and the fourth Bond's gamma gate; dexterity 5: you drive them from cover | 0 / 0 |
 | 12 | dexterity 6: every pip spent bites harder | 0 / 0 |
-| 13 | dexterity 7: you Break a foe alone; athletics 1: every foe hits you a twentieth less often, from the first point | 0 / 0 |
+| 13 | dexterity 7: you Break a foe alone, once your Athletics is 4; athletics 1: every foe hits you a twentieth less often, from the first point | 0 / 0 |
 | 14 | athletics 2: +2 Defense; athletics 3: a perk, +3 Defense | 0 / 0 |
-| 15 | empathy 10: the fourth Bond: a web nobody without the whole family can hold | 0 / 0 |
-| 16 | athletics 4: you can Break a foe alone | 0 / 0 |
+| 15 | empathy 10: the fourth Bond once your Camaraderie is 7 and your Insinuation 4: a web nobody without the whole family can hold | 0 / 0 |
+| 16 | athletics 4: your Break alone opens: it is yours at Dexterity 7 | 0 / 0 |
 | 17 | camaraderie 8: the Bond carries care back; camaraderie 9: a perk | 0 / 0 |
 | 18 | camaraderie 10: the web never goes all the way down | 0 / 0 |
 | 19 | pain_threshold 1: more HP and thicker plates from the first point; pain_threshold 2: +12% of your bar | 0 / 0 |
@@ -907,7 +932,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 
 | level | bought (skill to point: what is felt) | unspent S / A |
 | --- | --- | --- |
-| 1 | will_power 1: the door, a taste: a heart worked to stage 2 pays a third more than a quick one; will_power 2: two stages in one Pump, once a turn; will_power 3: the heart climbs a stage for no AP; will_power 4: stage 3: a full Release is worth most of two plain ones; will_power 5: a second school rides the same Release; will_power 6: every Pump is worth a fifth more; will_power 7: stage 4: what everyone had, now earned and compounding; composure 1: the heart holds one more point before it burns; composure 2: another point of headroom, and new modules; composure 3: your first Composure perk | 0 / 0 |
+| 1 | will_power 1: the door, a taste: a heart worked to stage 2 pays a third more than a quick one; will_power 2: two stages in one Pump, once a turn; will_power 3: the heart climbs a stage for no AP; will_power 4: stage 3: a full Release is worth most of two plain ones; will_power 5: a second school rides the same Release; will_power 6: every Pump is worth a fifth more; will_power 7: stage 4 once your Composure is 4: what everyone had, now earned and compounding; composure 1: the heart holds one more point before it burns; composure 2: another point of headroom, and new modules; composure 3: your first Composure perk | 0 / 0 |
 | 2 | composure 4: stage 4 opens | 0 / 0 |
 | 3 | composure 5: a perk; composure 6: a held heart climbs for free | 0 / 0 |
 | 4 | composure 7: stage 5's beta gate; lore_master 1: your Outbursts take a colour | 0 / 0 |
@@ -921,7 +946,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 12 | lore_master 8: a design and the Call's top step | 0 / 0 |
 | 13 | lore_master 9: a perk; empathy 1: you tie a foe and pull the thread the same turn | 0 / 0 |
 | 14 | empathy 2: the friend you keep up is tied to you without spending a turn on it; empathy 3: your first Empathy perk | 0 / 0 |
-| 15 | will_power 10: stage 5: a stage nobody without the whole family can hold | 0 / 0 |
+| 15 | will_power 10: stage 5 once your Composure is 7 and your Lore Master 4: a stage nobody without the whole family can hold | 0 / 0 |
 | 16 | composure 10: Mastered Composure is felt in the door it guards | 0 / 0 |
 | 17 | lore_master 10: you know what the thing is called; empathy 4: two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps | 0 / 0 |
 | 18 | pain_threshold 1: more HP and thicker plates from the first point | 0 / 0 |
@@ -946,7 +971,7 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | 12 | charisma 8: Rally's third step | 0 / 0 |
 | 13 | charisma 9: a cheaper Picture, and Rally cheaper still; dexterity 1: you can make a foe flinch and cash it in | 0 / 0 |
 | 14 | dexterity 2: you shed the Pressure laid on you; dexterity 3: the shooter's first perk | 0 / 0 |
-| 15 | visualization 10: four held: a stage nobody else can fill | 0 / 0 |
+| 15 | visualization 10: four held once your Proficiency is 7 and your Charisma 4: a stage nobody else can fill | 0 / 0 |
 | 16 | proficiency 10: the show goes on after the Curtain: one Figment stays | 0 / 0 |
 | 17 | charisma 10: everyone's friend, and a Rally on their turn; dexterity 4: you can pin a foe down (Suppressed) | 0 / 0 |
 | 18 | pain_threshold 1: more HP and thicker plates from the first point | 0 / 0 |
@@ -957,55 +982,55 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 
 | hour | wall | one_shield_wall | breaker_who_prays | sigilist | mender_with_a_gun | channeler | rigger |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | fine found, the shop: a grade step or a new piece (map 1), collection weapon Mark 1, shield Mark 1 | fine found, the shop: a grade step or a new piece (map 1), main weapon Mark 1, shield Mark 1 | fine found, collection weapon Mark 1, second hand weapon Mark 1, the shop: a grade step or a new piece (map 1) | fine found, a word learned (1), the shop: a grade step or a new piece (map 1) | fine found, the shop: a grade step or a new piece (map 1), collection weapon Mark 1 | fine found, a module learned (1), the shop: a grade step or a new piece (map 1) | fine found, the shop: a grade step or a new piece (map 1) |
+| 0 | fine found, collection weapon Mark 1, shield Mark 1 | fine found, main weapon Mark 1, shield Mark 1 | fine found, collection weapon Mark 1, second hand weapon Mark 1 | fine found, a word learned (1) | fine found, collection weapon Mark 1 | fine found, a module learned (1) | fine found |
 | 1 | L2, the gate's pick at the shelf's grade (map 1), the Forge: a grade step, a mod fitted or a property re-forged (map 1) | L2, the gate's pick at the shelf's grade (map 1), the Forge: a grade step, a mod fitted or a property re-forged (map 1) | Devotion standing 1, L2, the gate's pick at the shelf's grade (map 1), collection weapon Mark 2, second hand weapon Mark 2, the Forge: a grade step, a mod fitted or a property re-forged (map 1) | L2, the gate's pick at the shelf's grade (map 1), collection weapon Mark 1, the Forge: a grade step, a mod fitted or a property re-forged (map 1), a word learned (2) | second hand weapon Mark 1, L2, the gate's pick at the shelf's grade (map 1), the Forge: a grade step, a mod fitted or a property re-forged (map 1) | L2, the gate's pick at the shelf's grade (map 1), collection weapon Mark 1, the Forge: a grade step, a mod fitted or a property re-forged (map 1) | L2, the gate's pick at the shelf's grade (map 1), collection weapon Mark 1, the Forge: a grade step, a mod fitted or a property re-forged (map 1) |
-| 2 | Guard Mark 1, the last shop before the Boss (map 1), collection weapon Mark 2, shield Mark 2, L3, a boon of three (map 1), the Boss's pick (map 1) | Guard Mark 1, the last shop before the Boss (map 1), main weapon Mark 2, shield Mark 2, L3, a boon of three (map 1), the Boss's pick (map 1) | Momentum Mark 1, collection weapon Mark 3, the last shop before the Boss (map 1), Devotion standing 2, collection weapon Mark 4, L3, a boon of three (map 1), the Boss's pick (map 1) | Sigils Mark 1, the last shop before the Boss (map 1), L3, a boon of three (map 1), the Boss's pick (map 1) | Bonds Mark 1, collection weapon Mark 2, the last shop before the Boss (map 1), L3, a boon of three (map 1), the Boss's pick (map 1), second hand weapon Mark 2 | Outbursts Mark 1, a module learned (2), a feeling unlocked (1), the last shop before the Boss (map 1), L3, a boon of three (map 1), the Boss's pick (map 1) | Figments Mark 1, the last shop before the Boss (map 1), L3, a boon of three (map 1), the Boss's pick (map 1) |
+| 2 | Guard Mark 1, collection weapon Mark 2, shield Mark 2, L3, a boon of three (map 1), the Boss's pick (map 1) | Guard Mark 1, main weapon Mark 2, shield Mark 2, L3, a boon of three (map 1), the Boss's pick (map 1) | Momentum Mark 1, collection weapon Mark 3, Devotion standing 2, collection weapon Mark 4, L3, a boon of three (map 1), the Boss's pick (map 1) | Sigils Mark 1, L3, a boon of three (map 1), the Boss's pick (map 1) | Bonds Mark 1, collection weapon Mark 2, L3, a boon of three (map 1), the Boss's pick (map 1), second hand weapon Mark 2 | Outbursts Mark 1, a module learned (2), a feeling unlocked (1), L3, a boon of three (map 1), the Boss's pick (map 1) | Figments Mark 1, L3, a boon of three (map 1), the Boss's pick (map 1) |
 | 3 | the shop: a grade step or a new piece (map 2), L4, the gate's pick at the shelf's grade (map 2) | the shop: a grade step or a new piece (map 2), L4, the gate's pick at the shelf's grade (map 2) | second hand weapon Mark 3, the shop: a grade step or a new piece (map 2), collection weapon Mark 5, second hand weapon Mark 4, L4, the gate's pick at the shelf's grade (map 2) | a word learned (3), the shop: a grade step or a new piece (map 2), collection weapon Mark 2, L4, the gate's pick at the shelf's grade (map 2) | the shop: a grade step or a new piece (map 2), L4, the gate's pick at the shelf's grade (map 2) | the shop: a grade step or a new piece (map 2), collection weapon Mark 2, L4, the gate's pick at the shelf's grade (map 2), a module learned (3) | the shop: a grade step or a new piece (map 2), collection weapon Mark 2, L4, the gate's pick at the shelf's grade (map 2) |
-| 4 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), collection weapon Mark 3, the last shop before the Boss (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), main weapon Mark 3, the last shop before the Boss (map 2) | Devotion standing 3, the Forge: a grade step, a mod fitted or a property re-forged (map 2), collection weapon Mark 6, second hand weapon Mark 5, collection weapon Mark 7, the last shop before the Boss (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a word learned (4), the last shop before the Boss (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), collection weapon Mark 3, Pressure Mark 1, the last shop before the Boss (map 2), collection weapon Mark 4 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a feeling unlocked (2), the last shop before the Boss (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a form Mark (1), a form Mark (2), a form Mark (3), a form Mark (4), a form Mark (5), a form Mark (6), a form Mark (7), a form Mark (8), the last shop before the Boss (map 2) |
-| 5 | shield Mark 3, L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), collection weapon Mark 4, the shop: a grade step or a new piece (map 3) | shield Mark 3, L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), the shop: a grade step or a new piece (map 3) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), collection weapon Mark 8, the shop: a grade step or a new piece (map 3), second hand weapon Mark 6 | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), the shop: a grade step or a new piece (map 3), a word learned (5) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), second hand weapon Mark 3, the shop: a grade step or a new piece (map 3) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), the shop: a grade step or a new piece (map 3), a module learned (4) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), the shop: a grade step or a new piece (map 3) |
+| 4 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), the shrine: the rite, a knowledge piece or the patron's token (map 2), collection weapon Mark 3 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), the shrine: the rite, a knowledge piece or the patron's token (map 2), main weapon Mark 3 | Devotion standing 3, the Forge: a grade step, a mod fitted or a property re-forged (map 2), collection weapon Mark 6, second hand weapon Mark 5, the shrine: the rite, a knowledge piece or the patron's token (map 2), collection weapon Mark 7 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a word learned (4), the shrine: the rite, a knowledge piece or the patron's token (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), collection weapon Mark 3, the shrine: the rite, a knowledge piece or the patron's token (map 2), Pressure Mark 1, collection weapon Mark 4 | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a feeling unlocked (2), the shrine: the rite, a knowledge piece or the patron's token (map 2) | the Forge: a grade step, a mod fitted or a property re-forged (map 2), a form Mark (1), a form Mark (2), a form Mark (3), a form Mark (4), a form Mark (5), a form Mark (6), a form Mark (7), a form Mark (8), the shrine: the rite, a knowledge piece or the patron's token (map 2) |
+| 5 | shield Mark 3, L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), collection weapon Mark 4 | shield Mark 3, L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), collection weapon Mark 8, second hand weapon Mark 6 | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), a word learned (5) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), second hand weapon Mark 3 | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2), a module learned (4) | L5, a boon of three (map 2), masterwork found, the Boss's pick (map 2) |
 | 6 | L6, the gate's pick at the shelf's grade (map 3), the Forge: a grade step, a mod fitted or a property re-forged (map 3), collection weapon Mark 5 | L6, the gate's pick at the shelf's grade (map 3), the Forge: a grade step, a mod fitted or a property re-forged (map 3) | Prayer Mark 1, L6, the gate's pick at the shelf's grade (map 3), collection weapon Mark 9, second hand weapon Mark 7, Devotion standing 4, collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 3) | L6, the gate's pick at the shelf's grade (map 3), the Forge: a grade step, a mod fitted or a property re-forged (map 3) | L6, the gate's pick at the shelf's grade (map 3), collection weapon Mark 5, second hand weapon Mark 4, the Forge: a grade step, a mod fitted or a property re-forged (map 3) | L6, the gate's pick at the shelf's grade (map 3), a feeling unlocked (3), the Forge: a grade step, a mod fitted or a property re-forged (map 3) | L6, the gate's pick at the shelf's grade (map 3), the Forge: a grade step, a mod fitted or a property re-forged (map 3) |
-| 7 | the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) | the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 11, second hand weapon Mark 8, the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) | a word learned (6), collection weapon Mark 3, the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) | the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 3, the last shop before the Boss (map 3), a module learned (5), L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 3, the last shop before the Boss (map 3), L7, a boon of three (map 3), the Boss's pick (map 3) |
+| 7 | L7, a boon of three (map 3), the Boss's pick (map 3) | L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 11, second hand weapon Mark 8, L7, a boon of three (map 3), the Boss's pick (map 3) | a word learned (6), collection weapon Mark 3, L7, a boon of three (map 3), the Boss's pick (map 3) | L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 3, a module learned (5), L7, a boon of three (map 3), the Boss's pick (map 3) | collection weapon Mark 3, L7, a boon of three (map 3), the Boss's pick (map 3) |
 | 8 | the shop: a grade step or a new piece (map 4) | the shop: a grade step or a new piece (map 4) | the shop: a grade step or a new piece (map 4), collection weapon Mark 12, collection weapon Mark 13, second hand weapon Mark 9 | collection weapon Mark 4, the shop: a grade step or a new piece (map 4), a word learned (7) | collection weapon Mark 6, second hand weapon Mark 5, the shop: a grade step or a new piece (map 4) | collection weapon Mark 4, the shop: a grade step or a new piece (map 4) | collection weapon Mark 4, the shop: a grade step or a new piece (map 4) |
-| 9 | L8, the gate's pick at the shelf's grade (map 4), collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 4) | L8, the gate's pick at the shelf's grade (map 4), the Forge: a grade step, a mod fitted or a property re-forged (map 4) | L8, the gate's pick at the shelf's grade (map 4), second hand weapon Mark 10, Devotion standing 5, the Forge: a grade step, a mod fitted or a property re-forged (map 4), collection weapon Mark 14 | L8, the gate's pick at the shelf's grade (map 4), the Forge: a grade step, a mod fitted or a property re-forged (map 4) | L8, the gate's pick at the shelf's grade (map 4), collection weapon Mark 7, the Forge: a grade step, a mod fitted or a property re-forged (map 4) | a feeling unlocked (4), L8, the gate's pick at the shelf's grade (map 4), the Forge: a grade step, a mod fitted or a property re-forged (map 4), a module learned (6) | L8, the gate's pick at the shelf's grade (map 4), the Forge: a grade step, a mod fitted or a property re-forged (map 4) |
+| 9 | L8, the gate's pick at the shelf's grade (map 4), collection weapon Mark 6, the shrine: the rite, a knowledge piece or the patron's token (map 4) | L8, the gate's pick at the shelf's grade (map 4), the shrine: the rite, a knowledge piece or the patron's token (map 4) | L8, the gate's pick at the shelf's grade (map 4), second hand weapon Mark 10, Devotion standing 5, collection weapon Mark 14, the shrine: the rite, a knowledge piece or the patron's token (map 4) | L8, the gate's pick at the shelf's grade (map 4), the shrine: the rite, a knowledge piece or the patron's token (map 4) | L8, the gate's pick at the shelf's grade (map 4), collection weapon Mark 7, the shrine: the rite, a knowledge piece or the patron's token (map 4) | a feeling unlocked (4), L8, the gate's pick at the shelf's grade (map 4), a module learned (6), the shrine: the rite, a knowledge piece or the patron's token (map 4) | L8, the gate's pick at the shelf's grade (map 4), the shrine: the rite, a knowledge piece or the patron's token (map 4) |
 | 10 | collection weapon Mark 7, the last shop before the Boss (map 4), L9, a boon of three (map 4), relic found, the Boss's pick (map 4) | the last shop before the Boss (map 4), L9, a boon of three (map 4), relic found, the Boss's pick (map 4) | the last shop before the Boss (map 4), second hand weapon Mark 11, L9, a boon of three (map 4), relic found, the Boss's pick (map 4), collection weapon Mark 15 | a word learned (8), the last shop before the Boss (map 4), L9, a boon of three (map 4), relic found, the Boss's pick (map 4) | the last shop before the Boss (map 4), collection weapon Mark 8, L9, a boon of three (map 4), relic found, the Boss's pick (map 4) | the last shop before the Boss (map 4), L9, a boon of three (map 4), relic found, the Boss's pick (map 4) | the last shop before the Boss (map 4), L9, a boon of three (map 4), relic found, the Boss's pick (map 4) |
-| 11 | Guard Mark 2, the shop: a grade step or a new piece (map 5), collection weapon Mark 8, L10, the gate's pick at the shelf's grade (map 5) | Guard Mark 2, the shop: a grade step or a new piece (map 5), L10, the gate's pick at the shelf's grade (map 5) | Momentum Mark 2, collection weapon Mark 16, the shop: a grade step or a new piece (map 5), L10, the gate's pick at the shelf's grade (map 5) | collection weapon Mark 5, Sigils Mark 2, the shop: a grade step or a new piece (map 5), a word learned (9), L10, the gate's pick at the shelf's grade (map 5) | Bonds Mark 2, the shop: a grade step or a new piece (map 5), second hand weapon Mark 6, L10, the gate's pick at the shelf's grade (map 5) | collection weapon Mark 5, Outbursts Mark 2, the shop: a grade step or a new piece (map 5), a feeling unlocked (5), a module learned (7), L10, the gate's pick at the shelf's grade (map 5) | Figments Mark 2, collection weapon Mark 5, the shop: a grade step or a new piece (map 5), L10, the gate's pick at the shelf's grade (map 5) |
+| 11 | Guard Mark 2, collection weapon Mark 8, L10, the gate's pick at the shelf's grade (map 5) | Guard Mark 2, L10, the gate's pick at the shelf's grade (map 5) | Momentum Mark 2, collection weapon Mark 16, L10, the gate's pick at the shelf's grade (map 5) | collection weapon Mark 5, Sigils Mark 2, a word learned (9), L10, the gate's pick at the shelf's grade (map 5) | Bonds Mark 2, second hand weapon Mark 6, L10, the gate's pick at the shelf's grade (map 5) | collection weapon Mark 5, Outbursts Mark 2, a feeling unlocked (5), a module learned (7), L10, the gate's pick at the shelf's grade (map 5) | Figments Mark 2, collection weapon Mark 5, L10, the gate's pick at the shelf's grade (map 5) |
 | 12 | the Forge: a grade step, a mod fitted or a property re-forged (map 5) | the Forge: a grade step, a mod fitted or a property re-forged (map 5) | collection weapon Mark 17, second hand weapon Mark 12, the Forge: a grade step, a mod fitted or a property re-forged (map 5), second hand weapon Mark 13 | the Forge: a grade step, a mod fitted or a property re-forged (map 5) | second hand weapon Mark 7, the Forge: a grade step, a mod fitted or a property re-forged (map 5) | the Forge: a grade step, a mod fitted or a property re-forged (map 5) | the Forge: a grade step, a mod fitted or a property re-forged (map 5) |
-| 13 | the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5) | the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5) | collection weapon Mark 18, the last shop before the Boss (map 5), collection weapon Mark 19, L11, a boon of three (map 5), the Boss's pick (map 5), Devotion standing 6, second hand weapon Mark 14 | a word learned (10), the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5) | collection weapon Mark 9, the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5), collection weapon Mark 10 | the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5), a module learned (8), a feeling unlocked (6) | the last shop before the Boss (map 5), L11, a boon of three (map 5), the Boss's pick (map 5) |
-| 14 | collection weapon Mark 9, the shop: a grade step or a new piece (map 6), the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), collection weapon Mark 20, the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), a word learned (11), the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), second hand weapon Mark 8, the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), the gate's pick at the shelf's grade (map 6) | the shop: a grade step or a new piece (map 6), the gate's pick at the shelf's grade (map 6) |
-| 15 | collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 6) | the Forge: a grade step, a mod fitted or a property re-forged (map 6) | second hand weapon Mark 15, the Forge: a grade step, a mod fitted or a property re-forged (map 6), collection weapon Mark 21, collection weapon Mark 22 | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6) | collection weapon Mark 11, the Forge: a grade step, a mod fitted or a property re-forged (map 6) | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6), a module learned (9) | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6), a form Mark (10), a form Mark (11), a form Mark (12), a form Mark (13), a form Mark (14), a form Mark (15), a form Mark (16), a form Mark (9) |
-| 16 | the last shop before the Boss (map 6), L12, a boon of three (map 6), the Boss's pick (map 6), collection weapon Mark 11 | the last shop before the Boss (map 6), L12, a boon of three (map 6), the Boss's pick (map 6) | second hand weapon Mark 16, the last shop before the Boss (map 6), L12, a boon of three (map 6), the Boss's pick (map 6), collection weapon Mark 23 | the last shop before the Boss (map 6), a word learned (12), collection weapon Mark 7, L12, a boon of three (map 6), the Boss's pick (map 6) | the last shop before the Boss (map 6), L12, a boon of three (map 6), the Boss's pick (map 6) | the last shop before the Boss (map 6), collection weapon Mark 7, a feeling unlocked (7), L12, a boon of three (map 6), the Boss's pick (map 6) | the last shop before the Boss (map 6), collection weapon Mark 7, L12, a boon of three (map 6), the Boss's pick (map 6) |
-| 17 | Guard Mark 3, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7) | Guard Mark 3, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7) | Momentum Mark 3, second hand weapon Mark 17, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7), collection weapon Mark 24 | Sigils Mark 3, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7), a word learned (13) | Bonds Mark 3, the shop: a grade step or a new piece (map 7), collection weapon Mark 12, second hand weapon Mark 9, the gate's pick at the shelf's grade (map 7) | Outbursts Mark 3, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7), a module learned (10) | Figments Mark 3, the shop: a grade step or a new piece (map 7), the gate's pick at the shelf's grade (map 7) |
+| 13 | L11, a boon of three (map 5), the Boss's pick (map 5) | L11, a boon of three (map 5), the Boss's pick (map 5) | collection weapon Mark 18, collection weapon Mark 19, L11, a boon of three (map 5), the Boss's pick (map 5), Devotion standing 6, second hand weapon Mark 14 | a word learned (10), L11, a boon of three (map 5), the Boss's pick (map 5) | collection weapon Mark 9, L11, a boon of three (map 5), the Boss's pick (map 5), collection weapon Mark 10 | L11, a boon of three (map 5), the Boss's pick (map 5), a module learned (8), a feeling unlocked (6) | L11, a boon of three (map 5), the Boss's pick (map 5) |
+| 14 | collection weapon Mark 9, the gate's pick at the shelf's grade (map 6) | the gate's pick at the shelf's grade (map 6) | collection weapon Mark 20, the gate's pick at the shelf's grade (map 6) | a word learned (11), the gate's pick at the shelf's grade (map 6) | second hand weapon Mark 8, the gate's pick at the shelf's grade (map 6) | the gate's pick at the shelf's grade (map 6) | the gate's pick at the shelf's grade (map 6) |
+| 15 | collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 6), the shrine: the rite, a knowledge piece or the patron's token (map 6) | the Forge: a grade step, a mod fitted or a property re-forged (map 6), the shrine: the rite, a knowledge piece or the patron's token (map 6) | second hand weapon Mark 15, the Forge: a grade step, a mod fitted or a property re-forged (map 6), collection weapon Mark 21, the shrine: the rite, a knowledge piece or the patron's token (map 6), collection weapon Mark 22 | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6), the shrine: the rite, a knowledge piece or the patron's token (map 6) | collection weapon Mark 11, the Forge: a grade step, a mod fitted or a property re-forged (map 6), the shrine: the rite, a knowledge piece or the patron's token (map 6) | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6), the shrine: the rite, a knowledge piece or the patron's token (map 6), a module learned (9) | collection weapon Mark 6, the Forge: a grade step, a mod fitted or a property re-forged (map 6), a form Mark (10), a form Mark (11), a form Mark (12), a form Mark (13), a form Mark (14), a form Mark (15), a form Mark (16), a form Mark (9), the shrine: the rite, a knowledge piece or the patron's token (map 6) |
+| 16 | L12, a boon of three (map 6), the Boss's pick (map 6), collection weapon Mark 11 | L12, a boon of three (map 6), the Boss's pick (map 6) | second hand weapon Mark 16, L12, a boon of three (map 6), the Boss's pick (map 6), collection weapon Mark 23 | a word learned (12), collection weapon Mark 7, L12, a boon of three (map 6), the Boss's pick (map 6) | L12, a boon of three (map 6), the Boss's pick (map 6) | collection weapon Mark 7, a feeling unlocked (7), L12, a boon of three (map 6), the Boss's pick (map 6) | collection weapon Mark 7, L12, a boon of three (map 6), the Boss's pick (map 6) |
+| 17 | Guard Mark 3, the gate's pick at the shelf's grade (map 7) | Guard Mark 3, the gate's pick at the shelf's grade (map 7) | Momentum Mark 3, second hand weapon Mark 17, the gate's pick at the shelf's grade (map 7), collection weapon Mark 24 | Sigils Mark 3, the gate's pick at the shelf's grade (map 7), a word learned (13) | Bonds Mark 3, collection weapon Mark 12, second hand weapon Mark 9, the gate's pick at the shelf's grade (map 7) | Outbursts Mark 3, the gate's pick at the shelf's grade (map 7), a module learned (10) | Figments Mark 3, the gate's pick at the shelf's grade (map 7) |
 | 18 | the Forge: a grade step, a mod fitted or a property re-forged (map 7) | the Forge: a grade step, a mod fitted or a property re-forged (map 7) | collection weapon Mark 25, the Forge: a grade step, a mod fitted or a property re-forged (map 7), Devotion standing 7, second hand weapon Mark 18 | the Forge: a grade step, a mod fitted or a property re-forged (map 7) | the Forge: a grade step, a mod fitted or a property re-forged (map 7), collection weapon Mark 13, second hand weapon Mark 10 | the Forge: a grade step, a mod fitted or a property re-forged (map 7) | the Forge: a grade step, a mod fitted or a property re-forged (map 7) |
-| 19 | the last shop before the Boss (map 7), collection weapon Mark 12, L13, a boon of three (map 7), the Boss's pick (map 7) | the last shop before the Boss (map 7), L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 26, the last shop before the Boss (map 7), second hand weapon Mark 19, L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 8, the last shop before the Boss (map 7), a word learned (14), L13, a boon of three (map 7), the Boss's pick (map 7) | the last shop before the Boss (map 7), L13, a boon of three (map 7), the Boss's pick (map 7) | a feeling unlocked (8), collection weapon Mark 8, the last shop before the Boss (map 7), L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 8, the last shop before the Boss (map 7), L13, a boon of three (map 7), the Boss's pick (map 7) |
+| 19 | collection weapon Mark 12, L13, a boon of three (map 7), the Boss's pick (map 7) | L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 26, second hand weapon Mark 19, L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 8, a word learned (14), L13, a boon of three (map 7), the Boss's pick (map 7) | L13, a boon of three (map 7), the Boss's pick (map 7) | a feeling unlocked (8), collection weapon Mark 8, L13, a boon of three (map 7), the Boss's pick (map 7) | collection weapon Mark 8, L13, a boon of three (map 7), the Boss's pick (map 7) |
 | 20 | collection weapon Mark 13, the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8) | the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8) | the shop: a grade step or a new piece (map 8), collection weapon Mark 27, second hand weapon Mark 20, collection weapon Mark 28, the gate's pick at the shelf's grade (map 8) | the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8) | collection weapon Mark 14, the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8), second hand weapon Mark 11 | a module learned (11), the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8) | the shop: a grade step or a new piece (map 8), the gate's pick at the shelf's grade (map 8) |
-| 21 | the Forge: a grade step, a mod fitted or a property re-forged (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8), collection weapon Mark 29 | a word learned (15), the Forge: a grade step, a mod fitted or a property re-forged (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8) | a feeling unlocked (9), the Forge: a grade step, a mod fitted or a property re-forged (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8) |
-| 22 | collection weapon Mark 14, the last shop before the Boss (map 8), L14, a boon of three (map 8), the Boss's pick (map 8) | the last shop before the Boss (map 8), L14, a boon of three (map 8), the Boss's pick (map 8) | second hand weapon Mark 21, the last shop before the Boss (map 8), L14, a boon of three (map 8), collection weapon Mark 30, second hand weapon Mark 22, the Boss's pick (map 8) | the last shop before the Boss (map 8), L14, a boon of three (map 8), a word learned (16), the Boss's pick (map 8) | the last shop before the Boss (map 8), collection weapon Mark 15, L14, a boon of three (map 8), the Boss's pick (map 8) | a module learned (12), the last shop before the Boss (map 8), L14, a boon of three (map 8), the Boss's pick (map 8) | the last shop before the Boss (map 8), L14, a boon of three (map 8), the Boss's pick (map 8) |
-| 23 | Guard Mark 4, the shop: a grade step or a new piece (map 9) | Guard Mark 4, the shop: a grade step or a new piece (map 9) | Momentum Mark 4, Devotion standing 8, collection weapon Mark 31, the shop: a grade step or a new piece (map 9) | Sigils Mark 4, collection weapon Mark 9, the shop: a grade step or a new piece (map 9) | Bonds Mark 4, collection weapon Mark 16, the shop: a grade step or a new piece (map 9) | Outbursts Mark 4, collection weapon Mark 9, the shop: a grade step or a new piece (map 9) | Figments Mark 4, collection weapon Mark 9, the shop: a grade step or a new piece (map 9) |
+| 21 | the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8), collection weapon Mark 29, the shrine: the rite, a knowledge piece or the patron's token (map 8) | a word learned (15), the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) | a feeling unlocked (9), the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) | the Forge: a grade step, a mod fitted or a property re-forged (map 8), the shrine: the rite, a knowledge piece or the patron's token (map 8) |
+| 22 | collection weapon Mark 14, L14, a boon of three (map 8), the Boss's pick (map 8) | L14, a boon of three (map 8), the Boss's pick (map 8) | second hand weapon Mark 21, L14, a boon of three (map 8), collection weapon Mark 30, second hand weapon Mark 22, the Boss's pick (map 8) | L14, a boon of three (map 8), a word learned (16), the Boss's pick (map 8) | collection weapon Mark 15, L14, a boon of three (map 8), the Boss's pick (map 8) | a module learned (12), L14, a boon of three (map 8), the Boss's pick (map 8) | L14, a boon of three (map 8), the Boss's pick (map 8) |
+| 23 | Guard Mark 4 | Guard Mark 4 | Momentum Mark 4, Devotion standing 8, collection weapon Mark 31 | Sigils Mark 4, collection weapon Mark 9 | Bonds Mark 4, collection weapon Mark 16 | Outbursts Mark 4, collection weapon Mark 9 | Figments Mark 4, collection weapon Mark 9 |
 | 24 | the gate's pick at the shelf's grade (map 9), the Forge: a grade step, a mod fitted or a property re-forged (map 9), collection weapon Mark 15 | the gate's pick at the shelf's grade (map 9), the Forge: a grade step, a mod fitted or a property re-forged (map 9) | second hand weapon Mark 23, the gate's pick at the shelf's grade (map 9), collection weapon Mark 32, the Forge: a grade step, a mod fitted or a property re-forged (map 9) | the gate's pick at the shelf's grade (map 9), a word learned (17), collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 9) | the gate's pick at the shelf's grade (map 9), second hand weapon Mark 12, the Forge: a grade step, a mod fitted or a property re-forged (map 9) | the gate's pick at the shelf's grade (map 9), a feeling unlocked (10), a module learned (13), collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 9) | the gate's pick at the shelf's grade (map 9), collection weapon Mark 10, the Forge: a grade step, a mod fitted or a property re-forged (map 9) |
-| 25 | the last shop before the Boss (map 9), collection weapon Mark 16, L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | the last shop before the Boss (map 9), L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | collection weapon Mark 33, the last shop before the Boss (map 9), second hand weapon Mark 24, collection weapon Mark 34, L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | the last shop before the Boss (map 9), L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | collection weapon Mark 17, second hand weapon Mark 13, the last shop before the Boss (map 9), L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | the last shop before the Boss (map 9), L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | the last shop before the Boss (map 9), L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) |
+| 25 | collection weapon Mark 16, L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | collection weapon Mark 33, second hand weapon Mark 24, collection weapon Mark 34, L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | collection weapon Mark 17, second hand weapon Mark 13, L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) | L15, a boon of three (map 9), celestial found, the Boss's pick (map 9) |
 | 26 | the shop: a grade step or a new piece (map 10) | the shop: a grade step or a new piece (map 10) | second hand weapon Mark 25, the shop: a grade step or a new piece (map 10), collection weapon Mark 35 | a word learned (18), the shop: a grade step or a new piece (map 10) | the shop: a grade step or a new piece (map 10), Pressure Mark 2 | the shop: a grade step or a new piece (map 10), a module learned (14), a feeling unlocked (11) | the shop: a grade step or a new piece (map 10) |
 | 27 | the gate's pick at the shelf's grade (map 10), collection weapon Mark 17, the Forge: a grade step, a mod fitted or a property re-forged (map 10) | the gate's pick at the shelf's grade (map 10), the Forge: a grade step, a mod fitted or a property re-forged (map 10) | Devotion standing 9, the gate's pick at the shelf's grade (map 10), second hand weapon Mark 26, the Forge: a grade step, a mod fitted or a property re-forged (map 10), collection weapon Mark 36 | the gate's pick at the shelf's grade (map 10), collection weapon Mark 11, a word learned (19), the Forge: a grade step, a mod fitted or a property re-forged (map 10) | the gate's pick at the shelf's grade (map 10), collection weapon Mark 18, second hand weapon Mark 14, the Forge: a grade step, a mod fitted or a property re-forged (map 10) | the gate's pick at the shelf's grade (map 10), collection weapon Mark 11, the Forge: a grade step, a mod fitted or a property re-forged (map 10) | the gate's pick at the shelf's grade (map 10), collection weapon Mark 11, the Forge: a grade step, a mod fitted or a property re-forged (map 10) |
-| 28 | the last shop before the Boss (map 10) | the last shop before the Boss (map 10) | collection weapon Mark 37, the last shop before the Boss (map 10) | the last shop before the Boss (map 10) | collection weapon Mark 19, the last shop before the Boss (map 10) | the last shop before the Boss (map 10), a module learned (15) | the last shop before the Boss (map 10) |
+| 28 | the shrine: the rite, a knowledge piece or the patron's token (map 10) | the shrine: the rite, a knowledge piece or the patron's token (map 10) | the shrine: the rite, a knowledge piece or the patron's token (map 10), collection weapon Mark 37 | the shrine: the rite, a knowledge piece or the patron's token (map 10) | the shrine: the rite, a knowledge piece or the patron's token (map 10), collection weapon Mark 19 | the shrine: the rite, a knowledge piece or the patron's token (map 10), a module learned (15) | the shrine: the rite, a knowledge piece or the patron's token (map 10) |
 | 29 | L16, a boon of three (map 10), the Boss's pick (map 10), the shop: a grade step or a new piece (map 11) | L16, a boon of three (map 10), the Boss's pick (map 10), the shop: a grade step or a new piece (map 11) | L16, a boon of three (map 10), the Boss's pick (map 10), collection weapon Mark 38, second hand weapon Mark 27, the shop: a grade step or a new piece (map 11), second hand weapon Mark 28 | L16, a boon of three (map 10), the Boss's pick (map 10), a word learned (20), the shop: a grade step or a new piece (map 11) | L16, a boon of three (map 10), the Boss's pick (map 10), the shop: a grade step or a new piece (map 11) | L16, a boon of three (map 10), the Boss's pick (map 10), a feeling unlocked (12), the shop: a grade step or a new piece (map 11) | L16, a boon of three (map 10), the Boss's pick (map 10), the shop: a grade step or a new piece (map 11) |
 | 30 | collection weapon Mark 18, the gate's pick at the shelf's grade (map 11) | the gate's pick at the shelf's grade (map 11) | the gate's pick at the shelf's grade (map 11), collection weapon Mark 39, collection weapon Mark 40 | the gate's pick at the shelf's grade (map 11) | collection weapon Mark 20, the gate's pick at the shelf's grade (map 11), second hand weapon Mark 15 | the gate's pick at the shelf's grade (map 11) | the gate's pick at the shelf's grade (map 11) |
-| 31 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), collection weapon Mark 19, the last shop before the Boss (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), the last shop before the Boss (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), second hand weapon Mark 29, Devotion standing 10, collection weapon Mark 41, the last shop before the Boss (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), a word learned (21), the last shop before the Boss (map 11), collection weapon Mark 12 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), the last shop before the Boss (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), a module learned (16), the last shop before the Boss (map 11), collection weapon Mark 12 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), the last shop before the Boss (map 11), collection weapon Mark 12 |
+| 31 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), collection weapon Mark 19 | the Forge: a grade step, a mod fitted or a property re-forged (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), second hand weapon Mark 29, Devotion standing 10, collection weapon Mark 41 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), a word learned (21), collection weapon Mark 12 | the Forge: a grade step, a mod fitted or a property re-forged (map 11) | the Forge: a grade step, a mod fitted or a property re-forged (map 11), a module learned (16), collection weapon Mark 12 | the Forge: a grade step, a mod fitted or a property re-forged (map 11), collection weapon Mark 12 |
 | 32 | L17, the Boss's pick (map 11) | L17, the Boss's pick (map 11) | L17, the Boss's pick (map 11), second hand weapon Mark 30 | L17, the Boss's pick (map 11), a word learned (22) | second hand weapon Mark 16, L17, the Boss's pick (map 11), collection weapon Mark 21 | a feeling unlocked (13), L17, the Boss's pick (map 11) | L17, the Boss's pick (map 11) |
 | 33 | the shop: a grade step or a new piece (map 12), collection weapon Mark 20, the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), collection weapon Mark 42, collection weapon Mark 43, second hand weapon Mark 31, the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), collection weapon Mark 13, the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), collection weapon Mark 22, the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), collection weapon Mark 13, a module learned (17), the gate's pick at the shelf's grade (map 12) | the shop: a grade step or a new piece (map 12), collection weapon Mark 13, the gate's pick at the shelf's grade (map 12) |
-| 34 | the Forge: a grade step, a mod fitted or a property re-forged (map 12) | the Forge: a grade step, a mod fitted or a property re-forged (map 12) | the Forge: a grade step, a mod fitted or a property re-forged (map 12), collection weapon Mark 44, second hand weapon Mark 32 | the Forge: a grade step, a mod fitted or a property re-forged (map 12), a word learned (23) | second hand weapon Mark 17, the Forge: a grade step, a mod fitted or a property re-forged (map 12) | the Forge: a grade step, a mod fitted or a property re-forged (map 12) | the Forge: a grade step, a mod fitted or a property re-forged (map 12) |
+| 34 | the shrine: the rite, a knowledge piece or the patron's token (map 12) | the shrine: the rite, a knowledge piece or the patron's token (map 12) | collection weapon Mark 44, the shrine: the rite, a knowledge piece or the patron's token (map 12), second hand weapon Mark 32 | a word learned (23), the shrine: the rite, a knowledge piece or the patron's token (map 12) | second hand weapon Mark 17, the shrine: the rite, a knowledge piece or the patron's token (map 12) | the shrine: the rite, a knowledge piece or the patron's token (map 12) | the shrine: the rite, a knowledge piece or the patron's token (map 12) |
 | 35 | the last shop before the Boss (map 12), L18, the Boss's pick (map 12), collection weapon Mark 21 | the last shop before the Boss (map 12), L18, the Boss's pick (map 12) | the last shop before the Boss (map 12), L18, the Boss's pick (map 12), collection weapon Mark 45 | the last shop before the Boss (map 12), L18, the Boss's pick (map 12) | the last shop before the Boss (map 12), collection weapon Mark 23, L18, the Boss's pick (map 12) | a feeling unlocked (14), the last shop before the Boss (map 12), L18, the Boss's pick (map 12), a module learned (18) | the last shop before the Boss (map 12), L18, the Boss's pick (map 12) |
-| 36 | the shop: a grade step or a new piece (map 13), collection weapon Mark 22, the gate's pick at the shelf's grade (map 13) | the shop: a grade step or a new piece (map 13), the gate's pick at the shelf's grade (map 13) | collection weapon Mark 46, the shop: a grade step or a new piece (map 13), Prayer Mark 2, second hand weapon Mark 33, the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, the shop: a grade step or a new piece (map 13), a word learned (24), the gate's pick at the shelf's grade (map 13) | the shop: a grade step or a new piece (map 13), the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, the shop: a grade step or a new piece (map 13), the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, the shop: a grade step or a new piece (map 13), the gate's pick at the shelf's grade (map 13) |
+| 36 | collection weapon Mark 22, the gate's pick at the shelf's grade (map 13) | the gate's pick at the shelf's grade (map 13) | collection weapon Mark 46, Prayer Mark 2, second hand weapon Mark 33, the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, a word learned (24), the gate's pick at the shelf's grade (map 13) | the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, the gate's pick at the shelf's grade (map 13) | collection weapon Mark 14, the gate's pick at the shelf's grade (map 13) |
 | 37 | the Forge: a grade step, a mod fitted or a property re-forged (map 13) | the Forge: a grade step, a mod fitted or a property re-forged (map 13) | collection weapon Mark 47, second hand weapon Mark 34, the Forge: a grade step, a mod fitted or a property re-forged (map 13) | the Forge: a grade step, a mod fitted or a property re-forged (map 13) | the Forge: a grade step, a mod fitted or a property re-forged (map 13), collection weapon Mark 24, second hand weapon Mark 18 | the Forge: a grade step, a mod fitted or a property re-forged (map 13), a feeling unlocked (15) | the Forge: a grade step, a mod fitted or a property re-forged (map 13) |
 | 38 | the last shop before the Boss (map 13), collection weapon Mark 23 | the last shop before the Boss (map 13) | collection weapon Mark 48, second hand weapon Mark 35, the last shop before the Boss (map 13), collection weapon Mark 49 | a word learned (25), the last shop before the Boss (map 13) | the last shop before the Boss (map 13), collection weapon Mark 25 | a module learned (19), the last shop before the Boss (map 13) | the last shop before the Boss (map 13) |
-| 39 | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14) | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14) | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14), collection weapon Mark 50 | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14), a word learned (26) | second hand weapon Mark 19, L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14) | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14) | L19, the Boss's pick (map 13), the shop: a grade step or a new piece (map 14) |
+| 39 | L19, the Boss's pick (map 13) | L19, the Boss's pick (map 13) | L19, the Boss's pick (map 13), collection weapon Mark 50 | L19, the Boss's pick (map 13), a word learned (26) | second hand weapon Mark 19, L19, the Boss's pick (map 13) | L19, the Boss's pick (map 13) | L19, the Boss's pick (map 13) |
 | 40 | the gate's pick at the shelf's grade (map 14) | the gate's pick at the shelf's grade (map 14) | second hand weapon Mark 36, the gate's pick at the shelf's grade (map 14) | the gate's pick at the shelf's grade (map 14), collection weapon Mark 15 | the gate's pick at the shelf's grade (map 14), collection weapon Mark 26 | the gate's pick at the shelf's grade (map 14), a module learned (20), a feeling unlocked (16), collection weapon Mark 15 | the gate's pick at the shelf's grade (map 14), collection weapon Mark 15 |
-| 41 | the Forge: a grade step, a mod fitted or a property re-forged (map 14), collection weapon Mark 24, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the last shop before the Boss (map 14) | second hand weapon Mark 37, the Forge: a grade step, a mod fitted or a property re-forged (map 14), collection weapon Mark 51, collection weapon Mark 52, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), a word learned (27), the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), second hand weapon Mark 20, Pressure Mark 3, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the last shop before the Boss (map 14) |
+| 41 | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), collection weapon Mark 24, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), the last shop before the Boss (map 14) | second hand weapon Mark 37, the Forge: a grade step, a mod fitted or a property re-forged (map 14), collection weapon Mark 51, the shrine: the rite, a knowledge piece or the patron's token (map 14), collection weapon Mark 52, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), a word learned (27), the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), second hand weapon Mark 20, Pressure Mark 3, the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), the last shop before the Boss (map 14) | the Forge: a grade step, a mod fitted or a property re-forged (map 14), the shrine: the rite, a knowledge piece or the patron's token (map 14), the last shop before the Boss (map 14) |
 | 42 | L20, the Boss's pick (map 14), collection weapon Mark 25 | L20, the Boss's pick (map 14) | second hand weapon Mark 38, collection weapon Mark 53, L20, the Boss's pick (map 14) | collection weapon Mark 16, L20, the Boss's pick (map 14) | L20, the Boss's pick (map 14) | collection weapon Mark 16, L20, the Boss's pick (map 14), a module learned (21) | collection weapon Mark 16, L20, the Boss's pick (map 14), a form Mark (17), a form Mark (18), a form Mark (19), a form Mark (20), a form Mark (21), a form Mark (22), a form Mark (23), a form Mark (24) |
 | 43 | the shop: a grade step or a new piece (map 15), the gate's pick at the shelf's grade (map 15) | the shop: a grade step or a new piece (map 15), the gate's pick at the shelf's grade (map 15) | the shop: a grade step or a new piece (map 15), the gate's pick at the shelf's grade (map 15), collection weapon Mark 54 | the shop: a grade step or a new piece (map 15), a word learned (28), the gate's pick at the shelf's grade (map 15) | the shop: a grade step or a new piece (map 15), collection weapon Mark 27, the gate's pick at the shelf's grade (map 15) | the shop: a grade step or a new piece (map 15), a feeling unlocked (17), the gate's pick at the shelf's grade (map 15) | the shop: a grade step or a new piece (map 15), the gate's pick at the shelf's grade (map 15) |
 | 44 | the Forge: a grade step, a mod fitted or a property re-forged (map 15), collection weapon Mark 26 | the Forge: a grade step, a mod fitted or a property re-forged (map 15) | second hand weapon Mark 39, collection weapon Mark 55, the Forge: a grade step, a mod fitted or a property re-forged (map 15), second hand weapon Mark 40 | the Forge: a grade step, a mod fitted or a property re-forged (map 15) | collection weapon Mark 28, the Forge: a grade step, a mod fitted or a property re-forged (map 15) | the Forge: a grade step, a mod fitted or a property re-forged (map 15) | the Forge: a grade step, a mod fitted or a property re-forged (map 15) |
-| 45 | the last shop before the Boss (map 15), the Boss's pick (map 15) | the last shop before the Boss (map 15), the Boss's pick (map 15) | collection weapon Mark 56, the last shop before the Boss (map 15), the Boss's pick (map 15) | a word learned (29), the last shop before the Boss (map 15), collection weapon Mark 17, the Boss's pick (map 15) | second hand weapon Mark 21, the last shop before the Boss (map 15), the Boss's pick (map 15), collection weapon Mark 29 | a module learned (22), the last shop before the Boss (map 15), collection weapon Mark 17, the Boss's pick (map 15) | the last shop before the Boss (map 15), collection weapon Mark 17, the Boss's pick (map 15) |
+| 45 | the Boss's pick (map 15) | the Boss's pick (map 15) | collection weapon Mark 56, the Boss's pick (map 15) | a word learned (29), collection weapon Mark 17, the Boss's pick (map 15) | second hand weapon Mark 21, the Boss's pick (map 15), collection weapon Mark 29 | a module learned (22), collection weapon Mark 17, the Boss's pick (map 15) | collection weapon Mark 17, the Boss's pick (map 15) |
 | 46 | the shop: a grade step or a new piece (map 16) | the shop: a grade step or a new piece (map 16) | second hand weapon Mark 41, the shop: a grade step or a new piece (map 16), collection weapon Mark 57 | the shop: a grade step or a new piece (map 16) | second hand weapon Mark 22, the shop: a grade step or a new piece (map 16) | a feeling unlocked (18), the shop: a grade step or a new piece (map 16) | the shop: a grade step or a new piece (map 16) |
 | 47 | the gate's pick at the shelf's grade (map 16), collection weapon Mark 27, the Forge: a grade step, a mod fitted or a property re-forged (map 16) | the gate's pick at the shelf's grade (map 16), the Forge: a grade step, a mod fitted or a property re-forged (map 16) | collection weapon Mark 58, the gate's pick at the shelf's grade (map 16), collection weapon Mark 59, the Forge: a grade step, a mod fitted or a property re-forged (map 16) | a word learned (30), the gate's pick at the shelf's grade (map 16), the Forge: a grade step, a mod fitted or a property re-forged (map 16) | the gate's pick at the shelf's grade (map 16), the Forge: a grade step, a mod fitted or a property re-forged (map 16) | the gate's pick at the shelf's grade (map 16), a module learned (23), the Forge: a grade step, a mod fitted or a property re-forged (map 16) | the gate's pick at the shelf's grade (map 16), the Forge: a grade step, a mod fitted or a property re-forged (map 16) |
-| 48 | collection weapon Mark 28, the last shop before the Boss (map 16) | the last shop before the Boss (map 16) | second hand weapon Mark 42, second hand weapon Mark 43, the last shop before the Boss (map 16) | the last shop before the Boss (map 16), a word learned (31) | collection weapon Mark 30, second hand weapon Mark 23, the last shop before the Boss (map 16) | the last shop before the Boss (map 16) | the last shop before the Boss (map 16) |
+| 48 | the shrine: the rite, a knowledge piece or the patron's token (map 16), collection weapon Mark 28, the last shop before the Boss (map 16) | the shrine: the rite, a knowledge piece or the patron's token (map 16), the last shop before the Boss (map 16) | second hand weapon Mark 42, the shrine: the rite, a knowledge piece or the patron's token (map 16), second hand weapon Mark 43, the last shop before the Boss (map 16) | the shrine: the rite, a knowledge piece or the patron's token (map 16), the last shop before the Boss (map 16), a word learned (31) | the shrine: the rite, a knowledge piece or the patron's token (map 16), collection weapon Mark 30, second hand weapon Mark 23, the last shop before the Boss (map 16) | the shrine: the rite, a knowledge piece or the patron's token (map 16), the last shop before the Boss (map 16) | the shrine: the rite, a knowledge piece or the patron's token (map 16), the last shop before the Boss (map 16) |
 | 49 | the Boss's pick (map 16), the shop: a grade step or a new piece (map 17) | the Boss's pick (map 16), the shop: a grade step or a new piece (map 17) | collection weapon Mark 60, the Boss's pick (map 16), collection weapon Mark 61, second hand weapon Mark 44, the shop: a grade step or a new piece (map 17) | the Boss's pick (map 16), the shop: a grade step or a new piece (map 17) | the Boss's pick (map 16), collection weapon Mark 31, the shop: a grade step or a new piece (map 17) | the Boss's pick (map 16), a feeling unlocked (19), the shop: a grade step or a new piece (map 17) | the Boss's pick (map 16), the shop: a grade step or a new piece (map 17) |
 
 #### The clock: maps, foe levels by row, hours (typed in pacing.clock.maps; the model's in brackets), grades
@@ -1102,11 +1127,11 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 
 | item price | to Fine | to Masterwork | to Relic | re-forge |
 | --- | --- | --- | --- | --- |
-| 100 | 1,200 | 2,800 | 9,600 | 9,600 |
-| 750 | 1,200 | 3,000 | 10,200 | 9,600 |
-| 2,000 | 3,200 | 8,000 | 27,200 | 9,600 |
-| 4,500 | 7,200 | 18,000 | 61,200 | 9,600 |
-| 8,000 | 12,800 | 32,000 | 108,800 | 9,600 |
+| 100 | 1,200 | 2,800 | 5,200 | 5,200 |
+| 750 | 1,200 | 3,000 | 10,200 | 5,200 |
+| 2,000 | 3,200 | 8,000 | 27,200 | 5,200 |
+| 4,500 | 7,200 | 18,000 | 61,200 | 5,200 |
+| 8,000 | 12,800 | 32,000 | 108,800 | 5,200 |
 
 #### Co-op (ruling 37): the hours by squad size; party_pace multiplies practice and Devotion, never XP
 
@@ -1140,4 +1165,48 @@ Also: rules.json combat.armor.classes[].value (factor); rules.json combat.attack
 | elite in the hard room | 1.88 of 1.62 (alone) | 2.50 of 3.25 | 2.50 of 4.88 | 2.00 of 6.50 |
 | boss in the deadly room | 2.74 of 2.25 (alone) | 4.90 of 4.50 (alone) | 7.35 of 6.75 (alone) | 9.80 of 9.00 (alone) |
 | boss in the final room | 2.74 of 3.00 (alone) | 4.90 of 6.00 | 7.35 of 9.00 | 9.80 of 12.00 |
+
+#### The squad's one mark and one gift (ruling 41: scale.stack.squad; the best of each counts on a hit)
+
+| kind | name | damage share | to hit |
+| --- | --- | --- | --- |
+| mark | Closed | +15% | +0 |
+| mark | Corroded | +0% | +2 |
+| mark | Exposed | +0% | +2 |
+| mark | Fed | +0% | +2 |
+| mark | Footnote | +0% | +2 |
+| mark | Judgement | +15% | +0 |
+| mark | Marked | +15% | +0 |
+| mark | Named | +15% | +0 |
+| mark | Spotted | +15% | +0 |
+| mark | a foe's Abandon | +0% | +2 |
+| mark | a foe's Rage | +0% | +2 |
+| gift | Benediction | +0% | +1 |
+| gift | given Abandon | +15% | +0 |
+| gift | given Belonging | +0% | +1 |
+| gift | given Despair | +15% | +0 |
+| gift | given Edge | +0% | +2 |
+| gift | given Jealousy | +15% | +0 |
+| gift | given Joy | +15% | +0 |
+| gift | given Rage | +15% | +0 |
+| gift | given Shame | +15% | +0 |
+| gift | the Canticle's Crescendo | +0% | +1 |
+| gift | the Canticle's verse (Old Overcast's) | +6% | +0 |
+
+#### What a caster carries and spends over one standard fight (ruling 49: scale.costs.fight_check, check (h))
+
+| door | resource | level | units | carries | one full cash-out | cash-outs carried | everything, every turn |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| sigils | core charge | 1 | 3 | 30.0 | 7.0 | 4.3 | 35.0 |
+| sigils | core charge | 10 | 5 | 36.0 | 11.0 | 3.3 | 55.0 |
+| sigils | core charge | 20 | 6 | 36.0 | 14.0 | 2.6 | 70.0 |
+| figments | Visualizer charge (vcharge) | 1 | 2 | 49.0 | 12.0 | 4.1 | 65.0 |
+| figments | Visualizer charge (vcharge) | 10 | 4 | 70.0 | 25.0 | 2.8 | 87.5 |
+| figments | Visualizer charge (vcharge) | 20 | 5 | 76.0 | 30.0 | 2.5 | 90.0 |
+| bonds | MP | 1 | 2 | 88.0 | 12.0 | 7.3 | 180.0 |
+| bonds | MP | 10 | 4 | 160.2 | 15.7 | 10.2 | 235.6 |
+| bonds | MP | 20 | 5 | 316.7 | 21.8 | 14.5 | 327.4 |
+| outbursts | MP | 1 | 3 | 144.0 | 28.1 | 5.1 | 140.4 |
+| outbursts | MP | 10 | 5 | 258.7 | 58.2 | 4.4 | 291.1 |
+| outbursts | MP | 20 | 6 | 385.2 | 86.3 | 4.5 | 431.4 |
 

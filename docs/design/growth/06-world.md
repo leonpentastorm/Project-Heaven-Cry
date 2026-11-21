@@ -57,7 +57,7 @@ The map card and each fight node show the foes' level beside the squad's (client
 
 ## 5. Enemy doors read the same ladders
 
-`world.enemy_doors`: an enemy's door does what a character's does, at its door points and its level. A tag at a Reach step carries the family that step needs (ruling 13): `plated` (Durability), `skulk` (Ingenuity), `faithful` (Faith and Devotion), `bonded` (Empathy, with an Attuner in hand), each with `_ii` and `_iii`. Insight's gamma is `implication` (`data/skills.json`; critic-consistency-2 1.16 named it Insinuation, which the data does not hold). **Guard by the same reader:** `armGuard` (`combat.ts:700`) reads Durability from every door block and the plates from the ladder; the row's typed `guard` block goes. **Faith by the highest** (`enemy_doors.faith_reads`). **Casters** (`enemy_doors.casters`): Line length from Brain Power and top stage from Will Power on the ladders, so `sigils.json enemy_ai.max_words`, its code copy (`sigil.ts:1444`) and `soul_casters[].reach_bonus` go; a soul caster's pool is its row's `mp` on `scale.columns.mp` (`enemy_doors.mp`). **What an enemy deals through a door** reads `enemy_damage`; **what it soaks** reads `enemy_armour`, as its armour does: *a plate is a plate on either side of the board.*
+`world.enemy_doors`: an enemy's door does what a character's does, at its door points and its level. A tag at a Reach step carries the family that step needs (ruling 13): `plated` (Durability), `skulk` (Ingenuity), `faithful` (Faith and Devotion), `bonded` (Empathy, with an Attuner in hand), each with `_ii` and `_iii`. Insight's gamma is `implication` (`data/skills.json`), whose display name is Insinuation (`skills.json:4459`; critic-consistency-3 2). **Guard by the same reader:** `armGuard` (`combat.ts:700`) reads Durability from every door block and the plates from the ladder; the row's typed `guard` block goes. **Faith by the highest** (`enemy_doors.faith_reads`). **Casters** (`enemy_doors.casters`): Line length from Brain Power and top stage from Will Power on the ladders, so `sigils.json enemy_ai.max_words`, its code copy (`sigil.ts:1444`) and `soul_casters[].reach_bonus` go; a soul caster's pool is its row's `mp` on `scale.columns.mp` (`enemy_doors.mp`). **What an enemy deals through a door** reads `enemy_damage`; **what it soaks** reads `enemy_armour`, as its armour does: *a plate is a plate on either side of the board.*
 
 ## 6. The budget by level difference (ruling 38)
 
@@ -86,7 +86,7 @@ The map card and each fight node show the foes' level beside the squad's (client
 | --- | --- | --- |
 | consistency-2 1.2, player-2 8 (06 on an old clock) | FIXED | this file types no hour and no squad level; it reads `pacing.clock.maps` |
 | consistency-2 1.9, 7.1 (two migrations) | FIXED | `world.migration` is `@pacing.migration` |
-| consistency-2 1.16 (`bonded_iii`'s gamma) | NOT FIXED as asked | the data names Insight's gamma `implication` (`skills.json`); the critic's Insinuation does not exist |
+| consistency-2 1.16 (`bonded_iii`'s gamma) | FIXED | the id is `implication` (`skills.json`), the name Insinuation; the tag names the id |
 | consistency-2 2.1 (the vault) | FIXED for 06 | the vault is `pacing.grades_by_map.vault` (ruling 35) |
 | consistency-2 6.5 (tier words for a fight's level) | FIXED | `world.levels.fight_level_from` |
 | player-2 11 (boons past the cap) | FIXED for 06 | the cap stays (ruling A10); 05's calendar stops counting a boon past it |

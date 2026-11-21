@@ -1,5 +1,7 @@
 # The doors of Body: Guard, Momentum, Pressure (0.34 rebalance, design draft 02, third draft)
 
+> **Pass 4 (section G, 21 Nov 2026).** Slam's ring strikes Cleave's count of foes for the plates spent (ruling 45; `cashouts.slam_ring`, capped a hit, its total counted for the floor); Overbrace costs a share of your max HP (ruling 45; `door.push.numbers`); Cleave rolls with no Margins; Earthbreaker is read as a Finisher on every unit of the 3x3 (`cashouts.earthbreaker`, capped a hit); Guts' feed became two whole-number wear rules (`ladders.guts.feed.wear_rules`); every gated Reach step's felt line says its gate (check (c)). Each door's plain hit says whether it rolls (`plain.rolls`), so its Margins are read from the hit itself.
+
 Drafter's file for the lead. **Nothing here is built.** Pass 3 (ruling F): **every number of this file lives in `tools/balance/bible/body.json`**, and every shared number there is an `@` reference to `scale.json` or `pacing.json`. This file explains the design and names the JSON keys; it types no number the JSON does not hold. Every table of computed readings (plain hits, full cash-outs, the largest legal turn at level 20, one Slam on one foe or on a ring) is printed by the checker, never copied here:
 
 ```
@@ -37,13 +39,13 @@ The Guard technique stops growing with Durability: one plate a use (more with sh
 
 ### 1(c) The cash-out: Slam, from Durability 1 (ruling 34)
 
-Slam (2 AP, spends all your plates, at least 1, no roll): **every foe beside you takes a plain shield blow and the shove; the plates' weight (one plate's soak x Bite x the cash-out sum) lands on the foe you face.** Two readings of the one move, so the checker counts both: `cashouts.slam` (one foe) and `cashouts.slam_ring` (every foe beside you, `most_foes`, ruling 29's total). From Durability 5 the shove pushes and asks a Body save or Off Balance, as today (Stand Fast and Drive keep their forms). *Reason: the wall swings its shield as it throws its guard, so a Slam is worth pressing from the first point; on a crowd it shoves everyone and still falls on one.* Slam's gate in data moves from Durability 5 to 1 (`skills.json:203`); the shove keeps the gate of 5.
+Slam (2 AP, spends all your plates, at least 1, no roll): **as many foes beside you as Cleave's rule gives for the plates spent (1 + S(n) rounded down, up to `most_foes`: ruling 45) take a plain shield blow and the shove; the plates' weight (one plate's soak x Bite x the cash-out sum) lands on the foe you face; the other foes beside you take the shove only.** Two readings of the one move, so the checker counts both: `cashouts.slam` (one foe) and `cashouts.slam_ring` (the ring, `per_hit` the faced foe's hit, ruling 40: capped a hit, its total printed and counted for the floor). From Durability 5 the shove pushes and asks a Body save or Off Balance, as today (Stand Fast and Drive keep their forms). *Reason: the wall swings its shield as it throws its guard, so a Slam is worth pressing from the first point; on a crowd it shoves everyone and still falls on one.* Slam's gate in data moves from Durability 5 to 1 (`skills.json:203`); the shove keeps the gate of 5.
 
 The other spends are `door.spends`: soak, Challenge, Interpose, Shield Bash, Retort.
 
 ### 1(d) The Push at Durability 8: Overbrace
 
-Once a turn a Slam counts one plate more than you hold; **you are Bleeding** (ruling 34; `conditions.json` bleeding on yourself with `skip_save`). Endurance does not resist it, so the wall pays as every door pays (critic-player-2 4). Guard's Mark III makes it free once a fight.
+Once a turn a Slam counts one plate more than you hold; **when that plate is spent you lose a share of your max HP at the start of your next turn, nothing soaks it** (ruling 45: `door.push.numbers.hp_share`, the `share` cost rule, Overbind's shape). Bleeding (ruling 34) did not stack, ended with a stim and was a rounding error on a wall's bar (critic-player-3 2). Guard's Mark III makes it free once a fight.
 
 ### 1(e) Marks on Guard
 
@@ -97,7 +99,7 @@ One step more than you hold; you are Off Balance until your next turn (`conditio
 
 ### 2(g) Guts and Intimidation
 
-**Guts** (`ladders.guts`): the feed (`feed_flat`, `feed`), +1 on Body saves and now on saves against Fear (`save_mod` with `context`); 4 and 7 open Raw Power's Reach; at 10, Nothing Left to Fear and **a Finisher keeps 1 step** (critic-player-2 6). A per-point line is felt by its sum on the sheet (critic-player-2 14).
+**Guts** (`ladders.guts`): +1 on Body saves and now on saves against Fear (`save_mod` with `context`); 4 and 7 open Raw Power's Reach; **in place of a share of a whole step, two whole-number wear rules** (`feed.wear_rules`, critic-player-3 8): from Guts 4 the first damaging hit you take each round wears no step, from Guts 7 walking wears a step every two tiles (the wear site, S6); at 10, Nothing Left to Fear and **a Finisher keeps 1 step** (critic-player-2 6). A per-point line is felt by its sum on the sheet (critic-player-2 14).
 
 **Intimidation** (`ladders.intimidation`): Threaten and the voice; at 2 a landed Threaten gives you a chain step, at 6 two. Threaten aims at a foe, so it works alone.
 
@@ -171,7 +173,7 @@ What the plans must show, by design: a Bulwark takes Durability to 10 with Pain 
 | consistency-2 5.3, 5.4 (a pool's max as a source) | FIXED | it is S5; the extension is dropped from Needs |
 | consistency-2 note (level-1 cash-outs of three digits) | OPEN for the lead | check (a) tests level-1 plain hits only (`scale.digits.plain_l1`); the lead's wording decides whether a level-1 cash-out may show three |
 | player-2 1 (solo gammas) | FIXED for Sensory, Reaction Speed | Warn and Cue on yourself at the step below; `needs_ally` and `solo` on both |
-| player-2 4 (Overbrace has no price) | FIXED | Bleeding on yourself (ruling 34) |
+| player-2 4 (Overbrace has no price) | FIXED, then restated | a share of your max HP (ruling 45; was Bleeding, ruling 34) |
 | player-2 5 (Slam at 1 to 4 under par) | FIXED | the plain blow inside every Slam (ruling 34) |
 | player-2 6 (the specialist's last family points) | FIXED | each beta's 10 keeps a unit after the cash-out |
 | player-2 10 (Reach lost to C16 and B13) | NOT HERE | migration has one owner (`@pacing.migration`, ruling 39) |
@@ -189,7 +191,7 @@ What the plans must show, by design: a Bulwark takes Durability to 10 with Pain 
 | The beta feeds | `doorFeed` (`effects/feed.ts:37`), `skills.json` `per_point.numbers.feed` | `feed_flat` beside `feed` (an extension, Needs) |
 | The Guard technique, one plate a use | `guardGain` (`physical/core.ts:134`), `rules.guard.gain_per_point`; `skills.json` durability `guard_per_point` | `gain_per_point` 0; the per-point rows retired |
 | Slam: plain blow on each foe beside you, the plates on the one you face, from Durability 1 | Slam's `grant_action` (`skills.json:189-215`); op `deal` with an `amounts` block (the `melee` profile for the blow, the `guard` profile for the plates); ops `condition`, `displace` | the action's gate 1, the shove's 5; `res.guard` "all"; two deal parts |
-| Overbrace, Overswing, Overpress | predicate `toggle`; S5; `conditions.json` bleeding, off_balance (op `condition`, `skip_save`); a condition row Overpressed on the stats `always_seen`, `heat_limit` | data |
+| Overbrace, Overswing, Overpress | predicate `toggle`; S5; Overbrace's price the share cost (Overbind's row shape); `conditions.json` off_balance (op `condition`, `skip_save`); a condition row Overpressed on the stats `always_seen`, `heat_limit` | data |
 | Brace, Reforge read your Reach | Brace (`classes.json:4364`), Reforge (`:232`), op `resource`; S5 read as a number source (`self_res {at: "max"}` exists) | data |
 | Hold Their Eyes | op `resource` on `damaged`, `actor_has`, `by_hit`, `limit per_round each target` | a row on `classes.json defender` |
 | Retort as a one-plate Slam | `retort` (`classes.json:104`) | Slam's amount block with one unit |
@@ -223,7 +225,7 @@ What the plans must show, by design: a Bulwark takes Durability to 10 with Pain 
 | Extension: `feed_flat` | one key read by `doorFeed` | ruling 20 for all nine betas |
 | For the lead: **a natural-20 range** | one stat (`nat20_from`, default 20) read where a roll's natural 20 is decided, set by drill Mark III with the weapon | no existing piece widens the natural 20; if the lead refuses it, Mark III falls back to "+1 to hit more with this weapon" (a `to_hit` term) |
 
-S16 (`injure`) is no longer asked: Overbrace's price is Bleeding, which exists.
+S16 (`injure`) is no longer asked: Overbrace's price is the share cost Overbind already uses (ruling 45).
 
 ## What re-records
 

@@ -6,6 +6,8 @@ Line numbers in `docs/ENGINE-HOOKS.md` and in code were read in `E:/phc-wt/rel03
 
 ## 1. New pieces (13)
 
+Pass 4 (section G of `00-rulings.md`, critic-consistency-3 kind 5): S11 and S18 leave this list (it held 15 under a heading of 13) (S11 is dropped, S18 becomes an extension of `cleanse`, section 2), and S17 reads a saved field, not history it does not have.
+
 | # | Piece | Smallest form | The existing piece it generalises | Bible entries that use it |
 | --- | --- | --- | --- | --- |
 | S1 | **Margins** | the roll judge returns `margins` (each full `scale.margins.step` over the Defense or TN, plus `natural_20` on a natural 20); the attack and spell contexts carry it; its term adds to the cash-out factor (`scale.stack.formula`'s `per * m`); numbers in `rules.json rolls.margins`. The stats `crit_damage` and `crit_taken` are **renamed** `margins` and `margins_taken` (the stat list does not grow) | the critical term sites: `critMin` (`combat.ts:1644`), `critMult` (`character.ts:853-855`); the stats `crit_damage`, `crit_taken` (ENGINE-HOOKS:561-562); the `attack_roll` hook (ENGINE-HOOKS:345) | `scale.margins`, `scale.stack`, `scale.caps.items.crit_max` (goes); every cash-out with `rolls: true` in body, mind, soul; `mind.attributes.perception.card`; `gear_perks.margins_feeders` (every feeder); `world.stated_attacker` |
@@ -17,12 +19,10 @@ Line numbers in `docs/ENGINE-HOOKS.md` and in code were read in `E:/phc-wt/rel03
 | S7 | **`growthWorth`** | `growthHeld` as a factor: 0 on the field and in a dry run, whole out of a fight, else the worth by the level gap, x `party_pace` for practice and Devotion only (ruling 37) | `growthHeld` (`effects/hooks.ts:37`; ENGINE-HOOKS:818) | `pacing.xp.worth`, `pacing.xp.party_pace`; every Mark and practice stream in `pacing.calendar` |
 | S9 | **Firsts** | a keyed set on the character with a load default (`sigil:<sorted words>`, an Outburst design's key) | the felt list (`m.feelings`; the `felt` event, ENGINE-HOOKS:1634) | `mind.attributes.intelligence.door` (the found-spell book); `pacing.tracks.found_spells` |
 | S10 | **The resource `grace`** | one row in `data/actions.json resources`; its top is `res_max:grace` (S5) | the resource list (`RESOURCES`, ENGINE-HOOKS:524, :735) | `soul.attributes.virtue.door` (prayer's in-fight counter, ruling 19) |
-| S11 | **The stat `begin_stage`** | one line in `STATS` | `momentum_start` (`effects/stats.ts:68`; ENGINE-HOOKS:607), its twin for the heart | `soul.attributes.determination.class` (the Channeler's rebuild), `.door` |
 | S13 | **`crit_range`** (merged with 02's "natural-20 range") | a gear field with `_modes`, read once at the attack roll: a natural at or above it lands as a natural 20 (two Margins). `aimed_crit_min` becomes it. Drill Mark III ("a natural 19 lands as a natural 20 with this weapon") is the same field set by the Mark: **one piece, not two** | the weapon op `aimed_crit_min` (ENGINE-HOOKS:287) and `critMin` (`combat.ts:1644`) | `gear_perks.margins_feeders.crit_ranges`; `gear_perks.signatures.revolvers`; `body.drill.gifts.III` |
 | S14 | **`targets.past`** | a bool on a `line` target set: the units past the struck one | `TargetSet` / `selectUnits` (ENGINE-HOOKS:647, :651) | `gear_perks.signatures.anti_materiel` |
 | S15 | **`GearState.props`** | a list in place of `prop`, migrated on load (a Celestial holds two) | `GearState.prop` (`character.ts`; ENGINE-HOOKS:1516), `setGrade` (ENGINE-HOOKS:1310) | `scale.grades.relic`, `.celestial`; `gear_perks.grade_rows.props_list`; `gear_perks.properties` |
-| S17 | **`self_devotion`** (a standing predicate) | `{self_devotion: n}`: the highest standing reached with the patron is at least n (ruling 33) | none reads standing; the stat `devotion_xp` exists (ENGINE-HOOKS:542) | `scale.grades.prayer.reads`; `soul.attributes.virtue.door`, `.ladders`; `pacing.tracks.devotion.grade`; `pacing.migration` |
-| S18 | **A condition `slot`** | `slot: "mark"`: a condition put into a filled slot replaces the one there (one mark on a foe, ruling 30) | the `condition` op's `stacks: false` (same condition only; ENGINE-HOOKS:175, :228) | `scale.stack.scope.foe_mark`; `mind.attributes.expression.door` and `mind.attributes.perception.class` (the Operative's Mark); `soul.attributes.insight.class`; `gear_perks.mastered` (Judgement Day, True Name) |
+| S17 | **`self_devotion`** (a standing predicate) | `{self_devotion: n}`: the saved field `devotionPeak` (section 2's saved fields; its load default is the standing the kept XP reads, `pacing.migration`) is at least n (ruling 33). It reads the field, never a history the save does not hold (critic-consistency-3 5.3, 6.4). The prayer Push is today's overreach piece (`patrons.json prayer.overreach`) gated at Faith 8, not S5: a Hymn tier is not a resource | none reads standing; the stat `devotion_xp` exists (ENGINE-HOOKS:542) | `scale.grades.prayer.reads`; `soul.attributes.virtue.door`, `.ladders`; `pacing.tracks.devotion.grade`; `pacing.migration` |
 
 ## 2. Extensions (one key or one parameter of an existing piece; no closed list grows)
 
@@ -37,7 +37,9 @@ Line numbers in `docs/ENGINE-HOOKS.md` and in code were read in `E:/phc-wt/rel03
 | `armGuard` reads door blocks; `armDoors` faith by the highest | the enemy arming in `run/encounter.ts` | `world.tiers`, `world.endless.kits` |
 | `stageCeiling(stage, purpose)`; the grade step to the same grade (the re-forge) | `stageCeiling` (ENGINE-HOOKS:1235), `priceOf` (`credits.ts:51`; ENGINE-HOOKS:1253) | `pacing.grades_by_map`, `pacing.credits`, `gear_perks.grade_rows` |
 | `tallyOf`'s stage scope; `levels.gains.by_level` | the tally and the level gains | `pacing.levels` (ruling 12's swap) |
-| Saved fields with a load default: `capGrace`, `rankHeld`, `reachHeld`, `movesHeld`, `pointsOwed`, `respend` | the migration chain `migrateLoaded` (`game.ts:527`) and the `migrateCharacter*` family (`character.ts:810-1507`) | `pacing.migration` (one stamp `GROWTH_REV`, ruling 39) |
+| Saved fields with a load default: `capGrace`, `rankHeld`, `reachHeld`, `movesHeld`, `pointsOwed`, `respend`, `devotionPeak` | the migration chain `migrateLoaded` (`game.ts:527`) and the `migrateCharacter*` family (`character.ts:810-1507`) | `pacing.migration` (one stamp `GROWTH_REV`, ruling 39; the retired moves' successors, ruling 43, are rows of it) |
+| **The squad's one mark and one gift** (ruling 41; was S18, a condition `slot`) | `cleanse`'s `family` parameter (ENGINE-HOOKS:176, :253) and `cond_family` (ENGINE-HOOKS:110): two family words, `mark` and `gift`, on the condition rows that are a mark (Marked, Spotted, Exposed, Corroded, a foe's given feeling, Footnote, Fed, Closed, Named, Judgement) or a gift (the given feelings, given Edge, Benediction's blessed_aim, the Canticle's verses); every row that lays one first cleanses its family on the target, the way Inspire already cleanses the feelings before it gives one (`classes.json:5425-5480`, `target_lacks [given_mark]`). No new op, no new slot: the family list gains two words, for the lead's approval (critic-consistency-3 5.1) | `scale.stack.squad` (every mark and gift, with its size); `mind` (Mark, Spotter); `soul.attributes.insight.class` (Inspire); `gear_perks.perks` (Footnote, Fed) and `.mastered` (Closed, Named, Judgement) |
+| **Afterglow and Outbursts' Mark I** (was S11, the stat `begin_stage`) | the `resource` op on the held Outburst's `stage` at the `outburst_begin` event (ENGINE-HOOKS:374, `magic.ts:1121`), as a Mark I's start unit is the `resource` op on `combat_start`; the stage is a pool by S5 (`res_max:stage`), so the op cannot pass the Reach | `soul.attributes.determination.class.ranks.3` (Afterglow), `.door.marks.gifts.I` |
 | `forge_fit_rate`; `with_this` on worn armour; `FITS` armour; `extraSlots` reads the grade; `gearNum` reads the carried list; `families.json signature`; `rarity.masterwork.default_slot` | `gearNum` (ENGINE-HOOKS:1312), the rarity rows, the mod slots | `gear_perks.signatures`, `.grade_rows`, `.mods` |
 
 ## 3. Dropped (asked for once, done by an existing piece)
@@ -46,13 +48,17 @@ Line numbers in `docs/ENGINE-HOOKS.md` and in code were read in `E:/phc-wt/rel03
 | --- | --- |
 | S8, the `attr:` source | `skill:` and `holderNumber` already read a character's numbers (critic-consistency-2) |
 | S12, stack kinds | `stackDamage` already has the two buckets (multiply, add); only the scope extension is new (critic-consistency-2 5.2) |
-| S16, the `injure` op | Overbrace's price is Bleeding (ruling 34), an existing condition |
+| S16, the `injure` op | Overbrace's price is a share of max HP at the next turn's start (ruling 45), Overbind's shape: a condition that deals a `self:max_hp` share (an amount's `per`, already a share source: `scale.factor.walk.share_of`) at `turn_start` |
+| S11, the stat `begin_stage` | the `resource` op at `outburst_begin` (section 2; critic-consistency-3 5.2, by the same reasoning that dropped `res_start`) |
+| S18, a condition `slot` | `cleanse` with a family, before the row lays its mark or gift (section 2; critic-consistency-3 5.1) |
+| a fork re-pick piece | clearing a held fork pick on load makes the existing door-pick flow offer the pair again (`doorpicks.ts allPendingDoorPicks`, `character.ts:1485`) |
+| a checker for costs in the engine | ruling 49's fight check is `check.py (h)`, a reading of data: no engine piece |
 | `res_start:<res>` | a Mark I's start unit is the `resource` op on `combat_start` (ENGINE-HOOKS:174) |
 | a `practice_rate` stat | no bible entry sets one; S7's worth and `party_pace` carry every rate (05 corrected) |
 | 02's "a pool's max as a source" | it is S5 read as a number source |
 
 ## 4. For the lead
 
-1. Approve each of S1 to S18 above before it is built (no-rebuild rule 1). Every one generalises the piece named; none adds a per-item branch.
+1. Approve each of the thirteen pieces above (S1 to S7, S9, S10, S13 to S15, S17) and the two family words `mark` and `gift` (section 2) before they are built (no-rebuild rule 1). Every one generalises the piece named; none adds a per-item branch.
 2. S13 now carries drill Mark III (02 named it "for the lead" as a separate natural-20 range). If the lead refuses S13, Mark III falls back to "+1 to hit more with this weapon" (a `to_hit` term), and the revolvers' signature and `aimed_crit_min` stay as they are.
 3. The consolidation pass (no-rebuild rule 4) reads the diff of `docs/ENGINE-HOOKS.md` after step 2 and after step 5 of `09-build-order.md`.

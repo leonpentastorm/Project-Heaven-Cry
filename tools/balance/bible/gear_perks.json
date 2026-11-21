@@ -16,8 +16,8 @@
    "why": "a conditional damage or defence perk is +15% at tier I and +30% at tier II while its condition holds: more than a sixth is seen on the next hit. A d20 term under +2 is a twentieth and goes to +2 (I) and +3 (II); the squad's one ambush roll a fight goes to +4 at II"
   },
   "felt_bar": "a per-point line is judged by its sum on the sheet (Athletics 3 is +3 Defense), never one point alone (critic-player-2 14); a perk is judged alone",
-  "own_door": "a sum term counts on a door's cash-out only when its item is the door's own: a perk of one of the door's three skills (acquired or Mastered), an achieved perk one of whose skills is the door's and whose text names the door's output, the door's forks and class moves (ruling 30). Everything else (traits, boons, mods, signatures, properties, achieved and ultimate perks of no door) counts on plain hits only: its term says scope plain and the profiles it reaches (hits)",
-  "one_mark": "a foe carries one mark at a time (@scale.stack.scope.foe_mark); a new mark replaces the old (a condition slot \"mark\"); a damage mark is worth the mark share to the whole squad and reaches every cash-out; a to-hit mark (Footnote, Fed) fills the same slot",
+  "own_door": "a sum term counts on a door's cash-out only when its item is the door's own: a perk of one of the door's three skills (acquired or Mastered), an achieved perk one of whose skills is the door's and whose text names the door's output, the door's forks and class moves (ruling 30); the one exception is a perk whose own_door term is plain-only by a ruling it names (plain_by_ruling: Iron Grip, ruling 44). Everything else (traits, boons, mods, signatures, properties, achieved and ultimate perks of no door) counts on plain hits only: its term says scope plain and the profiles it reaches (hits)",
+  "one_mark": "ruling 41 (@scale.stack.squad): a foe carries one mark at a time; a new mark replaces the old (a condition slot \"mark\"); a damage mark is worth the mark's share to the whole squad and reaches every cash-out; a to-hit or Defense mark (Footnote, Fed, Exposed, Corroded) fills the same slot. The attacker carries one gift the same way (slot \"gift\": a given feeling, given Edge, Benediction, the Canticle)",
   "not_marks": "Read (information) and the Chaplain's judged (where interventions land) are not marks",
   "mp_restate": 0.5,
   "mp_restate_why": "a perk's MP price is today's x this, then x mp(L) on the mp cost rule (@scale.costs.rules.mp): the pool is smaller than today's, and a price is a choice at every level",
@@ -26,6 +26,12 @@
   "oil_why": "a Pain Threshold point's share (@scale.hp.pt_pct), negative"
  },
  "grades": "@scale.grades",
+ "camp_cores": {
+  "value": 3,
+  "today": {"data": "survival.json:loadout.focus_with.evoker[0].qty"},
+  "data_form": "survival.json loadout.focus_with: 3 standard cores with the Evoker and with the Visualizer (today 4 each)",
+  "why": "ruling 49 (check.py (h)): with four cores a level-20 Sigilist paid a Line of six every turn of a fight and a Rigger a full board, so the core was no choice; three keep a full fight of pressing out of reach at 20 and still pay for several full cash-outs at level 1 (the supply pack gives the burnt cores back after each fight, survival.json ammo_pack.supply). PROVISIONAL, for the lead"
+ },
  "grade_rows": {
   "about": "one copy of the grade: each rules.json rarity row (:1605-1659) gains effects (roll_mod to_hit with_this = acc; damage_mult dealing with_this = dmg; mend_mult heal and shield with_this = dmg), carried by the instance through the one carried-modifier list (effects/collect.ts:220). combat.ts:580, :585 and :1536 stop reading acc and dmg (the second copy goes); armOf (character.ts:224) keeps arm",
   "off_hand": "with_this already means that hand's weapon, or the door's focus: the off hand gets its grade, and every focus its door's output (today a graded Evoker, Emanator, Attuner or Visualizer gets durability, price and marks only)",
@@ -956,7 +962,8 @@
      "push_tiles": 1
     }
    },
-   "why": "the Momentum door's own, on the blows that build the chain, never on the Finisher that spends it: counted in the Coup it put the largest legal turn at 109,042 (ruling 8: the sum's sources are trimmed here). PROVISIONAL, for the lead",
+   "plain_by_ruling": "44",
+   "why": "ruling 44 (accepted): the Momentum door's own perk, on the blows that build the chain, never on the Finisher that spends it; gear_perks.rules.own_door names this exception, and check refs (OWN DOOR) fails any other own-door perk with a plain-only term",
    "skills": [
     "raw_power"
    ],
@@ -1437,15 +1444,15 @@
     "mark": {
      "name": "Footnote",
      "kind": "to_hit",
-     "value": "@gear_perks.rules.restep.roll_i"
+     "value": "@scale.stack.squad.mark.to_hit"
     }
    },
    "tier_ii": {
-    "text": "+3, and your own Sigils count it",
+    "text": "the mark lasts until your next turn, and your own Sigils count it (+3 today comes down to the mark's +2: ruling 41)",
     "mark": {
      "name": "Footnote",
      "kind": "to_hit",
-     "value": "@gear_perks.rules.restep.roll_ii"
+     "value": "@scale.stack.squad.mark.to_hit"
     }
    },
    "is_mark": true,
@@ -2320,7 +2327,7 @@
     "mark": {
      "name": "Fed",
      "kind": "to_hit",
-     "value": "@gear_perks.rules.restep.roll_i"
+     "value": "@scale.stack.squad.mark.to_hit"
     }
    },
    "is_mark": true,
@@ -2764,7 +2771,7 @@
    "mark": {
     "name": "Closed",
     "kind": "damage",
-    "value": "@scale.stack.scope.foe_mark.value"
+    "value": "@scale.stack.squad.mark.damage"
    },
    "own_door": "figments",
    "data_line": "perks.json:11902"
@@ -2824,7 +2831,7 @@
    "mark": {
     "name": "Named",
     "kind": "damage",
-    "value": "@scale.stack.scope.foe_mark.value"
+    "value": "@scale.stack.squad.mark.damage"
    },
    "own_door": "outbursts",
    "data_line": "perks.json:12202"
@@ -2845,7 +2852,7 @@
    "mark": {
     "name": "Judgement",
     "kind": "damage",
-    "value": "@scale.stack.scope.foe_mark.value"
+    "value": "@scale.stack.squad.mark.damage"
    },
    "own_door": "prayer",
    "data_line": "perks.json:12284"

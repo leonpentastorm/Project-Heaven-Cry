@@ -1,5 +1,7 @@
 # The doors of Soul: Bonds, Outbursts, Prayer (0.34 rebalance, design draft 04, third pass)
 
+> **Pass 4 (section G, 21 Nov 2026).** Inspire's given feelings are the squad's gift (ruling 41; `scale.json stack.squad.gifts`), each one size; Implication 1 has a solo half (ruling 46); a lone Snap is larger (`plain.x`, critic-player-3 11); the Hymn's wait base is today's again (critic-player-3 9); Empathy 9's MP cut came down and an Outburst design rides the `mp` column with a restate share (`design_costs`), so MP is still a choice at level 20 (ruling 49, check (h), `door.resource_use`); Blood Price came down in the sum (ruling 41); the Release's Burst and Wave and the Miracle are read a foe at a time (ruling 40); Afterglow and Outbursts' Mark I are the `resource` op at `outburst_begin` (no new stat); the prayer Push is today's overreach piece at Faith 8. **The Miracle's price stays** (ruling 47): critic-player-3 5's floor at standing 7 is not applied; it is Leon's call.
+
 Drafter's file for the lead. **Nothing here is built.** Since ruling F (`00-rulings.md`) **the numbers live in one place: `tools/balance/bible/soul.json`**; this file explains them and carries no number that file does not hold. Shared numbers (the factor, the columns, the cards, HP, MP and the cost rules, the grades, Margins, the cash-out sum, the stack) are `scale.json`'s; every rate, the clock, the gates, the hours, Devotion's track and the migration are `pacing.json`'s (rulings D22, F36, F39). `soul.json` names them by reference (`@scale...`, `@pacing...`), never by copy. Today's rows are read from `data/` by reference (`{"data": "file.json:path"}`); facts about today carry `file:line`, read in `E:/phc-wt/rel030` (`release/0.34-final`) on 21 Nov 2026. Every number is **PROVISIONAL**, chosen for what a player feels; nothing is fitted to a percentage or a line.
 
 **To see the numbers:** `python tools/balance/check.py --tables doors` prints each Soul door's ladder and its cash-outs at levels 1, 10 and 20; `--tables mp` the pools; `--tables profiles` the Stat terms; `--tables spend` and `--tables calendar` the walks and the hours (pacing's plans). `python tools/balance/check.py` runs the checks; every check on this file passes (section 8).
@@ -21,7 +23,7 @@ The counter is Bonds held (ties of kind `bond`): one at Empathy 1 (`tending.json
 
 ### 1(b) Empathy's ladder
 
-**Reach is Bonds held; Bite is what one Bond is worth when it is Snapped** (the unit is a lone Snap on a foe: today's Snap base read from data, x the factor, on the `tend` profile and the `deal` column; on a friend the same on `mend`). The ten points are `soul.json attributes.insight.ladders.empathy.points`. Reach 1 / 2 / 3 / 4 at points 1 / 4 / 7 / 10 (the third needs Camaraderie 4, the fourth Camaraderie 7 and Insinuation 4); Bite 1.0 / 1.4 / 1.8 at points 1 / 6 / 9.
+**Reach is Bonds held; Bite is what one Bond is worth when it is Snapped** (the unit is a lone Snap on a foe: today's Snap base read from data, x `plain.x` (critic-player-3 11: a lone Snap was a quarter of a Breaker's blow) and the factor, on the `tend` profile and the `deal` column; on a friend the same on `mend`). The ten points are `soul.json attributes.insight.ladders.empathy.points`. Reach 1 / 2 / 3 / 4 at points 1 / 4 / 7 / 10 (the third needs Camaraderie 4, the fourth Camaraderie 7 and Insinuation 4); Bite 1.0 / 1.4 / 1.8 at points 1 / 6 / 9.
 
 - **Snap at 1** (C18): the one-Bond medic can pull the thread it tied.
 - **Tending ties at 2** (C19): the medic who keeps you up is tied to you without a turn spent on it. Alone, Mend Yourself ties your own thread (one Bond on yourself), which Snap All pays back as a heal.
@@ -139,7 +141,7 @@ Devotion is standing with your patron (`patrons.json devotion`): it starts at 3 
 
 **Faith's ladder** (`ladders.faith.points`): Reach in Grace 2 / 3 / 4 / 5 at points 1 / 4 / 7 / 10 (Grace 4 needs Conscience 4; Grace 5 Conscience 7 and Authority 4); Bite 0.15 / 0.20 / 0.25 at points 1 / 6 / 9. Point 3 reads "Hymns open with standing 3" (critic-player-2 15: Devotion starts at 0).
 
-**The Hymn's wait** (`door.hymn_wait`): `10 - 0.5 x Faith - 0.25 x (Virtue - 1)`, rounded up, never under the floor read from data. Every second Faith point takes a round off, up to the tenth (today points past 7 move nothing), the floor is first met at the top, and Virtue keeps its card's line. Longer than today in the middle: the wait is the Hymn's price now that Grace pays for waiting.
+**The Hymn's wait** (`door.hymn_wait`): `base - per_faith x Faith - per_virtue x (Virtue - 1)`, rounded up (the base is today's again, critic-player-3 9: a two-door believer waited a whole fight for thirteen levels), never under the floor read from data. Every second Faith point takes a round off, up to the tenth (today points past 7 move nothing), the floor is first met at the top, and Virtue keeps its card's line. Longer than today in the middle: the wait is the Hymn's price now that Grace pays for waiting.
 
 ### 3(c) The cash-out: a prayer that spends Grace
 

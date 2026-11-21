@@ -13,6 +13,7 @@
     "gate_at_share": 0.385,
     "first_endless_map": 6,
     "tolerance_h": 0.06,
+    "gate_share_tolerance": 0.02,
     "time_model": {
       "about": "ASSUMED: minutes a player spends; no data holds them. A fight's minutes = rounds x (a player's turn + foes x a foe's turn) + after_fight; rounds = survival.json rounds x rounds_vs_target.",
       "turn_min_l1": 1.25,
@@ -133,7 +134,7 @@
   "gates": {
     "ceiling_by_level": {"1": 7, "5": 8, "10": 9, "15": 10},
     "rank_levels": {"I": 3, "II": 5, "III": 15},
-    "rank_thresholds": {"II": {"data": "classes.json:rank_thresholds.II"}, "III": {"data": "classes.json:rank_thresholds.III"}},
+    "rank_thresholds": {"II": {"data": "classes.json:assignment.rank_thresholds.II"}, "III": {"data": "classes.json:assignment.rank_thresholds.III"}},
     "advanced_level_min": 10,
     "why": "ruling 12: the ceiling moves at the tier gates, so crossing one is felt; rank II with the first gate, rank III with the last ceiling; the advanced classes open at the level-10 gate (shelved in 0.34; set now so no later pass touches it)"
   },
@@ -252,7 +253,8 @@
     },
     "grade_step": {
       "formula": "max(floor[to], priceOf(item, to) - priceOf(item, from)) * place",
-      "floors": {"fine": 1500, "masterwork": 3500, "relic": 12000},
+      "floors": {"fine": {"data": "survival.json:grade_up.price.fine"}, "masterwork": {"data": "survival.json:grade_up.price.masterwork"}, "relic": {"data": "survival.json:grade_up.price.relic"}},
+      "floors_why": "today's step prices, read (critic-player-3 7): at a Relic floor of 12,000 a deep map paid one Relic step in three visits and left hours with nothing felt; check (e) now counts a shop or Forge visit only when the credits for gear pay its cheapest step",
       "place": {"shop": {"data": "survival.json:grade_up.places.shop"}, "forge": {"data": "survival.json:grade_up.places.forge"}},
       "relic_at": "forge",
       "grade_price": {"data": "rules.json:rarity", "value_key": "price"},
@@ -264,7 +266,7 @@
       "offer": {"data": "survival.json:grade_up.relic_offer"},
       "why": "the peak's credit sink: once every piece is a Relic, credits buy a better property, not nothing"
     },
-    "gear_share": {"reading": 0.5, "why": "ASSUMED: of credits earned, the share spent on grades, mods and armour (the rest buys rounds, cores, stims, repair); the gear calendar in --tables pacing reads it"}
+    "gear_share": {"reading": 0.7, "why": "ASSUMED: of credits earned, the share spent on grades, mods and armour (the rest buys rounds, stims, repair; burnt cores come back in the supply pack). check (e) reads it: a shop or Forge visit is a gain only when this share of the credits earned, less what earlier visits spent, pays the visit's cheapest grade step (critic-player-3 7). A calendar character may state its own gear_share. PROVISIONAL"}
   },
 
   "grades_by_map": {
@@ -284,20 +286,21 @@
     "about": "Four characters under the family rule (ruling 13), walked level by level by check.py (d): attribute points to the plan's attributes in order (at most the ceiling), skill points to its skills in order (each point legal and felt). Two more for the collections a door opens (ruling 23).",
     "wall": {"label": "a wall (a Bulwark: Guard to its top, no faith)", "doors": ["guard"],
              "attributes": [["endurance", 10], ["agility", 5], ["strength", 4], ["perception", 5]],
-             "skills": [["durability", 7], ["pain_threshold", 4], ["durability", 10], ["pain_threshold", 7], ["sensory", 4], ["pain_threshold", 10], ["athletics", 3], ["sensory", 8], ["raw_power", 3], ["ingenuity", 4]]},
+             "skills": [["durability", 7], ["pain_threshold", 4], ["durability", 10], ["pain_threshold", 7], ["sensory", 4], ["pain_threshold", 10], ["athletics", 3], ["sensory", 10], ["athletics", 5], ["guts", 3]],
+             "why": "ruling 46: the wall's last points buy Sensory (the Warn's plates, sense), Athletics (Defense) and Guts (saves), never another door's first points (Shadow cannot be held by a wall that makes every foe look at it; a Coup on Strength 4 is under its own shield blow)"},
     "breaker_who_prays": {"label": "a Breaker who prays (Momentum to its top, Prayer a step under)", "doors": ["momentum", "prayer"],
              "attributes": [["strength", 10], ["virtue", 7], ["endurance", 3], ["agility", 4]],
              "skills": [["raw_power", 7], ["guts", 4], ["faith", 3], ["raw_power", 10], ["guts", 7], ["intimidation", 4], ["faith", 7], ["conscience", 4], ["guts", 10], ["pain_threshold", 3]]},
-    "sigilist": {"label": "a Sigilist (Sigils to its top)", "doors": ["sigils"],
+    "sigilist": {"label": "a Sigilist (Sigils to its top; a Break from the dark between Lines)", "doors": ["sigils", "shadow"],
              "attributes": [["intelligence", 10], ["endurance", 5], ["perception", 5], ["agility", 4]],
              "skills": [["brain_power", 7], ["rumination", 4], ["brain_power", 10], ["rumination", 7], ["eloquence", 4], ["rumination", 10], ["eloquence", 10], ["pain_threshold", 4], ["ingenuity", 4]]},
     "mender_with_a_gun": {"label": "a Mender with a gun (Bonds to its top, Pressure a step under)", "doors": ["bonds", "pressure"],
              "attributes": [["insight", 10], ["agility", 7], ["endurance", 3], ["determination", 4]],
              "skills": [["empathy", 7], ["camaraderie", 4], ["dexterity", 4], ["empathy", 10], ["camaraderie", 7], ["implication", 4], ["dexterity", 7], ["athletics", 4], ["camaraderie", 10], ["pain_threshold", 3]]},
-    "channeler": {"label": "a Channeler (Outbursts to its top)", "doors": ["outbursts"],
+    "channeler": {"label": "a Channeler (Outbursts to its top; Bonds for Mend Yourself)", "doors": ["outbursts", "bonds"],
              "attributes": [["determination", 10], ["insight", 5], ["endurance", 4], ["agility", 5]],
              "skills": [["will_power", 7], ["composure", 4], ["will_power", 10], ["composure", 7], ["lore_master", 4], ["composure", 10], ["lore_master", 10], ["empathy", 4], ["pain_threshold", 4]]},
-    "rigger": {"label": "a Rigger (Figments to its top)", "doors": ["figments"],
+    "rigger": {"label": "a Rigger (Figments to its top; a gun beside the board)", "doors": ["figments", "pressure"],
              "attributes": [["expression", 10], ["agility", 5], ["endurance", 4], ["perception", 5]],
              "skills": [["visualization", 7], ["proficiency", 4], ["visualization", 10], ["proficiency", 7], ["charisma", 4], ["proficiency", 10], ["charisma", 10], ["dexterity", 4], ["pain_threshold", 4]]}
   },
@@ -307,10 +310,11 @@
     "hours": [0, 49],
     "level_20_between": [38, 43],
     "map_events": [
-      {"at": 0.2, "label": "the shop: a grade step or a new piece (map {map})", "why": "half a's shop (rows 1 to 7): the one grade-step price, at the shelf's grade"},
+      {"at": 0.2, "buys": "shop", "label": "the shop: a grade step or a new piece (map {map})", "why": "half a's shop (rows 1 to 7): the one grade-step price, at the shelf's grade"},
       {"at": "gate", "label": "the gate's pick at the shelf's grade (map {map})", "why": "grades_by_map.gate_pick"},
-      {"at": 0.6, "label": "the Forge: a grade step, a mod fitted or a property re-forged (map {map})", "why": "half b's Forge (rows 9 to 13): mods are fitted only there (survival.json forge.fit); the re-forge is the peak's sink"},
-      {"at": 0.85, "label": "the last shop before the Boss (map {map})", "why": "row 14's shop and rest"},
+      {"at": 0.6, "buys": "forge", "label": "the Forge: a grade step, a mod fitted or a property re-forged (map {map})", "why": "half b's Forge (rows 9 to 13): mods are fitted only there (survival.json forge.fit); the re-forge is the peak's sink"},
+      {"at": 0.85, "buys": "shop", "label": "the last shop before the Boss (map {map})", "why": "row 14's shop and rest"},
+      {"at": 0.7, "every": 2, "first": 2, "label": "the shrine: the rite, a knowledge piece or the patron's token (map {map})", "why": "the route takes a shrine every second map (clock.route.half_b.shrine 0.5); every character takes one offer (survival.json shrine): a felt gain with no price"},
       {"at": "boss", "label": "the Boss's pick (map {map})", "why": "grades_by_map.boss_pick"},
       {"at": "boss", "label": "a boon of three (map {map})", "maps": [1, 10],
        "why": "the boon cap (survival.json boon_cap.cap, kept by ruling A10) fills at about ten boons: past it a boon is worth nothing and is not counted as a gain (critic-player-2 11)"}
@@ -404,14 +408,26 @@
       {"what": "MP", "who": "every character with a pool", "how": "the same share of its new pool (migrateCharacterMp)", "kind": "always"},
       {"what": "points (the free re-spend)", "who": "every character", "how": "c.respend offered once: every Skill and Attribute point back to unspent and placed again under the new gates and ladders; refused or not yet taken, the fallback rows hold", "kind": "plan"},
       {"what": "attribute ceilings", "who": "a 0.33 character above a new ceiling (today 8 from level 3, 9 from 6, 10 from 9)", "how": "c.capGrace, by attribute: the points above the new ceiling are kept and counted beside legends in legendRoom (character.ts:1327); a later ceiling absorbs them", "kind": "fallback"},
-      {"what": "Reach held", "who": "a 0.33 character whose door's Reach falls under the new ladder (a Bulwark's pool, a Breaker's chain of 5, stage 4 under Will Power 7, Broken under Dexterity 7, Lines of 4 without Brain Power)", "how": "c.reachHeld, by door: the 0.33 Reach is kept until the character re-spends; the notes say what it becomes then", "kind": "fallback"},
+      {"what": "Reach held", "who": "a 0.33 character whose door's Reach falls under the new ladder (a Bulwark's pool, a Breaker's chain of 5, stage 4 under Will Power 7, Broken under Dexterity 7, Lines of 4 without Brain Power, a Mender's fourth Bond, an Operative's meter, a Rigger's board)", "how": "c.reachHeld, by door: the 0.33 Reach is kept until the character re-spends; the notes say what it becomes then", "kind": "fallback"},
       {"what": "rank III before level 15", "who": "a level 12 to 14 character holding rank III", "how": "c.rankHeld: classRank (character.ts:1385) returns at least the rank held at migration", "kind": "always"},
       {"what": "class moves that changed rank", "who": "a character holding a move its class now grants at a later rank (Core Change, Backdraft and the like)", "how": "c.movesHeld: a move held at migration stays until the rank that now carries it", "kind": "always"},
       {"what": "the XP table", "who": "every character", "how": "the level is kept; XP is rebased to the same share of the way into its level on the new table; past 20 the renown is kept", "kind": "always"},
       {"what": "points at levels 4, 5, 14, 15", "who": "a character saved at level 4 or 14 (it took 1 Skill and 1 Attribute point there)", "how": "c.pointsOwed: the new rule's career totals at its level less the old rule's; a positive part is given at once as unspent, a negative part is taken from the next gain of that kind, never from points held", "kind": "always"},
       {"what": "study and practice steps", "who": "every Sigil or Outburst user", "how": "words and modules learned are kept; the counters are rebased to the same share of the way to the next pick", "kind": "always"},
       {"what": "feelings by Marks", "who": "every character with a felt feeling", "how": "every felt feeling's bar starts at its Mark I", "kind": "always"},
-      {"what": "Devotion", "who": "every Faithful character", "how": "its Devotion XP is kept whole (never clamped); every new threshold is at or under today's, so standing never falls; start 0 is for new characters only; prayer's grade reads the highest standing reached", "kind": "always"},
+      {"what": "Devotion", "who": "every Faithful character", "how": "its Devotion XP is kept whole (never clamped); every new threshold is at or under today's, so standing never falls; start 0 is for new characters only. The two readers that clamp today change in the same step: devotionXpOf (character.ts:276-280) reads the standing from the XP on the new curve, never the stored level's threshold (270 XP at standing 8 reads standing 9, and keeps its 270), and setDevotionXp (:283) no longer caps at the curve's top (XP past 300 is kept, standing 10)", "kind": "always"},
+      {"what": "the prayer grade's peak", "who": "every Faithful character", "how": "c.devotionPeak, a saved field with a load default: the standing the kept XP reads on the new curve (at least the 0.33 standing); it only rises, except by leaving the patron or a taboo's fall (ruling 33). The prayer grade and S17 read it; a 0.33 save has no history, so a Miracle spent before the revision is not remembered (critic-consistency-3 6.4)", "kind": "always"},
+      {"what": "retired moves (ruling 43)", "who": "a holder of a move 0.34 retires", "how": "each becomes its successor on load, listed in pairs; nothing a live character holds is removed without its successor", "kind": "always",
+       "pairs": [
+         {"from": "the Channeler's Shape (classes/i.ts:1147)", "to": "Afterglow (soul.json determination class rank 3), granted on load to a Channeler that held Shape"},
+         {"from": "the Mender's One More Bond (tending.json:1057 tend.mender_bonds)", "to": "the ladder's Reach: c.reachHeld for the bonds door keeps the fourth Bond until the character re-spends (the reachHeld row names Bonds)"},
+         {"from": "the Operative's +1 Shadow held (rules.json shadow.operative_cap_add)", "to": "c.reachHeld for the shadow door keeps the 0.33 meter until the re-spend; Dead Drop is granted with rank I"},
+         {"from": "the Rigger's +1 held (classes.json:1986)", "to": "c.reachHeld for the figments door keeps the 0.33 board until the re-spend; the bigger Curtain is granted with rank I"},
+         {"from": "a class dial at value 1 (classes.json:1941, :2282, :2821, :4001)", "to": "nothing: a dial at 1 gave nothing; the row goes and no number on the sheet moves"}
+       ]},
+      {"what": "the alpha ladder's perk steps (ruling 42)", "who": "nobody", "how": "data/skills.json ladder stays as it is (alpha perk steps at 3, 6, 7, 9, forks at 4 and 8; beta and gamma at 3, 5, 7, 9): no step moves, no row is needed; check (c) holds the bible to it", "kind": "none"},
+      {"what": "forks whose numbers changed (rulings 41 and 29)", "who": "a holder of Spotter, Overflux, Written in Advance or Blood Price", "how": "the fork pick is cleared on load, so the existing door-pick flow (doorpicks.ts allPendingDoorPicks) offers the pair again; the perks' re-pick (Footnote, the marks) is the perkRev row above", "kind": "always"},
+      {"what": "the squad's mark and gift (ruling 41)", "who": "a foe or an attacker holding two marks or two gifts in a fight saved before the revision", "how": "the room saved mid-fight row decides (ruling E); a new mark or gift replaces the one in its slot from the first action after load", "kind": "open"},
       {"what": "perks whose meaning changed", "who": "a holder of a restated, rewritten or narrowed perk, or of a foe mark (gear_perks.json)", "how": "a free re-pick (the existing perkRev piece: pendingRepicks, answerRepick)", "kind": "always"},
       {"what": "stored spells", "who": "a character holding a spell stored before the revision", "how": "it stays castable as stored until it is edited (or fades at the next rest), even past its caster's new Reach", "kind": "always"},
       {"what": "drill", "who": "every drilled weapon", "how": "nothing: the thresholds are today's", "kind": "always"},

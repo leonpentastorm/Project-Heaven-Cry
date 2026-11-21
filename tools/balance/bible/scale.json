@@ -37,6 +37,22 @@
         {"file": "enemies.json", "key": "items[].damage (a tier's damage factor)", "rule": "@world.tiers_rule.damage_x"},
         {"file": "rules.json", "key": "mending.gate.hp", "rule": "the normal bar at level 1: columns.mend's bar"}
       ],
+      "tick_text": {
+        "rule": "one copy of a tick (critic-consistency-3 4.1): Bleeding, Burning and Corroded carry their tick twice today, amounts.tick (dealt, on the level column) and effects[0].value (read by the text, {=effects.0.value|abs}). The effects row's number goes; the text reads the amount (the card shows the level column's tick), so the text never says 3 while 120 is dealt",
+        "rows": [
+          {"file": "conditions.json", "id": "bleeding", "dealt": {"data": "conditions.json:items[bleeding].amounts.tick.base"}, "text_copy": {"data": "conditions.json:items[bleeding].effects[0].value"}},
+          {"file": "conditions.json", "id": "burning", "dealt": {"data": "conditions.json:items[burning].amounts.tick.base"}, "text_copy": {"data": "conditions.json:items[burning].effects[0].value"}},
+          {"file": "conditions.json", "id": "corroded", "dealt": {"data": "conditions.json:items[corroded].amounts.tick.base"}, "text_copy": {"data": "conditions.json:items[corroded].effects[0].value"}}
+        ]
+      },
+      "typed_old_scale": {
+        "rule": "flat numbers on the old scale that live in text or code, not in a data row the factor walks (critic-consistency-3 4.2): each reads its row in the step 09-build-order.md names",
+        "rows": [
+          {"where": "packages/engine/src/character.ts:775 injuryText", "today": "'Bleeding: 5 damage a turn'", "becomes": "the Bleeding row's tick, read (tick_text above)", "step": "1"},
+          {"where": "rules.json:1486", "today": "'8 true damage per point over the limit'", "becomes": "the Strain burn's share of max HP (costs.shares.strain_burn), read from soul_modules.json strain", "step": "2d"},
+          {"where": "the glossary's Strain line (apps/web glossary data)", "today": "the old flat burn", "becomes": "the same share, read", "step": "2d"}
+        ]
+      },
       "not_touched": "every share (*_pct, *_share, *_mult, hp_frac, min_pct, cap_pct, stim_pct, a per[] of event:*, self:max_hp, max_hp, res:ledger, damage) and every count (plates, chain, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion, AP)"
     },
     "self_paid": {
@@ -82,7 +98,7 @@
     "mend": {
       "formula": "deal(L) * (@scale.hp.base + @scale.hp.per_end * (@scale.cards.normal_share.attribute - 1) + @scale.hp.per_level * (L - 1)) / (@scale.hp.base + @scale.hp.per_end * (@scale.cards.normal_share.attribute - 1))",
       "reads": "every heal and shield a character gives (the healing, mend, tend, *_mend and repair profiles); the heal gate counts to the normal bar at level 1 times this column",
-      "why": "A heal that closes a third of a normal friend's bar at level 1 closes a third of it at level 20: the column is the normal bar's growth (Endurance at the normal share; Pain Threshold is a constant share and cancels). Ruling A2 said x65 from the first draft's HP formula; on A5's formula the same reason gives this column."
+      "why": "Ruling 48: the heal column is derived from character HP, not typed. A heal that closes a third of a normal friend's bar at level 1 closes a third of it at level 20: the column is the normal bar's growth (Endurance at the normal share; Pain Threshold is a constant share and cancels)."
     },
     "mp": {
       "formula": "1 + per_level * (L - 1)",
@@ -173,12 +189,19 @@
     "rules": {
       "clock": "AP: never scales (rules.json combat.ap: 6 a turn, 2 to 9).",
       "count": "plates, chain, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion: never scale with level; the pool grows by points (Reach), the bill by what you build.",
-      "design": "an Outburst's school, modules, tone and second school are flat MP; a Pump costs pump_share of the Begin, so the bill grows with the design, never the level.",
+      "design": "an Outburst's school, modules, tone and second school are its design MP (soul.json design_costs: today's x the restate share) x mp(L) at the caster's level; a Pump costs pump_share of the Begin, so the bill grows with the design and with the pool (ruling 49: at a flat price a level-20 pool paid for a full heart every turn of every fight, so the cost was no choice).",
       "mp": "every other MP price is its number x mp(L) at the payer's level.",
       "share": "HP you pay yourself is a share of your own max HP.",
       "deal": "HP you deal to someone else (a trap, a barrel, a hazard, a tick) is x the factor on the dealer's column."
     },
     "pump_share": 0.1,
+    "fight_check": {
+      "about": "Ruling 49, check.py (h) COSTS: each caster door's core, charge or MP use over one standard fight against what it carries, at these levels, walked on its specialist's spend plan (pacing.spend_plans). FAIL when it cannot pay for one full cash-out at any of them, or when at choice_at it can pay for everything pressed every turn of the fight (the bill a door's resource_use.press states): the cost is then no choice.",
+      "levels": [1, 10, 20],
+      "choice_at": 20,
+      "rounds": {"data": "survival.json:rounds.fight"},
+      "ap": {"data": "rules.json:combat.ap.base"}
+    },
     "shares": {
       "strain_burn": 0.06,
       "mana_shock": {"data": "soul_modules.json:strain.shock.hp_share"},
@@ -225,7 +248,7 @@
     "per": 0.25,
     "per_perception": 0.01,
     "natural_20": 2,
-    "reading": "per + per_perception x Perception gives 26% at Perception 1 and 35% at 10 (01's reading of '25% to 35%'; critic-consistency-2 2.6 asks the lead to choose this or per_perception x (Perception - 1)). PROVISIONAL.",
+    "reading": "ruling 48: a Margin adds 25% plus 1% for each point of Perception, 26% at Perception 1 and 35% at 10 (per + per_perception x Perception). PROVISIONAL.",
     "skill_modifier": {"data": "skills.json:modifier_by_points"},
     "level_gap": {"max_levels": {"data": "enemies.json:levels.gap.max_levels"}, "one_hit_below": {"data": "enemies.json:levels.gap.one_hit_levels_below"}, "best_legal": "min(max_levels, one_hit_below - 1): a foe that many levels under still takes a real hit"},
     "landed": "A prayer, a heal, a Smite, a Slam's push, a Snap have no roll and no Margins.",
@@ -247,7 +270,31 @@
     "sum_top": null,
     "scope": {
       "rule": "A cash-out counts only its own door's sum terms, plus one mark on the foe (ruling 30). A plain hit counts the terms of its weapon's door and the mark.",
-      "foe_mark": {"value": 0.2, "one_at_a_time": true, "why": "A foe carries one mark at a time (Judged, True Name, Case Closed and the rest), worth the same to the whole squad."}
+      "foe_mark": {"value": "@scale.stack.squad.mark.damage", "one_at_a_time": true, "why": "A foe carries one mark at a time (Judged, True Name, Case Closed and the rest), worth the same to the whole squad (ruling 41: the size is the squad's mark below)."}
+    },
+    "squad": {
+      "rule": "Ruling 41: what a squad adds to a hit is ONE mark on the foe and ONE gift on the attacker. The mark is everything an ally lays on a foe that makes it take more or be easier to hit (Marked, Judged, Named, Closed, Exposed, Corroded, a foe's given feeling, Spotter, Footnote, Fed); the gift is everything an ally gives the attacker (a feeling given through Inspire or a Bond, given_edge, Benediction, the Canticle). The best mark and the best gift apply, never two of either: a foe's condition slot `mark` and the attacker's slot `gift` (one replaces the other in its slot). check.py (a) counts the best mark and the best gift in every door's largest legal hit and its largest plain hit. Each item below and every `mark` dict in the core files and gear_perks states its new size; the builders restate data to it.",
+      "mark": {"damage": 0.15, "to_hit": 2, "why": "set by check.py (a), ruling 41: at +20% for both the mark and the gift the largest Line, Break, Curtain and Release were six digits; +15% is still the felt bar (gear_perks rules.restep tier_i: more than a sixth is seen on the next hit), or two on the d20 (about one Margin in two). PROVISIONAL, for the lead"},
+      "gift": {"damage": 0.15, "to_hit": 2, "why": "the same size as the mark, so laying one and giving the other are equal choices for a support character; together +30% (or +4 to hit), under the six-digit line on every door with the Sigil forks and Blood Price trimmed (check.py (a)). PROVISIONAL, for the lead"},
+      "marks": {
+        "exposed": {"mark": {"name": "Exposed", "kind": "defense", "value": "@scale.stack.squad.mark.to_hit", "today": {"data": "conditions.json:items[exposed].effects[0].value"}, "by": "the Breaker's Break (Four Ways to Finish), Breach"}},
+        "corroded": {"mark": {"name": "Corroded", "kind": "defense", "value": "@scale.stack.squad.mark.to_hit", "today": {"data": "conditions.json:items[corroded].effects[1].value"}, "by": "acid Lines and rounds; its tick is the tick's own (scale.factor.tick_text)"}},
+        "foe_rage": {"mark": {"name": "a foe's Rage", "kind": "defense", "value": "@scale.stack.squad.mark.to_hit", "today": {"data": "conditions.json:items[foe_rage].effects[0].value"}, "by": "Inspire on a Bonded foe"}},
+        "foe_abandon": {"mark": {"name": "a foe's Abandon", "kind": "defense", "value": "@scale.stack.squad.mark.to_hit", "today": {"data": "conditions.json:items[foe_abandon].effects[0].value"}, "by": "Inspire on a Bonded foe; -3 Defense today comes down to the mark's -2"}}
+      },
+      "gifts": {
+        "given_rage": {"gift": {"name": "given Rage", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_rage].effects[0].value"}, "by": "Inspire (x1.2 today comes down to the gift; its -2 Defense on the holder kept)"}},
+        "given_joy": {"gift": {"name": "given Joy", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_joy].effects[1].value"}, "by": "Inspire (x1.15 and +1 to hit today: one gift is one of the two sizes, so Joy is the damage gift and its +1 retires)"}},
+        "given_shame": {"gift": {"name": "given Shame", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_shame].effects[0].value"}, "by": "Inspire (x1.3 today comes down to the gift; its self-hurt kept)"}},
+        "given_despair": {"gift": {"name": "given Despair", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_despair].effects[0].value"}, "by": "Inspire (x1.3 below half HP today comes down to the gift)"}},
+        "given_abandon": {"gift": {"name": "given Abandon", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_abandon].effects[0].value"}, "by": "Inspire (x1.4 today comes down to the gift; its -3 Defense on the holder kept: the price)"}},
+        "given_jealousy": {"gift": {"name": "given Jealousy", "kind": "damage", "value": "@scale.stack.squad.gift.damage", "today": {"data": "conditions.json:items[given_jealousy].effects[0].value"}, "by": "Inspire (x1.2 against a buffed foe today comes down to the gift)"}},
+        "given_edge": {"gift": {"name": "given Edge", "kind": "to_hit", "value": "@scale.stack.squad.gift.to_hit", "today": {"data": "conditions.json:items[given_edge].effects[0].value"}, "by": "Inspire (+2 today: kept)"}},
+        "given_belonging": {"gift": {"name": "given Belonging", "kind": "to_hit", "value": 1, "today": {"data": "conditions.json:items[given_belonging].effects[1].value"}, "by": "Inspire (kept)"}},
+        "blessed_aim": {"gift": {"name": "Benediction", "kind": "to_hit", "value": 1, "today": {"data": "conditions.json:items[blessed_aim].effects[0].value"}, "by": "Faith 8's fork Benediction (kept)"}},
+        "canticle_verse": {"gift": {"name": "the Canticle's verse (Old Overcast's)", "kind": "damage", "value": {"data": "conditions.json:items[canticle_old_overcast].effects[0].value_pct", "x": 0.01}, "by": "the Chaplain's Canticle: the strongest damage verse (+6%, kept)"}},
+        "canticle_crescendo": {"gift": {"name": "the Canticle's Crescendo", "kind": "to_hit", "value": {"data": "conditions.json:items[canticle_crescendo].effects[0].value"}, "by": "the Chaplain's Canticle from Faith 5 (+1, kept); the song is one gift: a verse and the Crescendo do not both count on one hit"}}
+      }
     },
     "sum_term_shape": "a dict {\"sum\": {\"door\": <door id or \"any\">, \"value\": <share>, \"group\": <optional exclusive group>}} anywhere in body, mind, soul or gear_perks (SCHEMA.md)"
   },
@@ -258,8 +305,8 @@
     "l20_specialist": {"level": 20, "attribute": 10, "skill": 10, "perception": 10, "grades": ["relic", "celestial"]},
     "plain_l1": {"min": 1, "max": 99},
     "plain_l20": {"min": 1000, "max": 9999},
-    "full_cashout_l20": {"min": 10000, "grade": "relic", "with": "nothing but the door's ladder (Reach at 10 with its family, Bite at 9)"},
-    "largest_turn_l20": {"max": 99999, "grade": "celestial", "with": "everything ruling 29 lists: the Bite, the forks (the best of each pair), perks at tier II, class moves, the grade, Margins from the best legal to-hit, the Push, one mark on the foe"}
+    "full_cashout_l20": {"min": 10000, "grade": "relic", "with": "nothing but the door's ladder (Reach at 10 with its family, Bite at 9)", "per": "a hit for a single-target door, the total for a spread one (a cash-out marked spread: Snap All, Slam; ruling 40)"},
+    "largest_turn_l20": {"max": 99999, "grade": "celestial", "with": "everything ruling 29 lists: the Bite, the forks (the best of each pair), perks at tier II, class moves with a cash-out, the grade, Margins from the best legal to-hit, the Push, the best mark on the foe and the best gift on the attacker (ruling 41)", "per": "a hit (ruling 40): a cash-out that strikes many is capped a foe, its total printed beside it"}
   },
 
   "caps": {

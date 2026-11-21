@@ -1,5 +1,7 @@
 # 03. The doors of Mind: Shadow, Sigils, Figments (0.34 rebalance, design phase; third draft, 21 Nov 2026)
 
+> **Pass 4 (section G, 21 Nov 2026).** The Operative's Mark is the squad's damage mark and its old +1 to hit retires (ruling 41: a mark is one size or the other); Spotter is a mark of its own, laid from the dark, no longer an ambush on top of a Mark; Overflux and Written in Advance came down in the sum so the largest Line stays five digits with the mark and the gift (`forks`, `fork_why`); Shadow's counter cannot be held by a plan that names Guard (`counter.broken_by`, check (d)); the area Line is read a creature at a time (`cashouts.evoke_area`, ruling 40). **Costs** (ruling 49, check (h)): `door.resource_use` for Sigils and Figments, on `gear_perks.camp_cores` (three cores, PROVISIONAL): at level 20 a Line or a board every turn of a fight costs more than the cores carry.
+
 **For the lead.** Nothing here is built; every proposed number is PROVISIONAL. **The numbers are not in this file.** By ruling F (`00-rulings.md`) they live once, in `tools/balance/bible/mind.json`; this file explains them and names each by its key (`mind.attributes.<attribute>.<...>`, shortened below to `perception.door.cashouts.break` and so on). Shared numbers are `scale.json`'s and `pacing.json`'s and are read there by reference. The tables are printed from the JSON and `data/*.json` (read only) by the checker:
 
     PYTHONUTF8=1 python tools/balance/check.py                  # every check; (a) DIGITS, (c) LADDERS, (d) SPEND, (f) SOLO read this file

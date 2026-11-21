@@ -6,13 +6,18 @@ script loads every bible file, resolves every "@file.path" reference (an unresol
 into a file that does not exist yet is WAITING), reads data/*.json where it needs today's rows (READ ONLY: it writes
 nothing anywhere), computes every table and runs the checks:
 
-  (a) DIGITS     each door: a level-1 and a level-20 specialist's plain hit, the full cash-out at 20, the largest legal turn
+  refs           every @reference and every {"data": ...} reference into data/ resolves (ruling 49); terms name a door; own-door perks
+  (a) DIGITS     each door: a level-1 and a level-20 specialist's plain hit, the full cash-out at 20 (a hit, or the total of a
+                 spread cash-out), the largest legal hit at 20 with the best mark and the best gift (rulings 40, 41), capped a hit,
+                 every many-foe total printed beside it
   (b) HITS       the stated attacker against same-level foes, a Soldier against the stated defenders, levels 1 to 20
-  (c) LADDERS    27 skills x 10 points, each felt; Reach, family gates, the Push at 8, a cash-out from point 1
-  (d) SPEND      four characters walked level 1 to 20 on 38 Skill and 20 Attribute points
+  (c) LADDERS    27 skills x 10 points, each felt; data/skills.json's schedule (ruling 42); Reach, family gates and their felt
+                 lines, the Push at 8, a cash-out from point 1
+  (d) SPEND      the plans walked level 1 to 20 on 38 Skill and 20 Attribute points; no door bought that the plan cannot use
   (e) HOURS      the calendar, hours 0 to 49, for the same four
   (f) SOLO       every move that needs an ally says what it does alone
   (g) MIGRATION  one revision stamp, one owner
+  (h) COSTS      each caster door's core, charge or MP over one standard fight at levels 1, 10 and 20 (ruling 49)
 
 Run from the repo root (Windows: export PYTHONUTF8=1 first):
 
@@ -132,6 +137,25 @@ class Bible:
         for f in sorted(self.present): walk(self.raw[f], f)
         return bad, sorted(wait)
 
+    def data_audit(self):
+        """Every {"data": "file.json:path"} and {"data_count": ...} reference in every present file must resolve in data/
+        (ruling 49): (count, unresolved list)."""
+        bad, n = [], 0
+        def walk(o, where):
+            if isinstance(o, dict):
+                for key in ('data', 'data_count'):
+                    v = o.get(key)
+                    if isinstance(v, str) and ':' in v and v.split(':', 1)[0].endswith('.json'):
+                        n_[0] += 1
+                        try: data_ref(v)
+                        except (KeyError, IndexError, StopIteration, TypeError, OSError, ValueError) as e: bad.append('%s: %s (%r)' % (where, v, e))
+                for k, x in o.items(): walk(x, where + '.' + k)
+            elif isinstance(o, list):
+                for i, x in enumerate(o): walk(x, '%s[%d]' % (where, i))
+        n_ = [0]
+        for f in sorted(self.present): walk(self.raw[f], f)
+        return n_[0], bad
+
 B = Bible()
 
 def num(v, what='a number'):
@@ -154,6 +178,7 @@ def ev(expr, env):
     """Evaluate a formula string: numbers, + - * / ** // %, comparisons, `a if c else b`, names from env, calls to
     functions in env, and inline @file.path references (each must resolve to a number)."""
     if isinstance(expr, (int, float)): return expr
+    if isinstance(expr, dict): return num(expr)   # a data reference a full @reference resolved to
     refs = {}
     def sub(m):
         name = '__ref%d' % len(refs); refs[name] = num(B.lookup(m.group(1), m.group(2)), m.group(0)); return name
@@ -331,6 +356,7 @@ def skills_by_attr():
     for s in data('skills.json')['items']: out[s['attribute']][s['slot']] = s['id']
     return out
 SKILL_ATTR = {s['id']: s['attribute'] for s in data('skills.json')['items']}
+SKILL_TOP = max(int(k) for k in data('skills.json')['modifier_by_points'])   # a skill's last point (10), read
 
 class Door:
     def __init__(self, core, attr, a):
@@ -370,13 +396,28 @@ class Door:
         p = ref['profile']
         return num(ref['base']) * S.stat(p, A, Sk) * S.col(S.column_of(p), L) * S.gd(G)
     def cashouts(self): return {k: v for k, v in (self.d.get('cashouts') or {}).items() if isinstance(v, dict)}
-    def cash_amount(self, co, L, A, Sk, G, n, P=1, m=0, SUM=0.0):
+    def hits(self):
+        """Every way the door strikes (ruling 40): its cash-outs and their readings, and every class move with a `cashout`
+        (Launch, Retort, Storm Front's arcs, Verdict), read on the door's own env (its Bite, its Reach, its plain hit)."""
+        out = dict(self.cashouts())
+        for rk, moves in (((self.a.get('class') or {}).get('ranks')) or {}).items():
+            for mv in moves:
+                if isinstance(mv, dict) and isinstance(mv.get('cashout'), dict):
+                    co = dict(mv['cashout']); co.setdefault('name', mv.get('name', mv.get('id'))); co.setdefault('source', 'class rank %s' % rk)
+                    out['class:' + mv['id']] = co
+        return out
+    def cash_hit(self, co, L, A, Sk, G, n, P=1, m=0, SUM=0.0):
+        """(the largest single hit, the total over every foe and every landing in a turn, the foes struck). A cash-out's
+        `formula` is its factor C over everything it strikes; `per_hit` (when the total is not one hit times the foes: Slam's
+        ring, Snap All's shares) is the C of its largest single hit; `targets` and `per_turn` multiply the total only."""
         e = self.env(L, A, Sk, G, P=P, n=n); e['plain'] = self.plain(L, A, Sk, G)
-        base = ev(co.get('base', 'plain'), e)
-        C = ev(co['formula'], e)
-        targets = ev(co.get('targets', '1'), e)
-        per_turn = ev(co.get('per_turn', '1'), e)
-        return base * (C + S.margin_per(P) * m) * (1 + SUM) * targets * per_turn
+        base = ev(co.get('base', 'plain'), e); mg = S.margin_per(P) * m
+        Cf = ev(co['formula'], e); Cp = ev(co['per_hit'], e) if 'per_hit' in co else Cf
+        targets = ev(co.get('targets', '1'), e); per_turn = ev(co.get('per_turn', '1'), e)
+        per = base * (Cp + mg) * (1 + SUM)
+        struck = ev(co['struck'], e) if 'struck' in co else targets   # the foes or Bonds struck, when targets does not say it
+        return per, base * (Cf + mg) * (1 + SUM) * targets * per_turn, struck
+    def cash_amount(self, co, L, A, Sk, G, n, P=1, m=0, SUM=0.0): return self.cash_hit(co, L, A, Sk, G, n, P, m, SUM)[1]
 
 def doors():
     out, waiting = [], []
@@ -423,6 +464,16 @@ def plain_terms(profile):
             else: free.append(v)
     return sum(free) + sum(sum(sorted(vs, reverse=True)[:take.get(g, 1)]) for g, vs in groups.items())
 
+def own_door_conflicts():
+    """gear_perks.rules.own_door: a perk of a door's own skills counts on its cash-out. A perk with an own_door whose term is
+    scope plain contradicts that rule unless it names the ruling that makes it plain-only (`plain_by_ruling`: ruling 44 for Iron Grip)."""
+    if 'gear_perks' not in B.present: return []
+    out = []
+    for pid, pk in (B.raw['gear_perks'].get('perks') or {}).items():
+        if not isinstance(pk, dict) or not pk.get('own_door'): continue
+        plain = [d for d in all_dicts([pk]) if isinstance(d.get('sum'), dict) and d['sum'].get('scope') == 'plain']
+        if plain and not pk.get('plain_by_ruling'): out.append(pid)
+    return out
 def bad_terms():
     """A sum or to_hit term that names no door (nor any) and is not scope plain with its hits counts nowhere: a FAILURE."""
     out = []
@@ -434,6 +485,34 @@ def bad_terms():
                 if isinstance(t, dict) and not ('door' in t or (kind == 'sum' and t.get('scope') == 'plain' and t.get('hits'))):
                     out.append('%s:%s.%s' % (f, d.get('id') or d.get('name') or d.get('text', '?')[:30], kind))
     return out
+
+def squad_items(kind):
+    """Ruling 41: what a squad adds is one mark on the foe and one gift on the attacker. Every {kind: {name, kind:
+    damage | to_hit | defense | both, value, to_hit?}} in scale, the core files and gear_perks: (name, damage share, to-hit).
+    A defense mark lowers the foe's Defense: it reads as to-hit. The best one of each applies to a hit, never two."""
+    files = [B.get(f) for f in ['scale'] + CORES + ['gear_perks'] if f in B.present]
+    out = {}
+    for d in all_dicts(files):
+        t = d.get(kind)
+        if isinstance(t, dict) and t.get('kind') in ('damage', 'to_hit', 'defense', 'both') and 'value' in t:
+            v = num(t['value'], '%s %s' % (kind, t.get('name')))
+            dmg = v if t['kind'] in ('damage', 'both') else 0
+            th = v if t['kind'] in ('to_hit', 'defense') else num(t.get('to_hit', 0))
+            out[(t.get('name', '?'), dmg, th)] = 1
+    return [('none', 0, 0)] + sorted(out)
+def margins_at(co, th, min_def):
+    """Margins a hit earns at to-hit th against Defense min_def (0 when it lands with no roll, or rolls without Margins)."""
+    m = S.s['margins']
+    if not co.get('rolls') or co.get('margins') is False: return 0
+    return max(0, (20 + th - min_def) // num(m['step'])) + num(m['natural_20'])
+def best_with_squad(fn, th0, SUM0, marks, gifts):
+    """fn(th, SUM) -> (per hit, total, ...): the best mark and the best gift (ruling 41), the pair that makes the largest hit."""
+    best = None
+    for mk in marks:
+        for gf in gifts:
+            r = fn(th0 + mk[2] + gf[2], SUM0 + mk[1] + gf[1])
+            if best is None or r[0] > best[0][0]: best = (r, mk, gf, th0 + mk[2] + gf[2], SUM0 + mk[1] + gf[1])
+    return best
 
 def plain_profile(d):
     ref = d.d['plain']
@@ -451,11 +530,10 @@ def check_digits():
     lo1, hi1 = num(dg['plain_l1']['min']), num(dg['plain_l1']['max']); lo20, hi20 = num(dg['plain_l20']['min']), num(dg['plain_l20']['max'])
     fmin, fG = num(dg['full_cashout_l20']['min']), dg['full_cashout_l20']['grade']
     tmax, tG = num(dg['largest_turn_l20']['max']), dg['largest_turn_l20']['grade']
-    mark = num(S.s['stack']['scope']['foe_mark']['value'])
+    marks, gifts = squad_items('mark'), squad_items('gift')
     min_def = None
     if 'world' in B.present:
         min_def = min(num(t['defense']) for t in B.get('world', 'tiers').values() if isinstance(t, dict) and 'defense' in t)
-    m = S.s['margins']
     for d in ds:
         try:
             p1 = [d.plain(1, A1, S1, g) for g in l1['grades']]
@@ -463,31 +541,46 @@ def check_digits():
             ok1 = all(lo1 <= x <= hi1 for x in p1); ok20 = all(lo20 <= x <= hi20 for x in p20)
             result('a', 'PASS' if ok1 else 'FAIL', 'DIGITS %s: level-1 plain hit %s (%s; %s to %s)' % (d.id, ' / '.join(fmt(x) for x in p1), ' / '.join(l1['grades']), fmt(lo1), fmt(hi1)))
             result('a', 'PASS' if ok20 else 'FAIL', 'DIGITS %s: level-20 plain hit %s (%s; %s to %s)' % (d.id, ' / '.join(fmt(x) for x in p20), ' / '.join(l20['grades']), fmt(lo20), fmt(hi20)))
-            cos = d.cashouts()
+            cos = d.cashouts(); hs = d.hits()
             if not cos: result('a', 'FAIL', 'DIGITS %s: the door names no cash-out' % d.id); continue
             n10 = d.top_reach() or 0
-            full = {k: d.cash_amount(co, 20, 10, 10, fG, n10) for k, co in cos.items()}
+            # the floor (ruling 40): per hit for a single-target door, the total for a spread one (Snap All, Slam's ring);
+            # the door's own cash-outs and their readings only (nothing but the ladder: no class move, no Mastered row)
+            full = {}
+            for k, co in cos.items():
+                if co.get('source'): continue
+                per, tot, _ = d.cash_hit(co, 20, 10, 10, fG, n10)
+                full[k] = tot if co.get('spread') else per
             kbest = max(full, key=full.get)
-            result('a', 'PASS' if full[kbest] >= fmin else 'FAIL', 'DIGITS %s: full cash-out at 20 (%s, Reach %s, Bite %s, %s) %s (at least %s)'
-                   % (d.id, kbest, fmt(n10), d.bite(10), fG, fmt(full[kbest]), fmt(fmin)))
-            if min_def is None: result('a', 'WAITING', 'DIGITS %s: the largest legal turn reads the lowest Defense from world.json' % d.id); continue
+            result('a', 'PASS' if full[kbest] >= fmin else 'FAIL', 'DIGITS %s: full cash-out at 20 (%s, %s, Reach %s, Bite %s, %s) %s (at least %s)'
+                   % (d.id, kbest, 'in total' if cos[kbest].get('spread') else 'one hit', fmt(n10), d.bite(10), fG, fmt(full[kbest]), fmt(fmin)))
+            if min_def is None: result('a', 'WAITING', 'DIGITS %s: the largest legal hit reads the lowest Defense from world.json' % d.id); continue
             push = d.d.get('push') or {}; n_push = n10 + (num(push.get('reach_plus', 0)) if push else 0)
             n_push += terms('reach_plus', d.id)   # forks and class things that add units (SCHEMA 1.4: a reach_plus term)
-            SUM = terms('sum', d.id) + mark
-            th = S.skill_mod(10) + S.ga(tG) + S.gap_best() + terms('to_hit', d.id)
-            best = (0, None, 0)
-            for k, co in cos.items():
-                mm = (max(0, (20 + th - min_def) // num(m['step'])) + num(m['natural_20'])) if co.get('rolls') else 0
-                v = d.cash_amount(co, 20, 10, 10, tG, n_push, P=P20, m=mm, SUM=SUM)
-                if v > best[0]: best = (v, k, mm)
-            result('a', 'PASS' if best[0] <= tmax else 'FAIL', 'DIGITS %s: largest legal turn at 20 (%s, %s units with the Push, %d Margins at +%d to hit, sum +%d%%, %s) %s (at most %s)'
-                   % (d.id, best[1], fmt(n_push), best[2], th, round(100 * SUM), tG, fmt(best[0]), fmt(tmax)))
-            if 'gear_perks' in B.present:   # the largest plain hit: the door's own terms, every plain-hit term of its profile, the mark (07)
-                prof = plain_profile(d); PS = terms('sum', d.id) + plain_terms(prof) + mark
-                pm = (max(0, (20 + th - min_def) // num(m['step'])) + num(m['natural_20'])) if any(co.get('rolls') for co in cos.values()) else 0
-                pv = d.plain(20, 10, 10, tG) * (1 + S.margin_per(P20) * pm) * (1 + PS)
-                result('a', 'PASS' if pv <= tmax else 'FAIL', 'DIGITS %s: largest plain hit at 20 (%s, %d Margins, sum +%d%%, %s) %s (at most %s)'
-                       % (d.id, prof, pm, round(100 * PS), tG, fmt(pv), fmt(tmax)))
+            SUM0 = terms('sum', d.id)
+            th0 = S.skill_mod(10) + S.ga(tG) + S.gap_best() + terms('to_hit', d.id)
+            rows = []
+            for k, co in hs.items():
+                fn = lambda th, SUM, co=co: d.cash_hit(co, 20, 10, 10, tG, n_push, P=P20, m=margins_at(co, th, min_def), SUM=SUM) + (margins_at(co, th, min_def),)
+                rows.append((k, co, best_with_squad(fn, th0, SUM0, marks, gifts)))
+            over = [(k, b) for k, co, b in rows if b[0][0] > tmax]
+            k, co, b = max(rows, key=lambda r: r[2][0][0])
+            (per, tot, tg, mm), mk, gf, th, SUM = b
+            result('a', 'FAIL' if over else 'PASS', 'DIGITS %s: largest legal hit at 20 (%s, %s units with the Push, %d Margins at +%d to hit, sum +%d%% with the mark %s and the gift %s, %s) %s%s (at most %s a hit)%s'
+                   % (d.id, k, fmt(n_push), mm, th, round(100 * SUM), mk[0], gf[0], tG, fmt(per), ('; %s in total on %s foes' % (fmt(tot), fmt(tg))) if tot > per * 1.0001 else '', fmt(tmax),
+                      (': over on %s' % ', '.join('%s %s' % (kk, fmt(bb[0][0])) for kk, bb in over)) if over else ''))
+            many = [(kk, bb) for kk, cc, bb in rows if bb[0][1] > bb[0][0] * 1.0001]
+            if many:
+                print('        the many-foe hits of %s (ruling 40: capped a hit, the total beside it): %s' % (d.id, '; '.join('%s %s a hit, %s on %s' % (kk, fmt(bb[0][0]), fmt(bb[0][1]), fmt(bb[0][2])) for kk, bb in many)))
+            if 'gear_perks' in B.present:   # the largest plain hit: the door's own terms, every plain-hit term of its profile, the mark and the gift
+                prof = plain_profile(d); pref = d.d['plain']
+                if 'rolls' not in pref: result('a', 'FAIL', 'DIGITS %s: the plain hit does not say whether it rolls (plain.rolls)' % d.id); continue
+                pco = {'rolls': pref['rolls']}; PS0 = terms('sum', d.id) + plain_terms(prof)
+                base = d.plain(20, 10, 10, tG)
+                fn = lambda th, SUM: (base * (1 + S.margin_per(P20) * margins_at(pco, th, min_def)) * (1 + SUM), 0, 1, margins_at(pco, th, min_def))
+                (pv, _, _, pm), mk, gf, th, PS = best_with_squad(fn, th0, PS0, marks, gifts)
+                result('a', 'PASS' if pv <= tmax else 'FAIL', 'DIGITS %s: largest plain hit at 20 (%s, %s, %d Margins, sum +%d%% with the mark %s and the gift %s, %s) %s (at most %s)'
+                       % (d.id, prof, 'rolls' if pref['rolls'] else 'lands', pm, round(100 * PS), mk[0], gf[0], tG, fmt(pv), fmt(tmax)))
         except Waiting as w: result('a', 'WAITING', 'DIGITS %s: %s.json' % (d.id, w.args[0]))
         except (RefError, KeyError, TypeError, ValueError, StopIteration) as e: result('a', 'FAIL', 'DIGITS %s: cannot compute: %r' % (d.id, e))
 
@@ -588,6 +681,13 @@ def check_ladders():
                 pts = lad.get('points') or {}
                 missing = [p for p in range(1, 11) if not str((pts.get(str(p)) or {}).get('felt') or '').strip()]
                 result('c', 'FAIL' if missing else 'PASS', 'LADDERS %s (%s): 10 points, felt on %d%s' % (sk, slot, 10 - len(missing), (' (no felt at %s)' % missing) if missing else ''))
+                # ruling 42: the ladder's perk steps, forks and Mastered point are data/skills.json's ladder for the slot, exactly
+                sched = data('skills.json')['ladder'][slot]
+                def at(word): return [p for p in range(1, 11) if word in str((pts.get(str(p)) or {}).get('exists') or '').lower()]
+                got = {'perk_steps': at('perk step'), 'forks': at('fork:'), 'mastered': at('mastered')}
+                want = {'perk_steps': sched['perk_steps'], 'forks': sched['forks'], 'mastered': [sched['mastered']]}
+                bad = ['%s at %s, data %s' % (k, got[k], want[k]) for k in want if got[k] != want[k]]
+                result('c', 'FAIL' if bad else 'PASS', 'LADDERS %s (%s): the schedule is data/skills.json ladder.%s%s' % (sk, slot, slot, (': ' + '; '.join(bad)) if bad else ''))
             a = (B.get(core)['attributes'] or {}).get(attr)
             if not isinstance(a, dict) or 'door' not in a or f['alpha'] not in (a.get('ladders') or {}):
                 result('c', 'FAIL', 'LADDERS %s: no door, or no alpha ladder, in %s.json' % (attr, core)); continue
@@ -606,6 +706,9 @@ def check_ladders():
                 got = {k: num(v) for k, v in (st.get('needs') or {}).items()}
                 if got != need: probs.append('the step at %d needs %s, ruling 13 says %s' % (p, got, need))
             result('c', 'FAIL' if probs else 'PASS', 'LADDERS %s: Reach %s and family gates%s' % (d.id, ' / '.join('%s at %d' % (fmt(num(s['reach'])), p) for p, s in steps), (': ' + '; '.join(probs)) if probs else ''))
+            # the family gates are felt only once met: a Reach step's felt line says so (critic-player-3 6)
+            loose = [p for p, st in steps if st.get('needs') and not re.search(r'\b(once|if|when)\b', str(st.get('felt', '')))]
+            result('c', 'FAIL' if loose else 'PASS', 'LADDERS %s: the felt line of every gated Reach step says its gate%s' % (d.id, (' (not at %s)' % loose) if loose else ''))
             pp = (d.d.get('push') or {}).get('point')
             result('c', 'PASS' if pp is not None and num(pp) == 8 else 'FAIL', 'LADDERS %s: the Push at %s (ruling 17: 8)' % (d.id, pp))
             firsts = [k for k, co in d.cashouts().items() if num(co.get('from_point', 99)) == 1]
@@ -633,7 +736,7 @@ def walk(plan):
             buy = None
             for s, tgt in plan['skills']:
                 nxt = sk[s] + 1
-                if sk[s] < num(tgt) and nxt <= 10 and nxt <= attrs[SKILL_ATTR[s]]:
+                if sk[s] < num(tgt) and nxt <= SKILL_TOP and nxt <= attrs[SKILL_ATTR[s]]:
                     lad, _ = ladder_of(s)
                     felt = ((lad or {}).get('points') or {}).get(str(nxt), {}).get('felt')
                     if felt and str(felt).strip(): buy = (s, nxt, felt); break
@@ -649,7 +752,8 @@ def check_spend():
         for pid, plan in plans.items():
             if not isinstance(plan, dict): continue
             rows, totals = walk(plan)
-            ok = totals == [38, 20] or (num(B.get('pacing', 'levels.career.skill')), num(B.get('pacing', 'levels.career.attribute'))) == tuple(totals)
+            career = (num(B.get('pacing', 'levels.career.skill')), num(B.get('pacing', 'levels.career.attribute')))
+            ok = tuple(totals) == RULING_11 and career == RULING_11   # ruling 11: both the walk and pacing's career are 38 and 20
             dead = [L for L, _, _, b, sp, _ in rows if not b and sp]
             last = rows[-1]
             tops = [d for d in by_id.values() if last[2][d.alpha] >= 10 and d.reach(10, last[2]) == d.top_reach()]
@@ -657,12 +761,21 @@ def check_spend():
             if dead: probs.append('nothing felt to buy at levels %s' % dead)
             if last[4] or last[5]: probs.append('%d Skill and %d Attribute points unspent at 20' % (last[4], last[5]))
             if len(plan.get('doors', [])) >= 2 and len(tops) >= 2: probs.append('two doors at the top Reach: %s' % ', '.join(d.id for d in tops))
-            if not ok: probs.append('the career is %s Skill and %s Attribute points' % tuple(totals))
+            if not ok: probs.append('the career is %s Skill and %s Attribute points (pacing says %s and %s; ruling 11: 38 and 20)' % (tuple(totals) + career))
+            # ruling 49 (e): a first point in a door the plan does not name, or in a door whose counter its own build cannot hold
+            named = set(plan.get('doors', []))
+            bought = [dd for dd in by_id.values() if last[2][dd.alpha] >= 1]
+            stray = [dd.id for dd in bought if dd.id not in named]
+            if stray: probs.append('buys a first point in %s, a door the plan does not name (a point it cannot use)' % ', '.join(stray))
+            for dd in bought:
+                broken = [x for x in ((dd.d.get('counter') or {}).get('broken_by') or []) if x in named and x != dd.id]
+                if broken: probs.append('buys %s, whose counter %s cannot hold (counter.broken_by)' % (dd.id, ' and '.join(broken)))
             result('d', 'FAIL' if probs else 'PASS', 'SPEND %s: %d Skill / %d Attribute points; top Reach on %s%s' % (pid, totals[0], totals[1], ', '.join(d.id for d in tops) or 'no door', (': ' + '; '.join(probs)) if probs else ''))
     except Waiting as w: result('d', 'WAITING', 'SPEND: %s.json' % w.args[0])
     except (RefError, KeyError, TypeError, ValueError) as e: result('d', 'FAIL', 'SPEND: cannot compute: %r' % (e,))
 
 # ------------------------------------------------------------------------------------------------ (e) HOURS
+RULING_11 = (38, 20)
 RULING_25 = {'finds_from_map': {'fine': 1, 'masterwork': 3, 'relic': 5, 'celestial': 10}, 'shelf_never': ['celestial'], 'relic_sold_from_first_endless': True}
 def fights_by_hour():
     """Cumulative worthy fights at hour h, linear inside each map (pacing.clock.maps[m].worthy_fights)."""
@@ -693,6 +806,23 @@ def thresholds_of(t, upto):
     first, every = num(t['first']), num(t['every']); out = [first]
     while out[-1] < upto and len(out) < num(t.get('count', 10 ** 6)): out.append(out[-1] + every)
     return out
+def credits_of_map(m):
+    """The credits a character earns on map m on the reference route (pacing.credits.income, survival.json credits)."""
+    P = B.get('pacing'); rt = P['clock']['route']; inc = P['credits']['income']; rr = rt['depth']; reads = data('survival.json')['rewards']['reads']; tot = 0.0
+    for half in ('a', 'b'):
+        for k, n in rt['half_' + half].items():
+            if k not in rr: continue
+            kk = reads.get(k, k) if k == 'gate' else k
+            mult = 1 if kk == 'fight' else num(inc['kind'][kk])
+            tot += num(n) * (num(inc['base']) + num(inc['per_depth']) * num(rr[k])) * mult * (1 + num(inc['stage']) * (m - 1))
+    return tot
+def visit_price(m, place):
+    """The cheapest one grade step a visit on map m can buy (pacing.credits.grade_step: the step's floor to the shelf's
+    grade, x the place): what the credits must pay before a shop or Forge visit counts as a gain (critic-player-3 7)."""
+    P = B.get('pacing'); gs = P['credits']['grade_step']; sh = P['grades_by_map']['shelf_from_map']
+    best = max((g for g in sh if num(sh[g]) <= m), key=lambda g: num(sh[g]), default=None)
+    if best is None: return None
+    return num(gs['floors'][best]) * num(gs['place'][place])
 def calendar():
     P = B.get('pacing'); cal = P['calendar']; h0, h1 = num_list(cal['hours']); clock = P['clock']; fb = fights_by_hour()
     gate_share = num(clock['gate_at_share']); ms = dict(maps())
@@ -703,15 +833,29 @@ def calendar():
     shared = []
     for L, w in P['levels']['lands'].items():
         shared.append((map_hour(w['map'], w['at']), 'L%s' % L))
-    for m, v in ms.items():
-        for ev_ in cal.get('map_events', []):
-            if 'maps' in ev_ and not (num(ev_['maps'][0]) <= m <= num(ev_['maps'][1])): continue
-            shared.append((map_hour(m, ev_['at']), ev_['label'].replace('{map}', str(m))))
+    def visits(share):
+        """The map events, a shop or Forge visit only when the credits this character spends on gear pay its cheapest grade
+        step (critic-player-3 7): one wallet across the run, spent at the first visit that it pays."""
+        out, spent, earned_before = [], 0.0, 0.0
+        for m, v in sorted(ms.items()):
+            s0, e0 = num(v['start_h']), num(v['end_h']); cm = credits_of_map(m)
+            for ev_ in sorted(cal.get('map_events', []), key=lambda x: map_hour(m, x['at'])):
+                if 'maps' in ev_ and not (num(ev_['maps'][0]) <= m <= num(ev_['maps'][1])): continue
+                if 'every' in ev_ and (m - num(ev_.get('first', 1))) % num(ev_['every']): continue   # a node the route takes every n-th map
+                if m < num(ev_.get('first', 1)): continue
+                h = map_hour(m, ev_['at'])
+                if ev_.get('buys'):
+                    price = visit_price(m, ev_['buys']); wallet = share * (earned_before + cm * (h - s0) / (e0 - s0)) - spent
+                    if price is None or wallet < price: continue
+                    spent += price
+                out.append((h, ev_['label'].replace('{map}', str(m))))
+            earned_before += cm
+        return out
     ff = P['grades_by_map']['finds_from_map']
     for G, m in ff.items(): shared.append((map_hour(num(m), 'start'), '%s found' % G))
     out = {}
     for cid, ch in cal['characters'].items():
-        evs = list(shared)
+        evs = list(shared) + visits(numf(ch.get('gear_share', P['credits']['gear_share']['reading'])))
         for st in ch['streams']:
             stream = cal['streams'][st['stream']]; rate = numf(st['units_per_fight'])
             hmax = h1 + 1; ths = thresholds_of(stream['thresholds'], rate * fb(hmax))
@@ -785,7 +929,7 @@ def held_level(m, half):
     for k, w in B.get('pacing', 'levels.lands').items():
         mm, at = int(num(w['map'])), w['at']
         if mm < m or (mm == m and half == 'b' and at == 'gate'): L = max(L, int(k))
-    return min(20, L)
+    return min(int(num(B.get('world', 'levels.cap'))), L)
 _MODEL = {}
 def model_maps(squad=1):
     """Each map of pacing.clock.maps from the time model: its halves' hours, the level held, XP earned and fights."""
@@ -806,7 +950,7 @@ def model_maps(squad=1):
                 mins += n * (fight_min(k, L) if k in fights else num(tm['node_min'][k]) * (1 + num(tm['node_min_per_extra_player']) * (squad - 1))) + n * num(tm['choose_min'])
                 if k in km and k != 'why':
                     lv = world_level(m, ROW_OF.get(k, 'early' if half == 'a' else 'late'))
-                    gap = int(max(-5, min(5, lv - L)))
+                    gmax = num(data('enemies.json')['levels']['gap']['max_levels']); gap = int(max(-gmax, min(gmax, lv - L)))
                     xp += n * num(fx['at_1']) * num(fx['per_level']) ** (lv - 1) * num(km[k]) * num(worth[str(gap)])
             if m == 1 and half == 'a': mins += num(tm['camp_min'])
             if half == 'b': mins += num(tm['boon_min'])
@@ -838,16 +982,48 @@ def check_clock():
                 if abs(num(v[key]) - val) > tol: probs.append('map %d %s %s (the model %.2f)' % (mp['map'], key, v[key], val))
             if num(v['squad_arrives']) != mp['a']['L']: probs.append('map %d squad_arrives %s (lands: %d)' % (mp['map'], v['squad_arrives'], mp['a']['L']))
             leaves = max([mp['b']['L']] + [int(k) for k, w in P['levels']['lands'].items() if int(num(w['map'])) == mp['map']])
-            if num(v['squad_leaves']) != min(20, leaves): probs.append('map %d squad_leaves %s (lands: %d)' % (mp['map'], v['squad_leaves'], leaves))
+            if num(v['squad_leaves']) != min(int(num(B.get('world', 'levels.cap'))), leaves): probs.append('map %d squad_leaves %s (lands: %d)' % (mp['map'], v['squad_leaves'], leaves))
             if abs(num(v['worthy_fights']) - (mp['a']['fights'] + mp['b']['fights'])) > 1e-9: probs.append('map %d worthy_fights %s (route %s)' % (mp['map'], v['worthy_fights'], mp['a']['fights'] + mp['b']['fights']))
             share = (mp['a']['to'] - mp['from']) / (mp['to'] - mp['from'])
-            if abs(share - num(P['clock']['gate_at_share'])) > 0.02: probs.append('map %d gate at %.3f of its hours' % (mp['map'], share))
+            if abs(share - num(P['clock']['gate_at_share'])) > num(P['clock']['gate_share_tolerance']): probs.append('map %d gate at %.3f of its hours' % (mp['map'], share))
         result('e', 'FAIL' if probs else 'PASS', 'CLOCK: pacing.clock.maps against the time model and the route (within %s h)%s' % (fmt(tol, 2), (': ' + '; '.join(probs)) if probs else ''))
         got = model_xp_total(); typed = {int(k): num(v) for k, v in P['levels']['xp_total'].items()}
         bad = ['%d: %s (route %s)' % (L, fmt(typed.get(L, -1)), fmt(got[L])) for L in range(1, 21) if typed.get(L) != got[L]]
         result('e', 'FAIL' if bad else 'PASS', "CLOCK: levels.xp_total against the route's XP%s" % ((': ' + '; '.join(bad)) if bad else ' (20 at %s)' % fmt(got[20])))
     except Waiting as w: result('e', 'WAITING', 'CLOCK: %s.json' % w.args[0])
     except (RefError, KeyError, TypeError, ValueError, StopIteration) as e: result('e', 'FAIL', 'CLOCK: cannot compute: %r' % (e,))
+
+# ------------------------------------------------------------------------------------------------ (h) COSTS
+def cost_rows(d):
+    """A caster door's resource_use read at scale.costs.fight_check.levels on its specialist's walk: (level, n, carries,
+    one full cash-out, everything pressed every turn of one standard fight)."""
+    ru = d.d['resource_use']; fc = S.s['costs']['fight_check']
+    plan = B.get('pacing', 'spend_plans')[ru['plan']]; rows, _ = walk(plan)
+    push = d.d.get('push') or {}; out = []
+    for L in num_list(fc['levels']):
+        _, attrs, sk, _, _, _ = rows[L - 1]
+        Sk = sk[d.alpha]; n = (d.reach(Sk, sk) or 0) + (num(push.get('reach_plus', 0)) if push and Sk >= num(push['point']) else 0)
+        env = dict(S.env); env.update(attrs); env.update(sk)
+        env.update(L=L, A=attrs[d.attr], S=Sk, B=sk[d.beta], n=n, rounds=num(fc['rounds']), ap=num(fc['ap']))
+        out.append((L, n, numf(ru['carries'], env), numf(ru['cost'], env), numf(ru['press'], env)))
+    return out
+def check_costs():
+    if S is None or not all(f in B.present for f in CORES + ['pacing']): result('h', 'WAITING', 'COSTS: the core files and pacing.json'); return
+    ds, _ = doors(); fc = S.s['costs']['fight_check']; top = num(fc['choice_at']); n_ = 0
+    for d in ds:
+        if 'resource_use' not in d.d: continue
+        n_ += 1
+        try:
+            rows = cost_rows(d); probs = []
+            for L, n, car, one, press in rows:
+                if car < one: probs.append('level %d carries %s, under one full cash-out (%s)' % (L, fmt(car, 1), fmt(one, 1)))
+                if L == top and car >= press: probs.append('level %d carries %s, enough to press everything every turn (%s): the cost is no choice' % (L, fmt(car, 1), fmt(press, 1)))
+            result('h', 'FAIL' if probs else 'PASS', 'COSTS %s (%s, %s): %s%s' % (d.id, d.d['resource_use']['res'], d.d['resource_use']['plan'],
+                   '; '.join('L%d %s units: carries %s, one %s (%.1f), a pressed fight %s' % (L, fmt(n), fmt(car, 1), fmt(one, 1), car / one if one else 0, fmt(press, 1)) for L, n, car, one, press in rows),
+                   (': ' + '; '.join(probs)) if probs else ''))
+        except Waiting as w: result('h', 'WAITING', 'COSTS %s: %s.json' % (d.id, w.args[0]))
+        except (RefError, KeyError, TypeError, ValueError, StopIteration, IndexError) as e: result('h', 'FAIL', 'COSTS %s: cannot compute: %r' % (d.id, e))
+    if not n_: result('h', 'FAIL', 'COSTS: no door states a resource_use (ruling 49)')
 
 # ------------------------------------------------------------------------------------------------ (f) SOLO, (g) MIGRATION
 def check_solo():
@@ -886,6 +1062,11 @@ def check_refs():
     for b in bad: result('refs', 'FAIL', 'REFERENCE %s' % b)
     result('refs', 'FAIL' if bad else 'PASS', 'REFERENCES: %d unresolved or circular in %s' % (len(bad), ', '.join(sorted(B.present)) or 'no file'))
     for w in wait: result('refs', 'WAITING', 'REFERENCES into %s' % w)
+    nd, dbad = B.data_audit()
+    for b in dbad: result('refs', 'FAIL', 'DATA REFERENCE %s' % b)
+    result('refs', 'FAIL' if dbad else 'PASS', 'DATA REFERENCES: %d into data/, %d unresolved' % (nd, len(dbad)))
+    od = own_door_conflicts()
+    result('refs', 'FAIL' if od else 'PASS', 'OWN DOOR: %d perks of a door carry a plain-only term without the ruling that allows it%s' % (len(od), (': ' + ', '.join(od)) if od else ''))
     bt = bad_terms()
     result('refs', 'FAIL' if bt else 'PASS', 'TERMS: %d sum or to_hit terms name no door and no plain scope%s' % (len(bt), (': ' + ', '.join(bt)) if bt else ''))
 
@@ -1049,16 +1230,9 @@ def t_pacing():
         return h
     print("#### Devotion from 0 (%.2f XP a worthy fight: the tags, and a rest's and the shrine's rites spread over the map)\n" % per)
     table(['standing'] + [str(i + 1) for i in range(10)], [['hour'] + [fmt(hour_at(num(t), per), 1) for t in dv['thresholds']]])
-    cr = P['credits']; inc = cr['income']; rr = rt['depth']; rows = []
-    reads = data('survival.json')['rewards']['reads']
+    cr = P['credits']; rows = []
     for r in mm:
-        tot = 0.0
-        for half in ('a', 'b'):
-            for k, n in rt['half_' + half].items():
-                if k not in rr: continue
-                kk = reads.get(k, k) if k == 'gate' else k
-                mult = 1 if kk == 'fight' else num(inc['kind'][kk])
-                tot += num(n) * (num(inc['base']) + num(inc['per_depth']) * num(rr[k])) * mult * (1 + num(inc['stage']) * (r['map'] - 1))
+        tot = credits_of_map(r['map'])
         rows.append([r['map'], fmt(r['to'], 1), fmt(tot), fmt(tot / (r['to'] - r['from']))])
     print('#### Credits a map, a character (survival.json credits, unchanged)\n')
     table(['map', 'ends at hour', 'credits a map', 'an hour'], rows)
@@ -1096,9 +1270,22 @@ def t_budget():
         rows.append(r)
     table(['foe'] + ['squad of %d' % n for n in bd['squads']], rows)
 
+def t_squad():
+    print("#### The squad's one mark and one gift (ruling 41: scale.stack.squad; the best of each counts on a hit)\n")
+    table(['kind', 'name', 'damage share', 'to hit'], [[k, n, '+%d%%' % round(100 * dm), '+%s' % fmt(th)] for k in ('mark', 'gift') for n, dm, th in squad_items(k) if n != 'none'])
+def t_costs():
+    ds, _ = doors()
+    print('#### What a caster carries and spends over one standard fight (ruling 49: scale.costs.fight_check, check (h))\n')
+    rows = []
+    for d in ds:
+        if 'resource_use' not in d.d: continue
+        for L, n, car, one, press in cost_rows(d):
+            rows.append([d.id, d.d['resource_use']['res'], L, n, fmt(car, 1), fmt(one, 1), '%.1f' % (car / one if one else 0), fmt(press, 1)])
+    table(['door', 'resource', 'level', 'units', 'carries', 'one full cash-out', 'cash-outs carried', 'everything, every turn'], rows)
+
 TABLES = collections.OrderedDict([('factor', t_factor), ('weapons', t_weapons), ('columns', t_columns), ('profiles', t_profiles), ('hp', t_hp), ('mp', t_mp),
                                   ('plate', t_plate), ('grades', t_grades), ('margins', t_margins), ('caps', t_caps), ('doors', t_doors), ('hits', t_hits),
-                                  ('spend', t_spend), ('calendar', t_calendar), ('pacing', t_pacing), ('budget', t_budget)])
+                                  ('spend', t_spend), ('calendar', t_calendar), ('pacing', t_pacing), ('budget', t_budget), ('squad', t_squad), ('costs', t_costs)])
 SCALE_TABLES = ['factor', 'weapons', 'columns', 'profiles', 'hp', 'mp', 'plate', 'grades', 'margins', 'caps']
 
 def main(argv):
@@ -1111,7 +1298,7 @@ def main(argv):
             except (Waiting, RefError) as e: print('WAITING or FAILED (%s): %r\n' % (name, e))
         return 0
     print('The growth bible checker: %s present; %s waiting\n' % (', '.join(f for f in FILES if f in B.present) or 'nothing', ', '.join(f for f in FILES if f not in B.present) or 'nothing'))
-    check_refs(); check_digits(); check_hits(); check_ladders(); check_spend(); check_hours(); check_clock(); check_solo(); check_migration()
+    check_refs(); check_digits(); check_hits(); check_ladders(); check_spend(); check_hours(); check_clock(); check_costs(); check_solo(); check_migration()
     c = collections.Counter(s for _, s, _ in RESULTS)
     print('\n%d PASS, %d FAIL, %d WAITING' % (c['PASS'], c['FAIL'], c['WAITING']))
     return 1 if c['FAIL'] else 0

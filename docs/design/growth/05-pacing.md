@@ -1,5 +1,7 @@
 # 05. Pacing: what a character gains, and when (0.34 rebalance, design phase; third draft, pass 3, 21 Nov 2026)
 
+> **Pass 4 (section G, 21 Nov 2026).** The wall's plan buys Sensory, Athletics and Guts at its end (ruling 46), and check (d) fails a plan that buys a door it does not name or one whose counter its own doors break; each plan names every door it buys. The grade-step floors read today's prices and check (e) counts a shop or Forge visit only when the credits for gear pay its cheapest step (`credits.gear_share`, PROVISIONAL), with the shrine every second map as a gain; `gates.rank_thresholds` reads `classes.json assignment.rank_thresholds`. **Migration** (ruling 43 and critic-consistency-3 6): the retired moves' successors in pairs, the Devotion readers that clamp, the prayer grade's peak as a saved field, the changed forks' re-pick by the existing door-pick flow, and ruling 42's note that no ladder step moves.
+
 **For the lead. Nothing here is built.** Pass 3 (ruling F): every number of this file lives once, in `tools/balance/bible/pacing.json`, and `tools/balance/check.py` computes every table from it and fails on a contradiction. **This file explains and carries no number the JSON does not**; a number is quoted by its key, and every table is printed by the checker:
 
     export PYTHONUTF8=1

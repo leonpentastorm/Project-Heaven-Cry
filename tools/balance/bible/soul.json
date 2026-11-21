@@ -84,11 +84,13 @@
         ],
         "plain": {
           "name": "a lone Snap on a foe (Soul damage, no armour, the tend profile read on the deal column)",
+          "rolls": false,
           "base_today": {
             "data": "tending.json:items[tend.snap].amounts.snap.base"
           },
-          "formula": "@soul.attributes.insight.door.plain.base_today * @scale.factor.value * stat('tend', A, S) * deal(L) * grade_dmg(G)",
-          "why": "A Snap's damage reads deal (an amount's column by its kind and dealer, scale.columns.about); its heal on a friend reads mend. No new profile."
+          "x": 1.5,
+          "formula": "@soul.attributes.insight.door.plain.base_today * @soul.attributes.insight.door.plain.x * @scale.factor.value * stat('tend', A, S) * deal(L) * grade_dmg(G)",
+          "why": "A Snap's damage reads deal (an amount's column by its kind and dealer, scale.columns.about); its heal on a friend reads mend. No new profile. x1.5 (critic-player-3 11): at 19 a level-1 Snap was a quarter of a Breaker's blow for the same 2 AP with its Bond; at about 29 a lone Snap is felt, still the smallest door's hit (it lands through armour, needs no roll, and the door is a healer's: the card says so)."
         },
         "cashouts": {
           "snap": {
@@ -111,6 +113,9 @@
             "min": 1,
             "rolls": false,
             "formula": "bite * cash(n)",
+            "per_hit": "bite * cash(n) / n",
+            "struck": "n",
+            "spread": true,
             "shared": "each Bond takes cash(n) / n of it (cash_share:bond): a foe as Soul damage and a Daze it saves, a friend as a heal",
             "terms": [
               "bite",
@@ -176,6 +181,15 @@
             },
             "why": "a Bonded ally going Down costs MP: the thread hurts, on the same scale as the pool"
           }
+        },
+        "resource_use": {
+          "about": "Ruling 49, check.py (h): MP over one standard fight. The door's cash-outs (Snap, Snap All) spend Bonds, not MP; its MP verb is the Mend, so a full cash-out of MP is one Mend and pressing everything is a Mend for every 2 AP of every turn.",
+          "res": "MP",
+          "plan": "mender_with_a_gun",
+          "carries": "mp_pool(L, determination, A)",
+          "cost": "@soul.attributes.insight.door.verbs.mend.cost.mp * mp(L) * (1 - @soul.attributes.insight.ladders.empathy.points.9.numbers.mp_cut_share * (S >= 9))",
+          "press": "rounds * floor(ap / @soul.attributes.insight.door.verbs.mend.ap) * @soul.attributes.insight.door.verbs.mend.cost.mp * mp(L) * (1 - @soul.attributes.insight.ladders.empathy.points.9.numbers.mp_cut_share * (S >= 9))",
+          "why": "a healer counts its Mends across a map: at level 20 a Mend for every 2 AP of a fight costs more than the pool"
         },
         "threads": {
           "today": "tending.json:31 tend.threads (the 20% share and echo, +3 to hit a Bonded foe, +5% a Bond held, Tending through a Bond x1.2): kept as they are",
@@ -313,7 +327,7 @@
               "needs": {
                 "camaraderie": 4
               },
-              "felt": "a web of three: Snap All of three is worth more than four lone Snaps"
+              "felt": "a web of three once your Camaraderie is 4: Snap All of three is worth more than four lone Snaps"
             },
             "8": {
               "exists": "fork: Shared Pulse or Long Thread",
@@ -322,11 +336,12 @@
             },
             "9": {
               "exists": "perk step",
-              "new": "Mend and Shield cost a quarter less MP (in place of the flat cut, tending.json res.mp.steps)",
+              "new": "Mend and Shield cost 15% less MP (in place of the flat cut, tending.json res.mp.steps)",
               "bite": 1.8,
               "numbers": {
-                "mp_cut_share": 0.25
+                "mp_cut_share": 0.15
               },
+              "mp_cut_why": "ruling 49 (check.py (h)): at a quarter less a level-20 Mender paid a Mend for every 2 AP of a whole fight, so the MP was no choice",
               "felt": "a full Snap All reaches five digits at level 20, and your Mends are cheaper"
             },
             "10": {
@@ -336,7 +351,7 @@
                 "camaraderie": 7,
                 "implication": 4
               },
-              "felt": "the fourth Bond: a web nobody without the whole family can hold"
+              "felt": "the fourth Bond once your Camaraderie is 7 and your Insinuation 4: a web nobody without the whole family can hold"
             }
           }
         },
@@ -419,7 +434,12 @@
           "points": {
             "1": {
               "exists": "the Call Taunt, its first step",
-              "felt": "a foe comes at you and not at the friend behind you"
+              "needs_ally": true,
+              "solo": "alone, a foe you Taunt this round saves against your Bond at -1 (point 2's line, a step smaller; ruling 46)",
+              "numbers": {
+                "solo_save": -1
+              },
+              "felt": "a foe comes at you and not at the friend behind you; alone, the barb opens it a little for your thread"
             },
             "2": {
               "exists": "modules Anchor, Lure, Linger",
@@ -522,7 +542,14 @@
               "factor": {
                 "data": "classes.json:base[bard].ranks.I.moves[ledger].numbers.factor"
               },
-              "worth": "the heals you gave come back as damage on your next blow or Snap: an add to the blow's base, not a share in the sum"
+              "worth": "the heals you gave come back as damage on your next blow or Snap: an add to the blow's base, not a share in the sum",
+              "cashout": {
+                "name": "a lone Snap with a full Ledger",
+                "base": "plain + @soul.attributes.insight.class.ranks.3.1.factor * @soul.attributes.insight.class.ranks.3.1.cap_base * stat('tend', A, S) * mend(L) * grade_dmg(G)",
+                "formula": "bite",
+                "rolls": false,
+                "why": "ruling 40 reads the Ledger's add: a full Ledger (its cap, on the tend profile and the mend column) x its factor added to the Snap's base, then the Snap's Bite"
+              }
             },
             {
               "id": "bond_free",
@@ -682,6 +709,7 @@
         ],
         "plain": {
           "name": "the Damage design at x1.0 (stage table at stage 1)",
+          "rolls": true,
           "base": {
             "data": "soul_modules.json:damage.base",
             "x": "@scale.factor.value"
@@ -737,6 +765,36 @@
               "feelings"
             ],
             "why": "everything legal on the sheet (ruling 29): the four strongest feelings in data on the last Pumps of the heart (the strongest last, where a Pump is worth most)"
+          },
+          "release_burst": {
+            "name": "Release of a Burst with four feelings",
+            "reading_of": "release_felt",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": false,
+            "form_mult": {"data": "soul_modules.json:items[burst].damage_mult"},
+            "most_foes": 9,
+            "base": "plain * @soul.attributes.determination.door.cashouts.release_burst.form_mult",
+            "formula": "@soul.attributes.determination.door.cashouts.release_felt.formula",
+            "targets": "@soul.attributes.determination.door.cashouts.release_burst.most_foes",
+            "terms": ["bite", "cash", "feelings"],
+            "why": "ruling 40: a Burst lands on every tile within 1 of the aim (nine), no roll, at the form's share; capped a hit, the total printed"
+          },
+          "release_wave": {
+            "name": "Release of a Wave with four feelings",
+            "reading_of": "release_felt",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": false,
+            "form_mult": {"data": "soul_modules.json:items[wave].damage_mult"},
+            "most_foes": 6,
+            "base": "plain * @soul.attributes.determination.door.cashouts.release_wave.form_mult",
+            "formula": "@soul.attributes.determination.door.cashouts.release_felt.formula",
+            "targets": "@soul.attributes.determination.door.cashouts.release_wave.most_foes",
+            "terms": ["bite", "cash", "feelings"],
+            "why": "ruling 40: a Wave's cone three tiles long holds six tiles; no roll, the form's share; capped a hit, the total printed"
           }
         },
         "verbs": {
@@ -783,7 +841,23 @@
         "design_costs": {
           "data_key": "soul_modules.json schools[].base_cost, items[].cost, second_school.cost, tones[].cost",
           "rule": "@scale.costs.rules.design",
-          "restate": "the builder restates each on the new pool by the share of a full pool it held today (scale.mp_pool against today's), so a design is the same share of a pool it was"
+          "restate_share": 0.3,
+          "restate": "each design cost is today's x restate_share, then x mp(L) at the caster's level (scale.costs.rules.design): a full heart of the specialist's best design is about a quarter of its pool at every level (ruling A6)",
+          "restate_why": "ruling 49 (check.py (h)): at today's share of a pool (about a quarter) and a flat price, a level-20 Channeler paid a full heart every turn of every fight; on the mp column at 0.3 a fight of full hearts costs more than the pool and one costs about a fifth of it. PROVISIONAL, for the lead"
+        },
+        "resource_use": {
+          "about": "Ruling 49, check.py (h): MP over one standard fight. A full cash-out is a Begin of the Damage school as a Burst with a tone and every module slot filled, Pumped to its Reach (and the Push); pressing everything is one such heart every turn.",
+          "res": "MP",
+          "plan": "channeler",
+          "school": {"data": "soul_modules.json:schools[damage].base_cost"},
+          "form": {"data": "soul_modules.json:items[burst].cost"},
+          "tone": {"data": "soul_modules.json:tones[fire].cost"},
+          "module": {"data": "soul_modules.json:items[size].cost"},
+          "slots": {"data": "soul_modules.json:limits.module_slots"},
+          "carries": "mp_pool(L, A, insight)",
+          "cost": "(@soul.attributes.determination.door.resource_use.school + @soul.attributes.determination.door.resource_use.form + @soul.attributes.determination.door.resource_use.tone + (1 + floor(S / 3)) * @soul.attributes.determination.door.resource_use.module) * @soul.attributes.determination.door.design_costs.restate_share * mp(L) * (1 + @scale.costs.pump_share * n) * (1 - @soul.attributes.insight.card.lines.2.number * (insight - 1))",
+          "press": "rounds * (@soul.attributes.determination.door.resource_use.school + @soul.attributes.determination.door.resource_use.form + @soul.attributes.determination.door.resource_use.tone + (1 + floor(S / 3)) * @soul.attributes.determination.door.resource_use.module) * @soul.attributes.determination.door.design_costs.restate_share * mp(L) * (1 + @scale.costs.pump_share * n) * (1 - @soul.attributes.insight.card.lines.2.number * (insight - 1))",
+          "why": "no MP comes back between fights (survival.json ammo_pack.mp), only by Syphon: a heart every turn at level 20 empties the pool before the fight ends"
         },
         "syphon": {
           "ap": 1,
@@ -827,7 +901,7 @@
           "rate": "@pacing.door_marks.outbursts",
           "gifts": {
             "I": {
-              "text": "your first Begin each fight starts at stage 1 (begin_stage); it adds with Afterglow in the one stat, never overlapping",
+              "text": "your first Begin each fight starts at stage 1 (the resource op on the stage at outburst_begin, once a fight); it adds with Afterglow's op, never past your Reach",
               "numbers": {
                 "begin_stage": 1
               }
@@ -931,11 +1005,11 @@
               },
               "sum": {
                 "door": "outbursts",
-                "value": 0.1,
+                "value": 0.05,
                 "group": "fork:outbursts:8"
               },
               "group": "fork:outbursts:8",
-              "why": "set by the checker's top of the scale (ruling 29: the Release with Ride the Edge and Blood Price at most 99,999, with gear_perks' Outburst terms in the sum)"
+              "why": "set by the checker's top of the scale (ruling 29, and 41: the felt Release with Ride the Edge, Blood Price, gear_perks' Outburst terms, the mark and the gift at most 99,999 a hit); its felt half is the burn and the next Release's push"
             },
             {
               "id": "fork.soul.clean_break",
@@ -988,7 +1062,7 @@
               "needs": {
                 "composure": 4
               },
-              "felt": "stage 4: what everyone had, now earned and compounding"
+              "felt": "stage 4 once your Composure is 4: what everyone had, now earned and compounding"
             },
             "8": {
               "exists": "fork: Blood Price or Clean Break",
@@ -1007,7 +1081,7 @@
                 "composure": 7,
                 "lore_master": 4
               },
-              "felt": "stage 5: a stage nobody without the whole family can hold"
+              "felt": "stage 5 once your Composure is 7 and your Lore Master 4: a stage nobody without the whole family can hold"
             }
           }
         },
@@ -1156,7 +1230,7 @@
                 "begin_stage_rank_iii": 2,
                 "after_stage": 2
               },
-              "worth": "after a Release at stage 2 or higher, your next Begin this fight starts a stage up (begin_stage, S11): the Channeler cashes out and rebuilds faster than any Will Power point gives"
+              "worth": "after a Release at stage 2 or higher, your next Begin this fight starts a stage up (a resource op on the stage when the Outburst begins, the outburst_begin event, magic.ts:1121; no new stat: critic-consistency-3 5.2): the Channeler cashes out and rebuilds faster than any Will Power point gives"
             },
             {
               "id": "iron_heart",
@@ -1182,7 +1256,8 @@
                 "within": 2
               },
               "cashout": {
-                "formula": "@soul.attributes.determination.door.release_floor",
+                "formula": "1 * @soul.attributes.determination.door.release_floor",
+                "targets": "@soul.attributes.determination.class.ranks.5.0.numbers.arcs",
                 "per": "each arc",
                 "rolls": false,
                 "why": "each arc takes the design at the stage table's floor, no Margins: the arcs are a thing, the Release is the hit"
@@ -1303,6 +1378,7 @@
         },
         "plain": {
           "name": "Judgement (a damage Hymn, the strongest in data; prayers land)",
+          "rolls": false,
           "base_today": {
             "data": "patrons.json:items[nerukhan].hymns[judgement].effects[0].value"
           },
@@ -1339,18 +1415,35 @@
               "cash"
             ],
             "why": "the Hymn is what Grace is saved for; Hymns open with standing 3 (Devotion's gate)"
+          },
+          "miracle": {
+            "name": "the Miracle (The Sky Answers, the largest damage Miracle in data)",
+            "source": "patron: Faith 7 and Devotion 10, once a session",
+            "from_point": 7,
+            "ap": 3,
+            "spends": 0,
+            "rolls": false,
+            "sky_base": {"data": "patrons.json:items[old_overcast].miracle.effects[0].value"},
+            "area_tiles": 25,
+            "most_foes": {"data": "survival.json:max_foes[3]"},
+            "base": "-@soul.attributes.virtue.door.cashouts.miracle.sky_base * @scale.factor.value * stat('blessing', A, S) * deal(L) * grade_dmg(G)",
+            "formula": "1",
+            "targets": "min(@soul.attributes.virtue.door.cashouts.miracle.area_tiles, @soul.attributes.virtue.door.cashouts.miracle.most_foes)",
+            "saints_verdict": "the Saints' Verdict (130, every foe in sight) doubles against a foe that harmed the helpless: that double is restated as the door's judgement_helpless term (+30%, in the sum), as Judgement's was",
+            "terms": [],
+            "why": "ruling 40: a Miracle strikes a 5 x 5; capped a hit, the total over the largest room printed. It spends no Grace: its price is five levels of Devotion (ruling 47)"
           }
         },
         "hymn_wait": {
           "formula": "max(floor_, ceil(base - per_faith * F - per_virtue * (V - 1)))",
-          "base": 10,
+          "base": 9,
           "per_faith": 0.5,
           "per_virtue": 0.25,
           "floor_": {
             "data": "patrons.json:prayer.hymn.cooldown_rule.floor"
           },
           "today": "patrons.json prayer.hymn.cooldown_rule (9, 0.75, 0.25; read at character.ts:1266 HYMN_COOLDOWN, whose typed fallbacks go)",
-          "why": "every second Faith point takes a round off, up to the tenth; the floor is first met at the top; the wait is the Hymn's price now that Grace pays for waiting"
+          "why": "every second Faith point takes a round off, up to the tenth; the floor is first met at the top; the wait is the Hymn's price now that Grace pays for waiting. Base 9 (today's, critic-player-3 9): at 10 a two-door believer (Faith 3, Virtue 6) waited 8 rounds, one Hymn a fight for thirteen levels; at 9 it waits 7, and a hard fight holds two"
         },
         "miracle": {
           "price_levels": {
@@ -1371,7 +1464,7 @@
           "tn": {
             "data_key": "patrons.json prayer.overreach (tn_base, tn_per_step): kept"
           },
-          "why": "once a turn, a Hymn one tier past your Devotion standing (the tier ladder's Reach +1 for the use, S5): it raises the tier, not the Grace held, so reach_plus on Grace is 0; asking past what you earned always costs standing (patrons.json:100 overreach moves to Faith 8)"
+          "why": "once a turn, a Hymn one tier past your Devotion standing: today's overreach piece (patrons.json:100 prayer.overreach, its TN and its Devotion price) gated at Faith 8, not a pool's top (a Hymn tier is not a resource, so no S5: critic-consistency-3 5.3): it raises the tier, not the Grace held, so reach_plus on Grace is 0; asking past what you earned always costs standing"
         },
         "marks": {
           "unit": "a step of Grace spent on a worthy foe",
@@ -1502,7 +1595,7 @@
               "needs": {
                 "conscience": 4
               },
-              "felt": "four Grace: a Hymn about twice its size"
+              "felt": "four Grace once your Conscience is 4: a Hymn about twice its size"
             },
             "8": {
               "exists": "fork: Benediction or Swift Psalm",
@@ -1521,7 +1614,7 @@
                 "conscience": 7,
                 "authority": 4
               },
-              "felt": "five Grace: a saint's litany nobody without the whole family can hold"
+              "felt": "five Grace once your Conscience is 7 and your Authority 4: a saint's litany nobody without the whole family can hold"
             }
           }
         },
@@ -1738,7 +1831,8 @@
                 "units": 1
               },
               "cashout": {
-                "base": "the weapon's plain hit (its own pair and grade, ruling 31)",
+                "base": "weapon('ork_wreck_saw') * stat('melee', A, S) * deal(L) * grade_dmg(G)",
+                "base_why": "the weapon's plain hit, its own pair and grade (ruling 31): the largest legal Verdict is a believer who also took Strength and Raw Power to 10 (Virtue 10, Faith 10, Conscience 7, Authority 4 and Raw Power 10 are 31 Skill and 18 Attribute points), with the strongest melee row",
                 "formula": "1 + bite * cash(n)",
                 "rolls": false,
                 "why": "a weapon blow that lands as a prayer: no roll, no Margins; the door's C with Grace is the only multiplier (today's (1 + Blessing power) is gone: A8)"

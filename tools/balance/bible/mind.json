@@ -26,6 +26,8 @@
       "door": {
         "id": "shadow", "name": "Shadow",
         "counter": {"resource": "shadow", "unit": "a Shadow", "starts_at": 0,
+                    "broken_by": ["guard"],
+                    "broken_by_why": "Shadow is built Hidden and worn by every turn that starts seen; the Guard door's verbs (Challenge, Called Out, Hold Their Eyes, Slam's Taunt) make every foe look at the wall, so a plan that names Guard cannot hold it (critic-player-3 3; ruling 49 (e))",
                     "gains_per_turn": {"data": "rules.json:shadow.door_gains_per_turn"}},
         "builds": [
           {"by": "your turn ends Hidden and you made no attack", "units": 1},
@@ -47,7 +49,7 @@
           {"by": "you are Downed", "units": "all"},
           {"by": "the fight ends", "units": "all"}
         ],
-        "plain": {"name": "a long rifle shot from the dark", "weapon": "long_rifle", "profile": "gun",
+        "plain": {"name": "a long rifle shot from the dark", "weapon": "long_rifle", "profile": "gun", "rolls": true,
                   "pair": "perception x ingenuity (ruling 31: the Break reads its door's pair, not the gun's Agility and Dexterity)"},
         "cashouts": {
           "break": {
@@ -89,8 +91,10 @@
           ],
           "8": [
             {"id": "fork.shadow.lightkiller", "name": "Lightkiller", "text": "once a fight, 1 AP, 2 Shadow: Dimmed for 2 rounds (forks.json, kept)", "group": "fork:shadow:8"},
-            {"id": "fork.shadow.spotter", "name": "Spotter", "text": "while you are Hidden, an ally's first plain weapon hit a round on a Marked foe is an ambush, for 1 Shadow (forks.json, kept); it reaches plain hits only, never another door's cash-out (ruling 30)", "group": "fork:shadow:8",
-             "needs_ally": true, "solo": "alone, the first plain weapon hit you make on a Marked foe after you leave Hidden, before your next turn, is still an ambush, for 1 Shadow (the ally is you, ruling 32)"}
+            {"id": "fork.shadow.spotter", "name": "Spotter", "text": "while you are Hidden, 1 Shadow: a foe you see carries your Spotted mark until your next turn, the squad +20% against it (the one mark, ruling 41; today an ally's plain hit on a Marked foe was an ambush, +50%, on top of the Mark)", "group": "fork:shadow:8",
+             "mark": {"name": "Spotted", "kind": "damage", "value": "@scale.stack.squad.mark.damage", "today": {"data": "rules.json:shadow.ambush_bonus"}},
+             "why": "ruling 41: Spotter is a mark, not an ambush on top of one; it no longer needs the Operative's Mark, so any Shadow specialist lays it from the dark",
+             "needs_ally": true, "solo": "alone, you Spot for yourself: the mark is yours on your own hits after you leave Hidden, until your next turn (the ally is you, ruling 32)"}
           ]
         }
       },
@@ -116,7 +120,7 @@
                   "felt": "one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it"},
             "9": {"exists": "perk step; Timing, Parting Cut", "bite": 0.5, "felt": "the last Shadow of a full meter is worth more than a shot on its own"},
             "10": {"exists": "Mastered: Vanishing Act; spot +1", "reach": 5, "needs": {"analysis": 7, "vigilant": 4},
-                   "felt": "five Shadow: a different machine from a 5, a Break that ends a fight's worst foe"}
+                   "felt": "five Shadow once your Analysis is 7 and your Vigilant 4: a different machine from a 5, a Break that ends a fight's worst foe"}
           }
         },
         "analysis": {
@@ -183,9 +187,9 @@
              "solo": "alone, Dead Drop hides 1 Shadow in your kit: the fight's end and being Downed do not take it, and it is yours at the next fight's start (at most 1; the ally is you, ruling 32)",
              "worth": "once a turn, a friend within 4 tiles who holds the Shadow door gains 1 Shadow, never past its own Reach: your spare dark becomes the squad's ambush"},
             {"id": "mark", "name": "Mark", "ap": 1, "cost": {"rule": "clock"},
-             "lays": "@scale.stack.scope.foe_mark",
-             "to_hit": {"door": "any", "value": {"data": "conditions.json:items[marked].effects[0].value"}, "group": "foe_mark"},
-             "worth": "the squad's one mark on the foe (+20% to everyone's hit, ruling 30) and today's +1 to hit; the foe cannot Hide: worth its AP in the round it lands"},
+             "mark": {"name": "Marked", "kind": "damage", "value": "@scale.stack.squad.mark.damage", "today": {"data": "conditions.json:items[marked].effects[0].value"}},
+             "retires": "today's +1 to hit of Marked (conditions.json marked attack_mod): a mark is +20% or +2, one of the two (ruling 41); the +20% is the bigger, so the Operative loses nothing it had",
+             "worth": "the squad's one mark on the foe (+20% to everyone's hit, ruling 41); the foe cannot Hide: worth its AP in the round it lands"},
             {"id": "vanish", "name": "Vanish", "ap": 0, "cost": {"rule": "clock"}, "worth": "once a turn, Hide costs no AP (kept): a turn of building saves an AP"}
           ],
           "5": [
@@ -233,7 +237,7 @@
           {"by": "a foe's Scuff or NULL (sigils.json enemy_ai)", "units": 1}
         ],
         "plain": {"name": "one STONE glyph (the strongest damaging Subject)",
-                  "base": {"data": "sigils.json:items[stone].damage", "x": "@scale.factor.value"}, "profile": "sigil",
+                  "base": {"data": "sigils.json:items[stone].damage", "x": "@scale.factor.value"}, "profile": "sigil", "rolls": true,
                   "pair": "intelligence x brain_power (ruling 31)",
                   "why": "a Line's plain hit is its Subject glyph's damage, before Bite x the cash-out sum (critic-consistency-2 1.18); Margins are on it"},
         "cashouts": {
@@ -241,6 +245,15 @@
             "name": "the Evoke", "from_point": 1, "ap": "own", "spends": "all", "min": 2, "rolls": true,
             "formula": "bite * cash(n)", "terms": ["bite", "cash"],
             "why": "a Line is one spell and its length is its power: no '1 +', so a Line of two is the short spell and every glyph past it is worth a fifth more than the one before"
+          },
+          "evoke_area": {
+            "name": "the Evoke of an area Line (SPREAD; Payload doubles its area)", "reading_of": "evoke", "from_point": 1, "ap": "own", "spends": "all", "min": 2, "rolls": true,
+            "share": {"data": "sigils.json:items[spread].mult"},
+            "most_foes": {"data": "survival.json:max_foes[3]"},
+            "formula": "bite * cash(n) * @mind.attributes.intelligence.door.cashouts.evoke_area.share",
+            "targets": "@mind.attributes.intelligence.door.cashouts.evoke_area.most_foes",
+            "terms": ["bite", "cash"],
+            "why": "ruling 40: each creature caught takes its share of the whole spell (words.spread_words), capped a hit; the total, every foe of the largest room, printed"
           }
         },
         "words": {
@@ -258,6 +271,21 @@
                           "stone": {"sum": {"door": "sigils", "value": {"data": "sigils.json:items[stone].inflection.effects[0].value", "x": 0.01}, "group": "word:inflection"}},
                           "becomes": "a damage inflection is a term of the Line's sum"}
         },
+        "resource_use": {
+          "about": "Ruling 49, check.py (h): the core charge a Sigil specialist spends in one standard fight against what it carries. A full cash-out is one Line at its Reach (and the Push from Brain Power 8); pressing everything is that Line every turn of the fight (drawing it is the turn).",
+          "res": "core charge",
+          "plan": "sigilist",
+          "core_charge": {"data": "rules.json:mana.cores.standard.charge"},
+          "glyph_charge": {"data": "sigils.json:items[stone].charge"},
+          "barrage_from_level": "@pacing.gates.rank_levels.I",
+          "mark_ii_level": 10,
+          "mark_ii_level_why": "the Sigils Mark II arrives about hour 11 (--tables calendar, sigilist), on map 5, where the squad reaches level 10",
+          "savings": "(S >= 2) + (S >= 5) + (S >= 9)",
+          "carries": "@gear_perks.camp_cores.value * (@mind.attributes.intelligence.door.resource_use.core_charge + @mind.attributes.intelligence.door.marks.gifts.II.numbers.core_charge * (L >= @mind.attributes.intelligence.door.resource_use.mark_ii_level) + proficiency)",
+          "cost": "n * @mind.attributes.intelligence.door.resource_use.glyph_charge - (L >= @mind.attributes.intelligence.door.resource_use.barrage_from_level) + max(1, n - ((S >= 2) + (S >= 5) + (S >= 9)))",
+          "press": "rounds * (n * @mind.attributes.intelligence.door.resource_use.glyph_charge - (L >= @mind.attributes.intelligence.door.resource_use.barrage_from_level) + max(1, n - ((S >= 2) + (S >= 5) + (S >= 9))))",
+          "why": "the core is the Sigilist's clock across a fight: a Line of six every turn of a level-20 fight costs about twice the three cores it carries, so the long Line is a choice; at level 1 the three cores pay for several Lines of three (critic-player-3 open question 2)"
+        },
         "words_held": {"base": 4, "per_point": 3, "formula": "base + per_point x Brain Power",
                        "today": "character.ts:890 wordsKnownCap and sigils.json grammar.known_max ('4 + brain_power')",
                        "why": "ruling C19: the words held never stop a specialist short of the 40 by the hours pacing gives them"},
@@ -273,7 +301,7 @@
           "rate": "@pacing.door_marks.sigils",
           "gifts": {
             "I": {"text": "your first glyph of each fight costs no AP"},
-            "II": {"text": "every core your Evoker loads holds 2 more charge", "op": "stat_mod core_charge +2 (character.ts:1223 coreChargeOf)"},
+            "II": {"text": "every core your Evoker loads holds 2 more charge", "op": "stat_mod core_charge +2 (character.ts:1223 coreChargeOf)", "numbers": {"core_charge": 2}},
             "middle": {"text": "the Flux limit +2", "op": "stat_mod flux_max +2"},
             "III": {"text": "Overclock without its overload once a fight"}
           },
@@ -302,16 +330,16 @@
         "forks": {
           "4": [
             {"id": "fork.sigil.overflux", "name": "Overflux", "today": "forks.json fork.sigil.overflux: damage_mult 1.25 at the Flux limit",
-             "text": "your Lines' sum +10% while your Flux is at its limit", "sum": {"door": "sigils", "value": 0.1, "group": "fork:sigils:4"}},
+             "text": "your Lines' sum +5% while your Flux is at its limit", "sum": {"door": "sigils", "value": 0.05, "group": "fork:sigils:4"}},
             {"id": "fork.sigil.clean_vent", "name": "Clean Vent", "text": "once a turn your Vent scorches every foe next to you and pushes them a tile (forks.json, kept; its scorch on the factor)", "group": "fork:sigils:4"}
           ],
           "8": [
             {"id": "fork.sigil.written_in_advance", "name": "Written in Advance", "today": "forks.json fork.sigil.written_in_advance: damage_mult 1.2",
-             "text": "your first Evoke after a turn you ended with glyphs drawn: the Line's sum +10%", "sum": {"door": "sigils", "value": 0.1, "group": "fork:sigils:8"}},
+             "text": "your first Evoke after a turn you ended with glyphs drawn: the Line's sum +5%", "sum": {"door": "sigils", "value": 0.05, "group": "fork:sigils:8"}},
             {"id": "fork.sigil.running_script", "name": "Running Script", "text": "after an Evoke, your next glyph this turn costs no AP and adds no Flux (forks.json, kept)", "group": "fork:sigils:8"}
           ]
         },
-        "fork_why": "ruling 29 sets the forks by the checker: at x1.25 and x1.2 the Overclocked Line with both forks, a Mastered STONE, a tier-II perk and the mark was six digits; at +10% each in the sum the largest legal Line stays five"
+        "fork_why": "ruling 29 sets the forks by the checker: at x1.25 and x1.2 the Overclocked Line with both forks, a Mastered STONE, a tier-II perk and the mark was six digits; at +10% each it was five until ruling 41 added the squad's gift; at +5% each the largest legal Line, with the mark and the gift, stays five (each fork's other half, the Flux limit and the turn written ahead, is the felt part)"
       },
 
       "ladders": {
@@ -335,7 +363,7 @@
                   "felt": "one glyph past your Reach, and the hand that wrote it burns"},
             "9": {"exists": "perk step; the third core saving", "bite": 0.85, "felt": "the longest Line you write is worth a tenth more than at 1, a Line of five over six glyphs"},
             "10": {"exists": "Mastered: Clean Draw; the Junction; the every-2 row", "reach": 5, "needs": {"rumination": 7, "eloquence": 4},
-                   "felt": "Lines of five: a different machine from a 5, and nobody else writes them"}
+                   "felt": "Lines of five once your Rumination is 7 and your Eloquence 4: a different machine from a 5, and nobody else writes them"}
           }
         },
         "rumination": {
@@ -443,9 +471,27 @@
         "upkeep": {"per_held": 0.5, "rounding": "up", "ap_from": 4,
                    "today": "figments.json upkeep: 1 charge a Figment, and 1 AP from 3 held",
                    "why": "a full board is a choice to keep, not a drain that forbids the Reach"},
+        "resource_use": {
+          "about": "Ruling 49, check.py (h): the Visualizer's charge over one standard fight. A full cash-out is a Curtain of a full board (Reach, the Push and Many Hands), every Figment Pictured from the strongest design; pressing everything is three Pictures a turn (Picture 2 AP, Quick Sketch's 1) and the board's upkeep, every turn.",
+          "res": "Visualizer charge (vcharge)",
+          "plan": "rigger",
+          "own_core": {"data": "figments.json:visualizer.charge"},
+          "core_charge": {"data": "rules.json:mana.cores.standard.charge"},
+          "form_charge": {"data": "figments.json:forms[beast].charge"},
+          "trait_charge": {"data": "figments.json:trait_charge"},
+          "many_hands": {"data": "forks.json:items[fork.figment.many_hands].effects[0].value"},
+          "mark_ii_level": 10,
+          "form_mark_iii_level": 20,
+          "levels_why": "the Figments Mark II about hour 11 (level 10), a form's Mark III (its third trait slot) about hour 42 at three forms a fight over eight (--tables calendar, rigger)",
+          "picture": "max(1, @mind.attributes.expression.door.resource_use.form_charge + @mind.attributes.expression.door.resource_use.trait_charge * ((S >= 3) + (S >= 7) + (L >= @mind.attributes.expression.door.resource_use.form_mark_iii_level)) - (charisma >= 9) - (S >= 8))",
+          "carries": "@mind.attributes.expression.door.resource_use.own_core + @gear_perks.camp_cores.value * (@mind.attributes.expression.door.resource_use.core_charge + @mind.attributes.expression.door.marks.gifts.II.numbers.core_charge * (L >= @mind.attributes.expression.door.resource_use.mark_ii_level) + proficiency)",
+          "cost": "(n + @mind.attributes.expression.door.resource_use.many_hands * (S >= 8)) * max(1, @mind.attributes.expression.door.resource_use.form_charge + @mind.attributes.expression.door.resource_use.trait_charge * ((S >= 3) + (S >= 7) + (L >= @mind.attributes.expression.door.resource_use.form_mark_iii_level)) - (charisma >= 9) - (S >= 8))",
+          "press": "rounds * ((floor((ap - 1) / 2) + (L >= @pacing.gates.rank_levels.I)) * max(1, @mind.attributes.expression.door.resource_use.form_charge + @mind.attributes.expression.door.resource_use.trait_charge * ((S >= 3) + (S >= 7) + (L >= @mind.attributes.expression.door.resource_use.form_mark_iii_level)) - (charisma >= 9) - (S >= 8)) + @mind.attributes.expression.door.upkeep.per_held * (n + @mind.attributes.expression.door.resource_use.many_hands * (S >= 8)))",
+          "why": "a full board rebuilt every turn is more than a fight's charge at level 20, so the Curtain is spent when the board is about to fall, not every turn; at level 1 the Visualizer and three cores pay for several Curtains"
+        },
         "limits": {"held_most": 6, "bodies": 8, "today": "figments.json limits (4 held, 6 bodies)",
                    "why": "Reach 4, Many Hands and Overhold held, and the Rigger's Double and Sentinel beside them"},
-        "plain": {"name": "a Beast's claws", "weapon": "figment_claws", "profile": "figment",
+        "plain": {"name": "a Beast's claws", "weapon": "figment_claws", "profile": "figment", "rolls": true,
                   "pair": "expression x visualization (ruling 31)"},
         "cashouts": {
           "curtain": {
@@ -464,7 +510,7 @@
           "rate": "@pacing.door_marks.figments",
           "gifts": {
             "I": {"text": "each fight starts with a Figment of your first ready design beside you (its charge paid as usual)"},
-            "II": {"text": "every core your Visualizer loads holds 2 more charge", "op": "stat_mod core_charge +2"},
+            "II": {"text": "every core your Visualizer loads holds 2 more charge", "op": "stat_mod core_charge +2", "numbers": {"core_charge": 2}},
             "middle": {"text": "your oldest Figment needs no upkeep"},
             "III": {"text": "Overhold without its price once a fight"}
           }
@@ -520,7 +566,7 @@
                   "felt": "one past your Reach, and it drinks your charge every turn it stands"},
             "9": {"exists": "perk step; all ten forms known", "bite": 0.85, "felt": "every form there is, and the Curtain at its fullest bite"},
             "10": {"exists": "Mastered: Solid Image; five ready designs", "reach": 4, "needs": {"proficiency": 7, "charisma": 4},
-                   "felt": "four held: a stage nobody else can fill"}
+                   "felt": "four held once your Proficiency is 7 and your Charisma 4: a stage nobody else can fill"}
           }
         },
         "proficiency": {
