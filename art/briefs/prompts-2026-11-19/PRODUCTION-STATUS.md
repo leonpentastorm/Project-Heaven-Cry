@@ -1,12 +1,12 @@
 # Current sole-artist production
 
-**551/871 (63.3%) selected review candidates.** Last delivery: `weapon-war_pick--celestial`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
+**552/871 (63.4%) selected review candidates.** Last delivery: `weapon-crossbow--masterwork`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
 
 | Requested work | Selected | Total |
 | --- | ---: | ---: |
 | icons_tiles | 88 | 88 |
 | new_repaint_standards | 53 | 104 |
-| grades | 396 | 656 |
+| grades | 397 | 656 |
 | uniques | 14 | 23 |
 
 Active run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Shared live ledger: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.

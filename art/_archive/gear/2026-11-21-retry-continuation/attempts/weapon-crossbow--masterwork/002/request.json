@@ -1,0 +1,56 @@
+{
+  "head": "5e20494a7301421aed7908925ba3a7ae0ab69a37",
+  "job": {
+    "id": "weapon-crossbow--masterwork",
+    "standard_id": "weapon-crossbow",
+    "grade": "masterwork",
+    "label": "Crossbow — Masterwork",
+    "path": "art/icons/gear/weapon-crossbow--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-crossbow--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-crossbow",
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.4",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same brass-and-wood stock, squared shoulder butt, upper-left winding crank and geared central winch, long rail and single existing loaded bolt with pale fletching, dark hanging rectangular trigger/box structure and its openings, the same curved vertical prod and taut string routing at the right, and open angular forward stirrup. Preserve all bands, gears, loops, rivets, exact string endpoints and existing ammunition count. No new bolt or moving part.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the line with the item's accent colour (bright brass if it has no accent): one clear stripe along each limb, along the stock, or down the quiver. The nock tips are capped in polished horn or brass, flush with the limb ends; the grip is wrapped in fine dark leather in an even pattern; the prod and metal fittings are crisp and bright; the quiver's rim is bound with a neat edge and its buckle polished.\n\nFIRST image locks Standard geometry, exact parts, pose, framing, scale and all negative spaces. SECOND image supplies the preceding selected grade; keep its earlier surface additions, repair and ornament locations. The portrait supplies Heavenprint brushwork only. No figures or scene, no letters, new ammunition, new mechanism or external glow. All additions remain flush inside original surfaces.",
+    "keep_line": "the same brass-and-wood stock, squared shoulder butt, upper-left winding crank and geared central winch, long rail and single existing loaded bolt with pale fletching, dark hanging rectangular trigger/box structure and its openings, the same curved vertical prod and taut string routing at the right, and open angular forward stirrup. Preserve all bands, gears, loops, rivets, exact string endpoints and existing ammunition count. No new bolt or moving part.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-crossbow--fine",
+    "prompt_assembly": "File08 exact BaseG+A3.4 grade block, keep line from actual Standard; prior rejected full prompt was not retained in original error record. No content reduction or evasion wording.",
+    "prior_generation_error": {
+      "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/crossbow-masterwork-service-response.json",
+      "response": {
+        "id": "crossbow",
+        "grade": "masterwork",
+        "response": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 2d84a6ee-a971-46ab-8049-cba41e9aa768. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+        "quota_exhausted": false,
+        "dependent_grades": "relic and celestial pending"
+      }
+    },
+    "original_prompt_sha256": "1d501da03de9f9b63c760d871dbaaec86ceccb2eea6ea0688337fc80d3c5d204",
+    "standard_sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "retry_authorized_by_user": true,
+    "family_references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-crossbow--fine.png"
+    ]
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "art/icons/gear/weapon-crossbow--fine.png": "2e7900745bd87b4acc0b5e163cad6219d5b1cc1d47959a4f2971dca9b06bb766",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7056379228,
+  "clock": {
+    "current_time": "2026-11-21 03:10:36 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056379228,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "efaef60d3441dff68fbc083c894c3f64cffd7dd9"
+}

@@ -2457,6 +2457,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-crossbow--masterwork",
+      "path": "art/icons/gear/weapon-crossbow--masterwork.png",
+      "sha256": "821367b46b7e72052477b7b8e7d013da41f55063c0e6e68063cb5ad8139c2ad1",
+      "label": "Crossbow — Masterwork",
+      "family": "weapon-crossbow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--masterwork.png",
+        "sha256": "39c6cb68d967311edf55825d60cabdd4e0a364870a2693d7a0757ad9c83223b7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--masterwork.png",
+        "sha256": "821367b46b7e72052477b7b8e7d013da41f55063c0e6e68063cb5ad8139c2ad1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--masterwork.txt",
+        "sha256": "85107a62453e1c971927fdc977b597056e8e2abf9e9139cbd2e87c0ae8f83f79"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-crossbow.png",
+          "sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b"
+        },
+        {
+          "path": "art/icons/gear/weapon-crossbow--fine.png",
+          "sha256": "2e7900745bd87b4acc0b5e163cad6219d5b1cc1d47959a4f2971dca9b06bb766"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--masterwork/002/native.png",
+          "sha256": "b46b5b4f1a54afc3bbda88ed8a5ca62d0992a9857d4dbe048a8d242ed0309134"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-crossbow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-crossbow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-crossbow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-crossbow--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "9e740fceb97340db545eca87f15a6c63bc90bbfaebe4cd156d92b2ce5df92bd3",
+        "128": "fa9e953f5605654e0589b31fb113b85f3c65208745842056ae7cabc9c35e1062",
+        "64": "28244e4616aa14d28a1bb7608b6b9fcba38782ebb2d0cbcc6cc16770fdd2430e",
+        "32": "47608d244d2e8482af6946082951a26a6769a1333aaef233862a862cdbf25ff5"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-crossbow",
+      "outline": {
+        "solid_alpha_iou": 0.935279637970139,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 47
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
