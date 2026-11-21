@@ -3067,7 +3067,7 @@ f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/g
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
 1c23860bb2798975c015d48a2c2ea6290c2887763fa05fb7add8c704691553f2  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
-45e7be4fbed19832647c3aa9369183e391fe510b3ec7c40b3c80a39ec516dff0  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+1396db8b12f73bcf15d8b3d1077ea1173fcf8706aeecf24a5b409b3df088e65c  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
 f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png
 d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/prompt.txt
@@ -3736,6 +3736,8 @@ abd3f529e67422c8e4d56f42651f6cbf22bb50606a785e8aaa41d3caa32c66ff  art/_archive/g
 c8f6011dc901e7f2cb14af25518d1ee92b7f591d3513d1ff355966b0c79a8cb0  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/002/request.json
 bfcc982fc1061e6cc0d66d5fcfc2a83a569044d5988b9a017b921e3e94d4e8cc  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/003/error.json
 1cf6cc70343435efc7cfb0e939b56a0b2d5c0a0b4022b5fcd19c97a8f27ae7ba  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/003/request.json
+9fd27b4c5174500b9539b5891be7594c4e3e8738f53c544c6bb0cd48265927d0  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/004/error.json
+cfe38281ceb94d2730918e11cdcc7a563ddcb95e3725ddafcfb0229bea160ecb  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/004/request.json
 9140c3a9f0c9fdc19fc1fd90a8e6e0df02cf7de7ae8aa9828a555b013ce37a47  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--celestial/001/native.png
 299439d51fac4036648594b4fbdba5e6b0a521a56e4fb476ddd96227dbff1e50  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--celestial/001/request.json
 e0422cad21934dbdd8521e1e0ef855a4109e6972181e9eebdc25a609610e32cb  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--celestial/001/review.json
@@ -3898,7 +3900,7 @@ aa9fb3aa1790fc110c089ffa1376d239677dbff535eadd1815120ab5a41cb8e4  art/_archive/g
 d2d630bd80da3119bb73609f1a580a50cfc1bc440f410e4fd554f1c0bdcd3d34  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--masterwork.png
 f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--relic.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-c29f35bd8412d6b0b1009851883ca398835e3ae1e12b39c370e313a2e4b2ad05  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+3dcf4c1e5de49b80898ca5461889d3c96139dc8703178c36f521cfab9e58cbd2  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt
 11ccde30be710af79c602ced16bf0e2b7cf1592c8a43521c4582b32125fed74a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--relic.txt
 067c9b66ea3e963d10b30d7a7b9519295ae13ae094bbee7de3a17691ab6bfc08  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--celestial.txt
@@ -4071,7 +4073,7 @@ e7ba48d8cf92b4924ed10e9ae50cec3ebbdc9b7a8b66cf0cf5955a8ed9465496  art/_archive/g
 a9695299f4b77360e6213dfe029098a46d047874225b0fdc184695bb1728efc4  art/_archive/gear/2026-11-21-retry-standards/original-repaint-source-rows.json
 fd89c4afff7bde7a9629271006847c36b3670b5189bc66acfb5b53113fde90b7  art/_archive/gear/2026-11-21-retry-standards/original-source-queue.json
 5c9ba09bd6aea3040c821b8876c0ad26870419bd5d60fc3c1f187a4496066f07  art/_archive/gear/2026-11-21-retry-standards/pack-material-references.py
-19511f594d8368a27de2accea771252d5193a0faf9598ebb0a6f771e867250f2  art/_archive/gear/2026-11-21-retry-standards/progress.json
+4bdc79bfbf119da084af90be11244d47006586e34b7c006da351a09be1dcbfb4  art/_archive/gear/2026-11-21-retry-standards/progress.json
 c25186f8465af028809b2fd6831e0283c80da176d6273e38ff97d13cd8572bcd  art/_archive/gear/2026-11-21-retry-standards/queue.json
 5fbdc19509e6aaf6f494622272880c8886223cecbec35e5c9fa028a1c78feb03  art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-blackpoint_700.png
 da212443b07ddc1acc0bf3045dbad1fbcad6989521e731bf43ec318ddefa7334  art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-breacher_tube.png
@@ -4082,7 +4084,7 @@ da212443b07ddc1acc0bf3045dbad1fbcad6989521e731bf43ec318ddefa7334  art/_archive/g
 0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f  art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png
 46f6af1ca4a4f09080c03a982b51796460cae75c73a6b6c27bff01a16b522f7a  art/_archive/gear/2026-11-21-retry-standards/references/material-packing.json
 31ce3aea1df7f44794decc78ae5b30ee8d021c228fe35e0c91442c333807bc96  art/_archive/gear/2026-11-21-retry-standards/references/rasterization.json
-d91ee75d68fddfd944dcd673c83a0a28723268c5926853be0d50076cd3036e89  art/_archive/gear/2026-11-21-retry-uniques/HANDOFF.md
+4de0dd4c5f98eae5f25c246ea80844ca455510c9cb278e84f4d3e045199366ee  art/_archive/gear/2026-11-21-retry-uniques/HANDOFF.md
 2d736713a2fb235c6e56b6fbf2b41bc96ab7069655aa0d8bf82b59e37b7215ff  art/_archive/gear/2026-11-21-retry-uniques/START-HERE.md
 4b11f998c2cea2d1ebce7825018bcef615984280771dbacfc8c09ae3145fb4f2  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/001/error.json
 0a3e443e08a69a51ca8d11fbdc127329564da3e53196ada2e30d258a33348cce  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/001/request.json
@@ -4096,6 +4098,10 @@ a59dd548064e632017db16cee2ff1b1698b480e66726cdfecbe9941a67fbd6c2  art/_archive/g
 c5d041763bfc32b9e88c48a4687e3fd38135263d30637684042f622628a76ba5  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/004/request.json
 6a88ffa9e4eedfd69e87735047c123978899b69421445f7bd832ad8d1026149e  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/005/error.json
 cc277f15cf8eb525fa3ba3701891cd5d27c630acec61811c6c74d7b7b1d31a32  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/005/request.json
+3dae6f9b5ef8375b48b1d4a59eb4c5892da0272ffc81d6457e826e2438d9dbd1  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/006/native.png
+810c4155076d89151815d6a12ad1e4be2798f71351b19238cdfedc87d870c68c  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/006/request.json
+be9e0af8fef4d1f4a3a6bda669fd700acd3aa8e92efb44d6bf252a6344d175a8  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/006/review.json
+b500c18a015266388da0f254a89f5d98f0920d0eb35419f23f04efe0e0e7405a  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/006/source.json
 1f4f002fff9ea27b8c29fb28772d5632822ef3c8f4c61d8dfd044944a04d818d  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-grandmothers_teeth/001/native.png
 886c95bf45a85b1402d803be76f5d47717c7c9a8e7f0abdfb925de950305e2cd  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-grandmothers_teeth/001/request.json
 b6d4700aedbf0ae0fe6657b61f9ef5c95f69c0098df1d9b3a2178f98a756d621  art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-grandmothers_teeth/001/review.json
@@ -4125,7 +4131,8 @@ b77783a5dceb8834add0e54210b2542aa584cc3acce6014f1faa3f93133f116b  art/_archive/g
 9d33227debec97f8ac3b0092ba3888245ca16050b4d14e83faee9061a60840cc  art/_archive/gear/2026-11-21-retry-uniques/claim.json
 ab3e6403e42f94ff8ed195f15c3a148b6a6f8a026a0e6b9fefb99b48b7a51a4a  art/_archive/gear/2026-11-21-retry-uniques/functions-delivery.js
 02b991aa02ab8346890a7c9b6a059bb7c0e6f634a787385d79aec8c07a20beb3  art/_archive/gear/2026-11-21-retry-uniques/functions-driver.js
-db7340df6281e10e6f367685dc73b590cd981f81262c03451626460c6ffd5e33  art/_archive/gear/2026-11-21-retry-uniques/manifest.json
+ab3b174334498c569cbafdd1a916b6d7a572bd6e8a1f927ffa557e4807ebb431  art/_archive/gear/2026-11-21-retry-uniques/manifest.json
+6f3b87c1deca5089a26614c478306956c792db6a84f73c680b1c01b663c4920b  art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-encore.png
 b73567e831e2b46319f12e89f840f86bbfe1f0f0d679770c2556117458cc94c5  art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-grandmothers_teeth.png
 58164159a8d0fce18dd158c9e15ce7476dddd4b7357a266b5c4fb89bf6ae7a8b  art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-in_triplicate.png
 de8c8294290ad8aba8bcfbd8f69c80a4319a25052157066a28e29f6dbe3f33c7  art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-last_crossing.png
@@ -4133,15 +4140,18 @@ de8c8294290ad8aba8bcfbd8f69c80a4319a25052157066a28e29f6dbe3f33c7  art/_archive/g
 d22f8f8980c8b613db50fa831114a1c59ece4ddf1b5ef1c2fd93865f6a2b0430  art/_archive/gear/2026-11-21-retry-uniques/original-source-queue.json
 2a67a28aec8583708b5009909035e69ea5ac1e5077ab54a7aba0569841ab6b7d  art/_archive/gear/2026-11-21-retry-uniques/prior-errors/failure-10-1795073291201.json
 4a18ee557226cd70a32a51734733c7c22cdd7146b61281181bcdd66f68dca7cd  art/_archive/gear/2026-11-21-retry-uniques/prior-errors/failure-8-1795073419258.json
-21ed46c50e697c1def8280e08ac804e9f9016e3dc2cfb6ea2ff73d49072c7850  art/_archive/gear/2026-11-21-retry-uniques/progress.json
+3641b7c66780beb2e3ee974818f08c19afb4fa61917e7eee730213aeb725df76  art/_archive/gear/2026-11-21-retry-uniques/progress.json
+8e08a5d15f9ce93c41a7dcaf674f87432000800db50bcde4670c6176b0364b34  art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-encore.txt
 c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3  art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-grandmothers_teeth.txt
 724aad7060c43fcffec01aa028d91560236237eb6729d60354aa616acf3309a7  art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-in_triplicate.txt
 8404761bb36f90d8bef28bf4e7e2614345a166843a3c030065427b77f2d58929  art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-last_crossing.txt
 c26d9102ae14eb798fbaa639fd6ba2bedefbcc418773ffac3b216fce31b8d65f  art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-reveille.txt
-33c6eb934bf9bd3ad1580a6daef0205276473fce60bc5e6d1f1f8d2ae5a48d0a  art/_archive/gear/2026-11-21-retry-uniques/queue.json
+770020fd4900dd273053c7d19e974f2b1263a7180abcc24a9ad91386f775196c  art/_archive/gear/2026-11-21-retry-uniques/queue.json
 fa8e958543f59f7d0ae03a791fb986a4e3cfb7b85d65a6a00eaefd6b4bebc8c0  art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-legion_bullpup.png
 0cf22b1b8cb757fe417170b240a50d0db6ebf3f34e62df9f57c822636854884a  art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-parlour_pistol.png
 ea43279dedb34ea71496e59660dd1b90e2889d054a2a2af0ef13edee491eea20  art/_archive/gear/2026-11-21-retry-uniques/references/rasterization.json
+8c8e6d67d1fb850ac5ecaceec797f33020aeff9cec83a10b6437af9ea26458b1  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-encore-32px.png
+59fd636b466899d4aec34a334c8157ac7eb16354d1549490b2dc97c832b61d86  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-encore-64px.png
 6b0a78c6ca0e26c0d870e64dcaa1b3e0bb2589b591c36455837d5e42db140abc  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-grandmothers_teeth-32px.png
 999dded080cc58c2c864411247d159b72f0cc10a5e57512afadf553af59ee8f7  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-grandmothers_teeth-64px.png
 55c2cfc11bf2b7caed715df128bba1d90e637cb35af5ea5e56153c915d81f59e  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-in_triplicate-32px.png
@@ -4151,6 +4161,7 @@ ce91c82a5d9174e343a33c915517cf49e3a910d3c593db3bf574569118aa36ae  art/_archive/g
 f4a6e2f325561017138addbd08acfe09aab04342ce9a19d3cc429478698eaf54  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-reveille-32px.png
 8219f984e5a8f7074b922a43c6416c8c1ec267df92d76dd77cd2fe9643cbd925  art/_archive/gear/2026-11-21-retry-uniques/reviews/unique-reveille-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-21-retry-uniques/source-brief.md
+3dae6f9b5ef8375b48b1d4a59eb4c5892da0272ffc81d6457e826e2438d9dbd1  art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-encore.png
 1f4f002fff9ea27b8c29fb28772d5632822ef3c8f4c61d8dfd044944a04d818d  art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-grandmothers_teeth.png
 4a2d328a48ff288da5a615818dccce5fed3e423819138f002ed7e0869962a82c  art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-in_triplicate.png
 7081fe07de75bd9601e13f1749760210562a81db60cc3e49a5e83bc33e964ef9  art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-last_crossing.png
@@ -8314,9 +8325,9 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/briefs/prompts-2026-11-19/08-grades-and-uniques.md
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
-d382d14037a113ada32305ba06f3db34568aee1b218c015b653d0b2a4d17b09e  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
+1e4938bfb93fa3d90e3d55e11c900a0e1dab1661ad31fe2a2ea1fec54184b477  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-f428f8c7a22480d78adec6c59a096ff94b23cd9bc97da74009c482c9418a491c  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
+4b21637d15fd7aedd9c02c0ae6edf6ad6463c82fd4899e6d1eeda4b8790bd723  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
 15a16bf0d5e3166a424a0812d48ccf869542577351a7381a2987e32557e37746  art/briefs/prompts-2026-11-19/SCRAP-SENTINEL-REPLACEMENT-2026-11-21.md
 dfb4f1f1eaac3f5732aae1e1c393cccb1112e0097b93350bfdd6f44cf36abeda  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
@@ -8325,7 +8336,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-4ee28e2567b6d42536bb7160024568966fd89f644cf8fe5d6fa4759e3b96f0bd  art/catalog.json
+90b741522e5556ccfd5bf96f55a6828a1e77346eb292cd389a2e3023499a67c4  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -10530,6 +10541,7 @@ efdfc496a383ff3971727b7c16a68e634bbd88a58889eb691b1f4869876526b2  art/icons/gear
 d32f608c481a593efcdced0d18e712c67be7220adc000289a69cd897163f4473  art/icons/gear/exports/128/weapon-drifter_revolver.png
 23c7f9a0f2848f91b1a619fb7fa531bcfb154f8762bcd29657b4af9a389794ea  art/icons/gear/exports/128/weapon-emanator_gauntlet.png
 b5aa3b89dede588a16211fa7298b3cfa149cf4868d38ac5d6be6e9316d8d83c6  art/icons/gear/exports/128/weapon-emanator_katana.png
+3e78824db8f5f675967f1dc7b7ecaacbe5ad4f22ec9a54e9e6344308ca620d09  art/icons/gear/exports/128/weapon-encore.png
 4fdd2b2b13b23f8b79759e67ea4322f1325b84744b1f3c184ae7955f54240dc8  art/icons/gear/exports/128/weapon-evoker_blade.png
 c93fd2f165a3a821a6ae4c4c258f5a7b9aa1366189723a458df23e4f025af9bf  art/icons/gear/exports/128/weapon-fists.png
 a49ae8dbda939c3aea02bb5a98b01ea59d64eff4a7d511129fabd8beca77dff4  art/icons/gear/exports/128/weapon-flashbang.png
@@ -11182,6 +11194,7 @@ f711ce577b6e3253fcc1f2adcec35f80e0a5502fa08939bf856c76f9f1c3c1e2  art/icons/gear
 00b1b44b8290c05df13bd3bfdb23aed2e9ecf09a1007766d510089e2a485312d  art/icons/gear/exports/256/weapon-drifter_revolver.png
 09bf580b6b3560d41918efafe072caad389c9bb037933e6d8dce08ef451e56fa  art/icons/gear/exports/256/weapon-emanator_gauntlet.png
 02f8d160ea3f7685d0f3a1f35e20ba6b65b83563bcebf16cc4009c02968dee39  art/icons/gear/exports/256/weapon-emanator_katana.png
+290e2fdb35ca658bee37968fc827e2800651245ec8f5ef99a7a45d624a72c69d  art/icons/gear/exports/256/weapon-encore.png
 7c1371bc759cc8d4fd52162f9769e99701e25285b912e8e6f126e9570b80dc0f  art/icons/gear/exports/256/weapon-evoker_blade.png
 2389897f2901fff66fcc859e8db1c43fd4bf3acf66f8078b2e60cf58cb225cca  art/icons/gear/exports/256/weapon-fists.png
 535b05cbf05f451ac33a233bc6d596674ce3a9ffd5e8ee56fa4a563c692aca13  art/icons/gear/exports/256/weapon-flashbang.png
@@ -11834,6 +11847,7 @@ d45ce054ea1f7e9b4fba2561d79b96e4f0ca8f761c23bcd8df7e99362c986366  art/icons/gear
 09ec7f212544995edfdcd7aa501d47f074f358fd08d267c299a97e6cc57b3569  art/icons/gear/exports/32/weapon-drifter_revolver.png
 7c7e3b4408340197efb43fb0828a12f4a24f1f1fecde3e00a04cebe6ce2d537e  art/icons/gear/exports/32/weapon-emanator_gauntlet.png
 6a0af04d93de69b503b6d4425e0090028e84468a3205d14c5d22f8f3897535c6  art/icons/gear/exports/32/weapon-emanator_katana.png
+fbc51dfbf72c3b46548ec98c9ecc0fb717848db36ccb400b0ea235cbc4b4a0eb  art/icons/gear/exports/32/weapon-encore.png
 cc3a7d5fc20c988b36ee55a6ab227c979ba2b55105adc7670057c4abcd41736b  art/icons/gear/exports/32/weapon-evoker_blade.png
 71ce91a2a14a5c1c728ed044b777198bd6dfba63a745d6e48d019c5a786e8c39  art/icons/gear/exports/32/weapon-fists.png
 fe793328d50b90d031510ad3cd740cb2281341ad925005c4d757ced4afff1df4  art/icons/gear/exports/32/weapon-flashbang.png
@@ -12486,6 +12500,7 @@ f5bfcd2fc3a014d24503701823626eb9a74619392fa4eac79c470dfabfbc7dfd  art/icons/gear
 37f498ebc9b53aba76c7bcf1313bdd4939df0055975944a6ad6e29e110ec43a3  art/icons/gear/exports/64/weapon-drifter_revolver.png
 4c262b651454e75966b5c04a92ddeb9cd2b805fe0eb98287d775ad7d50ea483b  art/icons/gear/exports/64/weapon-emanator_gauntlet.png
 37492a6ae3cf6709ff6a498511a3ae24f52fe339ac12a9d5265e6de5d8d62207  art/icons/gear/exports/64/weapon-emanator_katana.png
+b72cbc2e8db51b209050ba3e82766a126022b0f4efcf0472b846f667c42767e0  art/icons/gear/exports/64/weapon-encore.png
 7c83e05950200efaa5dab331b5828a800c208ec6afce692a767885185fc01129  art/icons/gear/exports/64/weapon-evoker_blade.png
 a55d9f163001c05b77f95e5f17ad50174014977486bfcec171f0caf8a378c158  art/icons/gear/exports/64/weapon-fists.png
 d36dedf1749f86cc884c71b0f815c38a2a755989bbe0f6d3a77bd6c1a1500360  art/icons/gear/exports/64/weapon-flashbang.png
@@ -12951,6 +12966,7 @@ a5a69e07abcdb36b75f0b19c09b11544b9e965854cc6e3c51a3b5afdf44e3d2f  art/icons/gear
 841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a  art/icons/gear/weapon-drifter_revolver.png
 0e63dc224d15837b444846c1763961c9f9166691bf0a066b18c06715d961901b  art/icons/gear/weapon-emanator_gauntlet.png
 ddb4a491352712db2686ab1fd618106df782eb4201cfb49bb5ff138e85366b3a  art/icons/gear/weapon-emanator_katana.png
+6f3b87c1deca5089a26614c478306956c792db6a84f73c680b1c01b663c4920b  art/icons/gear/weapon-encore.png
 c0053b826f74dfb8916a37fc7ecd1e7df1d2a216da00bb3a33568726b2974fc7  art/icons/gear/weapon-evoker_blade.png
 2f502ba719410c0a0c6bc725286a54457a34945fe95dfe15100e708d69ba1c6e  art/icons/gear/weapon-fists.png
 76e2077ec36195c2397ec34a8debc9b9ee899225afb93dcb5195c2bcdc87c1b1  art/icons/gear/weapon-flashbang.png

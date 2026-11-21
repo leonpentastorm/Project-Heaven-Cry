@@ -35075,6 +35075,33 @@
       "collection": "2026-11-21-retry-uniques",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-encore": {
+      "label": "Encore (two-shot derringer)",
+      "path": "art/icons/gear/weapon-encore.png",
+      "sha256": "6f3b87c1deca5089a26614c478306956c792db6a84f73c680b1c01b663c4920b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-encore.png",
+        "128": "art/icons/gear/exports/128/weapon-encore.png",
+        "64": "art/icons/gear/exports/64/weapon-encore.png",
+        "32": "art/icons/gear/exports/32/weapon-encore.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-encore.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 10,
+      "collection": "2026-11-21-retry-uniques",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

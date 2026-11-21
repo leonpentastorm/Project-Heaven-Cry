@@ -271,6 +271,77 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "id": "weapon-encore",
+      "path": "art/icons/gear/weapon-encore.png",
+      "sha256": "6f3b87c1deca5089a26614c478306956c792db6a84f73c680b1c01b663c4920b",
+      "label": "Encore (two-shot derringer)",
+      "family": "unique-encore",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-encore.png",
+        "sha256": "3dae6f9b5ef8375b48b1d4a59eb4c5892da0272ffc81d6457e826e2438d9dbd1"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-encore.png",
+        "sha256": "6f3b87c1deca5089a26614c478306956c792db6a84f73c680b1c01b663c4920b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-encore.txt",
+        "sha256": "8e08a5d15f9ce93c41a7dcaf674f87432000800db50bcde4670c6176b0364b34"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-parlour_pistol.png",
+          "sha256": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-parlour_pistol.png",
+          "sha256": "0cf22b1b8cb757fe417170b240a50d0db6ebf3f34e62df9f57c822636854884a"
+        },
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/002/native.png",
+          "sha256": "fe90432261a16411d40fdad78031770bea8675793cdfaa767655251869517e57"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-parlour_pistol.png",
+          "sha256": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0"
+        },
+        {
+          "path": "art/icons/weapons/parlour_pistol.svg",
+          "sha256": "3cea751c28d99721d71aaeebbb44979e2720782ca8a5b57ab8eb28d229bcc573"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-encore.png",
+        "128": "art/icons/gear/exports/128/weapon-encore.png",
+        "64": "art/icons/gear/exports/64/weapon-encore.png",
+        "32": "art/icons/gear/exports/32/weapon-encore.png"
+      },
+      "export_hashes": {
+        "256": "290e2fdb35ca658bee37968fc827e2800651245ec8f5ef99a7a45d624a72c69d",
+        "128": "3e78824db8f5f675967f1dc7b7ecaacbe5ad4f22ec9a54e9e6344308ca620d09",
+        "64": "b72cbc2e8db51b209050ba3e82766a126022b0f4efcf0472b846f667c42767e0",
+        "32": "fbc51dfbf72c3b46548ec98c9ecc0fb717848db36ccb400b0ea235cbc4b4a0eb"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }

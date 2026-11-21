@@ -4,13 +4,12 @@
     "weapon-grandmothers_teeth",
     "weapon-last_crossing",
     "weapon-reveille",
-    "weapon-in_triplicate"
-  ],
-  "remaining": [
+    "weapon-in_triplicate",
     "weapon-encore"
   ],
+  "remaining": [],
   "image_quota": null,
-  "project_distinct_count": 568,
+  "project_distinct_count": 569,
   "branch": "art/2026-11-20-reset-continuation",
-  "updated_utc": "2026-11-21T11:17:09.589110+00:00"
+  "updated_utc": "2026-11-21T11:54:49.772082+00:00"
 }
