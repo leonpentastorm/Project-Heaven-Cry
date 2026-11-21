@@ -221,7 +221,17 @@
     "retry_authorized_by_user": true,
     "original_prompt_sha256": "741dd00dbf61f8b35a0cc358af01462ea72485910d6dfa81a0c6ac00ef631f0d",
     "run": "sole-20261121-0109",
-    "standard_sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f"
+    "standard_sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f",
+    "current_lane_error_history": [
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-purifier_flamer--masterwork/001/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 8752139e-1890-42d3-82e0-7d1ebd52927a. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      },
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-purifier_flamer--masterwork/002/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 8b76eb57-4121-4afe-aae9-771148dc5947. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    ]
   },
   {
     "id": "weapon-dock_cutter--masterwork",
@@ -309,6 +319,12 @@
         "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 3924442a-dbc6-4637-a9a8-e8313b6e54e5. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
         "resolved_by_successful_native": "attempts/weapon-short_draw--masterwork/002/native.png",
         "prompt_unchanged": true
+      }
+    ],
+    "current_lane_error_history": [
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 3924442a-dbc6-4637-a9a8-e8313b6e54e5. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
       }
     ]
   },
@@ -404,7 +420,7 @@
     "brief_number": "A3.1",
     "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This item is explicitly a BLADE-class scrap cutter in File08 C3 (A3.1), despite its glaive name: keep its short steel-tube handle and existing parts, no additional haft strips. The rough notches and weld bead keep their geometry while surface rust/wear is removed at Fine and Masterwork. Masterwork blade inlay is dirty OCHRE, a single thin line inside the notched back, clear of the three original ochre daubs. No new mechanism or longer pole. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
     "keep_line": "the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.",
-    "status": "pending",
+    "status": "delivered",
     "production_approved": false,
     "collection": "2026-11-21-retry-continuation",
     "reference_sources": [
@@ -419,7 +435,13 @@
     "retry_authorized_by_user": true,
     "original_prompt_sha256": "b18b729c392309f15d31d6f0831e05dd72b740cebd7fbd3df6e738ee52a8b60c",
     "run": "sole-20261121-0109",
-    "standard_sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+    "standard_sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543",
+    "current_lane_error_history": [
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--masterwork/001/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID bc5009a1-5b84-4ebc-9f09-ecad98597ead. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    ]
   },
   {
     "id": "weapon-purifier_flamer--relic",
@@ -694,7 +716,13 @@
     "retry_authorized_by_user": true,
     "original_prompt_sha256": "7999c034e0937d3c2107abf079977bb3c063ca9aae7393f4e0912c3d75a5062a",
     "run": "sole-20261121-0109",
-    "standard_sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0"
+    "standard_sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "current_lane_error_history": [
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/001/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID bec5a10a-c535-4355-b8cd-5cff5eb66071. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    ]
   },
   {
     "id": "weapon-purifier_flamer--celestial",
