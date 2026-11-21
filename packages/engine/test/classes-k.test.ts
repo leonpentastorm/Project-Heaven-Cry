@@ -12,6 +12,13 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { SIGIL, WEAPON } from '../src/data';
+import { amountBlock } from '../src/effects/amounts';
+
+// rules 1.95 (the scale): every number below is its row's (sigils.json word damage, the class rows' amounts), read here
+const WD = (w: string): number => (SIGIL as any)[w].damage;
+const AB = (k: string, n: string): number => amountBlock(k, n).base;
+
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -373,10 +380,12 @@ describe('Vessel', () => {
     expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(14);
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
-    expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
+    expect(logHas(f.cb, new RegExp('RELEASE \\(1 form, ' + AB('class:vessel.release_strike', 'damage') + '\\)'))).toBe(true);
     // fists 10 + Surge 15 × 1.0 (stage 1, ×1.0 since rules 1.19; past Empty Hand's floor of 20) + the release 15 × 1.0 × the Soul multiplier, armour 0
     // rules 1.26: the fists and Surge's 15 go in together and take the weapon's multiplier (rules 1.56: the melee profile, by Strength), the melee factor and the Level term (a7: an item's flat is multiplied)
-    expect(999 - f.unit(foe.id).hp).toBe(Math.floor((10 + 15) * weaponMult(charOf(f, f.pc) as any, 'fists') * levelFactor('deal', f.pc.level)) + Math.floor(15 * f.pc.mg!.soulMult));
+    // rules 1.95: the fists' row and the release's row are on the new scale (x the factor); Surge's 15 is still typed in
+    // classes/k.ts (a shelved advanced class: not in the bible's walk, listed in the step 1 hand-off)
+    expect(999 - f.unit(foe.id).hp).toBe(Math.floor(((WEAPON as any).fists.damage + 15) * weaponMult(charOf(f, f.pc) as any, 'fists') * levelFactor('deal', f.pc.level)) + Math.floor(AB('class:vessel.release_strike', 'damage') * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

@@ -479,5 +479,6 @@
    "pain_threshold": 10,
    "hp": 10816
   }
- ]
+ ],
+ "factor": 0.6
 }

@@ -1409,6 +1409,7 @@ def export_scale():
     for e in (1, 4, 7, 10):
         for pt in (0, 5, 10):
             for L in (1, 5, 10, 15, 20): out['hp'].append({'level': L, 'endurance': e, 'pain_threshold': pt, 'hp': S.hp(L, e, pt)})
+    out['factor'] = S.F   # ruling 68: a test of a row the factor moved computes its expectation as the old number x this
     print(json.dumps(out, indent=1))
 
 def main(argv):

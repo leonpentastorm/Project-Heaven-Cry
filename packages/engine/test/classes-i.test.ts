@@ -174,9 +174,10 @@ describe('Medic', () => {
   // action; Field Surgery is anyone's at Empathy 3 (tending.json tend.field_surgery). The story Triage stays a lane action.
   it('Triage in the story: the most hurt ally, once per ally per scene', () => {
     const s = storyWith([cls('medic', 1), {}]);
-    const [m, ally] = s.chars; s.g.characters[ally.id].hp = 30;
+    const [m, ally] = s.chars; s.g.characters[ally.id].hp = 1; // rules 1.95: low enough that one Triage leaves the ally hurt on the new bar
     s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story' });
-    expect(s.g.characters[ally.id].hp).toBeGreaterThan(30);
+    expect(s.g.characters[ally.id].hp).toBeGreaterThan(1);
+    s.g.characters[ally.id].hp = 1; // hurt again (a story Triage can fill the level-1 bar), so the once-a-scene rule is what refuses
     expect(() => s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story', text: s.g.characters[ally.id].name })).toThrow(/already treated/);
   });
 });

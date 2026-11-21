@@ -7,6 +7,13 @@ import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here 
 import { d20, emit, objectsOf, condOn, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { SIGIL } from '../src/data';
+import { amountBlock } from '../src/effects/amounts';
+
+// rules 1.95 (the scale): every number below is its row's (sigils.json word damage, the class rows' amounts), read here
+const WD = (w: string): number => (SIGIL as any)[w].damage;
+const AB = (k: string, n: string): number => amountBlock(k, n).base;
+
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 function rngFor(n: number): number { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return s; } throw new Error('no seed'); }
@@ -55,7 +62,7 @@ describe('Blade Scribe under 1.4', () => {
     expect(foes(f.cb)[0].hp).toBeLessThan(hp);
   });
   it('Edge Sigil: SHOCK adds its 30 as Elemental; ACID adds 15 with no Corroded; STONE adds nothing', () => {
-    for (const [w, re, n] of [['shock', /Edge Sigil: SHOCK runs down the blade · 30 damage/, true], ['acid', /Edge Sigil: ACID runs down the blade · 15 damage/, true], ['stone', /Edge Sigil/, false]] as const) {
+    for (const [w, re, n] of [['shock', new RegExp('Edge Sigil: SHOCK runs down the blade · ' + WD('shock') + ' damage'), true], ['acid', new RegExp('Edge Sigil: ACID runs down the blade · ' + WD('acid') + ' damage'), true], ['stone', /Edge Sigil/, false]] as const) {
       const f = fightWith([cls('blade_scribe', { weapon: 'sabre' })], [{ at: 'O10' }]);
       const pc = f.turn(at(f.pc, '2,5')); evoker(pc, [w]); tough(at(f.foe, '3,5')); pc.ap = 6;
       seed(f, 10);
@@ -74,7 +81,7 @@ describe('Blade Scribe under 1.4', () => {
     expect((f.cb.glyphs || []).length).toBe(0);
     expect(f.pc.mg!.charge).toBe(10 - (2 + 2 + 2) - 3); expect(f.pc.mg!.flux).toBe(3);
     // FIRE + half a FIRE = 45 (item 589), one repeat ×0.9 = 41 (40.5 rounds up); SEEK's Reach multiplier doesn't apply (Touch)
-    expect(logHas(f.cb, /The script resolves on Foe 1 \(3 charge\) · FIRE hits Foe 1 \(d20 \d+\) · 41 damage to Foe 1/)).toBe(true);
+    expect(logHas(f.cb, new RegExp('The script resolves on Foe 1 \\(3 charge\\) · FIRE hits Foe 1 \\(d20 \\d+\\) · ' + Math.round(WD('fire') * 1.5 * 0.9) + ' damage to Foe 1'))).toBe(true);
     expect((f.cb.fx || []).some((e: any) => e.k === 'evoke' && e.shape === 'touch' && e.impact === '3,5')).toBe(true);
   });
   it('Three-Cut Script: a Burst applies at the last target (SPREAD catches the foe beside it, and an ally: friendly fire)', () => {
@@ -139,7 +146,7 @@ describe('Spellslinger under 1.4', () => {
     const s = storyWith([cls('spellslinger', { weapon: 'spellslinger_pistol' })]); const c = s.g.characters[s.chars[0].id];
     c.sigils = ['ward', 'seek']; c.evoCharge = 10;
     expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'spellslinger.inscribed_rounds', choice: 'ward', text: '2' } as any)).toThrow(/Element or an Affliction/);
-    for (const [w, re, cond] of [['acid', /inscribed ACID round bites · 7 damage/, 'corroded'], ['bind', /inscribed BIND round bites/, 'pinned']] as const) {
+    for (const [w, re, cond] of [['acid', new RegExp('inscribed ACID round bites · ' + Math.floor(WD('acid') * 0.5) + ' damage'), 'corroded'], ['bind', /inscribed BIND round bites/, 'pinned']] as const) {
       const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }]);
       (charOf(f.g, f.pc).state ||= {})['class:spellslinger.inscribed_rounds'] = { word: w, n: 2 };
       const pc = f.turn(at(f.pc, '2,5')); evoker(pc, [w]); tough(at(f.foe, '5,5')); seed(f, 10);

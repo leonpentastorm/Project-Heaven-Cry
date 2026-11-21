@@ -7,6 +7,13 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { SIGIL } from '../src/data';
+import { amountBlock } from '../src/effects/amounts';
+
+// rules 1.95 (the scale): every number below is its row's (sigils.json word damage, the class rows' amounts), read here
+const WD = (w: string): number => (SIGIL as any)[w].damage;
+const AB = (k: string, n: string): number => amountBlock(k, n).base;
+
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 /** A seed whose next d20 is n. */
@@ -294,7 +301,7 @@ describe('Blade Scribe', () => {
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['shock']); const foe = tough(at(f.foe, '3,5')); pc.ap = 6;
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'melee', mods: [mk('blade_scribe.sword_form', 'word_shock')] } as any);
-    expect(logHas(f.cb, /Edge Sigil: SHOCK runs down the blade · 30 damage/)).toBe(true);
+    expect(logHas(f.cb, new RegExp('Edge Sigil: SHOCK runs down the blade · ' + WD('shock') + ' damage'))).toBe(true);
   });
   // Sigil 1.4: the words resolve as Touch on the last target (more in sigil14-classes-j.test.ts).
   it('Three-Cut Script: 6 AP, three cuts, the words resolve as one spell on the last target', () => {
@@ -358,7 +365,7 @@ describe('Spellslinger', () => {
     const pc = f.turn(at(f.pc, '2,5')); tough(at(f.foe, '5,5')); seed(f, 10);
     const mana = f.cb.mana ?? 15;
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: f.foe.id, mode: 'shot' } as any);
-    expect(logHas(f.cb, /inscribed FIRE round bites · 15 damage/)).toBe(true);
+    expect(logHas(f.cb, new RegExp('inscribed FIRE round bites · ' + Math.floor(WD('fire') * 0.5) + ' damage'))).toBe(true);
     expect(charOf(f.g, f.pc).state!['class:spellslinger.inscribed_rounds'].n).toBe(1);
     expect(f.cb.mana).toBeGreaterThan(mana);
   });
@@ -378,7 +385,7 @@ describe('Spellslinger', () => {
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
     // Sigil 1.4: as Touch on the target, no roll; CONDENSE's core ×1.5 (30 → 45)
-    expect(logHas(f.cb, /spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE catches Foe 1 · 45 damage/)).toBe(true);
+    expect(logHas(f.cb, new RegExp('spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE catches Foe 1 · ' + Math.floor(WD('fire') * 1.5) + ' damage'))).toBe(true);
   });
   it('Ricochet Glyph: a miss glances to another enemy within 4 tiles at −2, once a turn, no extra ammo', () => {
     const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }, { at: 'O2' }]);
@@ -403,7 +410,7 @@ describe('Storm Hand', () => {
     (charOf(f.g, f.pc).state ||= {})['class:storm_hand.gauntlet_infusion'] = { element: 'shock' };
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, [], { evoker: false, emanator: true, mp: 20, mpMax: 40 }); tough(at(f.foe, '3,5')); seed(f, 10);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: f.foe.id, mode: 'melee' } as any);
-    expect(logHas(f.cb, /Infusion: SHOCK \(5 MP\) · 10 damage/)).toBe(true); expect(f.pc.mg!.mp).toBe(15);
+    expect(logHas(f.cb, new RegExp('Infusion: SHOCK \\(5 MP\\) · ' + AB('class:storm_hand.gauntlet_infusion', 'damage') + ' damage'))).toBe(true); expect(f.pc.mg!.mp).toBe(15);
   });
   it('Charged by Battle (rules 1.5): each melee hit gives 1 Charge (max 3), not a kill', () => {
     const f = fightWith([cls('storm_hand', { weapon: 'sabre' })], [{ at: 'O10' }, { at: 'O2' }]);

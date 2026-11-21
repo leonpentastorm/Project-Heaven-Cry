@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 import { amountBlock, amountMult, itemAmount } from '../src/effects/amounts';
 import { term } from '../src/effects/output';
+import bible from './golden/bible-scale.json';
 
 const SRC = fileURLToPath(new URL('../src', import.meta.url));
 const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => { const p = join(dir, f); return statSync(p).isDirectory() ? files(p) : p.endsWith('.ts') ? [p] : []; });
@@ -52,19 +53,28 @@ const LEDGER: [string, string, Record<string, number>][] = [
   ['trait:grenadiers_arm', 'damage', { base: 10, 'per.kg': 0.25 }],                                   // (10 + kg / 4) * Physical multiplier
   ['trait:drone_handler', 'repair', { base: 0, 'per.mastery': 10 }],
 ];
+// Rules 1.95 (the scale): every flat base and per-point part above was multiplied by the bible's factor
+// (tools/balance/bible/scale.json factor, exported to golden/bible-scale.json), so the ledger reads the old literal x
+// the factor. Kept at the old number: multipliers and shares (mults, a per max_hp or per damage share), and the HP a
+// character pays itself (scale.factor.self_paid: the Flux overload, the Crawler's blessing burn), which leave the factor.
+const F = bible.factor;
+const SELF_PAID = new Set(['rule:flux_overload damage', 'trait:crawler_blooded blessing_burn']);
+const SHARES = new Set(['perk:field_surgeon patch per.max_hp', 'trait:crawler_blooded chitin per.damage']);
+const scaled = (key: string, name: string, path: string, v: number): number =>
+  path.startsWith('mults.') || SELF_PAID.has(key + ' ' + name) || SHARES.has(key + ' ' + name + ' ' + path) ? v : v * F;
 describe('a6: the ledger (what moved from TypeScript into data is the same number)', () => {
   it('every block holds the number the code had', () => {
     for (const [key, name, want] of LEDGER) {
       const b: any = amountBlock(key, name);
       for (const [path, v] of Object.entries(want)) {
         const got = path === 'base' ? b.base : path.startsWith('per.') ? (b.per || []).find((p: any) => p.of === path.slice(4))?.value : b.mults?.[path.slice(6)];
-        expect(got, key + ' ' + name + ' ' + path).toBe(v);
+        expect(got, key + ' ' + name + ' ' + path).toBeCloseTo(scaled(key, name, path, v), 9);
       }
     }
   });
   it('itemAmount is the base, its per-point parts, then each multiplier in turn; a missing block or multiplier throws', () => {
-    expect(itemAmount('class:storm_hand.discharge', 'damage', [term(1.35, 'stat')], { charge: 3 })).toBe(48.6 /* rules 1.95 (the scale): was 20 * 3 * 1.35 */);
-    expect(itemAmount('trait:grenadiers_arm', 'damage', [term(1.6, 'stat')], { kg: 70 })).toBe(26.4 /* rules 1.95 (the scale): was (10 + 70 / 4) * 1.6 */);
+    expect(itemAmount('class:storm_hand.discharge', 'damage', [term(1.35, 'stat')], { charge: 3 })).toBeCloseTo(20 * F * 3 * 1.35, 9); // rules 1.95: the per-charge 20 x the factor
+    expect(itemAmount('trait:grenadiers_arm', 'damage', [term(1.6, 'stat')], { kg: 70 })).toBeCloseTo((10 * F + 70 * 0.25 * F) * 1.6, 9); // rules 1.95: base and per-kg x the factor
     expect(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: 145 })).toBe(0.5 * 145);
     expect(amountMult('perk:trick_shot', 'ricochet', 'share')).toBe(0.5);
     expect(() => amountBlock('perk:field_surgeon', 'nothing')).toThrow(/No amount block/);

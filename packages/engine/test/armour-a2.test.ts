@@ -5,6 +5,7 @@
 // Forge's grade step takes armour (no Relic step), its fitting reaches Juggernaut at the class row's price; a worn
 // piece's own non-gear effects are held (N4).
 import { describe, it, expect, afterEach } from 'vitest';
+import { scaled } from './helpers/scale';
 import { type GameState, apply, RuleError, ITEM, ARMOUR, ARMOUR_CLASSES, RARITY, packOf, armourOf, gearBonus, noSprintClass, armouredClass, LIGHT_CAP, ARMOURED_FROM,
   bodyArmourValue, migrateLoaded, heldOfChar, statQuery, bindGame, setGrade, itemTags, runOptions, priceOf, expandVariants, unitFromCharacter } from '../src';
 import { addItems } from '../src/effects/hooks';
@@ -36,10 +37,11 @@ describe('rules 1.91 items 7950, 7951: the class rows are the one copy', () => {
   it('ARMOUR is read from the rows: every class of 0.33 gives what it gave; class 6 is the breacher plate', () => {
     // the typed table of 0.33, kept here as the record that nothing moved
     const was = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
-    was.forEach((w, i) => expect({ value: ARMOUR[i].value, move: ARMOUR[i].move, dodge: ARMOUR[i].dodge }).toEqual(w));
+    // rules 1.95 (the scale): each class's value is the 0.33 value x the factor (scale.armour.classes.x), the moves kept
+    was.forEach((w, i) => expect({ value: ARMOUR[i].value, move: ARMOUR[i].move, dodge: ARMOUR[i].dodge }).toEqual({ ...w, value: scaled(w.value) }));
     expect(ARMOUR_CLASSES.map((r) => r.class)).toEqual([0, 1, 2, 3, 4, 5, 6]);
     const bp = ARMOUR_CLASSES[6];
-    expect([bp.name, bp.value, bp.weight_kg, bp.price_credits, bp.penalty.movement, !!bp.penalty.no_sprint]).toEqual(['Breacher plate', 18, 14, 1400, -0.5, false]);
+    expect([bp.name, bp.value, bp.weight_kg, bp.price_credits, bp.penalty.movement, !!bp.penalty.no_sprint]).toEqual(['Breacher plate', scaled(18), 14, 1400, -0.5, false]);
     expect((techJ as any).rules.gear_gates.heavy_armour.classes['6']).toBe(2);
     expect(priceOf('armour:6')).toBe(1400);
     expect(itemTags('armour:6')).toEqual(['kind:armour', 'family:plate', 'form:light', 'line:adamantile_brigade', 'slot:torso_outer', 'grade:standard']); // its line: rules 1.93 item 8103
@@ -47,7 +49,7 @@ describe('rules 1.91 items 7950, 7951: the class rows are the one copy', () => {
   it('the fields code reads in place of a class number: no Sprint (5 only), armoured (2 on), the light cap (Class I\'s 5)', () => {
     expect([0, 1, 2, 3, 4, 5, 6].map(noSprintClass)).toEqual([false, false, false, false, false, true, false]);
     expect([0, 1, 2, 3, 4, 5, 6].map(armouredClass)).toEqual([false, false, true, true, true, true, true]);
-    expect(LIGHT_CAP).toBe(3); expect(ARMOURED_FROM).toBe(6 /* rules 1.95 (the scale): was 6 */);
+    expect(LIGHT_CAP).toBe(scaled(5)); expect(ARMOURED_FROM).toBe(scaled(10)); // rules 1.95: Class I's 5 and Class II's 10 x the factor
   });
   it('in a fight: Juggernaut forbids Sprint, the breacher plate does not; the plate\'s armour is its row\'s, scaled by level', () => {
     const s = storyWith([{ kit: 'soldier', skills: { pain_threshold: 5 } }]);
@@ -121,9 +123,14 @@ describe('rules 1.91 items 7953 to 7955: armour grades through the Forge (buy, g
     const was = RARITY.fine.arm;
     try {
       const plain = W(g, () => ({ arm: gearBonus(c, 'armour_bonus'), ir: gearBonus(c, 'injury_resist_bonus'), body: bodyArmourValue(c) }));
-      expect(plain).toEqual({ arm: 3, ir: 10, body: 10 });
+      // rules 1.95: the grade's arm is a multiplier on the ladder (scale.grades: Fine 1.15); the insert's +3 (its row) and
+      // Class II's value (its row, x the factor) are each multiplied by it
+      const insert = 3, classII = ARMOUR[2].value;
+      expect(plain.ir).toBe(10);
+      expect(plain.arm).toBeCloseTo(insert * was, 9); expect(plain.body).toBeCloseTo(classII * was, 9);
       (RARITY as any).fine.arm = 2;
-      expect(W(g, () => ({ arm: gearBonus(c, 'armour_bonus'), ir: gearBonus(c, 'injury_resist_bonus'), body: bodyArmourValue(c) }))).toEqual({ arm: 6, ir: 10, body: 20 });
+      const two = W(g, () => ({ arm: gearBonus(c, 'armour_bonus'), ir: gearBonus(c, 'injury_resist_bonus'), body: bodyArmourValue(c) }));
+      expect(two).toEqual({ arm: insert * 2, ir: 10, body: classII * 2 });
     } finally { (RARITY as any).fine.arm = was; }
   });
   it('body armour: graded at the Forge (wornState.torso_outer); a fitting is a new plate at Standard; the fitting reaches Juggernaut at its row\'s price', () => {

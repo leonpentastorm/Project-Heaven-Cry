@@ -6,6 +6,13 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import { strainBurn, d20, grantShield, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { SIGIL } from '../src/data';
+import { amountBlock } from '../src/effects/amounts';
+
+// rules 1.95 (the scale): every number below is its row's (sigils.json word damage, the class rows' amounts), read here
+const WD = (w: string): number => (SIGIL as any)[w].damage;
+const AB = (k: string, n: string): number => amountBlock(k, n).base;
+
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -167,7 +174,7 @@ describe('Vessel: body forms on the 1.5 stage table (items 531, 532)', () => {
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { choice: 'steady' });
     perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' }); perk(f, f.pc, 'vessel.inner_charge', { actionId: 'pump_form', choice: 'iron' });
     seed(f, 10); perk(f, f.pc, 'vessel.release_strike', { targetId: f.foe.id });
-    expect(logHas(f.cb, /RELEASE \(2 forms, 36\)/)).toBe(true); // 15 × 1.4 + 15 × 1.0 (rules 1.19)
+    expect(logHas(f.cb, new RegExp('RELEASE \\(2 forms, ' + Math.round(AB('class:vessel.release_strike', 'damage') * (1.4 + 1.0)) + '\\)'))).toBe(true); // 15 × 1.4 + 15 × 1.0 (rules 1.19)
   });
 });
 
@@ -233,21 +240,21 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
     const z = sh('freeze'); seed(z.f, 10, 2); A(z.f, z.u, { type: 'combat/attack', targetId: z.a.id, mode: 'melee' });
     expect(condOn(z.f.unit(z.a.id), 'slowed')).toBe(true); expect(fxOf(z.f.cb, 'infusion').at(-1).element).toBe('freeze');
     const fi = sh('fire'); seed(fi.f, 10); A(fi.f, fi.u, { type: 'combat/attack', targetId: fi.a.id, mode: 'melee' });
-    expect(logHas(fi.f.cb, /Infusion: FIRE \(5 MP\) · 15 damage/)).toBe(true);
+    expect(logHas(fi.f.cb, new RegExp('Infusion: FIRE \\(5 MP\\) · ' + (AB('class:storm_hand.gauntlet_infusion', 'damage') + AB('class:storm_hand.gauntlet_infusion', 'fire_extra')) + ' damage'))).toBe(true);
     const sk = sh('shock'); seed(sk.f, 10); A(sk.f, sk.u, { type: 'combat/attack', targetId: sk.a.id, mode: 'melee' });
-    expect(lost(sk.f.unit(sk.b.id))).toBe(5); expect(fxOf(sk.f.cb, 'chain').at(-1).element).toBe('shock');
+    expect(lost(sk.f.unit(sk.b.id))).toBe(AB('class:storm_hand.gauntlet_infusion', 'arc')); expect(fxOf(sk.f.cb, 'chain').at(-1).element).toBe('shock');
   });
   it('Discharge at 2 Charges with Freeze: 40 to each enemy beside the target and Frost\'s stage-2 rider (Slowed, no save); shake', () => {
     const z = sh('freeze'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(24); expect(condOn(z.f.unit(z.b.id), 'slowed')).toBe(true);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(condOn(z.f.unit(z.b.id), 'slowed')).toBe(true);
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'freeze', charges: 2, shake: true });
     expect(z.f.unit(z.u.id).res!.charges).toBe(0);
   });
   it('Fire on a critical: Burning 1 round and no +5 (the plain +10 only)', () => {
     const fi = sh('fire'); seed(fi.f, 20); A(fi.f, fi.u, { type: 'combat/attack', targetId: fi.a.id, mode: 'melee' });
-    expect(logHas(fi.f.cb, /Infusion: FIRE \(5 MP\) · 10 damage/)).toBe(true);
+    expect(logHas(fi.f.cb, new RegExp('Infusion: FIRE \\(5 MP\\) · ' + AB('class:storm_hand.gauntlet_infusion', 'damage') + ' damage'))).toBe(true);
     expect(condOn(fi.f.unit(fi.a.id), 'burning')).toBe(true); expect(fi.f.unit(fi.a.id).conds!.burning).toBe(1);
     const no = sh('fire'); seed(no.f, 10); A(no.f, no.u, { type: 'combat/attack', targetId: no.a.id, mode: 'melee' });
     expect(condOn(no.f.unit(no.a.id), 'burning')).toBe(false);
@@ -269,14 +276,14 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
     const z = sh('spark'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(24); expect(Object.keys(z.f.unit(z.b.id).conds || {}).length).toBe(0);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(Object.keys(z.f.unit(z.b.id).conds || {}).length).toBe(0);
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'spark', charges: 2, shake: true }); expect(z.f.unit(z.u.id).res!.charges).toBe(0);
   });
   it('Discharge with Fire at 2 Charges: 40 and Fire\'s stage-2 rider (Burning 2 rounds) on each enemy beside the target', () => {
     const z = sh('fire'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(24); expect(condOn(z.f.unit(z.b.id), 'burning')).toBe(true); expect(z.f.unit(z.b.id).conds!.burning).toBe(2);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(condOn(z.f.unit(z.b.id), 'burning')).toBe(true); expect(z.f.unit(z.b.id).conds!.burning).toBe(2);
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'fire', charges: 2 });
   });
 });

@@ -11,6 +11,8 @@ import {
   enemyStats, healingMult, levelFactor, harm, attackDamage, applyCond, condOn, endCond, phys, enemyPreference, BOSS_GUARD, unguarded, guardNextAction, pastShields, apply, type Unit,
 } from '../src';
 import { genericOf } from '../src/effects/hooks';
+import { amountBlock } from '../src/effects/amounts';
+import { scaleOf } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -19,24 +21,31 @@ const put = (u: Unit, x: number, y: number) => { u.pos = x + ',' + y; };
 const bag = (u: Unit, hp = 5000) => { u.armour = 0; u.maxHp = hp; u.hp = hp; u.shield = 0; return u; };
 
 describe('1. a weapon whose damage is a formula reads it from the data', () => {
-  it('the longbow deals 25 + 6 × Raw Power, the recurve bow 20 + 5 × Raw Power', () => {
-    expect(weaponDamage(WEAPON.longbow, 6, 0)).toBe(25);
-    expect(weaponDamage(WEAPON.longbow, 6, 4)).toBe(25);
-    expect(weaponDamage(WEAPON.recurve_bow, 6, 4)).toBe(21 /* rules 1.95 (the scale): was 21 */);
+  // rules 1.95 (scale.factor.draw_bows): a draw bow's draw moved off its row onto the Stat term (phys.also_scales:
+  // Dexterity and Raw Power); the row is one number, the same at every Raw Power
+  it('the longbow and the recurve bow deal their row number; the draw rides the Stat (also_scales)', () => {
+    for (const id of ['longbow', 'recurve_bow']) {
+      const w: any = WEAPON[id]; expect(typeof w.damage).toBe('number');
+      expect(weaponDamage(w, 6, 0)).toBe(w.damage); expect(weaponDamage(w, 6, 4)).toBe(w.damage);
+      expect(w.phys.also_scales).toEqual(['dexterity', 'raw_power']);
+    }
   });
   it('every weapon whose damage is text is a formula the engine can read (none falls back to 20 unseen)', () => {
     const texts = WEAPONS.filter((w) => typeof w.damage === 'string');
-    expect(texts.map((w) => w.id).sort()).toEqual(['longbow', 'recurve_bow']);
+    expect(texts.map((w) => w.id).sort()).toEqual([]); // rules 1.95: the two bows' text formulas left the rows
     for (const w of texts) { const f = damageFormula(w.damage); expect(f, w.id + ': ' + w.damage).not.toBeNull(); expect(weaponDamage(w, 3, 3)).toBe(f!.base + 3 * f!.perRawPower); }
     expect(damageFormula('lots')).toBeNull(); expect(damageFormula('30')).toEqual({ base: 30, perRawPower: 0 });
   });
-  it('in a fight: a longbow in strong arms hits for its formula before armour', () => {
+  it('in a fight: a longbow in strong arms hits for its row before armour, and its draw is on the Stat', () => {
+    const weak = fightWith([{ weapon: 'longbow', skills: { raw_power: 0, dexterity: 4 } }], [{ tier: 'soldier', classic: true }]);
+    const dw = withGame(weak.g, () => attackDamage(weak.cb, weak.pc, bag(weak.foe), 'shot', weak.g.characters[weak.pc.charId!]));
     const f = fightWith([{ weapon: 'longbow', skills: { raw_power: 4, dexterity: 4 } }], [{ tier: 'soldier', classic: true }]);
     const pc = f.pc, foe = bag(f.foe); put(pc, 3, 5); put(foe, 8, 5); pc.attack = 60;
     const who = f.g.characters[pc.charId!], d = withGame(f.g, () => attackDamage(f.cb, pc, foe, 'shot', who));
-    expect(d.base).toBe(25); // 25 + 6 × 4, before the multipliers
+    expect(d.base).toBe((WEAPON.longbow as any).damage); // the row, before the multipliers
+    expect(d.total).toBeGreaterThan(dw.total); // Raw Power 4 draws harder: the Stat reads it
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit && !r.crit); i++) { foe.hp = foe.maxHp; pc.ap = 6; pc.ammo = 5; r = resolveAttack(f.cb, f.g.rng, pc, foe, 'shot', who); } });
-    expect(r.hit).toBe(true); expect(r.damage).toBe(Math.max(1, Math.floor(d.total) - d.armour)); expect(r.damage).toBeGreaterThan(49);
+    expect(r.hit).toBe(true); expect(r.damage).toBe(Math.max(1, Math.floor(d.total) - d.armour));
   });
 });
 
@@ -115,16 +124,17 @@ describe('8. a shield stops blasts, traps and hazards; not damage over time, not
   });
   it('a grenade thrown by an enemy: the shield takes it', () => {
     const { f, u } = one(); put(u, 3, 5); put(f.pcs[1], 12, 1);
-    withGame(f.g, () => blast(f.cb, f.g.rng, f.foe, '3,5', 'frag_grenade'));
-    expect(u.shield).toBe(0); expect(u.hp).toBe(200 - (40 - 30));
+    // rules 1.95: the blast is on the scale (the thrown profile); a shield bigger than any blast takes all of it
+    u.shield = 1000; withGame(f.g, () => blast(f.cb, f.g.rng, f.foe, '3,5', 'frag_grenade'));
+    expect(u.shield).toBeLessThan(1000); expect(u.hp).toBe(200);
   });
   it('a barrel going up next to you: the shield takes it', () => {
     const { f, u } = one(); const barrel = objectsOf(f.cb).find((o) => o.kind === 'barrel');
     if (!barrel) { f.cb.objects!.push({ id: 'tb', kind: 'barrel', name: 'Barrel', pos: '5,5', hp: 1, max: 20 } as any); }
     const b = objectsOf(f.cb).find((o) => o.kind === 'barrel')!; b.hp = 1; const [bx, by] = b.pos.split(',').map(Number); put(u, bx + 1, by);
     for (const v of f.cb.units) if (v !== u) put(v, (bx + 8) % 16, (by + 5) % 11);
-    withGame(f.g, () => damageObject(f.cb, b.pos, 50));
-    expect(u.shield).toBe(0); expect(u.hp).toBe(200 - (40 - 30));
+    u.shield = 1000; withGame(f.g, () => damageObject(f.cb, b.pos, 50)); // rules 1.95: as the grenade, a shield bigger than the blast
+    expect(u.shield).toBeLessThan(1000); expect(u.hp).toBe(200);
   });
   it('damage over time goes past it: Bleeding, Burning, Corroded', () => {
     const { f, u } = one();
@@ -132,10 +142,11 @@ describe('8. a shield stops blasts, traps and hazards; not damage over time, not
     expect(u.shield).toBe(30); expect(u.hp).toBe(195);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, null, u, 'burning', undefined, 'body', { skipSave: true })); expect(condOn(u, 'burning')).toBe(true);
     f.turn(u); // the tick at the start of its turn
-    expect(u.shield, 'Burning').toBe(30); expect(u.hp, 'Burning: 10 at the start of the turn').toBe(185);
+    const tick = (id: string) => Math.floor(amountBlock('condition:' + id, 'tick').base * scaleOf(u.level)); // rules 1.95: the row's tick on the level column
+    expect(u.shield, 'Burning').toBe(30); expect(u.hp, 'Burning: its tick at the start of the turn').toBe(195 - tick('burning'));
     endCond(u, 'burning'); withGame(f.g, () => applyCond(f.cb, f.g.rng, null, u, 'corroded', 3, 'body', { skipSave: true })); expect(condOn(u, 'corroded')).toBe(true);
     f.turn(u);
-    expect(u.shield, 'Corroded').toBe(30); expect(u.hp, 'Corroded: 5 at the start of the turn').toBe(180);
+    expect(u.shield, 'Corroded').toBe(30); expect(u.hp, 'Corroded: its tick at the start of the turn').toBe(195 - tick('burning') - tick('corroded'));
   });
   it('true damage goes past it; Soul and Sigil damage do not', () => {
     const { f, u } = one();
