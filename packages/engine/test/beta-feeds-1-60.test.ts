@@ -41,7 +41,7 @@ describe('the feed is data: nine betas, one door each, one carrier each', () => 
     // (rules 1.70 item 5539, Leon's ruling: Composure no longer feeds Will Power's door; it gives the Strain limit by steps)
     // (rules 1.97 item 8344: Guts no longer feeds a share of the chain's wear; its whole-number rules are below)
     expect(FEEDS.map((x) => x.beta).sort()).toEqual(['analysis', 'athletics', 'camaraderie', 'conscience', 'pain_threshold', 'proficiency', 'rumination']);
-    for (const x of FEEDS) { expect((SKILL as any)[x.door].slot).toBe('alpha'); expect((SKILL as any)[x.door].attribute).toBe((SKILL as any)[x.beta].attribute); expect(x.per).toBe(STEP(x.beta)); expect(x.row.provisional).toBe(true); }
+    for (const x of FEEDS) { expect((SKILL as any)[x.door].slot).toBe('alpha'); expect((SKILL as any)[x.door].attribute).toBe((SKILL as any)[x.beta].attribute); expect(x.per).toBe(STEP(x.beta) ?? 0); /* rules 1.100 item 8375: Rumination has no product step */ expect(x.row.provisional).toBe(true); }
     expect(new Set(FEEDS.map((x) => x.carrier)).size).toBe(FEEDS.length);
   });
   it('x1 with no points in either skill; at alpha 10 and beta 10: 1 + feed_flat x 10 + feed x 100', () => {
@@ -122,11 +122,11 @@ describe('Acuity feeds the spot TN against you (item 4607)', () => {
   });
 });
 
-describe('Rumination feeds the Flux limit (item 4608); Composure gives the Strain limit by steps (rules 1.70 item 5539, was item 4611); Improvisation the Figment body (item 4609)', () => {
+describe('Rumination feeds the Flux limit (item 4608, rules 1.100 item 8375: +feed_flat a point); Composure gives the Strain limit by steps (rules 1.70 item 5539, was item 4611); Improvisation the Figment body (item 4609)', () => {
   for (const b of [1, 10]) it('alpha 10, beta ' + b, () => {
     const f = fight({ brain_power: ALPHA, rumination: b, will_power: ALPHA, composure: b, visualization: ALPHA, proficiency: b });
     const u = f.unit(f.pc.id), c = f.char(f.pc);
-    expect(f.bound(() => fluxMaxOf(u, f.cb))).toBe(Math.round(FLUX_MAX * feedAt('rumination', b)));
+    expect(f.bound(() => fluxMaxOf(u, f.cb))).toBe(FLUX_MAX + (SKILL as any).rumination.per_point.numbers.feed_flat * b); // rules 1.100 item 8375: a whole Flux a Rumination point (the product feed retired)
     // Leon's ruling: 3, +1 at Composure 1, 2, 4, 6, 8; Will Power gives none (Will Power 10 here): 4 at 1, 8 at 10, as the fight holds it
     expect(strainLimit(c)).toBe(b === 1 ? 4 : 8);
     expect(strainLimit({ ...c, skills: { ...c.skills, composure: 0 } } as any)).toBe(3);

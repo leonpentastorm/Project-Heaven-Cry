@@ -220,7 +220,10 @@ describe('Survival, one stage (rules 1.41)', () => {
     // PHC-0001 to PHC-0040: 0007, 0026, 0034 and 0037 reach the boon; 0007 plays eight fights.
     // PHC-0020 since rules 1.97 (0.34 step 2b: the Body doors on their ladders, enemies' Margins by tier): PHC-0007 now
     // loses its eighth fight; a seed scan of PHC-0001 to PHC-0040: 0020, 0033 and 0037 reach the boon; 0020 plays nine fights.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0020', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0020', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0033 since rules 1.100 (0.34, the Sigil door: the Line on the cash-out, one Subject's damage, CONDENSE with no
+    // strength, Overclock at 8 with its overload): PHC-0020 no longer reaches the boon; a seed scan of PHC-0001 to PHC-0040:
+    // 0022, 0033, 0037 and 0040 reach the boon (read, not fitted).
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0033', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0033', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

@@ -14,7 +14,7 @@ export interface CallDef {
   text: string; steps: CallStep[]; adjudication: string; provisional?: boolean;
   /** rules 1.98 item 8352 (ruling 32): a Call on yourself is made this many steps below your own (at least the first) */ self_step_less?: number;
   /** rules 1.98 item 8352: a Call that lands gives its speaker this resource, by the speaker's points in the Call's skill
-   *  (the last step whose `from` is met), up to the pool's top (Warn's plates) */ feeds?: { resource: string; steps: { from: number; value: number }[] };
+   *  (the last step whose `from` is met), up to the pool's top (Warn's plates) */ feeds?: { resource: string; steps: { from: number; value: number }[]; /** rules 1.100 item 8376: 'given' feeds as the Call is made (Brief); else when it lands (Warn) */ when?: 'given'; /** the log line ({who} {n} {call}) */ line?: string };
 }
 /** What the speaker (or the enemy AI) chose. `opt`: Order's things, joined by '+' ('reload', 'stand', 'pickup',
  * 'move'). `tile`: Order's move, Cue's step, Warn's named tile. `react`: made off the speaker's turn, on its reaction

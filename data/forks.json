@@ -276,7 +276,26 @@
           },
           "resource": "shadow",
           "value": 1,
-          "limit": [{"per": "per_turn", "n": 1, "key": "fingers"}, {"per": "per_turn", "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]}, "shared": "shadow_gain"}],
+          "limit": [
+            {
+              "per": "per_turn",
+              "n": 1,
+              "key": "fingers"
+            },
+            {
+              "per": "per_turn",
+              "n": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "rule:shadow.door_gains_per_turn",
+                    "value": 1
+                  }
+                ]
+              },
+              "shared": "shadow_gain"
+            }
+          ],
           "label": "Light Fingers",
           "fx": {
             "k": "stance",
@@ -1284,13 +1303,13 @@
               }
             }
           },
-          "value": 1.25,
+          "value": 1.1,
           "label": "Overflux"
         }
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3); rules 1.100 item 8377 (ruling 52: +10%)"
     },
     {
       "id": "fork.sigil.clean_vent",
@@ -1408,7 +1427,7 @@
             ],
             "flag": "aged"
           },
-          "value": 1.2,
+          "value": 1.1,
           "label": "Written in Advance"
         },
         {
@@ -1432,7 +1451,7 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3); rules 1.100 item 8377 (ruling 52: +10%)"
     },
     {
       "id": "fork.sigil.running_script",

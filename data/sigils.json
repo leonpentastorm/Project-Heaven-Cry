@@ -30,13 +30,13 @@
       "other_means": "any word that isn't a Subject"
     },
     "min_glyphs": 2,
-    "max_glyphs": 4,
+    "max_glyphs": 5,
     "max_words": "sigil_max_words",
     "glyphs_on_ground": "sigil_max_words (+ Hold the Stroke)",
     "shape": {
       "kind": "line",
       "min": 2,
-      "max": 4,
+      "max": 5,
       "directions": [
         "horizontal",
         "vertical",
@@ -45,7 +45,7 @@
       "bends": false,
       "group": "A Line is one stroke: glyphs drawn one after another in a straight row. Glyphs from different strokes never join into one Line, even when they touch.",
       "stroke": {
-        "extends": "A new glyph joins a stroke when it is drawn next to the stroke's last glyph and carries on in the same direction, and the stroke has fewer than 4 glyphs. A single glyph can be extended in any of the 8 directions.",
+        "extends": "A new glyph joins a stroke when it is drawn next to the stroke's last glyph and carries on in the same direction, and the stroke is shorter than the longest Line. A single glyph can be extended in any of the 8 directions.",
         "otherwise": "Any other glyph starts a new stroke, even if it touches other glyphs.",
         "picker_default": "When a new glyph could join more than one stroke, it joins the one that holds your most recent glyph. If none of them is yours, it starts a new Line; it joins an ally's stroke only when you pick that stroke yourself.",
         "stack": "A second glyph on a tile joins the stroke of the glyph already there.",
@@ -95,25 +95,12 @@
         "heal",
         "shield"
       ],
-      "subjects": "Repeated Subjects add their healing and shields together; of damaging glyphs the strongest counts in full and every other adds half. Each copy's extra effect still applies only once.",
+      "subjects": "Repeated Subjects add their healing and shields together; of damaging glyphs only the strongest deals damage, and every other adds its element and its condition (other_share). Each copy's extra effect still applies only once.",
       "except": [
         "kin",
         "a second, different Reach word"
-      ]
-    },
-    "line_mult": {
-      "id": "line_mult",
-      "by_glyphs": {
-        "2": 1.87,
-        "3": 1.93,
-        "4": 1.98
-      },
-      "applies_to": [
-        "damage"
       ],
-      "who": "characters and the units that fight for them; an enemy caster's damage comes from the enemy table",
-      "provisional": true,
-      "text": "A Line's direct damage is multiplied by its length: ×{=by_glyphs.2} for two glyphs, ×{=by_glyphs.3} for three, ×{=by_glyphs.4} for four. Healing, shields, ranges and conditions are not changed."
+      "other_share": 0
     },
     "critical": {
       "text": "Rules 1.96 item 8320: a spell's roll to hit takes Margins as a weapon's does (rules.json rolls.margins): every full 4 over the Defense is one, a natural 20 is a critical and adds two, and each adds its share of the spell to the Line's multiplier.",
@@ -160,7 +147,7 @@
       "after",
       "stays"
     ],
-    "multipliers": "A spell's damage is its strongest damaging Subject in full and half of every other damaging glyph (healing and shields add in full), × the Reach word, × the Burst word, × the Delivery word (×0.5 for a field or turret, ×0.75 for each CHAIN jump), × 0.9 for each repeated glyph, × your Sigil multiplier. Damage is also × the Line multiplier (×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4). Elemental damage adds your Elemental bonus to the Sigil bonus (the two are added, not multiplied), MEND and WARD are also × your Healing given, and a critical hit is ×1.5 damage (up to ×2.0). Armour comes off last.",
+    "multipliers": "A spell's damage is its strongest damaging Subject (every other damaging glyph adds its element and condition, not its damage; healing and shields add in full), x the Reach word, x the Burst word, x the Delivery word (a field, turret or CHAIN jump at its share), x 0.9 for each repeated glyph, x your Sigil multiplier, x the Line's cash-out (Brain Power's Bite on its length). Elemental damage adds your Elemental bonus to the Sigil bonus (the two are added, not multiplied), MEND and WARD are also x your Healing given, and each Margin adds its share of the spell. Armour comes off last.",
     "mixes": {
       "condense+spread": "CONDENSE with SPREAD: ×1.5 on the tile where the spell lands and ×0.6 around it.",
       "condense+push": "CONDENSE with PUSH: ×1.5 on the tile where the spell lands and ×0.7 in the cone.",
@@ -188,7 +175,7 @@
         "seek"
       ]
     },
-    "known_max": "4 + brain_power",
+    "known_max": "4 + 3 x brain_power (grammar.known.base + brain_power per_point.numbers.words a point)",
     "retired": [
       {
         "id": "return",
@@ -233,6 +220,22 @@
       "practised": 10,
       "mastered": 30,
       "provisional": true
+    },
+    "push_past": 1,
+    "push_past_note": "rules 1.100 item 8374: an Overclocked Line may be one glyph past its caster's Reach, so the longest Line anyone writes is max_glyphs + push_past",
+    "line_cash": {
+      "id": "line_cash",
+      "applies_to": [
+        "damage"
+      ],
+      "who": "characters and the units that fight for them; an enemy caster's damage comes from the enemy table",
+      "provisional": true,
+      "source": "rules 1.100 item 8371 (the growth bible's mind.json sigils cash-out, ruling 58): the Line multiplier is Brain Power's Bite x S(n) on the door's own step (skills.json brain_power door_ladder); a Line pays for at most the glyphs its caster may write now",
+      "text": "A Line is the door's cash-out: its direct damage is multiplied by Brain Power's Bite on its length, each glyph past the first worth more than the one before (a Line of two is about two plain hits, the longest about eleven). Healing, shields, ranges and conditions are not changed."
+    },
+    "known": {
+      "base": 4,
+      "source": "rules 1.100 item 8373 (ruling C19): words held are this base + skills.json brain_power per_point.numbers.words a Brain Power point, plus each Mastered free word"
     }
   },
   "elements": {
@@ -1516,12 +1519,9 @@
       "class": "burst",
       "charge": 1,
       "flux": 1,
-      "text": "One target, at ×{=mult} strength.",
+      "text": "One target and nothing else: it gives the Line a single target and no strength of its own.",
       "area": "single",
-      "mult": 1.5,
-      "per_copy": {
-        "mult": 0.5
-      },
+      "mult": 1,
       "order": "cover",
       "new": false,
       "grand": "Crush. Each enemy that starts a turn in the area next to another creature takes 10 Sigil damage.",
@@ -1529,15 +1529,19 @@
       "provisional": true,
       "adjudication": "engine",
       "inflection": {
-        "text": "CONDENSE is ×1.6 instead of ×{=mult}.",
+        "text": "CONDENSE costs no charge.",
         "effects": [
           {
             "op": "inflection",
-            "stat": "mult",
-            "value": 0.1
+            "stat": "charge_free",
+            "value": 1
           }
         ],
         "provisional": true
+      },
+      "source": "rules 1.100 item 8372 (mind.json words.condense): length pays a Line now, so a word that only multiplied paid twice",
+      "per_copy": {
+        "mult": 0
       }
     },
     {

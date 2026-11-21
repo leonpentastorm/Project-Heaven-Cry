@@ -70,7 +70,7 @@ function build(): WikiEntry[] {
   const groups = ['subject', 'reach', 'delivery', 'burst', 'filter'].map((gr) => gr[0].toUpperCase() + gr.slice(1) + ': ' + (SIGILS as any[]).filter((w) => w.group === gr).map((w) => w.word).join(', ')).join('. ');
   add('sigil:grammar', 'Sigil grammar', line('How Sigil words make a spell.', groups + '.',
     'A spell is 2 to 4 glyphs: one or more Subjects plus at least one other word; at most one Reach word (none = Touch, 1 tile deep); KIN once. Words may repeat (each repeated glyph x0.9 to damage, healing and shields).',
-    [sg.line_mult?.text, sg.critical?.text, sg.elite_guard?.text].filter(Boolean).join(' '),
+    [sg.line_cash?.text, sg.critical?.text, sg.elite_guard?.text].filter(Boolean).join(' '),
     'Drawing: one glyph on the caster\'s own tile; step and draw again to walk a Line, 2 to 4 tiles in a straight row (diagonals too). Glyphs fade after a few rounds.',
     'Evoking (1 AP): stand at an end or behind it to fire along the Line, beside it to fire across; the Line\'s length is the spell\'s width, the Reach its depth. A finished Line fires back the way the caster walked. Middle glyphs can\'t fire.',
     'Reach: SEEK a straight bolt (cover stops it), ARC a lob over everything, SENSE appears with no sight, RELAY casts from an ally. Delivery: STAY strikes, then leaves a field (full the first time, half after), WAIT a hidden trap, WATCH a turret, TWICE two missiles, PULL, CHAIN, LEECH. Burst: CONDENSE one target, SPREAD 5x5, PUSH a cone.',

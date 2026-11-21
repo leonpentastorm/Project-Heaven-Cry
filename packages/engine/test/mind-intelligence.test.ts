@@ -33,13 +33,13 @@ const evoke = (f: F, aim = '8,5') => f.act({ type: 'combat/evoke', unitId: f.pc.
 const dealt = (f: F, e: Unit) => 500 - f.unit(e.id).hp;
 
 describe('Brain Power: the ladder (rules 1.74 item 6020)', () => {
-  it('Overclock is held from Brain Power 2; the core-charge cut a Sigil comes at 3, 5 and 9', () => {
+  it('Overclock is the Push, held from Brain Power 8 (rules 1.100 item 8374); the core-charge cut a Sigil comes at the row points', () => {
     const held = (bp: number) => { const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: bp } }); return itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).map((i) => i.key); };
-    expect(held(1)).not.toContain('skill:brain_power.2'); expect(held(2)).toContain('skill:brain_power.2');
+    expect(held(7)).not.toContain('skill:brain_power.8'); expect(held(8)).toContain('skill:brain_power.8');
     const cut = (bp: number) => { const f = rig(['fire'], ['8,5'], { skills: { brain_power: bp } }); return sigilCoreSaving(f.g.characters[f.pc.charId!]); };
     const pp: any = (SKILL as any).brain_power.per_point;
-    expect(pp.charge_at).toEqual([3, 5, 9]);
-    expect([2, 3, 4, 5, 8, 9, 10].map(cut)).toEqual([0, 1, 1, 2, 2, 3, 3].map((n) => n * pp.numbers.charge));
+    expect(pp.charge_at).toEqual([2, 5, 9]); // rules 1.100 item 8374: the first saving at 2 (was 3)
+    expect([1, 2, 3, 4, 5, 8, 9, 10].map(cut)).toEqual([1, 2, 3, 4, 5, 8, 9, 10].map((b) => pp.charge_at.filter((at: number) => b >= at).length * pp.numbers.charge));
   });
 });
 

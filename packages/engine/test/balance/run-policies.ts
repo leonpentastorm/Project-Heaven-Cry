@@ -16,6 +16,7 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
+import { LINE_MOST } from '../../src/sigilwords';
 import { coverBonus, lineOfSight, isPressed, SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP, hasTag } from '../../src';
 import { POLICIES, sigil, sigilAfter, sigilLines, outburst, plain, plainCands, best, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { pickedFork } from '../../src/doorpicks';
@@ -82,9 +83,9 @@ export const sigilRun: Policy = (x) => {
       const tgt = [...x.foes].sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos))[0];
       const pc = plainCands({ ...x, foes: [tgt] }).cands[0];
       if (pc && (SMALL_T.has(tgt.tier) || pc.value >= tgt.hp)) { const s = pistolOn([tgt]); if (s) { SIGIL_RUN.pistolSmall++; return s; } }
-      // 5. Overclock: one glyph past Max Sigil words (the verb is sent before the glyph that needs it, below)
-      const over = (m.maxWords || 2) < 4 && !!verbOk(x, 'skill:brain_power.2', 'overclock');
-      const cap = Math.min(4, (m.maxWords || 2) + (over ? 1 : 0), W2(x.g, () => groundCap(u, x.cb)) + (over ? 1 : 0));
+      // 5. Overclock (the Push at Brain Power 8, rules 1.100 item 8374): one glyph past Max Sigil words (the verb is sent before the glyph that needs it, below)
+      const over = (m.maxWords || 2) < LINE_MOST && !!verbOk(x, 'skill:brain_power.8', 'overclock');
+      const cap = Math.min(LINE_MOST, (m.maxWords || 2) + (over ? 1 : 0), W2(x.g, () => groundCap(u, x.cb)) + (over ? 1 : 0));
       // 3. the Line's length: the shortest that drops the target, else the longest the turn pays for
       const K = M.lineK || LINE_K, byN: Record<number, any> = {};
       for (const l of sigilLines(m.words, cap)) if (!byN[l.words.length] || l.est > byN[l.words.length].est) byN[l.words.length] = l;
@@ -98,13 +99,13 @@ export const sigilRun: Policy = (x) => {
           const s = pistolOn(x.foes); if (s) return s;
         }
         if (n < (ns[ns.length - 1] || n)) SIGIL_RUN.short++;
-        const mw = m.maxWords; if (over) { u.mg.maxWords = Math.min(4, mw + 1); M.overAt = mw; }
+        const mw = m.maxWords; if (over) { u.mg.maxWords = Math.min(LINE_MOST, mw + 1); M.overAt = mw; }
         try { return sigilRunBase({ ...x, opts: { ...(x.opts || {}), glyphs: n, noCover: true, along: x.opts?.along ?? SIGIL_RUN_OPTS.along } }); } finally { u.mg.maxWords = mw; }
       }
     }
     // Overclock before the glyph past Max Sigil words
     if (plan && plan.i < plan.words.length && M.overAt != null && plan.i >= M.overAt && plan.tiles[plan.i] === u.pos && M.overStamp !== plan.sid + ':' + plan.i) {
-      const v = verbOk(x, 'skill:brain_power.2', 'overclock'); M.overStamp = plan.sid + ':' + plan.i; if (v) { SIGIL_RUN.overclock++; return v; }
+      const v = verbOk(x, 'skill:brain_power.8', 'overclock'); M.overStamp = plan.sid + ':' + plan.i; if (v) { SIGIL_RUN.overclock++; return v; }
     }
   }
   return sigilRunBase(x);

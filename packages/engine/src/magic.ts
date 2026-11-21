@@ -32,7 +32,8 @@ import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter, setResLimit } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
-import { feedOf, showFeedNumber } from './effects/feed';
+import { feedStep, showFeedNumber } from './effects/feed';
+import { doorSkillsOf } from './door';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
@@ -105,6 +106,7 @@ export interface MagicUnit {
   sigilBoon?: number; soulBoon?: number;
   /** Rules 1.26 (the re-fit): the level factor on what this caster deals (output.level.deal; a character's; unset on an enemy, whose level is in its tier: ×1). */ deal?: number;
   maxWords: number; glyphAp: number; coreSave: number; rangeBonus: number; durBonus: number;
+  /** Rules 1.100 item 8371: the Sigil door's skill points the Line's cash-out reads, for a unit with no character behind it (a companion, a twin) */ lineSkills?: Record<string, number>;
   /** Begin's AP (2; the 1.2 'Soul cast AP' name). */ soulAp: number; costSave: number; soulRange: number; syphon: number; strainLimit: number;
   saves: Record<Fam, number>; /** Debuff strength by delivering skill (a PC's table; an enemy caster's tier number is under '*'). */ debuff: Record<string, number>;
   /** Items' changes to a word's charge (word_cost), by word. */
@@ -121,7 +123,8 @@ export const MANA_START = 15;
 export const FLUX_MAX: number = Number((RULES as any).mana?.sigil?.flux?.safe_max);
 if (!(FLUX_MAX > 0)) throw new Error('data/rules.json mana.sigil.flux.safe_max is missing');
 /** This unit's Flux limit: FLUX_MAX (fed by Rumination) plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
-/** Rules 1.60 item 4608 (the beta feeds: Rumination): FLUX_MAX x the Flux limit's feed, rounded, then what items add. */
+/** Rules 1.100 item 8375 (ruling 20; was rules 1.60 item 4608's product): FLUX_MAX + Rumination's whole step a point
+ * (feedStep: feed_flat x Rumination), then what items add. */
 /** Bound to `g` while `fn` reads (preview.ts withGame does the same; it can't be imported here: preview imports this file's importers). */
 const inGame = <T>(g: any, fn: () => T): T => { const was = bindGame(g || null); try { return fn(); } finally { bindGame(was); } };
 /** A stat query's who for a unit, or for a character sheet out of a fight (no tile: its own points and items). */
@@ -131,9 +134,9 @@ const whoOf = (u: Unit | Character, cb?: Combat | null) => ((u as any).pos === u
 export function fluxMaxOf(u: Unit | Character, cb?: Combat | null, g?: any): number {
   if (g !== undefined) return inGame(g, () => fluxMaxOf(u, cb));
   const who = whoOf(u, cb);
-  return Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery(who, 'flux_max').add;
+  return FLUX_MAX + feedStep(u, 'flux_limit') + statQuery(who, 'flux_max').add;
 }
-showFeedNumber('flux_limit', (x) => Math.round(FLUX_MAX * feedOf(x, 'flux_limit')));
+showFeedNumber('flux_limit', (x) => FLUX_MAX + feedStep(x, 'flux_limit'));
 export { CORE_CHARGE, coreChargeOf };
 /** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */
 export const CORE_ITEM = 'standard_core';
@@ -200,7 +203,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
     words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, ...(attuner ? { attuner } : {}), feelings: [...(c.feelings || [])],
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c), freeUsed: 0, swellFree: swellFree(c),
     brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), sigilBoon: statOf('sigil_mend', c), soulBoon: statOf('soul_mend', c), soulBase: SOUL_DAMAGE, mend: mendFactor(c.level), deal: levelFactor('deal', c.level), elemMult: elementalMult(c), healMult: healingMult(c),
-    maxWords: maxSigilWords(c), glyphAp: glyphAp(c), coreSave: sigilCoreSaving(c), rangeBonus: sigilRangeBonus(c), durBonus: sigilDurationBonus(c),
+    maxWords: maxSigilWords(c), lineSkills: doorSkillsOf(c, 'glyphs'), glyphAp: glyphAp(c), coreSave: sigilCoreSaving(c), rangeBonus: sigilRangeBonus(c), durBonus: sigilDurationBonus(c),
     soulAp: soulCastAp(c), costSave: soulCostSaving(c), soulRange: soulRangeBonus(c), syphon: syphonMult(c), strainLimit: strainLimit(c),
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: strengthTable(c),
@@ -647,7 +650,7 @@ export {
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
   evokeGrowth, strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
-  lineMult, LINE_MULT, lineMultFor, spellMargins, spellGapToHit, lineGuards, capParts,
+  lineCash, LINE_MOST, lineMultFor, spellMargins, spellGapToHit, lineGuards, capParts,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, spellMargins, spellGapToHit } from './sigil';
 import { work } from './kit';

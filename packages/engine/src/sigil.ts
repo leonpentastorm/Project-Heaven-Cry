@@ -8,9 +8,9 @@
 // Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
-import { WEAPON, SKILL, ATTR, ENEMY, type SigilDef } from './data';
+import { WEAPON, SKILL, ENEMY, type SigilDef } from './data';
 import {
-  type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
+  type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, LINE_MOST, OTHER_SHARE, SIGIL_REV, STARTING_DEFAULT,
 } from './sigilwords';
 export * from './sigilwords';
 import { say, objectAtLevel,
@@ -27,8 +27,9 @@ import { itemAmount } from './effects/amounts';
 import { mendFactorOf, flatLevelOf } from './effects/mending';
 import { armourAgainst, landed, amountOf, term, gatedAmount, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
-import { NEEDS_EVOKER, passiveVigilance, marginShareOf, marginsPlus, maxSigilWords, attrCapAt } from './character';
+import { NEEDS_EVOKER, passiveVigilance, marginShareOf, marginsPlus, maxSigilWords } from './character';
 import { ENEMY_LEVELS } from './data';
+import { cashSum, doorOfResource, biteAt, keepsOf } from './door';
 import {
   type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
   SPELL_AP, fluxMaxOf, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
@@ -71,7 +72,8 @@ export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, ti
   // Rules 1.10: a Mastered word's charge or Flux inflection lowers what drawing it costs (never below 1 charge, 1 Flux).
   const w = W(word), inf = (u.mg?.inflect || []).includes(word), ic = inf ? inflectionValue(word, 'charge') : 0, ifx = inf ? inflectionValue(word, 'flux') : 0;
   const ch0 = (w?.charge || 0) + (u.mg?.wordCost?.[word] || 0), fx0 = w?.flux ?? 1;
-  const w0 = { charge: ic ? Math.max(Math.min(1, ch0), ch0 + ic) : ch0, flux: ifx ? Math.max(Math.min(1, fx0), fx0 + ifx) : fx0 };
+  const free = inf && inflectionValue(word, 'charge_free') > 0; // rules 1.100 item 8372: a Mastered CONDENSE costs no charge
+  const w0 = { charge: free ? 0 : ic ? Math.max(Math.min(1, ch0), ch0 + ic) : ch0, flux: ifx ? Math.max(Math.min(1, fx0), fx0 + ifx) : fx0 };
   const base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, w0.charge), flux: w0.flux, preview, tile: tile || u.pos, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
   if (u.edgeWord) c.ap = 0; // the Evoker blade's Edge Word (item 487): the glyph after a hit costs no AP
@@ -193,7 +195,7 @@ function readShape(members: Glyph[], comp: string[], side: 'pc' | 'foe', from?: 
     if (gs.length >= 2) return { shape: 'stack', tiles: comp, glyphs: gs, words: gs.map((g) => g.word), side, ...(sid ? { strokeId: sid } : {}) };
     return 'One glyph alone is no spell: step to a tile next to it and draw a second, in a straight row.';
   }
-  if (comp.length > MAX_GLYPHS) return 'No shape: ' + comp.length + ' glyphs ' + (legacy ? 'touch here' : 'in this stroke') + ', and a Line is 2 to ' + MAX_GLYPHS + '. Scuff one or let it fade.';
+  if (comp.length > LINE_MOST) return 'No shape: ' + comp.length + ' glyphs ' + (legacy ? 'touch here' : 'in this stroke') + ', and a Line is 2 to ' + LINE_MOST + '. Scuff one or let it fade.';
   const s = straight(comp); if (!s) return 'No shape: these glyphs bend or cluster. A Line is one straight row (across, down or diagonal).';
   // Read the Line from the end drawn first, so its words come in the order they were written.
   const first = (k: string) => on(k)[0];
@@ -327,10 +329,27 @@ const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart
  * targets, not a limit: the engine no longer scales a spell down to them (the full Line is the Mage's peak and may pass
  * them). Kept for the screens and reports that name them. */
 // Rules 1.95 (the scale; scale.json caps.sigil_cap): the dead Sigil cap (350, 500) is gone: it meant nothing on the new scale.
-/** Whose Lines take the Line multiplier (rules 1.17): a character, or a unit fighting for one (a companion, a twin). */
+/** Whose Lines take the Line's cash-out (rules 1.17, 1.100): a character, or a unit fighting for one (a companion, a twin). */
 const linesGrow = (u: Unit | null | undefined) => !!u && !!(u.charId || (u as any).ctrl);
-/** A spell's Line multiplier for this caster (1 for an enemy caster, or a spell with no caster). */
-export const lineMultFor = (caster: Unit | null | undefined, sp: Spell): number => (linesGrow(caster) ? lineMult(sp.words.length) : 1);
+/** Rules 1.100 item 8371: the Sigil door's ladder (skills.json brain_power door_ladder, resource "glyphs"). */
+const LINE_DOOR = doorOfResource('glyphs');
+/** Rules 1.100 item 8371 (08-primitives S3): the Line's cash-out for these skill points and glyphs: the door's Bite x
+ * S(n) on its own step, no "1 +" (a Line of two is the short spell); 1 below the ladder (no Bite: a plain hit). */
+export function lineCash(skills: Record<string, number> | null | undefined, n: number): number {
+  const bite = LINE_DOOR ? biteAt(skills, LINE_DOOR) : 0;
+  return bite > 0 && n > 0 ? bite * cashSum(n, LINE_DOOR!.cash_step) : 1;
+}
+/** The skill points a caster's Line reads: its character's (a companion or a twin: the sheet its magic was built from,
+ * cached on mg.lineSkills). */
+function lineSkills(u: Unit): Record<string, number> | null {
+  const c = u.charId && !u.companion ? (boundGame()?.characters?.[u.charId] as Character | undefined) : undefined;
+  return (c?.skills as any) || (u.mg as any)?.lineSkills || null;
+}
+/** A spell's Line factor for this caster (1 for an enemy caster, or a spell with no caster). A Line pays for at most the
+ * glyphs its caster may write now (its Max Sigil words, Overclock's one included): a stored spell longer than a new
+ * Reach goes off as stored, at the Reach's worth (rules 1.100 item 8371, ruling 39). */
+export const lineMultFor = (caster: Unit | null | undefined, sp: Spell): number =>
+  (linesGrow(caster) ? lineCash(lineSkills(caster!), Math.min(sp.words.length, caster!.mg?.maxWords ?? sp.words.length)) : 1);
 /** Rules 1.96 item 8320 (S1): a spell's Margins on its target, the same rule as a weapon's: full steps of its roll's
  * total over the target's Defense, a critical's two, the caster's own (the stat `margins`), less the target's Margins
  * taken; and the share each is worth (the caster's Perception; an enemy caster's 0). Replaces rules 1.17's critical. */
@@ -365,8 +384,8 @@ export function sigilParts(subjects: string[], infl?: string[]): { w: string; ty
   const parts: { w: string; type: 'elemental' | 'sigil'; n: number }[] = [];
   // Rules 1.10: a Mastered word's damage inflection (STONE, SPARK: +10%) scales its own glyphs.
   const up = (w: string, n: number) => (infl?.includes(w) ? n * (1 + inflectionValue(w, 'damage_pct') / 100) : n);
-  glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = up(x.w, i === 0 ? x.d.damage : x.d.damage / 2), p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
-  return parts;
+  glyphs.forEach((x, i) => { const type = x.d.damage_type === 'elemental' ? 'elemental' : 'sigil', n = up(x.w, i === 0 ? x.d.damage : x.d.damage * OTHER_SHARE), p = parts.find((y) => y.type === type); if (p) p.n += n; else parts.push({ w: x.w, type, n }); });
+  return parts.filter((p) => p.n > 0); // rules 1.100 item 8372: a type whose Subjects add no damage is no part (no hit of its own)
 }
 /** Rules 1.17: no ceiling inside Sigil magic any more (the parts are returned as they are). Kept for old callers. */
 export function capParts(raws: number[], _crit: boolean): number[] { return raws; }
@@ -420,7 +439,7 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
 // power: the caster's Sigil multiplier, with the Elemental bonus added for Elemental damage; the unit's own cached
 // number, never the sheet read again) and the spell's own named multipliers, each from data:
 //   shape      the Burst's or the placed spell's multiplier on this creature (sigils.json: spread, chain, arc, twice, placed)
-//   line       the Line multiplier by glyph count (sigils.json grammar.line_mult; damage only, a character's Lines)
+//   line       the Line's cash-out by glyph count (rules 1.100: Brain Power's Bite x S(n); damage only, a character's Lines)
 //   sharpened  SHARPEN on the caster (sigils.json sharpen.damage_mult; a rolled spell)
 //   items      what perks and traits say on 'spell_mult'
 //   critical   a natural 20 (rules 1.17: ×1.5 to ×2.0)
@@ -795,15 +814,16 @@ export interface DrawPreview {
   junction?: boolean; strokeId2?: string; words2?: string[]; joins2?: string[];
 }
 const up = (w: string) => w.toUpperCase();
-/** For the word-cap refusal: " at Intelligence N. Intelligence N' raises it to M'." read from the one Max Sigil words
- * formula (character.ts maxSigilWords) on the drawer's character with Intelligence raised; the second sentence is left
- * out when no Intelligence up to the attributes' top raises it. Enemies and companions: ''. */
+/** For the word-cap refusal: " at Brain Power N. Brain Power N' raises it to M'." read from the one Max Sigil words
+ * formula (character.ts maxSigilWords: Brain Power's Reach, rules 1.100 item 8370) on the drawer's character with Brain
+ * Power raised; the second sentence is left out when no point up to 10 raises it alone (its family gate). Enemies and
+ * companions: ''. */
 function wordsAt(cb: Combat, u: Unit): string {
   const c = charOfUnit(cb, u);
-  const id = 'intelligence', name = ATTR[id]?.name || id; if (!c?.attrs) return '';
-  const now = c.attrs[id] || 1, have = u.mg?.maxWords || maxSigilWords(c);
-  for (let i = now + 1; i <= attrCapAt(Infinity); i++) {
-    const m = maxSigilWords({ ...c, attrs: { ...c.attrs, [id]: i } } as Character);
+  const id = 'brain_power', name = SKILL[id]?.name || id; if (!c?.skills) return '';
+  const now = (c.skills as any)[id] || 0, have = u.mg?.maxWords || maxSigilWords(c);
+  for (let i = now + 1; i <= 10; i++) {
+    const m = maxSigilWords({ ...c, skills: { ...c.skills, [id]: i } } as Character);
     if (m > have) return ' at ' + name + ' ' + now + '. ' + name + ' ' + i + ' raises it to ' + m;
   }
   return ' at ' + name + ' ' + now;
@@ -813,8 +833,8 @@ function wordsAt(cb: Combat, u: Unit): string {
 function strokeRefusal(cb: Combat, u: Unit, ws: string[], tiles: number, drawers: string[]): string | null {
   const cnt = count(ws), reaches = Object.keys(cnt).filter(isReach);
   const caps = drawers.map((id) => cb.units.find((x) => x.id === id)?.mg?.maxWords || 0);
-  const cap4 = Math.min(MAX_GLYPHS, Math.max(u.mg!.maxWords, ...caps));
-  if (ws.length > MAX_GLYPHS || tiles > MAX_GLYPHS) return 'Past the cap: a spell holds at most ' + MAX_GLYPHS + ' glyphs.';
+  const cap4 = Math.min(LINE_MOST, Math.max(u.mg!.maxWords, ...caps));
+  if (ws.length > LINE_MOST || tiles > LINE_MOST) return 'Past the cap: a spell holds at most ' + LINE_MOST + ' glyphs.';
   if (ws.length > cap4) return 'Past your cap: this Line would be ' + ws.length + ' glyphs, and your Max Sigil words is ' + u.mg!.maxWords + wordsAt(cb, u) + '.';
   if (reaches.length > 1) return 'A second Reach word is refused: one Reach word per spell (' + reaches.map(up).join(', ') + ').';
   if ((cnt.kin || 0) > 1) return 'KIN takes one copy.';
@@ -835,7 +855,7 @@ export function junctionsFor(cb: Combat, u: Unit): string | null {
 /** The strokes of u's side a glyph on tile `at` could extend (rules 1.10, Drawing 3.1): next to the stroke's end glyph and
  * on along its axis, or next to a stroke of one glyph; fewer than 4 tiles. Enemies' strokes never. */
 export function strokeCandidates(cb: Combat, u: Unit, at: string): Stroke[] {
-  return strokeRuns(cb.glyphs || []).filter((s) => s.side === u.side && s.tiles.length < MAX_GLYPHS && !s.tiles.includes(at)
+  return strokeRuns(cb.glyphs || []).filter((s) => s.side === u.side && s.tiles.length < LINE_MOST && !s.tiles.includes(at)
     && (s.tiles.length === 1 ? dist(s.tiles[0], at) === 1 : !!s.axis && add(s.end, s.axis) === at));
 }
 /** Which stroke a new glyph of u's on tile `at` goes into (rules 1.10; items 901–902): on a tile that already holds a glyph
@@ -995,8 +1015,10 @@ export function readDrawnBy(cb: Combat, u: Unit, t: Unit): void {
 
 /** The glyphs of a fired pattern fade (a Keystone survives). Rules 1.10 Junctions (item 919): a junction leaves the
  * fired stroke only, and stays in its other one. The strokes left are tidied, so a split stroke's parts are their own. */
-export function fadePattern(cb: Combat, p: Pattern) {
+export function fadePattern(cb: Combat, p: Pattern, keepFirst = 0) {
   const src = p.strokeSrc, keep = new Set<string>();
+  // rules 1.100 item 8375 (Rumination 10, the beta's point 10): the Line's first glyphs, in the order written, stay
+  for (const g of p.shape === 'line' ? p.glyphs.slice(0, Math.max(0, keepFirst)) : []) keep.add(g.id);
   if (src) for (const g of p.glyphs) if (g.strokeId2 && !(g as any).keystone && (g.strokeId === src || g.strokeId2 === src)) { if (g.strokeId === src) g.strokeId = g.strokeId2; delete g.strokeId2; keep.add(g.id); }
   const used = new Set(p.glyphs.filter((g) => !(g as any).keystone && !keep.has(g.id)).map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !used.has(g.id)); tidyStrokes(cb.glyphs);
 }
@@ -1017,8 +1039,8 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
     src: pv.missiles[0]?.origin, impact: pv.missiles[0]?.impact ?? null, targets: pv.targets, targetAt: pv.targets.map((id) => cb.units.find((x) => x.id === id)?.pos),
     missiles: pv.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: x.placed })),
     stay: sp.stay, placed: pv.missiles[0]?.placed || null, fizzle: pv.fizzle });
-  // The glyphs fade as the spell fires (a Keystone survives).
-  fadePattern(cb, p);
+  // The glyphs fade as the spell fires (a Keystone survives; rules 1.100 item 8375: Rumination 10 keeps the first).
+  fadePattern(cb, p, Math.min(p.glyphs.length - 1, keepsOf(lineSkills(u), 'glyphs')));
   if (pv.fizzle) {
     emitFx(cb, 'fizzle', { unit: u.id, at: u.pos, tiles: pv.missiles.flatMap((x) => x.burst.tiles), words: p.words, element: sp.element });
     say(cb, head + ': nothing it may affect, and it fizzles (the charge, AP and Flux are spent).');
@@ -1402,7 +1424,7 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: st
   return {
     words, shape: typeof p === 'string' ? (comp.length ? 'none' : null) : p.shape, tiles: typeof p === 'string' ? comp : p.tiles, valid: !why, why: why || null,
     side: start?.side || null, readable: !!u && words.every((w) => u.mg?.words.includes(w)),
-    capLeft: u ? Math.max(0, groundCap(u, cb) - mine) : 0, lineLeft: Math.max(0, Math.min(MAX_GLYPHS, m?.maxWords ?? MAX_GLYPHS) - words.length),
+    capLeft: u ? Math.max(0, groundCap(u, cb) - mine) : 0, lineLeft: Math.max(0, Math.min(LINE_MOST, m?.maxWords ?? MAX_GLYPHS) - words.length),
     costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { /* rules 1.89 (outside playtest 0.32.0: "Charge 0 → -1"): never below 0; `short` is what the Evoker lacks */ charge: Math.max(0, (m?.charge ?? 0) - charge), short: Math.max(0, charge - (m?.charge ?? 0)), ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
     overloadWarning: !!m && !!u && m.flux >= fluxMaxOf(u, cb) ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),
@@ -1499,7 +1521,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     if (dist(g.pos, u.pos) > 1) continue; const p = findPattern(cb, g.pos, u.pos); if (typeof p === 'string') continue;
     for (const t of [...foes, ...friends]) { const pv = planEvoke(cb, u, g.pos, t.pos); if (!pv.ok) continue; const s = scorePlan(cb, u, pv); if (s > 0 && (!best || s / pv.ap > best.score / best.cost)) best = { score: s, words: [], tiles: [g.pos], aim: t.pos, cost: pv.ap, pre: null }; }
   }
-  const P = paths(cb, u.pos, u.id), maxW = Math.min(MAX_GLYPHS, m.maxWords);
+  const P = paths(cb, u.pos, u.id), maxW = Math.min(LINE_MOST, m.maxWords);
   for (const words of combos(m.words, maxW)) {
     const sp = compileSpell(words), L = words.length, charge = words.reduce((t, x) => t + glyphCost(cb, u, x, true, u.pos).charge, 0) + Math.max(1, L - (m.coreSave || 0));
     const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > fluxMaxOf(u, cb), needCore = charge > m.charge;

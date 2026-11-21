@@ -12,14 +12,17 @@ export const SIGIL_GRAMMAR = G;
 export const SIGIL_ELEMENTS: Record<string, { rider: string; look: string; sound: string; motion: string }> = (sigilsJ as any).elements || {};
 /** The save revision stamped on 1.4 glyphs and fights (old 1.2 glyphs have none and are dropped on load: item 441). */
 export const SIGIL_REV = 14;
-export const MAX_GLYPHS: number = G.max_glyphs ?? 4;
+/** Rules 1.100 item 8370: the longest Line anyone writes at their top Reach (sigils.json grammar.max_glyphs: Brain Power's
+ * top Reach), and the longest an Overclocked Line may be (max_glyphs + grammar.push_past): the limit of a stroke. */
+export const MAX_GLYPHS: number = G.max_glyphs;
+export const PUSH_PAST: number = G.push_past ?? 0;
+export const LINE_MOST: number = MAX_GLYPHS + PUSH_PAST;
+if (!(MAX_GLYPHS >= 2)) throw new Error('data/sigils.json grammar.max_glyphs is missing');
 export const MIN_GLYPHS: number = G.min_glyphs ?? 2;
 export const REPEAT_MULT: number = G.repeats?.mult_per_repeated_glyph ?? 0.9;
-/** Rules 1.17, the Line multiplier: a character's Line multiplies its direct damage by its length (sigils.json
- * grammar.line_mult by_glyphs, re-fit in rules 1.26; its text reads the same fields). Damage only (never healing, shields, ranges or conditions), and
- * only for characters and the units fighting for them: an enemy caster's damage comes from the enemy table. */
-export const LINE_MULT: Record<string, number> = G.line_mult?.by_glyphs || {};
-export const lineMult = (glyphs: number): number => (glyphs >= MIN_GLYPHS ? LINE_MULT[String(Math.min(MAX_GLYPHS, glyphs))] ?? 1 : 1);
+/** Rules 1.100 item 8372: what every damaging Subject but the strongest adds of its damage (sigils.json
+ * grammar.repeats.other_share: 0, it adds its element and its condition only; it was a half). */
+export const OTHER_SHARE: number = Number(G.repeats?.other_share ?? 0.5);
 export const LIM = { traps: G.limits?.traps_per_caster ?? 2, turrets: G.limits?.turrets_per_caster ?? 1 };
 
 // ---------- words ----------
@@ -76,7 +79,7 @@ export function compileSpell(words: string[]): Spell {
 /** Why these words make no spell (spec: Grammar and cost), or null. maxWords is the Evoker's Max Sigil words. */
 export function grammarError(words: string[], maxWords: number = MAX_GLYPHS): string | null {
   if (words.some((w) => !W(w))) return 'Unknown word: ' + words.find((w) => !W(w)) + '.';
-  if (words.length > MAX_GLYPHS) return 'A spell holds at most ' + MAX_GLYPHS + ' glyphs.';
+  if (words.length > LINE_MOST) return 'A spell holds at most ' + LINE_MOST + ' glyphs.';
   if (words.length > maxWords) return 'Too many words for you: ' + words.length + ' of at most ' + maxWords + ' (Max Sigil words).';
   const c = count(words), reaches = Object.keys(c).filter(isReach);
   if (reaches.length > 1) return 'A second Reach word is refused: one Reach word per spell.';

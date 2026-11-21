@@ -16,9 +16,39 @@
     "10": 9
   },
   "ladder": {
-    "alpha": { "perk_steps": [3, 6, 7, 9], "forks": [4, 8], "mastered": 10 },
-    "beta": { "perk_steps": [3, 5, 7, 9], "forks": [], "mastered": 10 },
-    "gamma": { "perk_steps": [3, 5, 7, 9], "forks": [], "mastered": 10 },
+    "alpha": {
+      "perk_steps": [
+        3,
+        6,
+        7,
+        9
+      ],
+      "forks": [
+        4,
+        8
+      ],
+      "mastered": 10
+    },
+    "beta": {
+      "perk_steps": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "forks": [],
+      "mastered": 10
+    },
+    "gamma": {
+      "perk_steps": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "forks": [],
+      "mastered": 10
+    },
     "provisional": true,
     "note": "Rules 1.70 item 5537 (ruling layer section 1): THE schedule of a skill's ladder by its slot: the points of its perk steps (one perk at Tier I, or a Tier I raised to II, from the skill's own acquired perks: two or four), of its fork steps (an alpha's skills.json forks, in order), and of its Mastered perk. Read by character.ts stepsEarned and doorpicks.ts; the level-up screen and the ? page read the engine's answer. Mastery levels (mastery_at) are a different thing (Overreach, the named unlocks) and stay."
   },
@@ -2087,7 +2117,15 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
+                "n": {
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "rule:shadow.door_gains_per_turn",
+                      "value": 1
+                    }
+                  ]
+                },
                 "shared": "shadow_gain"
               },
               "fx": {
@@ -2120,7 +2158,15 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
+                "n": {
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "rule:shadow.door_gains_per_turn",
+                      "value": 1
+                    }
+                  ]
+                },
                 "shared": "shadow_gain"
               },
               "and": [
@@ -2149,7 +2195,15 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
+                "n": {
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "rule:shadow.door_gains_per_turn",
+                      "value": 1
+                    }
+                  ]
+                },
                 "shared": "shadow_gain"
               },
               "fx": {
@@ -2520,7 +2574,16 @@
           "provisional": true,
           "text": "The big verb of the door opens: Fade (step to cover and go Hidden even while seen). Scout: before a fight you go ahead alone, so the squad sees who is waiting before it chooses, and its ambush roll takes +{=unlocks.5.effects.0.value} (the best scout counts, never two).",
           "player": "Scout: see who waits before a fight, ambush roll +{=.effects.0.value} · New move: Fade (slip back into Hidden)",
-          "effects": [{ "op": "stat_mod", "stat": "ambush_scout", "value": 2, "label": "Scout", "note": "rules 1.90 item 7812 (Leon, 20 Nov 2026: \"give the full ingenuity guy that scouting tag too\"): a squad holding a scout sees the line-up before the choice, and this is its bonus on the ambush roll (run/ambush.ts; the best scout counts)", "provisional": true }],
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ambush_scout",
+              "value": 2,
+              "label": "Scout",
+              "note": "rules 1.90 item 7812 (Leon, 20 Nov 2026: \"give the full ingenuity guy that scouting tag too\"): a squad holding a scout sees the line-up before the choice, and this is its bonus on the ambush roll (run/ambush.ts; the best scout counts)",
+              "provisional": true
+            }
+          ],
           "source": "rules 1.74 item 6000"
         },
         "6": {
@@ -3120,7 +3183,7 @@
       "door_focus_line": "Your Evoker is in your pack, not in a hand: open the Backpack and draw it to draw glyphs.",
       "door_numbers": {
         "line_min": 2,
-        "line_max": 4,
+        "line_max": 5,
         "about": "The Sigil grammar's Line lengths (sigils.json grammar.min_glyphs / max_glyphs), for the door line's placeholders; tools/validate.py holds them equal."
       },
       "door_tab": "sigils",
@@ -3130,7 +3193,7 @@
       "per_point": {
         "numbers": {
           "sigil": 0.1,
-          "words": 1,
+          "words": 3,
           "range": 1,
           "rounds": 1,
           "charge": 1
@@ -3142,7 +3205,7 @@
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.words} Sigil word"
+            "text": "+{=per_point.numbers.words} Sigil words held"
           },
           {
             "at": "each",
@@ -3153,7 +3216,7 @@
             "text": "+{=per_point.numbers.range} tile Sigil reach · +{=per_point.numbers.rounds} round duration"
           },
           {
-            "at": "at 3",
+            "at": "at 2",
             "text": "Sigils cost {=per_point.numbers.charge} core charge less"
           },
           {
@@ -3163,10 +3226,14 @@
           {
             "at": "at 9",
             "text": "A third cut of {=per_point.numbers.charge} core charge a Sigil"
+          },
+          {
+            "at": "at 8",
+            "text": "Overclock, the door's Push: once a turn, one glyph past your Reach for more charge, and your Evoker overloads when that Line is Evoked"
           }
         ],
         "charge_at": [
-          3,
+          2,
           5,
           9
         ]
@@ -3175,30 +3242,6 @@
         "focus:evoker"
       ],
       "unlocks": {
-        "2": {
-          "name": "Overclock",
-          "category": "Active Skill",
-          "mastery": 0,
-          "text": "Draw a spell one word longer than your Max Sigil words (never past a full Line), for +{=unlocks.2.effects.1.value|abs} Core charge.",
-          "player": "One glyph past what you know for {=.effects.1.value|abs} more core charge",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "overclock",
-              "ap": 0,
-              "uses": "at_will"
-            },
-            {
-              "op": "resource",
-              "resource": "core",
-              "value": -2,
-              "when": "on_overclock"
-            }
-          ],
-          "adjudication": "engine",
-          "item": true,
-          "source": "rules 1.74 item 6020: the small verb at 2 (was at 3)"
-        },
         "3": {
           "name": "Mastery 1",
           "mastery": 1,
@@ -3267,15 +3310,29 @@
           "adjudication": "engine"
         },
         "8": {
-          "name": "Fork: Written in Advance or Running Script",
+          "name": "Overclock; fork: Written in Advance or Running Script",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork: Written in Advance (a Line drawn before your turn ended hits harder) or Running Script (after an Evoke, your next glyph is free). Chosen once, kept for good.",
-          "effects": [],
+          "text": "The door's Push, Overclock: once a turn, your next glyph may make the Line one longer than your Reach, for +{=unlocks.8.effects.1.value|abs} Core charge; when that Line is Evoked your Evoker overloads as if its Flux had gone one over. And the door's second fork: Written in Advance (a Line drawn before your turn ended hits harder) or Running Script (after an Evoke, your next glyph is free). The fork is chosen once, kept for good.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "overclock",
+              "ap": 0,
+              "uses": "per_turn"
+            },
+            {
+              "op": "resource",
+              "resource": "core",
+              "value": -2,
+              "when": "on_overclock"
+            }
+          ],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.74 item 6021",
-          "player": "Choose: Written in Advance or Running Script"
+          "source": "rules 1.100 item 8374 (ruling 17: the Push at 8; Overclock moved from 2) and rules 1.74 item 6021 (the fork)",
+          "player": "Overclock (one glyph past your Reach, and the Evoker overloads), and choose: Written in Advance or Running Script",
+          "item": true
         },
         "9": {
           "name": "Mastery 4",
@@ -3370,21 +3427,27 @@
         "line": "{beta} {points}: your Flux limit is {now}",
         "next": " (next point: {next})",
         "provisional": true,
-        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+        "note": "rules 1.100 item 8375 (ruling 20): this beta feeds its door from its first point, a whole +feed_flat to the Flux limit a point (effects/feed.ts feedStep); the product term is 0 (retired). keeps / keeps_from: the beta's point 10 (door.ts keepsOf): an Evoke leaves that many of its first glyphs on the ground"
       },
       "per_point": {
         "numbers": {
-          "feed": 0.01,
-          "save": 1
+          "save": 1,
+          "feed_flat": 1,
+          "keeps": 1,
+          "keeps_from": 10
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Flux limit"
+            "text": "+{=per_point.numbers.feed_flat} Flux limit"
           },
           {
             "at": "each",
             "text": "+{=per_point.numbers.save} on Brain saves"
+          },
+          {
+            "at": "at 10",
+            "text": "From Rumination {=per_point.numbers.keeps_from}, your Evoke leaves {=per_point.numbers.keeps} of its glyphs on the ground: the first"
           }
         ]
       },
@@ -3549,6 +3612,10 @@
           {
             "at": "each",
             "text": "+{=per_point.numbers.call_range} tile Brief reach"
+          },
+          {
+            "at": "at 6",
+            "text": "A Brief you give also vents Flux"
           }
         ]
       },
@@ -3628,7 +3695,9 @@
         "perks": {
           "burden_of_proof": "objection"
         },
-        "names": { "burden_of_proof": "Burden of Proof" },
+        "names": {
+          "burden_of_proof": "Burden of Proof"
+        },
         "passives": {
           "3": "objection",
           "5": "opening_argument"
@@ -4777,7 +4846,10 @@
           "soulmate": "pull_together",
           "rally_cry": "steady_hands"
         },
-        "names": { "soulmate": "Soulmate", "rally_cry": "Rally Cry" },
+        "names": {
+          "soulmate": "Soulmate",
+          "rally_cry": "Rally Cry"
+        },
         "passives": {
           "3": "hand_off",
           "5": "nobody_left_behind"
@@ -4930,7 +5002,10 @@
           "sweet_talker": "veiled_insult",
           "double_meaning": "between_the_lines"
         },
-        "names": { "sweet_talker": "Sweet Talker", "double_meaning": "Double Meaning" },
+        "names": {
+          "sweet_talker": "Sweet Talker",
+          "double_meaning": "Double Meaning"
+        },
         "passives": {
           "3": "between_the_lines",
           "5": "veiled_insult"
@@ -5366,7 +5441,9 @@
         "perks": {
           "you_get_used_to_it": "poker_face"
         },
-        "names": { "you_get_used_to_it": "You Get Used to It" },
+        "names": {
+          "you_get_used_to_it": "You Get Used to It"
+        },
         "passives": {
           "3": "poker_face",
           "5": "stand_still"
@@ -5532,7 +5609,9 @@
         "perks": {
           "old_tongue": "old_tales"
         },
-        "names": { "old_tongue": "Old Tongue" },
+        "names": {
+          "old_tongue": "Old Tongue"
+        },
         "passives": {
           "3": "old_tales",
           "5": "lore_ward"
@@ -6157,7 +6236,9 @@
         "perks": {
           "real_power": "rank_has_privileges"
         },
-        "names": { "real_power": "Real Power" },
+        "names": {
+          "real_power": "Real Power"
+        },
         "passives": {
           "3": "rank_has_privileges",
           "5": "five_stars"

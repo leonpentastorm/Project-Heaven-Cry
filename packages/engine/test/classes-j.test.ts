@@ -388,8 +388,8 @@ describe('Spellslinger', () => {
     expect(f.cb.objects!.find((o) => o.kind === 'pile' && o.pos === '2,5')!.items!.map((e) => e.name)).toEqual(['Service pistol magazine 3/12']);
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
-    // Sigil 1.4: as Touch on the target, no roll; CONDENSE's core ×1.5 (30 → 45)
-    expect(logHas(f.cb, new RegExp('spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE catches Foe 1 · ' + Math.floor(WD('fire') * 1.5) + ' damage'))).toBe(true);
+    // Sigil 1.4: as Touch on the target, no roll; CONDENSE adds no strength (rules 1.100 item 8372)
+    expect(logHas(f.cb, new RegExp('spell magazine fires FIRE · CONDENSE into Foe 1 · FIRE catches Foe 1 · ' + Math.floor(WD('fire')) + ' damage'))).toBe(true);
   });
   it('Ricochet Glyph: a miss glances to another enemy within 4 tiles at −2, once a turn, no extra ammo', () => {
     const f = fightWith([cls('spellslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }, { at: 'O2' }]);

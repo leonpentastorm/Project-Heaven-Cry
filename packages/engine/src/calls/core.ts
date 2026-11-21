@@ -16,7 +16,7 @@ import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
 import { CALL, CALLS, CALL_RULES, CALL_REACT_AT, callBaseAp, callsPerTurn, callRangeAt, callSkillName, callStepAt } from './data';
-import { priced, whyNot, pay, refund } from '../effects/cost';
+import { priced, whyNot, pay, refund, resGive, RESOURCES } from '../effects/cost';
 import { uses } from '../effects/uses';
 
 // ---------- the registry ----------
@@ -178,6 +178,7 @@ function speak(cb: Combat, u: Unit, def: CallDef, args: CallArgs, p: any, t: any
     return err;
   }
   for (const n of t.pv.notes) say(cb, '  ' + n);
+  if (def.feeds?.when === 'given') callFeed(cb, u, def); // rules 1.100 item 8376: a Call that feeds as it is given (Brief vents Flux)
   if (args.text) (cb.notes ||= []).push(u.name + ' (round ' + cb.round + ', ' + def.name + (tgt === u ? '' : ' at ' + tgt.name) + '):' + said);
   checkOver(cb);
   return null;
@@ -254,7 +255,8 @@ export function callView(u: Unit, me: 'pc' | 'foe'): Unit {
 export function callFeed(cb: Combat, u: Unit, def: CallDef | undefined): number {
   const f = def?.feeds; if (!f || !alive(u)) return 0;
   const pts = callLevel(u, def!), row = [...f.steps].reverse().find((x) => pts >= x.from); if (!row) return 0;
-  const got = resGain(u, f.resource, row.value);
-  if (got) say(cb, '  ' + u.name + ' reads the blow: +' + got + ' ' + f.resource + ' (' + def!.name + ').');
+  // rules 1.100 item 8376: a resource with its own setter (Flux: magic.ts) goes through it (resGive); a unit meter tops at its pool
+  const got = RESOURCES[f.resource]?.setter ? resGive(cb, u, f.resource, row.value, { why: def!.name }) : resGain(u, f.resource, row.value);
+  if (got) say(cb, '  ' + (f.line ? f.line.replace(/\{who\}/g, u.name).replace(/\{n\}/g, String(Math.abs(got))).replace(/\{call\}/g, def!.name) : u.name + ' reads the blow: +' + got + ' ' + f.resource + ' (' + def!.name + ').'));
   return got;
 }

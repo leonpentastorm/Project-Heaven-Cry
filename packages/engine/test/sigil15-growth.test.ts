@@ -142,10 +142,10 @@ describe('thresholds and picks (items 907-909)', () => {
     expect(wordsKnownCap(s.g.characters[id])).toBe(4);
     expect(() => s.act({ type: 'sigil/learn', charId: id, word: 'mend' } as any)).toThrow(/the pick is banked until a slot frees up/);
     expect(sigilGrowthView(s.g.characters[id]).pending).toBe(3);
-    s.g.characters[id].skills.brain_power = 2; // two more slots (cap 6)
-    s.act({ type: 'sigil/learn', charId: id, word: 'mend' } as any); s.act({ type: 'sigil/learn', charId: id, word: 'acid' } as any);
-    expect(() => s.act({ type: 'sigil/learn', charId: id, word: 'bind' } as any)).toThrow(/banked/);
-    expect(sigilGrowthView(s.g.characters[id]).pending).toBe(1);
+    s.g.characters[id].skills.brain_power = 1; // rules 1.100 item 8373: three more slots a point (cap 7)
+    expect(wordsKnownCap(s.g.characters[id])).toBe(7);
+    s.act({ type: 'sigil/learn', charId: id, word: 'mend' } as any); s.act({ type: 'sigil/learn', charId: id, word: 'acid' } as any); s.act({ type: 'sigil/learn', charId: id, word: 'bind' } as any);
+    expect(sigilGrowthView(s.g.characters[id]).pending).toBe(0);
   });
   it('learning waits for the fight to end', () => {
     const f = rig(['spark', 'seek']); growth(f).study = 6;
@@ -229,13 +229,13 @@ describe('Mastery study and the Mastered free word (items 912-913)', () => {
 
 describe('the free word ignores the cap (item 913)', () => {
   it('taken while a slot is open, it does not fill that slot: the picks still fill every ordinary slot', () => {
-    const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 1 } }]); const id = s.chars[0].id, c = () => s.g.characters[id];
-    c().sigils = ['spark', 'seek', 'fire', 'ward']; (c() as any).sigilGrowth = { study: 14, picksUsed: 0, free: 1, paid: [...ALL_PAID], toStudy: [], uses: {} };
-    expect(wordsKnownCap(c())).toBe(5);
+    const s = storyWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 0 } }]); const id = s.chars[0].id, c = () => s.g.characters[id];
+    c().sigils = ['spark', 'seek', 'fire']; (c() as any).sigilGrowth = { study: 14, picksUsed: 0, free: 1, paid: [...ALL_PAID], toStudy: [], uses: {} };
+    expect(wordsKnownCap(c())).toBe(4); // rules 1.100 item 8373: 4 + 3 a Brain Power point (none here)
     s.act({ type: 'sigil/learn', charId: id, word: 'mend', free: true } as any);
-    expect(wordsKnownCap(c())).toBe(6); // 4 + Brain Power 1, + the free word taken
+    expect(wordsKnownCap(c())).toBe(5); // + the free word taken
     s.act({ type: 'sigil/learn', charId: id, word: 'acid' } as any); // the open ordinary slot is still there for a pick
-    expect(c().sigils!.length).toBe(6); expect(sigilGrowthView(c())).toMatchObject({ known: 6, cap: 6, pending: 1 }); // cap 5, + 1 free
+    expect(c().sigils!.length).toBe(5); expect(sigilGrowthView(c())).toMatchObject({ known: 5, cap: 5, pending: 1 }); // cap 4, + 1 free
     expect(() => s.act({ type: 'sigil/learn', charId: id, word: 'bind' } as any)).toThrow(/banked/);
   });
   it('a free word taken at the cap stays over it when Brain Power rises: the new slot is an ordinary one', () => {

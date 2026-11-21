@@ -155,7 +155,7 @@
     },
     {
       "id": "intelligence",
-      "player": "+{=derived.1.per_point_above_1|pct}% Sigil power · a longer Line at every even point",
+      "player": "+{=derived.0.per_point_above_1|pct}% Sigil power",
       "name": "Intelligence",
       "core": "mind",
       "skills": {
@@ -164,11 +164,6 @@
         "gamma": "eloquence"
       },
       "derived": [
-        {
-          "stat": "sigil_max_words",
-          "formula": "2 + floor((Intelligence − 1) ÷ 2)",
-          "per_point_above_1": 0.5
-        },
         {
           "stat": "mult_sigil",
           "formula": "1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power",

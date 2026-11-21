@@ -1,7 +1,7 @@
 // Skill Mastery unlocks the runtime runs as items (perk-runtime H4; rules 1.4 completeness batch 2): skills.json
 // `unlocks` entries keyed "skill:<skillId>.<points>" (effects/collect.ts SKILL_ITEMS). A character holds one once its
 // points in the skill reach the unlock's level. The four Sigil ones:
-//   Brain Power · Overclock (M1, 3 points)      item 451, 482
+//   Brain Power · Overclock (the Push, 8 points) item 451, 482; rules 1.100 item 8374
 //   Brain Power · Twin Draw (M2, 5 points)      item 483
 //   Rumination · Proven Formula (M2, 5 points)  item 484 (rules 1.13: a save bonus, no longer a Sigil discount)
 // and the two Soul ones (rules 1.5):
@@ -9,8 +9,9 @@
 //   Will Power · Pure Heart (M2, 5 points)      item 540
 // Every number here is PROVISIONAL (spec section 14).
 import { register, stateOf, uses, modOn, emit, boundGame, type Holder, type ActionDef } from '../effects';
+import { SKILLS } from '../data';
 import { type Combat, type Unit, dist, emitFx } from '../combat';
-import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
+import { compileSpell, LINE_MOST, flux, fluxMaxOf, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
 import type { Rng } from '../rng';
 import { say, rngOf } from '../kit';
 import { num } from '../effects/num';
@@ -19,12 +20,19 @@ const mine = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id ===
 const evokerWhy = (h: Holder): string | true => (!h.u?.mg ? 'Needs Sigil magic.' : !h.u.mg.evoker ? 'Needs an Evoker in hand.' : true);
 const W = (s: string) => s.toUpperCase();
 
-// ---------- Brain Power · Overclock (Mastery 1) ----------
-// "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +2 Core charge." Engine reading
-// (item 482): the action (0 AP, at will) arms it; while armed, and then while the next glyph you draw stands, your Max
-// Sigil words is +1 (never past 4: the cap holds over it, item 437), and that glyph costs 2 charge more. From Max Sigil
-// words 4 it does nothing, so it is refused (item 451). The +1 is marked on mg (ocBump) so a rebuilt unit gets it once.
-const OC_CHARGE = 2;
+// ---------- Brain Power · Overclock (the door's Push, rules 1.100 item 8374; was Mastery 1 at 2) ----------
+// "Once a turn, your next glyph may make the Line one longer than your Reach, for +2 Core charge; when that Line is
+// Evoked your Evoker overloads as if its Flux had gone one over." Engine reading (item 482): the action (0 AP, once a
+// turn: the unlock's grant_action uses) arms it; while armed, and then while the next glyph you draw stands, your Max
+// Sigil words is +1 (never past the longest Line plus its one, LINE_MOST), and that glyph costs the unlock's charge more.
+// The +1 is marked on mg (ocBump) so a rebuilt unit gets it once. When a Line holding that glyph is Evoked, the Evoker
+// overloads by one (magic.ts flux: the one overload path). The unlock is found by its grant_action, not by its point.
+const OC_UNLOCK: [string, any] | undefined = (() => {
+  for (const sk of SKILLS as any[]) for (const [lvl, x] of Object.entries(sk.unlocks || {}) as [string, any][]) if ((x.effects || []).some((e: any) => e?.op === 'grant_action' && e.action === 'overclock')) return [sk.id + '.' + lvl, x];
+  return undefined;
+})();
+if (!OC_UNLOCK || OC_UNLOCK[0] !== 'brain_power.8') throw new Error('data/skills.json: Overclock is granted by brain_power unlocks.8 (rules 1.100 item 8374); this handler is that item');
+const OC_CHARGE = Math.abs(Number((OC_UNLOCK[1].effects || []).find((e: any) => e?.op === 'resource' && e.resource === 'core')?.value ?? 0));
 function ocSync(st: Record<string, any>, u: Unit | null | undefined, cb: Combat | null | undefined) {
   const m: any = u?.mg; if (!m || !cb) return;
   if (st.glyph && !(cb.glyphs || []).some((g) => g.id === st.glyph)) st.glyph = null;
@@ -33,23 +41,28 @@ function ocSync(st: Record<string, any>, u: Unit | null | undefined, cb: Combat 
 }
 const overclock = (scope: 'combat' | 'world'): ActionDef => ({
   id: scope === 'combat' ? 'overclock' : 'overclock_world', label: 'Overclock', scope: [scope], target: 'none', ap: 0,
-  text: 'Your next glyph may make the spell one word longer than your Max Sigil words (never past 4 glyphs); it costs 2 charge more.',
+  text: 'Once a turn: your next glyph may make the Line one longer than your Reach; it costs more charge, and your Evoker overloads when that Line is Evoked.',
   available: (h) => {
     const e = evokerWhy(h); if (e !== true) return e; const st = stateOf(h), m: any = h.u!.mg!;
     if (st.armed) return 'Overclocked: draw the glyph.';
-    if (m.maxWords - (m.ocBump ? 1 : 0) >= MAX_GLYPHS) return 'Your Max Sigil words is already ' + MAX_GLYPHS + ': a spell holds no more.';
+    if (m.maxWords - (m.ocBump ? 1 : 0) >= LINE_MOST) return 'Your Max Sigil words is already ' + LINE_MOST + ': a spell holds no more.';
     return true;
   },
-  preview: (h) => (!h.u?.mg ? {} : { lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(MAX_GLYPHS, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge.'] }), // (no magic: the button is greyed with the reason; nothing to preview)
+  preview: (h) => (!h.u?.mg ? {} : { lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(LINE_MOST, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge, and the Evoker overloads when its Line is Evoked.'] }), // (no magic: the button is greyed with the reason; nothing to preview)
   run: (h) => { const st = stateOf(h); st.armed = true; ocSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overclocks: the next glyph may go one word past Max Sigil words (+' + OC_CHARGE + ' charge).'); },
 });
 register({
-  id: 'skill:brain_power.2', kind: 'skill', claims: 'all', // rules 1.74 item 6020: Overclock at 2 (it was 3)
+  id: 'skill:brain_power.8', kind: 'skill', claims: 'all', // rules 1.100 item 8374: Overclock is the Push at 8 (rules 1.74 item 6020 had it at 2)
   actions: [overclock('combat'), overclock('world')],
   on: {
     glyph_cost: (ctx, h) => { const st = stateOf(h); ocSync(st, h.u, h.cb); if (mine(h, ctx.u) && st.armed) ctx.charge += OC_CHARGE; },
     glyph_drawn: (ctx, h) => { const st = stateOf(h); if (!mine(h, ctx.u) || !st.armed) return; st.armed = false; st.glyph = ctx.glyph.id; say(h.cb, '(Overclock: +' + OC_CHARGE + ' charge on ' + W(ctx.glyph.word) + '.)'); },
-    evoked: (ctx, h) => { if (mine(h, ctx.u)) ocSync(stateOf(h), h.u, h.cb); },
+    evoked: (ctx, h) => {
+      if (!mine(h, ctx.u)) return; const st = stateOf(h), u = h.u!, m = u.mg, cb = h.cb;
+      // rules 1.100 item 8374: the Overclocked Line's price: the Evoker overloads as if its Flux had gone one over
+      if (st.glyph && m && cb && (ctx.pattern?.glyphs || []).some((g: any) => g.id === st.glyph)) { const out = flux(cb, ctx.rng || rngOf(), u, Math.max(1, fluxMaxOf(u, cb) - (m.flux || 0) + 1)); if (out) say(cb, u.name + ' (Overclock):' + out + '.'); st.glyph = null; }
+      ocSync(st, h.u, h.cb);
+    },
     turn_start: (ctx, h) => { if (mine(h, ctx.u)) ocSync(stateOf(h), h.u, h.cb); },
     round_start: (ctx, h) => ocSync(stateOf(h), h.u, h.cb),
     unit_built: (ctx, h) => { if (!ctx.world || !ctx.u?.charId || ctx.u.charId !== (h.c?.id || h.u?.charId)) return; ocSync(stateOf({ ...h, u: ctx.u, cb: ctx.cb }), ctx.u, ctx.cb); },

@@ -224,10 +224,10 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
     expect(plan(f, '3,5', '8,5').leech).toEqual({ heal: half, restored: Math.min(half, 10), expected: Math.floor(Math.min(half, 10) * 0.95) }); // expected: a hit is 95% at best
     f.foe.hp = 8; expect(plan(f, '3,5', '8,5').leech!.heal).toBe(4); // 8 dealt at most
   });
-  it('CONDENSE + PUSH: ×1.5 on the first tile (45), ×0.7 in the cone (21)', () => {
+  it('CONDENSE + PUSH: CONDENSE strength on the first tile (rules 1.100 item 8372: none of its own), ×0.7 in the cone', () => {
     const f = rig(['fire', 'condense', 'push'], ['6,5', '7,5']); line(f, ['fire', 'condense', 'push'], L3);
-    const pv = plan(f, '3,5', '6,5'); expect(pv.missiles[0].burst.mult['6,5']).toBe(1.5); expect(pv.missiles[0].burst.mult['7,5']).toBe(0.7);
-    evoke(f, '3,5', '6,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([27, 13]); // rules 1.95 (the scale): was [45, 21]
+    const pv = plan(f, '3,5', '6,5'); expect(pv.missiles[0].burst.mult['6,5']).toBe(Math.max((SIGIL as any).condense.mult, 0.7)); expect(pv.missiles[0].burst.mult['7,5']).toBe(0.7);
+    evoke(f, '3,5', '6,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([Math.round((SIGIL as any).fire.damage * Math.max((SIGIL as any).condense.mult, 0.7)), Math.round((SIGIL as any).fire.damage * 0.7)]);
   });
 });
 

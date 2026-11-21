@@ -1,6 +1,8 @@
 // Lane classes-i under Sigil rules 1.4 (spec: "the old classes under the new Sigil rules"; items 430, 437, 448;
 // docs/design/sigil-1.4-impact.md, base classes): the Mage's Barrage, Overcharge and Payload, the Warden's Raise Cover
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
+import { SIGIL } from '../src/data';
+import { LINE_MOST } from '../src/sigilwords';
 import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
@@ -61,15 +63,16 @@ describe('Mage under 1.4', () => {
     expect(ch2 - f.unit(u.id).mg!.charge).toBe(Math.max(1, Math.max(1, 3 - (f.unit(u.id).mg!.coreSave || 0)) - 1));
     expect(f.unit(u.id).mg!.maxWords).toBe(2);
   });
-  it('Overcharge never passes 4 glyphs (item 437)', () => {
-    const f = fightWith([cls('mage', 2, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['spark', 'seek', 'condense'], 4);
+  it('Overcharge never passes the longest Line (item 437; rules 1.100 item 8370: LINE_MOST)', () => {
+    const f = fightWith([cls('mage', 2, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['spark', 'seek', 'condense'], LINE_MOST - 1);
     act(f, u, { type: 'combat/perk', id: 'class:mage.overcharge', actionId: 'overcharge' });
-    walk(f, u, ['spark', 'seek', 'condense', 'condense'], ['3,2', '4,2', '5,2', '6,2']);
-    at(f, u, '7,2');
-    // Rules 1.10: a stroke of 4 is full; the next glyph starts a new Line and the Line of 4 stays 4.
-    act(f, u, { type: 'combat/draw', word: 'condense', tile: '7,2' });
-    const p = findPattern(f.cb, '3,2'); expect(typeof p === 'object' && p.words.length).toBe(4);
-    expect(findPattern(f.cb, '7,2')).toMatch(/One glyph alone/);
+    const words = ['spark', 'seek', ...Array(LINE_MOST - 2).fill('condense')], tiles = words.map((_, i) => (3 + i) + ',2'), next = (3 + LINE_MOST) + ',2';
+    walk(f, u, words, tiles);
+    const p = findPattern(f.cb, '3,2'); expect(typeof p === 'object' && p.words.length).toBe(LINE_MOST);
+    at(f, u, next);
+    // Rules 1.10: a full stroke is full; the next glyph starts a new Line (the oldest glyph fades at the ground cap).
+    act(f, u, { type: 'combat/draw', word: 'condense', tile: next });
+    expect(findPattern(f.cb, next)).toMatch(/One glyph alone/);
   });
 
   /** SPARK and a second word on a Line at 5,2 (drawn first) and 4,2; the Mage stands on 4,2, so it fires east, Touch:
@@ -96,7 +99,7 @@ describe('Mage under 1.4', () => {
   });
   it('Payload gives a one-target spell one more missile, at the nearest other target in the area', () => {
     const p = payloadFight('condense', '6,3', true);
-    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); expect(p.b.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); // SPARK 15 × CONDENSE 1.5 = 22.5, rounded to the nearest (item 456), each
+    expect(p.a.hp).toBe(999 - Math.round((SIGIL as any).spark.damage * (SIGIL as any).condense.mult)); expect(p.b.hp).toBe(p.a.hp); // SPARK x CONDENSE's strength (rules 1.100 item 8372: none of its own), rounded to the nearest (item 456), each
     expect(logHas(p.f.cb, /one more missile \(1 → 2\)/)).toBe(true);
     expect(payloadFight('condense', '6,3', false).b.hp).toBe(999);
   });
@@ -111,7 +114,7 @@ describe('Mage under 1.4', () => {
   });
   it('Payload with no aim on a harmful spell still goes to the nearest enemy in the area', () => {
     const p = payloadFight('condense', '10,2', true, '');
-    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */);
+    expect(p.a.hp).toBe(999 - Math.round((SIGIL as any).spark.damage * (SIGIL as any).condense.mult)); // rules 1.100 item 8372
   });
   it('Payload is refused on a STAY, WAIT or WATCH spell, before anything is spent', () => {
     const f = fightWith([cls('mage', 3, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['spark', 'stay']);

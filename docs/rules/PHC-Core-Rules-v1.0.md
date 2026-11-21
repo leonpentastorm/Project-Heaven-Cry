@@ -15075,3 +15075,53 @@ bible's (`tools/balance/bible/mind.json` perception door; rulings 13, 20, 31, 41
       Last Shade (its AP price and the length of its Traced are not in the bible), Dead Drop, Spotter as the Spotted
       mark, Lend the Dark's, Spot's and Dead Drop's solo forms, the keeps tags, Shadow's Marks and gifts (step 3),
       the Operative's Toxin restated, and the rank levels 3, 5 and 15. Until each is built it keeps its 0.33 rule.
+
+### Rules 1.100 (the Sigil door), 0.34: one lane of the total rebalance: the Line on Brain Power's ladder, the Evoke on the cash-out (21 Nov 2026)
+
+One door, one lane (ruling M): Intelligence's door, Sigils, through Brain Power, Rumination and Eloquence, after rules
+1.99. Every number is the bible's (`tools/balance/bible/mind.json` intelligence door; rulings 13, 17, 19, 20, 31, 32,
+39, 52, 58 and 63) and lives in `data/skills.json` (Brain Power's `door_ladder`, the three ladders), `data/sigils.json`
+`grammar`, `data/calls.json` (Brief) and `data/forks.json`. Everything is PROVISIONAL until played. As played after
+this revision:
+
+8370. **A Line's length is Brain Power's Reach** (rules 1.96 item 8324's ladder): 2 glyphs from Brain Power 1, 3 from
+      4, 4 from 7 once Rumination is 4, 5 from 10 once Rumination is 7 and Eloquence 4 (ruling 13: a step whose family
+      is short is not held; the step below stands). Items that add Max Sigil words add to it. The longest Line anyone
+      writes is 5 (`grammar.max_glyphs`), one more when Overclocked (`grammar.push_past`). A character with an Evoker
+      and no Brain Power writes the shortest Line (2) and its Evoke pays no Bite (its Line is a plain hit). Supersedes
+      rules 1.4's Max Sigil words from Intelligence (2 + (Intelligence - 1) / 2) and the Line of 4 at most.
+8371. **The Evoke is the door's cash-out.** A character's Line multiplies its direct damage by Brain Power's Bite x
+      S(n) for its n glyphs, at the door's own step (rules 1.96 item 8326; no "1 +": a Line of two is the short spell),
+      so a Line of two is about two plain hits and the Line of five about eleven (ruling 58). The Line pays for at most
+      the glyphs its caster may write now (its Reach, one more Overclocked): a stored spell longer than its caster's
+      new Reach still goes off as stored, at the Reach's worth (ruling 39). The hit's Margins add to the factor.
+      Healing, shields, ranges and conditions are not changed; an enemy caster's Line has no factor. Supersedes rules
+      1.17 and 1.26's Line multiplier (x1.87 / 1.93 / 1.98 for 2 / 3 / 4 glyphs).
+8372. **One Subject deals the damage.** A Line deals its strongest damaging Subject's damage; every other damaging
+      Subject adds its element and its condition, not its damage (`grammar.repeats.other_share` 0). **CONDENSE** is one
+      target and nothing else: no strength of its own; Mastered, it costs no charge. Supersedes rules 1.4's "the
+      strongest in full and half of every other" and CONDENSE's x1.5 (+0.5 a copy, x1.6 Mastered).
+8373. **Words held: 4 + 3 a Brain Power point** (plus each Mastered free word). Supersedes rules 1.10's 4 + Brain Power.
+8374. **Brain Power 2 is the first core saving** (the savings at 2, 5 and 9; was 3, 5 and 9). **Overclock is the
+      door's Push, at Brain Power 8** (ruling 17; it was at 2): once a turn, 0 AP, your next glyph may make the Line one
+      longer than your Reach (never past the longest Line plus one), for 2 more charge; when the Overclocked Line is
+      Evoked your Evoker overloads as if its Flux had gone one over (the one overload: its share of your max HP, locked
+      to the next round, all your Flux to the air). Supersedes rules 1.74 item 6020's Overclock at 2, at will, with no
+      overload.
+8375. **Rumination counts from its first point** (ruling 20): each point is +1 to your Flux limit (6 + Rumination;
+      the old product feed, 1% x Brain Power x Rumination on a limit of 6, is retired). **Rumination 10: an Evoke
+      leaves its first glyph on the ground** (the beta's point 10, as the other doors' betas): the next Line starts one
+      glyph written. Supersedes rules 1.60 item 4608's Flux feed.
+8376. **Brief works alone and vents** (ruling 32): you may Brief yourself, at the step below your own (at least the
+      first). **Eloquence 6:** a Brief you give vents 1 of your Flux. Supersedes rules 1.74's Brief for an ally only.
+8377. **The forks are +10%** (ruling 52): Overflux, your Lines at your Flux limit deal x1.1 (was x1.25); Written in
+      Advance, your first Evoke after a turn you ended with glyphs drawn deals x1.1 (was x1.2). The bible's form is a
+      term of the one sum (A8), which is not built: until it is they multiply. Clean Vent and Running Script are kept.
+8378. **The Intelligence card drops Max Sigil words** (its derived line): Intelligence is +10% Sigil power a point, and
+      the Line's length is Brain Power's.
+8379. **Not in this revision** (for the lead, listed in `docs/design/handoffs/0.34-REBALANCE-DOOR-sigils.md`): the
+      Sigilist's ranks re-ordered (Stored Spell and Barrage at 3, Bleed the Flux and Core Change at 5, Payload and
+      Backdraft at 15; the rank levels are the shared class gate), the Sigilist's dial retired, Sigils' Marks and gifts
+      and the word Marks (step 3), the found-spell book (S9, step 3), the keeps tags, the Evoker's grade on a Line's
+      damage (the grade's damage half for a focus is step 5: the seam is left), and the enemy caster's Margins by tier.
+      Until each is built it keeps its 0.33 rule.

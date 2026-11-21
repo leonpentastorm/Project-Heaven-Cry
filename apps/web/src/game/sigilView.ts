@@ -45,10 +45,10 @@ export function shortWhy(why: string | null | undefined): string {
   const ap = /Needs ([\d.]+) AP/.exec(w); if (ap) return 'needs ' + ap[1] + ' AP';
   // The word cap (engine strokeRefusal): its numbers as the engine wrote them, and the attribute that raises it, if any.
   if (/past your cap/i.test(w)) {
-    const m = /Max Sigil words is (\d+)/.exec(w), r = /(\w+) (\d+) raises it to (\d+)/.exec(w);
+    const m = /Max Sigil words is (\d+)/.exec(w), r = /([A-Z][\w ]*?) (\d+) raises it to (\d+)/.exec(w);
     return m ? m[1] + ' words max' + (r ? '; ' + r[1] + ' ' + r[2] + ' gives ' + r[3] : '') : 'over your cap';
   }
-  const rules: [RegExp, string][] = [[/one glyph per tile|holds \d+ glyphs at most/i, 'tile taken'], [/past the cap/i, 'over 4 glyphs'],
+  const rules: [RegExp, string][] = [[/one glyph per tile|holds \d+ glyphs at most/i, 'tile taken'], [/past the cap/i, 'Line too long'],
     [/second reach/i, 'one Reach only'], [/KIN takes one/i, 'one KIN only'], [/WATCH and STAY/i, 'no WATCH + STAY'], [/locked after an overload/i, 'Evoker locked'],
     [/need an Evoker/i, 'no Evoker'], [/silenced/i, 'silenced'], [/downed/i, 'downed'], [/not your turn/i, 'not your turn'], [/own tile/i, 'step on it'], [/charge/i, 'not enough charge'], [/don't know/i, 'unknown word']];
   for (const [re, t] of rules) if (re.test(w)) return t;

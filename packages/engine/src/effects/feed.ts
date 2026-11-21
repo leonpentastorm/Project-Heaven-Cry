@@ -17,8 +17,9 @@ export const FEEDS: Feed[] = (SKILLS as any[]).filter((s) => s.feed).map((s) => 
   const door = (SKILLS as any[]).find((a) => a.attribute === s.attribute && a.slot === 'alpha');
   if (!door) throw new Error('skills.json ' + s.id + '.feed: its attribute has no alpha skill to feed.');
   const n = s.per_point?.numbers || {};
-  if (typeof s.feed.carrier !== 'string' || !(n.feed > 0)) throw new Error('skills.json ' + s.id + ': a feed needs its carrier and per_point.numbers.feed.');
-  return { beta: s.id, betaName: s.name, door: door.id, carrier: s.feed.carrier, per: n.feed, flat: Number(n.feed_flat) || 0, atDouble: Number(n.feed_at_double) || 0, row: s.feed };
+  // rules 1.100 item 8375: a beta with no product step feeds by its flat term alone (Rumination: feed_flat, no feed)
+  if (typeof s.feed.carrier !== 'string' || !(n.feed > 0 || (n.feed == null && n.feed_flat > 0))) throw new Error('skills.json ' + s.id + ': a feed needs its carrier and per_point.numbers.feed (or, with none, feed_flat).');
+  return { beta: s.id, betaName: s.name, door: door.id, carrier: s.feed.carrier, per: Number(n.feed) || 0, flat: Number(n.feed_flat) || 0, atDouble: Number(n.feed_at_double) || 0, row: s.feed };
 });
 const BY_DOOR: Record<string, Feed> = Object.fromEntries(FEEDS.map((f) => [f.door, f]));
 export const FEED_BY_CARRIER: Record<string, Feed> = Object.fromEntries(FEEDS.map((f) => [f.carrier, f]));

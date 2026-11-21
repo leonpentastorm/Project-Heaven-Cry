@@ -131,8 +131,8 @@
       "name": "Brief",
       "skill": "eloquence",
       "kind": "helping",
-      "aim": "ally",
-      "text": "Make an ally's next actions cost less AP. The discount lasts until the end of their next turn, and an action that costs no AP doesn't use it up.",
+      "aim": "self-or-ally",
+      "text": "Make an ally's next actions cost less AP, or your own. On yourself it is made at the step below your own (at least the first). The discount lasts until the end of their next turn, and an action that costs no AP doesn't use it up. From Eloquence {=feeds.steps.0.from}, a Brief you give vents {=feeds.steps.0.value|abs} of your Flux.",
       "steps": [
         {
           "at": 1,
@@ -164,7 +164,20 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "rules 1.74 item 6023 (re-stepped stronger: ruling layer section 2 item 4; re-stepped again by rules 1.87 item 7501, measured)"
+      "source": "rules 1.74 item 6023 (re-stepped stronger: ruling layer section 2 item 4; re-stepped again by rules 1.87 item 7501, measured)",
+      "self_step_less": 1,
+      "feeds": {
+        "resource": "flux",
+        "when": "given",
+        "steps": [
+          {
+            "from": 6,
+            "value": -1
+          }
+        ],
+        "line": "{who} talks the pressure out: {n} Flux vented ({call}).",
+        "source": "rules 1.100 item 8376 (mind.json eloquence point 6): a Brief you give vents your Flux"
+      }
     },
     {
       "id": "call.name_it",
@@ -302,8 +315,14 @@
       "feeds": {
         "resource": "guard",
         "steps": [
-          { "from": 2, "value": 1 },
-          { "from": 6, "value": 2 }
+          {
+            "from": 2,
+            "value": 1
+          },
+          {
+            "from": 6,
+            "value": 2
+          }
         ],
         "source": "rules 1.98 item 8352 (body.json sensory points 2 and 6): a Warn that lands raises the speaker's plates, up to its Reach"
       },

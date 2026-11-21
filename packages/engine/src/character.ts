@@ -17,7 +17,7 @@ import { marginShare } from './rolls';
 import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { CONDITION_ROWS } from './condtable';
-import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
+import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV, G as SIGIL_G, MIN_GLYPHS } from './sigilwords';
 import { feedOf } from './effects/feed';
 import { itemTags, hasTag, fixedGradeOf, ungradedWhy } from './itemtags';
 import { reachOfRes } from './door';
@@ -896,16 +896,21 @@ export const sigilMult = (c: Character) => statOf('sigil', c); // 1 + 0.1 × (In
 export const soulMult = (c: Character) => statOf('soul', c);
 // Balance pass (item 587, provisional): the same slope as the Physical multiplier (was 0.2 and 0.1; max ×2.4, was ×3.8).
 export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.1 × (Expression − 1) + 0.05 × Visualization
-export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
+/** Rules 1.100 item 8370: Max Sigil words is Brain Power's Reach (skills.json brain_power door_ladder, with its family
+ * gates); with no Brain Power, the shortest Line (sigils.json grammar.min_glyphs). Items add to it (max_sigil_words). */
+export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', reachOfRes(c.skills as any, 'glyphs') || MIN_GLYPHS);
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
 /** Rules 1.74 item 6020: the core-charge cut a Sigil, one step a point listed in skills.json brain_power per_point.charge_at (3, 5, 9). */
 export const sigilCoreSaving = (c: Character) => { const pp: any = (SKILL as any).brain_power?.per_point || {}, n: any = pp.numbers || {}; return ((pp.charge_at as number[]) || []).filter((at) => P(c, 'brain_power') >= at).length * (n.charge ?? 1); };
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
-/** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
- * cap, so it never fills an ordinary slot, now or after Brain Power rises). */
-export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as any).sigilGrowth?.freeTaken || 0);
+/** Words known at most (rules 1.100 item 8373, ruling C19): sigils.json grammar.known.base + Brain Power's per_point
+ * numbers.words a point, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the cap, so it never fills an
+ * ordinary slot, now or after Brain Power rises). */
+const KNOWN_BASE = Number(SIGIL_G.known?.base), KNOWN_PER = Number((SKILL as any).brain_power?.per_point?.numbers?.words);
+if (!(KNOWN_BASE >= 0) || !(KNOWN_PER >= 0)) throw new Error('data/sigils.json grammar.known.base and skills.json brain_power per_point.numbers.words are needed');
+export const wordsKnownCap = (c: Character) => KNOWN_BASE + KNOWN_PER * P(c, 'brain_power') + ((c as any).sigilGrowth?.freeTaken || 0);
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };

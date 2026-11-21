@@ -10,14 +10,14 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
-  ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, previewEvoke, compileSpell, lineMult, LINE_MULT, lineMultFor, spellMargins, capParts, marginShareOf, marginsOf, RULES,
+  ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, previewEvoke, compileSpell, lineCash, lineMultFor, spellMargins, capParts, marginShareOf, marginsOf, RULES,
   STAGE_MULT, stageMult, SOUL_DAMAGE, SOUL_DAMAGE_ENEMY, outburstDamage, heldMult, previewOutburstPlan, previewPump, heartMagic, HEART_CASTERS, migrateDesign,
   FEELINGS, FEELING, PLAIN_STEP, feelingStep, MODULE, RETIRED_MODULE, SOUL_RULES, SIGIL_GRAMMAR,
   type Sheet, type Combat, type Unit, type MapDef, type OutburstDesign,
 } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { scaled } from './helpers/scale';
-import { SIGIL, SCHOOL } from '../src/data';
+import { SIGIL, SCHOOL, SKILL } from '../src/data';
 import { MEND_GATE } from '../src/effects/output';
 const WD = (w: string): number => (SIGIL as any)[w].damage;
 
@@ -48,36 +48,39 @@ function cast(s: ReturnType<typeof sigil>, words: string[], rng = s.rng, t: Unit
   return hp - t.hp;
 }
 
-describe('Sigil: the Line multiplier (rules 1.17)', () => {
-  it('the data: ×1.87 for 2 glyphs, ×1.93 for 3, ×1.98 for 4 (rules 1.26, the re-fit; ×1.7 / 1.75 / 1.8 in rules 1.17); nothing under 2 glyphs', () => {
-    expect(LINE_MULT).toEqual({ 2: 1.87, 3: 1.93, 4: 1.98 }); expect([1, 2, 3, 4, 5].map(lineMult)).toEqual([1, 1.87, 1.93, 1.98, 1.98]);
-    expect(SIGIL_GRAMMAR.line_mult.provisional).toBe(true);
+// Rules 1.100 item 8371: the Line multiplier is the Sigil door's cash-out, Brain Power's Bite x S(n) (skills.json brain_power
+// door_ladder); every expectation reads it through lineCash on the caster's own sheet (its magic's lineSkills).
+const L = (u: Unit, n: number) => lineCash((u.mg as any).lineSkills, n);
+describe("Sigil: the Line's cash-out (rules 1.17, 1.100)", () => {
+  it("the data: Bite x S(n) on the door's own step, each glyph worth more than the one before; nothing below the ladder", () => {
+    const lad: any = (SKILL as any).brain_power.door_ladder, bite = lad.rows.find((r: any) => typeof r.bite === 'number').bite, g = lad.cash_step;
+    const sk = { brain_power: 10, rumination: 7, eloquence: 4 };
+    for (const n of [2, 3, 4, 5]) expect(lineCash(sk, n)).toBeCloseTo(bite * (g ** n - 1) / (g - 1), 9);
+    expect(lineCash(sk, 3)).toBeGreaterThan(lineCash(sk, 2)); expect(lineCash({}, 4)).toBe(1);
+    expect(SIGIL_GRAMMAR.line_cash.provisional).toBe(true);
   });
-  it('the player-facing text (the glossary reads it) shows the numbers the engine multiplies by, from its own fields', () => {
-    for (const n of [2, 3, 4]) expect(SIGIL_GRAMMAR.line_mult.text).toContain('×' + LINE_MULT[n] + ' ');
-  });
-  it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
-    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(WD('fire') * LINE_MULT[2])); // rules 1.95: FIRE's row (30 x the factor)
-    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(WD('fire') * 1.5 * LINE_MULT[3]));
-    // 4 glyphs: STONE 35 in full (Sigil), FIRE at half (Elemental), CONDENSE ×1.5, the Line ×1.8
+  it("a character's Line multiplies its damage by its cash-out, in the preview and in the hit (one Subject deals the damage, CONDENSE adds none)", () => {
+    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(WD('fire') * L(a.u, 2)));
+    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(WD('fire') * L(b.u, 3)));
+    // 4 glyphs: STONE in full (Sigil); FIRE adds its element and its condition, not its damage (rules 1.100 item 8372)
     const c = sigil(['stone', 'fire', 'condense', 'seek']);
     draw(c.cb, c.rng, c.u, ['stone', 'fire', 'condense', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
-    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(WD('stone') * 1.5 * LINE_MULT[4]) + Math.round(WD('fire') * 0.5 * 1.5 * LINE_MULT[4])); // rules 1.95: the rows, FIRE at half
+    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(WD('stone') * L(c.u, 4)));
     const hp = c.e.hp; expect(evoke(c.cb, c.rng, c.u, '2,5', c.e.pos)).toBeNull(); expect(hp - c.e.hp).toBe(pv.affected[0].dmg);
   });
-  it('damage only: the Line multiplier does not touch a heal (MEND 15 since rules 1.36, under the gate)', () => {
+  it("damage only: the Line's cash-out does not touch a heal (MEND 15 since rules 1.36, under the gate)", () => {
     const s = sigil(['mend', 'seek'], [{ at: '15,5' }], '9,5'); s.ally!.hp = 100;
     draw(s.cb, s.rng, s.u, ['mend', 'seek'], ['5,5', '4,5']); expect(evoke(s.cb, s.rng, s.u, '4,5', '9,5')).toBeNull();
     expect(s.ally!.hp).toBe(100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, MEND_GATE.hp!))) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); // rules 1.36: the gate (20% of the bar, counted to 145)
   });
-  it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
+  it("an enemy caster's Line takes no factor: its damage comes from the enemy table", () => {
     const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
-    expect(lineMultFor(s.u, sp)).toBe(LINE_MULT[2]); expect(lineMultFor(s.e, sp)).toBe(1); expect(lineMultFor(null, sp)).toBe(1);
+    expect(lineMultFor(s.u, sp)).toBe(L(s.u, 2)); expect(lineMultFor(s.e, sp)).toBe(1); expect(lineMultFor(null, sp)).toBe(1);
   });
   it('no ceiling: a spell is never scaled down to 350 (the targets stay targets)', () => {
     expect(capParts([400, 300], false)).toEqual([400, 300]);
-    const s = sigil(['fire', 'seek']); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 5000;
-    expect(cast(s, ['fire', 'seek'])).toBe(337 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2] * 10) */); // 561
+    const s = sigil(['fire', 'seek']); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 50000;
+    expect(cast(s, ['fire', 'seek'])).toBe(Math.round(WD('fire') * L(s.u, 2) * 10));
   });
 });
 
@@ -88,7 +91,7 @@ describe('Sigil: Margins, the level gap, and the Elite and Boss guard (rules 1.1
     s.e.marginsTaken = 0; // this test is the Margins' own: the fixture's 'no Margins' is undone
     const bonus = previewEvoke(s.cb, s.u, '4,5', s.e.pos).affected[0].roll!.bonus, m = marginsOf(20 + bonus, s.e.def, true), share = marginShareOf(null); // no game bound: the caster reads Perception 0
     const hp = s.e.hp; expect(evoke(s.cb, rollIs(20), s.u, '4,5', s.e.pos)).toBeNull();
-    expect(hp - s.e.hp).toBe(Math.round(WD('fire') * (LINE_MULT[2] + share * m)));
+    expect(hp - s.e.hp).toBe(Math.round(WD('fire') * (L(s.u, 2) + share * m)));
     const half = sigil(['fire', 'seek']); half.e.marginsTaken = -1; // the target's Margins taken: one fewer
     expect(spellMargins(half.cb, half.u, half.e, 20 + bonus, true).n).toBe(m - 1);
     s.u.marginsTaken = 0; expect(spellMargins(s.cb, s.e, s.u, 20, true).share).toBe(MG.per); // an enemy's

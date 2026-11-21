@@ -5,6 +5,8 @@
 import { MEND_GATE } from '../src/effects/output';
 import { scaled } from './helpers/scale';
 import { SIGIL } from '../src/data';
+import { LINE_MOST } from '../src/sigilwords';
+const CM: number = (SIGIL as any).condense.mult; // rules 1.100 item 8372: CONDENSE's strength (1: none of its own)
 import { F } from './helpers/scale';
 const WD = (w: string): number => (SIGIL as any)[w].damage;
 import { describe, expect, it } from 'vitest';
@@ -55,7 +57,7 @@ describe('grammar (spec: Grammar and cost)', () => {
     expect(grammarError(['fire', 'seek', 'arc'], 4)).toMatch(/second Reach/);
     expect(grammarError(['fire', 'kin', 'kin'], 4)).toMatch(/KIN takes one copy/);
     expect(grammarError(['fire', 'watch', 'stay'], 4)).toMatch(/WATCH and STAY/);
-    expect(grammarError(['fire', 'seek', 'seek', 'seek', 'seek'], 9)).toMatch(/at most 4/);
+    expect(grammarError(['fire', ...Array(LINE_MOST).fill('seek')], 9)).toMatch(new RegExp('at most ' + LINE_MOST)); // rules 1.100 item 8370: the longest Line, Overclocked
     expect(grammarError(['fire', 'seek', 'spread'], 2)).toMatch(/Max Sigil words/);
     expect(grammarError(['fire', 'seek', 'seek'], 4)).toBeNull(); // the same Reach word may repeat
     expect(grammarError(['step', 'condense'], 4)).toBeNull();
@@ -68,7 +70,7 @@ describe('grammar (spec: Grammar and cost)', () => {
     const u = compileSpell(['fire', 'push', 'push', 'twice']);
     expect(u.coneLen).toBe(5); expect(u.coneMult).toBe(0.6); expect(u.missiles).toBe(2);
     expect(compileSpell(['fire', 'twice', 'twice']).missiles).toBe(3);
-    expect(compileSpell(['fire', 'condense', 'condense', 'condense']).coreMult).toBe(2.5);
+    expect(compileSpell(['fire', 'condense', 'condense', 'condense']).coreMult).toBe(CM); // rules 1.100 item 8372: CONDENSE adds no strength
     expect(compileSpell(['fire', 'pull', 'pull']).pull).toBe(6);
     expect(compileSpell(['fire', 'chain', 'chain']).chain).toBe(2);
     expect(compileSpell(['fire', 'leech', 'leech']).leech).toBe(0.75);
@@ -78,15 +80,13 @@ describe('grammar (spec: Grammar and cost)', () => {
     expect(compileSpell(['mend', 'arc']).reachMult).toBe(0.8);
     expect(compileSpell(['mend', 'sense']).reachMult).toBe(0.6);
   });
-  // Balance pass (item 589): the strongest damaging glyph counts in full, every other one adds half.
-  it('the spec\'s numbers: FIRE · CONDENSE ×3 61, FIRE · FIRE · CONDENSE 61, FIRE ×3 · CONDENSE 73', () => {
-    for (const [words, want] of [[['fire', 'condense', 'condense', 'condense'], 61], [['fire', 'fire', 'condense'], 61], [['fire', 'fire', 'fire', 'condense'], 73]] as const) {
+  // Rules 1.100 item 8372: the strongest damaging glyph deals the damage, every other adds its element, not its damage; each repeat x0.9.
+  it('the spec numbers now: FIRE · CONDENSE ×3, FIRE · FIRE · CONDENSE, FIRE ×3 · CONDENSE are FIRE x its repeats', () => {
+    for (const words of [['fire', 'condense', 'condense', 'condense'], ['fire', 'fire', 'condense'], ['fire', 'fire', 'fire', 'condense']]) {
       const { cb, u, e, rng } = setup([...new Set(words)], [{ at: '6,5' }]);
       draw(cb, rng, u, [...words], row(5, 5, words.length, -1));
-      // The caster stands on the last glyph, at the Line's west end, so it fires east past the first: Touch reaches 6,5.
-      const pv = previewEvoke(cb, u, u.pos, e.pos);
-      // rules 1.95: FIRE's row is 30 x the factor, so the spec's number is x the factor too, within the formula's rounding
-      const got = pv.affected.find((a) => a.unit === e.id)!.dmg; expect(pv.ok).toBe(true); expect(Math.abs(got - want * F)).toBeLessThanOrEqual(1);
+      const pv = previewEvoke(cb, u, u.pos, e.pos), want = WD('fire') * CM * compileSpell(words).repMult;
+      const got = pv.affected.find((a) => a.unit === e.id)!.dmg; expect(pv.ok).toBe(true); expect(Math.abs(got - want)).toBeLessThanOrEqual(1);
       const hp = e.hp; expect(evoke(cb, rng, u, u.pos, e.pos)).toBeNull(); expect(hp - e.hp).toBe(got);
     }
   });
@@ -125,13 +125,14 @@ describe('drawing (spec: Drawing a spell)', () => {
     draw(cb, rng, u, ['kin'], ['4,5']); u.pos = '5,5'; expect(drawGlyph(cb, rng, u, 'kin')).toMatch(/KIN takes one copy/);
     const g2 = setup(['fire', 'watch', 'stay']); draw(g2.cb, g2.rng, g2.u, ['fire', 'watch'], ['2,5', '3,5']); g2.u.pos = '4,5'; expect(drawGlyph(g2.cb, g2.rng, g2.u, 'stay')).toMatch(/WATCH and STAY/);
     const g3 = setup(['fire', 'seek', 'condense']); g3.u.mg!.maxWords = 2; draw(g3.cb, g3.rng, g3.u, ['fire', 'seek'], ['2,5', '3,5']); g3.u.pos = '4,5'; expect(drawGlyph(g3.cb, g3.rng, g3.u, 'condense')).toMatch(/Past your cap/);
-    // Rules 1.10: a full stroke of 4 can't be extended, so a fifth glyph beyond its end starts a new Line (no refusal,
-    // and the Line of 4 is untouched).
-    const g4 = setup(['fire', 'seek', 'condense', 'spread']); draw(g4.cb, g4.rng, g4.u, ['fire', 'seek', 'condense', 'spread'], row(2, 5, 4)); g4.u.pos = '6,5';
+    // Rules 1.10: a full stroke (rules 1.100: the longest Line, LINE_MOST) can't be extended, so a glyph beyond its end
+    // starts a new Line (no refusal, and the full Line is untouched).
+    const W6 = ['fire', 'seek', 'condense', 'spread', 'kin', 'leech'].slice(0, LINE_MOST), end = (2 + LINE_MOST) + ',5';
+    const g4 = setup([...W6]); g4.u.mg!.maxWords = LINE_MOST; draw(g4.cb, g4.rng, g4.u, W6, row(2, 5, LINE_MOST)); g4.u.pos = end;
     expect(previewDraw(g4.cb, g4.u, 'fire').effect).toBe('starts'); expect(previewDraw(g4.cb, g4.u, 'fire').strokes).toEqual([]);
-    expect(drawGlyph(g4.cb, g4.rng, g4.u, 'fire')).toBeNull(); // (the oldest, FIRE at 2,5, fades at the ground cap of 4)
-    const p4 = findPattern(g4.cb, '3,5'); expect(typeof p4 === 'object' && p4.words).toEqual(['seek', 'condense', 'spread']);
-    expect(findPattern(g4.cb, '6,5')).toMatch(/One glyph alone/);
+    expect(drawGlyph(g4.cb, g4.rng, g4.u, 'fire')).toBeNull(); // (the oldest, FIRE at 2,5, fades at the ground cap)
+    const p4 = findPattern(g4.cb, '3,5'); expect(typeof p4 === 'object' && p4.words).toEqual(W6.slice(1));
+    expect(findPattern(g4.cb, end)).toMatch(/One glyph alone/);
   });
   it('a bend no longer breaks a Line (rules 1.10: it starts a new stroke); an enemy glyph beside your Line never joins it', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'condense']);
@@ -194,7 +195,7 @@ describe('the facing rule (spec: Evoking)', () => {
     const { cb, u, rng } = setup(['mend', 'condense', 'push', 'fire']); u.hp = 100;
     draw(cb, rng, u, ['mend', 'condense'], ['3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', u.pos); expect(pv.ok).toBe(true); expect(pv.affected.map((a) => a.unit)).toEqual([u.id]);
-    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(127 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 1.5 * 145) */); // rules 1.36: MEND 15 × 1.5 under the gate (20% × the shape's 1.5, counted to 145)
+    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.ceil(0.2 * CM * 90) /* rules 1.100 item 8372: CONDENSE's shape is CM (it was 1.5: 127) */); // rules 1.36: MEND 15 × 1.5 under the gate (20% × the shape's 1.5, counted to 145)
     const t = setup(['fire', 'push']); draw(t.cb, t.rng, t.u, ['fire', 'push'], ['3,5', '2,5']);
     expect(previewEvoke(t.cb, t.u, '2,5', t.u.pos).why).toMatch(/PUSH is refused/);
   });
@@ -295,7 +296,7 @@ describe('Burst (spec: Burst)', () => {
     const { cb, u, es, rng } = setup(['fire', 'seek', 'spread', 'condense'], [{ at: '9,5' }, { at: '10,6' }, { at: '12,5' }]);
     draw(cb, rng, u, ['fire', 'spread', 'seek'], ['5,5', '4,5', '3,5']);
     const pv = previewEvoke(cb, u, '3,5', '9,5'); expect(pv.missiles[0].burst.tiles.length).toBe(25);
-    const splash = Math.round(WD('fire') * 0.6), core = Math.round(WD('fire') * 1.5); // rules 1.95: FIRE's row
+    const splash = Math.round(WD('fire') * 0.6), core = Math.round(WD('fire') * CM); // rules 1.95: FIRE's row
     expect(pv.affected.filter((a) => !a.kinSpared).map((a) => [a.unit, a.dmg])).toEqual([[es[0].id, splash], [es[1].id, splash]]);
     const t = setup(['fire', 'seek', 'spread', 'condense'], [{ at: '9,5' }, { at: '10,6' }]);
     draw(t.cb, t.rng, t.u, ['fire', 'condense', 'spread', 'seek'], ['6,5', '5,5', '4,5', '3,5']);
@@ -319,21 +320,21 @@ describe('Subjects (spec: the words)', () => {
   it('FIRE 30 (a critical is ×1.5 since rules 1.17, and sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
     for (const [w, dmg] of [['fire', 30], ['freeze', 25], ['stone', 35], ['spark', 15], ['gale', 15]] as const) {
       const { cb, u, e, rng } = setup([w, 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, [w, 'condense'], ['4,5', '3,5']);
-      const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp, w).toBe(Math.round(WD(w) * 1.5)); void dmg; // rules 1.95: each word's row
+      const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp, w).toBe(Math.round(WD(w) * CM)); void dmg; // rules 1.95: each word's row
       if (w === 'freeze') expect(condOn(e, 'slowed')).toBe(true);
       if (w === 'gale') expect(e.pos).toBe('7,5');
     }
     const a = setup(['stone', 'condense'], [{ at: '5,5' }]); a.e.armour = 10; draw(a.cb, a.rng, a.u, ['stone', 'condense'], ['4,5', '3,5']);
     const f = setup(['fire', 'condense'], [{ at: '5,5' }]); f.e.armour = 10; draw(f.cb, f.rng, f.u, ['fire', 'condense'], ['4,5', '3,5']);
-    expect(previewEvoke(a.cb, a.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('stone') * 1.5) - 10); // rules 1.95: the rows; Sigil damage takes full armour
-    expect(previewEvoke(f.cb, f.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('fire') * 1.5) - 5); // Elemental: half armour
+    expect(previewEvoke(a.cb, a.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('stone') * CM) - 10); // rules 1.95: the rows; Sigil damage takes full armour
+    expect(previewEvoke(f.cb, f.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('fire') * CM) - 5); // Elemental: half armour
     const c = setup(['fire', 'condense'], [{ at: '5,5' }]); draw(c.cb, c.rng, c.u, ['fire', 'condense'], ['4,5', '3,5']);
-    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(Math.round(WD('fire') * 1.5)); /* rules 1.96: the critical's ×1.5 is gone (its two Margins are tested in rules117-magic; this fixture's foes take none) */ expect(condOn(c.e, 'burning')).toBe(true); // FIRE's row × 1.5 (CONDENSE) × 1.5 (critical), rounded (rules 1.95: the row x the factor)
+    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(Math.round(WD('fire') * CM)); /* rules 1.96: the critical's ×1.5 is gone (its two Margins are tested in rules117-magic; this fixture's foes take none) */ expect(condOn(c.e, 'burning')).toBe(true); // FIRE's row × 1.5 (CONDENSE) × 1.5 (critical), rounded (rules 1.95: the row x the factor)
   });
   it('ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense −2, a Body save at the end of each turn ends it', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
     const def = e.def, hp = e.hp; evoke(cb, rng, u, '3,5', e.pos);
-    expect(hp - e.hp).toBe(Math.round(WD('acid') * 1.5)); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
+    expect(hp - e.hp).toBe(Math.round(WD('acid') * CM)); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(3 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
     e.sv = { body: 99, brain: 0, heart: 0 }; e.condFresh = []; condTurnEnd(cb, e, seed()); expect(condOn(e, 'corroded')).toBe(false); expect(e.def).toBe(def);
   });
@@ -386,8 +387,8 @@ describe('Subjects (spec: the words)', () => {
     draw(cb, rng, u, ['sharpen', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos);
     const a = allies[0]; expect(condOn(a, 'sharpened')).toBe(true);
     draw(cb, rng, a, ['fire', 'condense'], ['11,5', '10,5']);
-    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(Math.round(scaled(45) * 1.25) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
-    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(34 /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(condOn(a, 'sharpened')).toBe(false);
+    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(Math.round(WD('fire') * CM * 1.25) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
+    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(Math.round(WD('fire') * CM * 1.25) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */); expect(condOn(a, 'sharpened')).toBe(false);
   });
   it('CLEANSE ends one condition, the newest first', () => {
     const { cb, u, allies, rng } = setup(['cleanse', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });

@@ -125,17 +125,17 @@ describe('join marks (game/glyphs.ts)', () => {
 });
 
 describe('the word cap on the draw step: the hint says why, new Line says what fades', () => {
-  it('a third glyph past Max Sigil words 2: the key\'s hint gives the cap and the Intelligence that raises it, from the engine\'s refusal', () => {
-    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', attrs: { intelligence: 2 } }], [{ at: 'P11' }]);
+  it('a third glyph past Max Sigil words 2: the key\'s hint gives the cap and the Brain Power that raises it (rules 1.100 item 8370), from the engine\'s refusal', () => {
+    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 1 } }], [{ at: 'P11' }]);
     const u = f.turn(f.pc); Object.assign(u, { ap: 99 }); Object.assign(u.mg!, { words: ['fire', 'seek', 'condense'], charge: 999, flux: -99, glyphAp: 1 });
     const a = u.pos, [x, y] = a.split(',').map(Number), b = (x + 1) + ',' + y, c = (x + 2) + ',' + y;
     for (const [w, at] of [['fire', a], ['seek', b]]) { f.unit(u.id).pos = at; f.act({ type: 'combat/draw', unitId: u.id, word: w, tile: at } as any); }
     const me = f.unit(u.id); me.pos = c;
     const dw = withGame(f.g, () => drawStrip(f.cb, me)).words.find((w) => w.id === 'condense')!;
     expect(dw.ok).toBe(false);
-    const m = /Max Sigil words is (\d+) at Intelligence 2\. Intelligence (\d+) raises it to (\d+)\./.exec(dw.why!)!;
+    const m = /Max Sigil words is (\d+) at Brain Power 1\. Brain Power (\d+) raises it to (\d+)\./.exec(dw.why!)!;
     expect(m).not.toBeNull();
-    expect(dw.hint).toBe(m[1] + ' words max; Intelligence ' + m[2] + ' gives ' + m[3]);
+    expect(dw.hint).toBe(m[1] + ' words max; Brain Power ' + m[2] + ' gives ' + m[3]);
     expect(dw.sub).toContain(dw.hint);
   });
   it('the hint at the top of the table names only the cap; an old refusal without numbers still reads "over your cap"', () => {

@@ -4,6 +4,7 @@
 // Line of half-glyphs and its backlash as Touch on the victim, Fusion delivering an Outburst by the 1.4 area (Reach,
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
+import { MAX_GLYPHS } from '../src/sigilwords';
 import { scaled } from './helpers/scale';
 import { amountBlock } from '../src/effects/amounts';
 import { describe, expect, it } from 'vitest';
@@ -136,7 +137,7 @@ describe('Circuit Mage under 1.4: Fusion', () => {
     const g = fuse(['seek', 'kin']); seed(g, 15);
     perk(g, g.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: g.foes[0].id });
     const plain = 999 - g.unit(g.foes[0].id).hp;
-    expect(plain).toBeGreaterThan(0); expect(Math.abs(hit - plain * 1.5)).toBeLessThanOrEqual(1);
+    expect(plain).toBeGreaterThan(0); expect(Math.abs(hit - plain * (SIGIL as any).condense.mult)).toBeLessThanOrEqual(1); // rules 1.100 item 8372: CONDENSE's strength (none of its own)
   });
   it('the facing rule sets where it may land: a SEEK Line fired along can\'t reach a target behind you', () => {
     const f = fuse(['seek', 'condense'], { aim: '0,1' });
@@ -154,8 +155,8 @@ describe('Circuit Mage under 1.4: Fusion', () => {
     expect(() => perk(s, s.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: s.foes[0].id })).toThrow(/only Form and Motion/);
     const st = fuse(['seek', 'stay']);
     expect(() => perk(st, st.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: st.foes[0].id })).toThrow(/No standing Outbursts/);
-    const four = fuse(['seek', 'condense', 'condense', 'kin']); four.pc.mg!.maxWords = 4;
-    expect(() => perk(four, four.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: four.foes[0].id })).toThrow(/3 glyphs at most/);
+    const four = fuse(['seek', ...Array(MAX_GLYPHS - 2).fill('condense'), 'kin']); four.pc.mg!.maxWords = MAX_GLYPHS; // rules 1.100 item 8370: the longest Line
+    expect(() => perk(four, four.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: four.foes[0].id })).toThrow(new RegExp((MAX_GLYPHS - 1) + ' glyphs at most'));
     const mid = fuse(['seek', 'condense', 'kin'], { stand: '3,2' });
     expect(() => perk(mid, mid.pc, 'circuit_mage.fusion', { tile: '2,2', choice: 'o1', targetId: mid.foes[0].id })).toThrow(/middle glyph/);
   });

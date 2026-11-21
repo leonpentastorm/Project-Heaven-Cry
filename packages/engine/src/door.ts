@@ -79,3 +79,11 @@ export function keepsOf(skills: Record<string, number> | null | undefined, res: 
   const n = beta?.per_point?.numbers || {};
   return typeof n.keeps === 'number' && typeof n.keeps_from === 'number' && Number(skills?.[beta.id] || 0) >= n.keeps_from ? n.keeps : 0;
 }
+/** Rules 1.100 item 8371: the skill points a door reads (its alpha, its family gates' skills and its beta), copied from a
+ *  sheet: what a unit with no character behind it (a companion's magic) carries for its door's cash-out. */
+export function doorSkillsOf(c: { skills?: Record<string, number> } | null | undefined, res: string): Record<string, number> {
+  const l = doorOfResource(res), out: Record<string, number> = {}; if (!l || !c?.skills) return out;
+  const ids = new Set([l.skill, ...l.rows.flatMap((r) => Object.keys(r.needs || {})), ...(doorBeta(res)?.id ? [doorBeta(res).id] : [])]);
+  for (const id of ids) if (c.skills[id]) out[id] = Number(c.skills[id]);
+  return out;
+}

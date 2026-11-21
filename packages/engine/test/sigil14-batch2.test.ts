@@ -8,6 +8,9 @@ import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here 
 import { PERK, d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { LINE_MOST } from '../src/magic';
+import { SIGIL } from '../src/data';
+import SKILLS_J from '../../../data/skills.json';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 function calm(n = 40): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); }
@@ -87,32 +90,38 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
     const [far, near] = f.foes; f.unit(far.id).pos = '4,4'; f.unit(near.id).pos = '1,4';
     const pv = plan(f, '3,5', '4,4'); expect(pv.ok).toBe(false); // next to the Stack, 2 from the caster
     expect(pv.area).toContain('3,5'); expect(pv.area).toContain('1,4'); expect(pv.area).not.toContain('4,4');
-    evoke(f, '3,5', '1,4'); expect(500 - f.unit(near.id).hp).toBe(27); expect(f.unit(far.id).hp).toBe(500); // FIRE × CONDENSE 1.5
+    evoke(f, '3,5', '1,4'); expect(500 - f.unit(near.id).hp).toBe((SIGIL.fire as any).damage); expect(f.unit(far.id).hp).toBe(500); // FIRE; CONDENSE adds no strength (rules 1.100 item 8372)
   });
 });
 
 describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-485)', () => {
   it('skill unlocks become items once the points reach them, and are in the coverage report', () => {
     const keys = allItems().filter((i) => i.kind === 'skill').map((i) => i.key);
-    expect([...keys].sort()).toEqual(['skill:brain_power.2', 'skill:brain_power.5', 'skill:will_power.2', // rules 1.75 item 6200: Overdraw at Will Power 2 (Pure Heart is a Composure perk)
+    expect([...keys].sort()).toEqual(['skill:brain_power.8', 'skill:brain_power.5', // rules 1.100 item 8374: Overclock is the Push at 8
+      'skill:will_power.2', // rules 1.75 item 6200: Overdraw at Will Power 2 (Pure Heart is a Composure perk)
       'skill:raw_power.2', 'skill:raw_power.5', 'skill:dexterity.1', 'skill:camaraderie.1', 'skill:ingenuity.1', 'skill:ingenuity.3', 'skill:ingenuity.5', 'skill:durability.1', 'skill:conscience.1', 'skill:faith.2', 'skill:vigilant.6'].sort()); // rules 1.99 item 8365: vigilant.6, the eye in the dark; // rules 1.90 item 7812: ingenuity.5, the Scout; rules 1.75: Hand-Off (camaraderie.3) and Stand Still (composure.5) are perks, Name the Sinner is faith.2 // faith.5: rules 1.60 item 4635, Deliver the Sinner a data row; ingenuity: Shadow's door and Ghost Kill (rules 1.32; Close Quarters and Still Breath went to Acuity's perk Still Breath, Shadow Run to Shadow Step II: rules 1.74 items 6002, 6005) // rules 1.13 (perks/skeleton.ts); the list is the data's (skills.json unlocks marked `item`: Classes 3.0 P6), in its order; conscience.1: rules 1.60 item 4612, the prayers' shields fed by Conscience
     const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3, rumination: 4, visualization: 0 } });
     const held = itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).filter((i) => i.kind === 'skill' && !i.key.startsWith('skill:dexterity.')).map((i) => i.key); // (Dexterity's own door, rules 1.56, is held from its first point)
-    expect(held).toEqual(['skill:brain_power.2']);
+    expect(held).toEqual([]); // rules 1.100 item 8374: Overclock moved to Brain Power 8
   });
-  it('Overclock: the next glyph may make the spell one word past Max Sigil words, for +2 charge; gone with that glyph; refused at 4', () => {
-    const plain = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 2 });
+  it('Overclock (the Push at 8, rules 1.100 item 8374): the next glyph may make the spell one word past Max Sigil words, for its charge; the Line overloads the Evoker; refused at the longest Line', () => {
+    const OC = 'skill:brain_power.8', cost = Math.abs(Number(((SKILLS_J as any).items.find((x: any) => x.id === 'brain_power').unlocks['8'].effects[1].value)));
+    const plain = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 8 }, maxWords: 2 });
     line(plain, ['fire', 'seek'], L2.map((k) => k.replace(',5', ',7')));
     plain.pc.pos = '2,7'; expect(withGame(plain.g, () => previewDraw(plain.cb, plain.pc, 'condense')).why).toMatch(/Past your cap/);
-    const f = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 2 });
-    perk(f, 'skill:brain_power.2', 'overclock'); expect(f.pc.mg!.maxWords).toBe(3);
-    const c0 = f.pc.mg!.charge; line(f, ['condense'], ['5,5']); expect(c0 - f.pc.mg!.charge).toBe(1 + 2); // CONDENSE 1 + Overclock 2
-    const c1 = f.pc.mg!.charge; line(f, ['fire', 'seek'], ['4,5', '3,5']); expect(c1 - f.pc.mg!.charge).toBe(4); // no more +2
-    expect(logHas(f.cb, /Overclock: \+2 charge on CONDENSE/)).toBe(true);
+    const seven = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 7 }, maxWords: 2 });
+    expect(() => perk(seven, OC, 'overclock')).toThrow(); // the Push needs Brain Power 8
+    const f = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 8 }, maxWords: 2 });
+    perk(f, OC, 'overclock'); expect(f.pc.mg!.maxWords).toBe(3);
+    const c0 = f.pc.mg!.charge; line(f, ['condense'], ['5,5']); expect(c0 - f.pc.mg!.charge).toBe((SIGIL.condense as any).charge + cost);
+    const c1 = f.pc.mg!.charge; line(f, ['fire', 'seek'], ['4,5', '3,5']); expect(c1 - f.pc.mg!.charge).toBe((SIGIL.fire as any).charge + (SIGIL.seek as any).charge); // no more extra
+    expect(logHas(f.cb, new RegExp('Overclock: [+]' + cost + ' charge on CONDENSE'))).toBe(true);
     const pv = plan(f, '3,5', '8,5'); expect(pv.ok).toBe(true); expect(pv.pattern!.words).toEqual(['condense', 'fire', 'seek']);
-    evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(27); expect(f.pc.mg!.maxWords).toBe(2); // the glyph left the ground
-    const four = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 4 });
-    expect(() => perk(four, 'skill:brain_power.2', 'overclock')).toThrow(/already 4/);
+    const hp = f.pc.hp; evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe((SIGIL.fire as any).damage); // CONDENSE adds no strength (rules 1.100 item 8372)
+    expect(f.pc.mg!.maxWords).toBe(2); // the glyph left the ground
+    expect(f.pc.hp).toBeLessThan(hp); expect(f.pc.mg!.lockRound).toBe(f.cb.round); // the Overclocked Line overloads the Evoker
+    const top = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 8 }, maxWords: LINE_MOST });
+    expect(() => perk(top, OC, 'overclock')).toThrow(new RegExp('already ' + LINE_MOST));
   });
   it('Twin Draw: once a fight, the second spell\'s glyphs cost no Glyph AP until it is as long as the first', () => {
     const f = rig(['fire', 'seek', 'bind', 'condense'], ['14,9'], { skills: { brain_power: 5 } });

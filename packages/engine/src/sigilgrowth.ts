@@ -115,7 +115,7 @@ export interface Inflection { text: string; effects: { op: string; stat?: string
 export const inflectionOf = (w: string): Inflection | null => ((SIGIL[w] as any)?.inflection as Inflection) || null;
 /** The stats the engine runs (sigil.ts applyInflections and the spots that read a word's numbers); any other goes to the
  * Narrator with the inflection's text. */
-export const INFLECTION_STATS = new Set(['cond_rounds', 'save_tn', 'to_hit', 'damage_pct', 'push_tiles', 'shield_pct', 'heal_pct', 'charge', 'flux', 'lasts_rounds', 'radius',
+export const INFLECTION_STATS = new Set(['cond_rounds', 'save_tn', 'to_hit', 'damage_pct', 'push_tiles', 'shield_pct', 'heal_pct', 'charge', 'charge_free', 'flux', 'lasts_rounds', 'radius',
   'teleport_tiles', 'barrier_hp_pct', 'move_tiles', 'range', 'turret_def', 'pull_tiles', 'jump_radius', 'leech', 'mult', 'radius_at_4', 'cone_length', 'spare_downed']);
 /** A Mastered word's inflection value for a stat (0 if none). */
 export function inflectionValue(w: string, stat: string): number {

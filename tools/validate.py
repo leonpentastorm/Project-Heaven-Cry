@@ -429,8 +429,8 @@ if isinstance(sg, dict):
               "resolve_order", "limits", "starting", "known_max"):
         if k not in gr:
             errors.append(f"sigils.grammar: missing {k}")
-    if gr.get("max_glyphs") != 4 or gr.get("min_glyphs") != 2:
-        errors.append("sigils.grammar: a spell is 2 to 4 glyphs (rules 1.4)")
+    if gr.get("max_glyphs") != 5 or gr.get("min_glyphs") != 2 or (gr.get("shape") or {}).get("max") != gr.get("max_glyphs"):
+        errors.append("sigils.grammar: a spell is 2 to 5 glyphs (rules 1.100 item 8370: the top Reach), shape.max the same")
     if (gr.get("draw") or {}).get("glyphs_per_tile") != 1:
         errors.append("sigils.grammar.draw: one glyph per tile (rules 1.4)")
     if set(gr.get("resolve_order") or []) != SG_ORDER:
@@ -463,7 +463,7 @@ if isinstance(sg, dict):
         if x.get("id") in smap:
             errors.append(f"sigils.grammar.retired: {x.get('id')} is still a word")
     # rules 1.10 (Sigil 1.5): every word has a provisional inflection; study and word mastery numbers
-    INFL_STATS = {"cond_rounds", "save_tn", "to_hit", "damage_pct", "push_tiles", "shield_pct", "heal_pct", "charge", "flux",
+    INFL_STATS = {"cond_rounds", "save_tn", "to_hit", "damage_pct", "push_tiles", "shield_pct", "heal_pct", "charge", "charge_free", "flux",
                   "lasts_rounds", "radius", "teleport_tiles", "barrier_hp_pct", "move_tiles", "range", "turret_def", "pull_tiles",
                   "jump_radius", "leech", "mult", "radius_at_4", "cone_length", "spare_downed"}
     for w in sw:
@@ -2246,7 +2246,8 @@ for _s in (data.get("skills") or {}).get("items") or []:
     if _f["carrier"] in _feed_carriers: errors.append(f"{_w}: the carrier {_f['carrier']!r} is fed by {_feed_carriers[_f['carrier']]} too (one beta a number)")
     _feed_carriers[_f["carrier"]] = _s.get("id")
     _n = ((_s.get("per_point") or {}).get("numbers") or {})
-    if not (isinstance(_n.get("feed"), (int, float)) and not isinstance(_n.get("feed"), bool) and _n["feed"] > 0): errors.append(f"{_w}: its step is per_point.numbers.feed, a number above 0")
+    _num = lambda k: isinstance(_n.get(k), (int, float)) and not isinstance(_n.get(k), bool)
+    if not ((_num("feed") and _n["feed"] > 0) or ("feed" not in _n and _num("feed_flat") and _n["feed_flat"] > 0)): errors.append(f"{_w}: its step is per_point.numbers.feed, a number above 0 (or, with no product step, a feed_flat above 0: rules 1.100 item 8375)")
     if _f.get("provisional") is not True: errors.append(f"{_w}: provisional: true (rules 1.60 numbers are PROVISIONAL)")
     for _k in ("line", "next"):
         if not isinstance(_f.get(_k), str) or not _f[_k]: errors.append(f"{_w}: needs its door tab words `{_k}`")

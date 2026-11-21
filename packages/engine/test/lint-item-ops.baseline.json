@@ -277,8 +277,8 @@
   "perks/skills.ts": [
    "proven_formula",
    "pure_heart",
-   "skill:brain_power.2",
    "skill:brain_power.5",
+   "skill:brain_power.8",
    "skill:will_power.2"
   ]
  },

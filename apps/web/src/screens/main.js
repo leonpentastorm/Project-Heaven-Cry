@@ -220,7 +220,7 @@ function magicVals(self, g, c) {
     hasToStudy: GV.toStudy.length > 0, toStudy: GV.toStudy.filter((x) => SIGIL[x]).map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text })) };
   // rules 1.89 (outside playtest 0.32.0: "Line length 5" beside Overclock's "already 4"): a Line holds at most
   // MAX_GLYPHS whatever Max Sigil words is; Max Sigil words itself is how many of your glyphs stand on the ground (rules 1.4)
-  const sigStats = [['Line length', String(Math.min(MAX_GLYPHS, maxSigilWords(c)))], ['Glyphs on the ground', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', evoC ? N.charge + ' / ' + CORE_CHARGE + ' · ' + handShort(evoAt) : handShort(evoAt)],
+  const sigStats = [['Line length (Brain Power's Reach)', String(Math.min(MAX_GLYPHS, maxSigilWords(c)))], ['Glyphs on the ground', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', evoC ? N.charge + ' / ' + CORE_CHARGE + ' · ' + handShort(evoAt) : handShort(evoAt)],
     ['Spare cores', String(N.cores)], ['Flux', ((fmax) => N.flux + ' / ' + fmax + (N.flux >= fmax - 1 ? ' · vent soon' : ''))(fluxMaxOf(N.cu || c, N.cu ? g.combat : null, g))], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
