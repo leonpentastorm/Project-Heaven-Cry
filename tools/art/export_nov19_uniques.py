@@ -86,6 +86,9 @@ def reviews(queue, manifest):
 
 
 def update_handoff(queue,progress):
+    if BASE.name == '2026-11-21-retry-uniques':
+        (BASE/'HANDOFF.md').write_text('# Current unique retry lane\n\n'+str(len(progress['delivered']))+'/'+str(len(queue))+' selected candidates, run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Exact remaining: '+', '.join(progress['remaining'])+'. Read liveissue3+allcomments+remote deliveries before everygeneration. Allcandidate approvalflagsfalse. Native/prompts/refhashes/oldversions preserved, everypicture separatelypushed. Actualquota: '+str(progress.get('image_quota'))+'. See PRODUCTION-STATUS.md for latestdeduplicated total.\n')
+        return
     if BASE.name == '2026-11-20-sole-uniques':
         (BASE/'HANDOFF.md').write_text('# Sole artist unique shields\n\n'
             f'{len(progress["delivered"])}/{len(queue)} selected candidates; project {508 + len(progress["delivered"])}/871. '
@@ -150,7 +153,7 @@ def export(asset_id, source):
         'exports': exports, 'source_path': rel(source_target),
         'native_dimensions': list(Image.open(source_target).size),
         'brief': job['brief'], 'brief_number': job['brief_number'],
-        'collection': '2026-11-19-unique-melee-bow', 'grade': 'unique',
+        'collection': BASE.name, 'grade': 'unique',
         'origin': 'image_gen; technical crop/alpha separation/uniform downsample only',
     }
     catalog = ROOT / 'art/catalog.json'

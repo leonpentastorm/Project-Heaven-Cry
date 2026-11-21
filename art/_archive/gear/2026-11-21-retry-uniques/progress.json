@@ -1,0 +1,12 @@
+{
+  "status": "drawing",
+  "delivered": [],
+  "remaining": [
+    "weapon-grandmothers_teeth",
+    "weapon-last_crossing",
+    "weapon-reveille"
+  ],
+  "image_quota": null,
+  "project_distinct_count": 564,
+  "branch": "art/2026-11-20-reset-continuation"
+}

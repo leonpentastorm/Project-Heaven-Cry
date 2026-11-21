@@ -1,0 +1,14 @@
+{
+  "run": "sole-20261121-0109",
+  "branch": "art/2026-11-20-reset-continuation",
+  "status": "active",
+  "expected_count": 3,
+  "ids": [
+    "weapon-grandmothers_teeth",
+    "weapon-last_crossing",
+    "weapon-reveille"
+  ],
+  "first": "weapon-last_crossing",
+  "source_note": "Original exact peer prompts and errors preserved, user explicitly authorizes renewed faithful fiction-art attempts. Allapprovalflagsfalse.",
+  "comment": 7061559992
+}

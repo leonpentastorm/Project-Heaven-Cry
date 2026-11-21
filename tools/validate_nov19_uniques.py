@@ -24,7 +24,8 @@ def validate(selected=None, complete=False):
     assert (BASE/'source-brief.md').read_text()==text, 'Brief changed; reconcile claim'
     expected=set(json.loads((BASE/'claim.json').read_text())['ids'])
     assert len(queue)==len(expected)
-    assert len(expected)==(2 if BASE.name=='2026-11-20-sole-uniques' else 8)
+    claim=json.loads((BASE/'claim.json').read_text())
+    assert len(expected)==claim.get('expected_count',2 if BASE.name=='2026-11-20-sole-uniques' else 8)
     assert expected <= {Path(p).stem for p in re.findall(r'\*\*Save as:\*\* `([^`]+)`',text)}
     assert {j['id'] for j in queue} == expected
     delivered = {j['id'] for j in queue if j['status']=='delivered'}

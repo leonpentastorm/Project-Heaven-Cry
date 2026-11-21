@@ -1,3 +1,7 @@
+## Unique3 claim7061559992
+
+Runsole-20261121-0109 reserves GrandmothersTeeth,LastCrossing,Reveille exactIDs/newroot art/_archive/gear/2026-11-21-retry-uniques.564/871;firstLastCrossing.74gradequeue51selected/23pending retained. Other281missinggear requirefreshclaims.
+
 ## Keptgun24 expansion7061326470
 
 Runsole-20261121-0109 claims all4grades of ParlourPistol,LeverCarbine,SawnOff,CoachGun,LegionBullpup,WhisperSMG. Exact74queue46selected/28pending, total559/871. Other284missinggear require freshclaims. Nootherproducer.
