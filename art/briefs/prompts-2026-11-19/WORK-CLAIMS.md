@@ -1,3 +1,7 @@
+# ACTIVE renewed grade claim
+
+Run sole-20261121-0109, exact26 IDs in art/_archive/gear/2026-11-21-retry-continuation/claim.json, issue3claim7055037202. FirstLegionSpearMasterwork.512/871 selected; user explicitly superseded earlier no-retry restriction. Preserve all previous native/prompts/errors; no artistic approval fabricated; holdsremain. All currentclaims checked beforeeveryrender.
+
 # Current21November sole-artist checkpoint
 
 Run sole-20261121-0109. RunningScript delivered, total512/871. User explicitly authorizes renewed attempts on rejected fiction briefs; old no-retry rule superseded. Actual existing claims/bytes/errors preserved; claim exact further IDs before drawing. All candidate approvals false; ScrapTurret remains held.

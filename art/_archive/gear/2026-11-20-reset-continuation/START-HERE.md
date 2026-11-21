@@ -1,3 +1,9 @@
+# Current21November continuation
+
+512/871 selected, RunningScript complete with unchanged original marks. User expressly authorized renewed attempts on fictional-art briefs. ACTIVE lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md ; run sole-20261121-0109. Read it and liveissue3/allcomments before everyimage. Old no-retry/method-input blocks below are historical and superseded. All oldsources/errors preserved. All artistic/implementation approvals remainfalse. ScrapTurret held. No newquota/reset.
+
+# Historical20November handoff
+
 # Sole artist: current continuation
 
 Run sole-20261120-1615 on art/2026-11-20-reset-continuation. Current fully integrated project511/871 review candidates:86/88 icons/tiles,53/104 new/repaint Standards,358/656 grades,14/23 uniques. Authoritative exact remaining360 destinations and statuses: art/briefs/prompts-2026-11-19/REMAINING-WORK.json. Live mailbox https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3, read opening andALLcomments plus remote deliveries before EVERY imagegen. Sole takeover explicitly requested by Leon. Develop untouched.

@@ -1,0 +1,3 @@
+# User-directed renewed attempts,21November
+
+After the explicit question whether to replace the earlier no-retry restriction, Leon answered: "Try until approve, unlimited attempt, fictional work have no reason to be reject". The earlier no-retry restriction is superseded for these fictional-art briefs. Preserve exact old returned errors. This lane starts with the same unchanged26 pending grade prompts, stored prompt hashes checked before every call. No artistic approval is implied. Do not conceal/reword content to bypass moderation. Keep0.30 content holds. Quota handling remains exact: stop on actualusage_limit_reached, preserve returnedreset andhandoff.
