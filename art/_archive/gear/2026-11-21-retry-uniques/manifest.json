@@ -133,6 +133,77 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "id": "weapon-last_crossing",
+      "path": "art/icons/gear/weapon-last_crossing.png",
+      "sha256": "de8c8294290ad8aba8bcfbd8f69c80a4319a25052157066a28e29f6dbe3f33c7",
+      "label": "Last Crossing (polearm)",
+      "family": "unique-last_crossing",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-last_crossing.png",
+        "sha256": "7081fe07de75bd9601e13f1749760210562a81db60cc3e49a5e83bc33e964ef9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-last_crossing.png",
+        "sha256": "de8c8294290ad8aba8bcfbd8f69c80a4319a25052157066a28e29f6dbe3f33c7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-last_crossing.txt",
+        "sha256": "8404761bb36f90d8bef28bf4e7e2614345a166843a3c030065427b77f2d58929"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-glaive.png",
+          "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/glaive.png",
+          "sha256": "7b8efe72fd8c57c71e44cde023b49775f2f5f014de442caac2bc2a1484d6f040"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-last_crossing/002/native.png",
+          "sha256": "c97b1ae5e4572fc9bfb6084ea83d3d7280c4da6dd4f250e4f3faf84954eb66a7"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-glaive.png",
+          "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+        },
+        {
+          "path": "art/icons/weapons/glaive.svg",
+          "sha256": "669d61572a85ef235e26304feda7237ad72b64b454dc82e9e45ade4d091549e8"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-last_crossing.png",
+        "128": "art/icons/gear/exports/128/weapon-last_crossing.png",
+        "64": "art/icons/gear/exports/64/weapon-last_crossing.png",
+        "32": "art/icons/gear/exports/32/weapon-last_crossing.png"
+      },
+      "export_hashes": {
+        "256": "15caf37a00a02e3d21733cf3d3b4b77414e857572d2c3abba5c9902fdb377d2e",
+        "128": "c22e123a4e22ea7efefda02cf0f36ac765bc83536f1ac78a2b2aabdec23127b8",
+        "64": "6580281301c6bcdaafa776979d6b14590ab45db0a9230f88f75d30de637fe80e",
+        "32": "005c307229ec4c49661dd41f7df6f75f5681cdddba931187bb661992e336962e"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }

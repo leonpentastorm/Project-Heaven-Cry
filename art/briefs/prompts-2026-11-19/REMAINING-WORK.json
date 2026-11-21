@@ -1,7 +1,7 @@
 {
-  "selected": 566,
+  "selected": 567,
   "requested": 871,
-  "remaining": 305,
+  "remaining": 304,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -16,7 +16,7 @@
       "total": 656
     },
     "uniques": {
-      "selected": 16,
+      "selected": 17,
       "total": 23
     }
   },
@@ -27,13 +27,13 @@
   "by_kind": {
     "standard": 51,
     "grade": 247,
-    "unique": 7
+    "unique": 6
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
     "service-blocked-or-preceding-grade-dependent": 43,
     "awaits-missing-requested-standard": 208,
-    "service-blocked": 3
+    "service-blocked": 2
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "records": [
@@ -2473,14 +2473,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-last_crossing",
-      "kind": "unique",
-      "path": "art/icons/gear/weapon-last_crossing.png",
-      "status": "service-blocked",
-      "standard": null,
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-in_triplicate",
       "kind": "unique",
       "path": "art/icons/gear/weapon-in_triplicate.png",
@@ -2535,7 +2527,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-reveille",
+  "last_delivered": "weapon-last_crossing",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
