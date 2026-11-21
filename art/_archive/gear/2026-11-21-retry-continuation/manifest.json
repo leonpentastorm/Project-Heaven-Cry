@@ -204,6 +204,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_draw--fine",
+      "path": "art/icons/gear/weapon-short_draw--fine.png",
+      "sha256": "3e231bfe46b8e95957e86617cfe83597792a0a9e86db21eb3f9f84de86b624f3",
+      "label": "Short Draw — Fine",
+      "family": "weapon-short_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--fine.png",
+        "sha256": "97b561f81aaefc271434935c860061d4a6d97bd6a23499d230fc1985e2647d5e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--fine.png",
+        "sha256": "3e231bfe46b8e95957e86617cfe83597792a0a9e86db21eb3f9f84de86b624f3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--fine.txt",
+        "sha256": "3290c14bb1674e21dc47d7367d5959cf134d0bb84e08bae20362e687758a5a15"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_draw.png",
+          "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png",
+          "sha256": "251886e2fa6aaee22e844d498239ef610edcec77d15ca25d062a1962eab8e082"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_draw--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-short_draw--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-short_draw--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-short_draw--fine.png"
+      },
+      "export_hashes": {
+        "256": "e725d151a2f06b09f79df214bc8c97586b048de9379d43029464020e30a2cd85",
+        "128": "40cf632c5c9c09e3120316dc5e10ed10c1bb04d0fcc727a22844669e8fac307a",
+        "64": "831abf1d4277973738ff431089213e292e15400b0ed381f74236b0a8f535801b",
+        "32": "e3609ea32e5804a99ac4c125f1f4ed79f838c79227208babefdca525b3639057"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-short_draw",
+      "outline": {
+        "solid_alpha_iou": 0.9392604458683754,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
