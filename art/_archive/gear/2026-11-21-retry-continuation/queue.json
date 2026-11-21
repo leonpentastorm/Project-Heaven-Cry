@@ -3249,5 +3249,101 @@
     "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
     "original_prompt_sha256": "d6b009b438c3f9cfba56e301de9519f74885fa6887443f38eb9cc24eab167de3",
     "retry_authorized_by_user": true
+  },
+  {
+    "id": "weapon-drifter_revolver--masterwork",
+    "standard_id": "weapon-drifter_revolver",
+    "grade": "masterwork",
+    "label": "Drifter revolver \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-drifter_revolver--masterwork.png",
+    "kind": "weapon",
+    "family": "weapon-drifter_revolver",
+    "family_references": [
+      "art/icons/gear/weapon-drifter_revolver.png"
+    ],
+    "references": [
+      "art/icons/gear/weapon-drifter_revolver.png",
+      "art/icons/gear/weapon-drifter_revolver--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "B2.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: side profile, muzzle to the right, level; a long octagonal barrel with a small brass blade front sight at the muzzle; a fluted six-chamber cylinder in an open steel frame; a tall curved spur hammer at the rear; three brass pins on the frame; a curved brass trigger guard and trigger; a walnut grip curling down and back, with one brass pin. Worn dark steel with a bronze cast, no colour accent: the brass of the fittings.\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the barrel with bright polished brass, one continuous stripe from the frame to the front sight. The grip is re-made in exactly the same shape in a deep, close-grained figured walnut with a high polish; the trigger guard, trigger, sight and pins are bright polished brass; the cylinder flutes and the barrel flats are machined crisp. No wear.\n\nFIRST attachment is the actual Standard geometry, framing and pose reference; SECOND is the preceding grade. Keep its visible part count and all openings. These are fictional RPG inventory paintings; surfaces only, no diagram or instructions. The portrait is brushwork reference only, no person or scene. Fully transparent background; no stray coloured pixels outside the object, no halo, no external effects. No artistic approval is implied by these references.",
+    "original_prompt_sha256": "20a3cfff0e80adda25ae292ef6d7af71671d19075244209081e7c268fa1a14dd",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-drifter_revolver--fine",
+    "standard_sha256": "841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a",
+    "retry_authorized_by_user": true,
+    "source_brief_sha256": "59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4",
+    "prompt_assembly": "Verbatim BaseG + exact B2.2 block, followed by truthful reference and transparency instructions.",
+    "prior_generation_error": {
+      "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/drifter-masterwork-service-response.json",
+      "response": {
+        "id": "drifter_revolver",
+        "tier": "masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 4372f6d0-5ce5-4a6e-af43-95eeb2b05e0d. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      },
+      "note": "Historical error records no exact prompt; current request assembled from current verbatim brief blocks. No claim of recovering missing wording."
+    }
+  },
+  {
+    "id": "weapon-drifter_revolver--relic",
+    "standard_id": "weapon-drifter_revolver",
+    "grade": "relic",
+    "label": "Drifter revolver \u2014 Relic",
+    "path": "art/icons/gear/weapon-drifter_revolver--relic.png",
+    "kind": "weapon",
+    "family": "weapon-drifter_revolver",
+    "family_references": [
+      "art/icons/gear/weapon-drifter_revolver.png"
+    ],
+    "references": [
+      "art/icons/gear/weapon-drifter_revolver.png",
+      "art/icons/gear/weapon-drifter_revolver--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "B2.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: side profile, muzzle to the right, level; a long octagonal barrel with a small brass blade front sight at the muzzle; a fluted six-chamber cylinder in an open steel frame; a tall curved spur hammer at the rear; three brass pins on the frame; a curved brass trigger guard and trigger; a walnut grip curling down and back, with one brass pin. Worn dark steel with a bronze cast, no colour accent: the brass of the fittings.\nGrade: Relic. Keep the shape and the barrel stripe. The steel darkens to a warm, deep, oiled blued-brown patina; the walnut grip is darkened and worn glassy-smooth where a palm sat for decades; the barrel stripe turns to dull old gold, and a small flush panel of engraved scrollwork (no letters, no figures) sits on the side of the frame below the cylinder. One old repair: the grip's brass pin replaced by a plain steel one that does not match. It still works perfectly: no rust, no chips.\n\nFIRST attachment is the actual Standard geometry, framing and pose reference; SECOND is the preceding grade. Keep its visible part count and all openings. These are fictional RPG inventory paintings; surfaces only, no diagram or instructions. The portrait is brushwork reference only, no person or scene. Fully transparent background; no stray coloured pixels outside the object, no halo, no external effects. No artistic approval is implied by these references.",
+    "original_prompt_sha256": "e6f37e29782f698ad9912113ab95ba1e1a70a49c98353e8b719674f0960ba2eb",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-drifter_revolver--masterwork",
+    "standard_sha256": "841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a",
+    "retry_authorized_by_user": true,
+    "source_brief_sha256": "59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4",
+    "prompt_assembly": "Verbatim BaseG + exact B2.3 block, followed by truthful reference and transparency instructions."
+  },
+  {
+    "id": "weapon-drifter_revolver--celestial",
+    "standard_id": "weapon-drifter_revolver",
+    "grade": "celestial",
+    "label": "Drifter revolver \u2014 Celestial",
+    "path": "art/icons/gear/weapon-drifter_revolver--celestial.png",
+    "kind": "weapon",
+    "family": "weapon-drifter_revolver",
+    "family_references": [
+      "art/icons/gear/weapon-drifter_revolver.png"
+    ],
+    "references": [
+      "art/icons/gear/weapon-drifter_revolver.png",
+      "art/icons/gear/weapon-drifter_revolver--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "B2.4",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: side profile, muzzle to the right, level; a long octagonal barrel with a small brass blade front sight at the muzzle; a fluted six-chamber cylinder in an open steel frame; a tall curved spur hammer at the rear; three brass pins on the frame; a curved brass trigger guard and trigger; a walnut grip curling down and back, with one brass pin. Worn dark steel with a bronze cast, no colour accent: the brass of the fittings.\nGrade: Celestial. Keep the shape, the barrel stripe and the scroll panel's place. Barrel, cylinder and frame become a pale, unmarked pearl-ivory metal; the grip is ivory with a faint warm trace of walnut; the trigger guard, trigger, sight and pins are pale gold. The barrel stripe and the gap between the cylinder and the frame give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST attachment is the actual Standard geometry, framing and pose reference; SECOND is the preceding grade. Keep its visible part count and all openings. These are fictional RPG inventory paintings; surfaces only, no diagram or instructions. The portrait is brushwork reference only, no person or scene. Fully transparent background; no stray coloured pixels outside the object, no halo, no external effects. No artistic approval is implied by these references.",
+    "original_prompt_sha256": "13306a5d49e1d5edb848e74e4ec1660610bd2d8b149b1f438d3ed983aca271de",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-drifter_revolver--relic",
+    "standard_sha256": "841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a",
+    "retry_authorized_by_user": true,
+    "source_brief_sha256": "59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4",
+    "prompt_assembly": "Verbatim BaseG + exact B2.4 block, followed by truthful reference and transparency instructions."
   }
 ]

@@ -9,6 +9,7 @@
     "weapon-crossbow",
     "weapon-decrkm_autopistol",
     "weapon-dock_cutter",
+    "weapon-drifter_revolver",
     "weapon-hellraiser_rotary",
     "weapon-kemizuchi_side_sword",
     "weapon-legion_bullpup",
@@ -123,7 +124,10 @@
     "weapon-magistrate_pistol--celestial",
     "weapon-decrkm_autopistol--masterwork",
     "weapon-decrkm_autopistol--relic",
-    "weapon-decrkm_autopistol--celestial"
+    "weapon-decrkm_autopistol--celestial",
+    "weapon-drifter_revolver--masterwork",
+    "weapon-drifter_revolver--relic",
+    "weapon-drifter_revolver--celestial"
   ],
   "first": "weapon-legion_spear--masterwork",
   "retry_authorization": "AUTHORIZATION.md",
@@ -221,7 +225,10 @@
     "weapon-magistrate_pistol--celestial": 7062296286,
     "weapon-decrkm_autopistol--masterwork": 7062296286,
     "weapon-decrkm_autopistol--relic": 7062296286,
-    "weapon-decrkm_autopistol--celestial": 7062296286
+    "weapon-decrkm_autopistol--celestial": 7062296286,
+    "weapon-drifter_revolver--masterwork": 7062519965,
+    "weapon-drifter_revolver--relic": 7062519965,
+    "weapon-drifter_revolver--celestial": 7062519965
   },
   "expansion_history": [
     {
@@ -264,7 +271,17 @@
       ],
       "first": "weapon-magistrate_pistol--masterwork",
       "original_source": "coordination/final-gun17-source-queue.json"
+    },
+    {
+      "comment": 7062519965,
+      "ids": [
+        "weapon-drifter_revolver--masterwork",
+        "weapon-drifter_revolver--relic",
+        "weapon-drifter_revolver--celestial"
+      ],
+      "first": "weapon-drifter_revolver--masterwork",
+      "source": "Verbatim current File08 BaseG plus dedicated B2.2-B2.4 blocks; historical error retained"
     }
   ],
-  "expected_count": 91
+  "expected_count": 94
 }

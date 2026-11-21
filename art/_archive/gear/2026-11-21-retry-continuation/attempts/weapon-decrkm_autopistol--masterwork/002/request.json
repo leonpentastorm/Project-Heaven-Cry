@@ -1,0 +1,64 @@
+{
+  "head": "20b70baab880ccb42fe1e530f95c82874a44ff13",
+  "job": {
+    "id": "weapon-decrkm_autopistol--masterwork",
+    "standard_id": "weapon-decrkm_autopistol",
+    "grade": "masterwork",
+    "label": "DECRKM autopistol repaint — Masterwork",
+    "path": "art/icons/gear/weapon-decrkm_autopistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png",
+      "art/icons/gear/weapon-decrkm_autopistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-decrkm_autopistol",
+    "family_references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is bright brass, matching the original brass fittings, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-decrkm_autopistol--fine",
+    "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-decrkm_autopistol--masterwork--1795161719657.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-decrkm_autopistol--masterwork--1795161719657.json",
+      "request_id": "d5fcff27-9849-4e19-ac3d-8fcc72c208c5"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "b1fea85f4c298a4380ba2c4960604f0d7823be3e87916f7a5b26dfa0d4d7fe15",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-decrkm_autopistol--masterwork--1795161719657.json",
+      "response": {
+        "id": "weapon-decrkm_autopistol--masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID d5fcff27-9849-4e19-ac3d-8fcc72c208c5. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-decrkm_autopistol.png": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "art/icons/gear/weapon-decrkm_autopistol--fine.png": "60b2730c8827025df25134ce1043ebfd2f5c9de19068b91bd51ff0c620525dad",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 12:17:48 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062296286,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

@@ -95,7 +95,10 @@
     "weapon-magistrate_pistol--celestial",
     "weapon-decrkm_autopistol--masterwork",
     "weapon-decrkm_autopistol--relic",
-    "weapon-decrkm_autopistol--celestial"
+    "weapon-decrkm_autopistol--celestial",
+    "weapon-drifter_revolver--masterwork",
+    "weapon-drifter_revolver--relic",
+    "weapon-drifter_revolver--celestial"
   ],
   "baseline_project_pictures": 512,
   "project_total": 871,
@@ -488,7 +491,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T12:17:24.430250+00:00",
+  "updated_utc": "2026-11-21T12:22:51.868735+00:00",
   "project_distinct_count": 569,
-  "total": 91
+  "total": 94
 }
