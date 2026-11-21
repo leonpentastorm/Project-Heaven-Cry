@@ -2,11 +2,29 @@
   "run": "sole-20261121-0109",
   "branch": "art/2026-11-20-reset-continuation",
   "status": "active",
-  "expected_count": 2,
+  "expected_count": 7,
   "ids": [
     "weapon-arbalest",
-    "weapon-hellraiser_twin_rotary"
+    "weapon-hellraiser_twin_rotary",
+    "weapon-hellraiser_service_rifle",
+    "weapon-smetanita_thumper",
+    "weapon-breacher_tube",
+    "weapon-hellraiser_lmg",
+    "weapon-blackpoint_700"
   ],
-  "first": "weapon-arbalest",
-  "comment": 7061913827
+  "first": "weapon-hellraiser_service_rifle",
+  "comment": 7062068723,
+  "expansion_history": [
+    {
+      "ids": [
+        "weapon-hellraiser_service_rifle",
+        "weapon-smetanita_thumper",
+        "weapon-breacher_tube",
+        "weapon-hellraiser_lmg",
+        "weapon-blackpoint_700"
+      ],
+      "comment": 7062068723,
+      "first": "weapon-hellraiser_service_rifle"
+    }
+  ]
 }

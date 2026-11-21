@@ -1,0 +1,31 @@
+{
+  "label": ".700 Blackpoint anti-materiel",
+  "path": "art/icons/gear/weapon-blackpoint_700.png",
+  "sha256": "5fbdc19509e6aaf6f494622272880c8886223cecbec35e5c9fa028a1c78feb03",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-blackpoint_700.png",
+    "128": "art/icons/gear/exports/128/weapon-blackpoint_700.png",
+    "64": "art/icons/gear/exports/64/weapon-blackpoint_700.png",
+    "32": "art/icons/gear/exports/32/weapon-blackpoint_700.png"
+  },
+  "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P055.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 41,
+  "origin": "brief",
+  "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-blackpoint_700.png",
+  "previous_exports": {
+    "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-blackpoint_700.png",
+    "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-blackpoint_700.png",
+    "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-blackpoint_700.png",
+    "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-blackpoint_700.png"
+  },
+  "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-blackpoint_700.png"
+}

@@ -3,7 +3,12 @@
   "delivered": [],
   "remaining": [
     "weapon-arbalest",
-    "weapon-hellraiser_twin_rotary"
+    "weapon-hellraiser_twin_rotary",
+    "weapon-hellraiser_service_rifle",
+    "weapon-smetanita_thumper",
+    "weapon-breacher_tube",
+    "weapon-hellraiser_lmg",
+    "weapon-blackpoint_700"
   ],
   "image_quota": null,
   "project_distinct_count": 568,

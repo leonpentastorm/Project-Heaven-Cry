@@ -1,0 +1,23 @@
+{
+  "label": "Hellraiser rifle",
+  "path": "art/icons/gear/weapon-hellraiser_service_rifle.png",
+  "sha256": "99c427ece30b53645dafd986dc133011d5254ae1d83c3612943c21795d150587",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-hellraiser_service_rifle.png",
+    "128": "art/icons/gear/exports/128/weapon-hellraiser_service_rifle.png",
+    "64": "art/icons/gear/exports/64/weapon-hellraiser_service_rifle.png",
+    "32": "art/icons/gear/exports/32/weapon-hellraiser_service_rifle.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hellraiser_service_rifle.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 4,
+  "origin": "brief"
+}

@@ -1,3 +1,7 @@
+# Current five prerequisite repaints
+
+568/871 pushed,303remain. Claim7062068723 adds5File10requestedrepaints to2pendingfreshStandards,7totalpending. FirstHellraiserServiceRifle; HellraiserLMG mustwaitforitsNEWselectedmaster, legacydoesnotsatisfydependency. Currentmasterbytes+allUIexportschecked, fullcatalogsnapshots and beforePNG preserved; productiontargetonlychangesafterselectedactualimagegen. Oldnative/source chains andprevious versionsuntouched. Originalfullpromptwordscopiedverbatim. Existinggrade74/51selected/23pending andunique5/4selected/Encorepending retained. Other272missingpicturesoutsideexactclaims. Noquota/reset, allnewcandidateflagsfalse. Readliveissue3/allcomments/remotedeliveries beforeEVERYrender andpushEVERYselectedpicture.
+
 # Two new Standard candidates
 
 Runsole-20261121-0109 samebranch,568/871 atclaim. Exact2newStandardIDs arbalest andhellraiser_twin_rotary, noexistingdestination/catalogentry. Allactualfamilyrefsready; namedrepaintprerequisites remainpendingelsewhere andarenotbypassed. Currentbriefblocks/entrypaint copiedexact with truthfulfictionalgamecontext. Sourcebriefsnapshots included, noPatternclause forinventedTwinRotaryorArbalest. Newmastersunlockfourgrades each,butfuturegradesstillneedexactclaims. Native/prompts/refhashes/exports preserved; allreviewcandidateapprovalflagsfalse. Readliveissue3+allcomments+remote deliveries beforeEVERYimage; pushEVERYpicture. Noquota/reset.

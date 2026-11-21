@@ -50,6 +50,16 @@ def validate(selected=None, complete=False):
         assert entry['production_approved'] is a['production_approved'] is False
         assert entry['grade'] == a['grade'] == 'standard'
         if BASE.name == '2026-11-21-retry-standards':assert entry['implementation_ready'] is a['implementation_ready'] is False
+        job=next(j for j in queue if j['id']==a['id'])
+        if job.get('replace_existing'):
+            before=json.loads((ROOT/job['previous_catalog_snapshot']).read_text())
+            assert entry['previous_path']==a['previous_path']==job['previous_master_path']
+            assert sha(ROOT/entry['previous_path'])==entry['previous_sha256']==before['sha256']==job['expected_previous_sha256']
+            assert entry['previous_catalog_snapshot']==job['previous_catalog_snapshot']
+            assert set(entry['previous_exports'])==set(before.get('exports',{}))
+            for size,path in entry['previous_exports'].items():
+                assert path==a['previous_exports'][size]
+                assert sha(ROOT/path)==job['expected_previous_export_hashes'][size]==entry['previous_export_sha256'][size]==hashes[path]
         assert entry['source_path'] == a['source']['path'] and entry['native_dimensions'] == a['native_dimensions']
         assert entry['exports'] == a['exports'] and set(a['exports']) == {'256','128','64','32'}
         assert entry['sha256'] == a['sha256'] == sha(ROOT/a['path'])

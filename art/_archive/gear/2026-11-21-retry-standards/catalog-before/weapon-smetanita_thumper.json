@@ -1,0 +1,23 @@
+{
+  "label": "Smetanita thumper",
+  "path": "art/icons/gear/weapon-smetanita_thumper.png",
+  "sha256": "6354abeadb429ac6452833cb2cecacdc7534bdbf3f6dcf856fba957c58982616",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-smetanita_thumper.png",
+    "128": "art/icons/gear/exports/128/weapon-smetanita_thumper.png",
+    "64": "art/icons/gear/exports/64/weapon-smetanita_thumper.png",
+    "32": "art/icons/gear/exports/32/weapon-smetanita_thumper.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-smetanita_thumper.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 44,
+  "origin": "brief"
+}

@@ -124,8 +124,25 @@ def export(asset_id, source):
     if job['status'] != 'pending':
         raise ValueError('Already delivered: preserve revisions in a new version')
     target = ROOT / job['path']
+    previous = None
     if target.exists():
-        raise ValueError('Preserve existing production artwork; inspect before replacement')
+        if not job.get('replace_existing'):
+            raise ValueError('Preserve existing production artwork; inspect before replacement')
+        before=json.loads((ROOT/job['previous_catalog_snapshot']).read_text())
+        current=json.loads((ROOT/'art/catalog.json').read_text())['gear'][asset_id]
+        assert current==before and sha(target)==job['expected_previous_sha256']==before['sha256']
+        previous_master=ROOT/job['previous_master_path'];assert sha(previous_master)==before['sha256']
+        old_exports={}
+        for size,path in before.get('exports',{}).items():
+            src=ROOT/path;assert sha(src)==job['expected_previous_export_hashes'][str(size)]
+            dest=BASE/f'previous-exports/{asset_id}/{size}.png';dest.parent.mkdir(parents=True,exist_ok=True)
+            if dest.exists():assert sha(dest)==sha(src)
+            else:shutil.copy2(src,dest)
+            old_exports[str(size)]=rel(dest)
+        previous={'previous_path':rel(previous_master),'previous_sha256':before['sha256'],
+            'previous_exports':old_exports,'previous_export_sha256':job['expected_previous_export_hashes'],
+            'previous_catalog_snapshot':job['previous_catalog_snapshot']}
+
     source_target = BASE / f'sources/v1/{asset_id}.png'
     source_target.parent.mkdir(parents=True, exist_ok=True)
     if source_target.exists() and sha(source_target) != sha(source):
@@ -158,11 +175,12 @@ def export(asset_id, source):
         'collection': BASE.name, 'grade': 'standard',
         'origin': 'image_gen; technical crop/alpha separation/uniform downsample only',
     }
+    if previous:asset.update(previous)
     catalog = ROOT / 'art/catalog.json'
     catalog.write_text(set_catalog_entry(catalog.read_text(), 'gear', asset_id, asset))
     manifest = json.loads((BASE / 'manifest.json').read_text())
     manifest['assets'].append({
-        'id': asset_id, **record(target), 'label': job['label'], 'family': job['family'],
+        'id': asset_id, **record(target), **(previous or {}), 'label': job['label'], 'family': job['family'],
         'source': record(source_target), 'master': record(master),
         'prompt': record(BASE / f'prompts/{asset_id}.txt'),
         'references': [record(ROOT / p) for p in job['references']],

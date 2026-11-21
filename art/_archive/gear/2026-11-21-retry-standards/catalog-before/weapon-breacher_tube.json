@@ -1,0 +1,23 @@
+{
+  "label": "Breacher tube",
+  "path": "art/icons/gear/weapon-breacher_tube.png",
+  "sha256": "da212443b07ddc1acc0bf3045dbad1fbcad6989521e731bf43ec318ddefa7334",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-breacher_tube.png",
+    "128": "art/icons/gear/exports/128/weapon-breacher_tube.png",
+    "64": "art/icons/gear/exports/64/weapon-breacher_tube.png",
+    "32": "art/icons/gear/exports/32/weapon-breacher_tube.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-breacher_tube.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 45,
+  "origin": "brief"
+}

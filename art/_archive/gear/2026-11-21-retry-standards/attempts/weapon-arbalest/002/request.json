@@ -1,0 +1,94 @@
+{
+  "head": "7b2bee6f244dc047416f7ba2f7d0b784a7c25b0f",
+  "job": {
+    "id": "weapon-arbalest",
+    "data_id": "arbalest",
+    "label": "Arbalest (Crossbows, long)",
+    "path": "art/icons/gear/weapon-arbalest.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.85,
+    "family": "standard-arbalest",
+    "family_references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-repeating_crossbow.png"
+    ],
+    "references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-repeating_crossbow.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "brief_number": 17,
+    "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-06-queue.json",
+    "prompt": "This is fictional RPG inventory artwork for Project Heaven Cry.\n\nPaint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour is the single accent, a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. It must sit in one set with the attached paintings of its maker line: the same scale rule, the same shape language, the same accent. The object is:\n\nA heavy frontier arbalest: one bolt that goes through a door. Pose: horizontal like a rifle, the prod at the right turned slightly toward the viewer, filling about 85% of the canvas width. Silhouette: a very thick laminated steel prod, much wider and deeper than the crossbow's, bound to the stock with iron bands; a long rifle-like stock; a stirrup at the front; at the rear a squared toothed crank box with a short handle, in place of the crossbow's windlass; one heavy square-headed bolt lying loaded in the groove. Materials: dark steel prod with hammered facets, plain oiled wood stock, a thick rope-and-cable string, iron fittings; no colour accent.\nAt 32 px: against the crossbow, the prod is far thicker and wider and the crank is a toothed box; against the repeating crossbow, no magazine box on top.\nAvoid: a magazine, a scope, ornament or inlay, a loose bolt beside it, a hand on the crank.\n\nThe family paintings and line icon give family/material identity; do not copy an unrelated object. The fuel drum, tool rack and field lamp supply material/edge treatment only, never their overhead camera. Orren supplies directional gouache brushwork only. Use this entry's specified camera and pose. One complete inventory object, fully transparent, no figures, scene or external effects.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "26a15be62d5920023d9536ec15097f9716909ad60ab73e01f5dcced687df294e",
+    "reference_catalog_hashes": {
+      "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+      "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68"
+    },
+    "dependency_check": "All actual family paintings present and no named prerequisite repaint pending; TwinRotary has no after-repaint requirement, Arbalest uses kept crossbows.",
+    "expected_reference_hashes": {
+      "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+      "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    },
+    "unpacked_required_references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-repeating_crossbow.png",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "unpacked_reference_hashes": {
+      "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+      "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
+      "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+      "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+      "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+    },
+    "reference_packing": {
+      "operation": "Native-size contact strip; original RGB/alpha source files unchanged, no crop or rescale. Original transparency composited on #10151F for reference viewing only. Count0.",
+      "source_hashes": {
+        "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+        "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+        "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+      },
+      "packed_path": "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "packed_sha256": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+  },
+  "reference_source_hashes": {
+    "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+    "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+    "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+  },
+  "attempt": 2,
+  "claim_comment": 7061913827,
+  "clock": {
+    "current_time": "2026-11-21 11:30:19 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061913827,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

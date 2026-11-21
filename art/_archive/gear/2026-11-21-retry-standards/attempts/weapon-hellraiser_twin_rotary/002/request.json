@@ -1,0 +1,94 @@
+{
+  "head": "7b2bee6f244dc047416f7ba2f7d0b784a7c25b0f",
+  "job": {
+    "id": "weapon-hellraiser_twin_rotary",
+    "data_id": "hellraiser_twin_rotary",
+    "label": "Twin rotary (invented: built from one pattern's parts; paste no pattern clause)",
+    "path": "art/icons/gear/weapon-hellraiser_twin_rotary.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.89,
+    "family": "standard-hellraiser_twin_rotary",
+    "family_references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png"
+    ],
+    "references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png"
+    ],
+    "reference_sources": [
+      "art/icons/weapons/hellraiser_rotary.svg",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "brief_number": 6,
+    "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-09-queue.json",
+    "prompt": "This is fictional RPG inventory artwork for Project Heaven Cry.\n\nPaint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:\n\nAn invented combined weapon: two six-barrel electrically driven rotary machine guns mounted side by side as one carried weapon, the heaviest gun a person carries. The combination is ours; each of the two guns is drawn from the real six-barrel rotary pattern's own parts. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by a twin cradle, with a crossbar carry handle on top and a pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns. Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.\nAt 32 px: two rings of barrels side by side and two long curving chutes; no drum.\n\nThe family paintings and line icon give family/material identity; do not copy an unrelated object. The fuel drum, tool rack and field lamp supply material/edge treatment only, never their overhead camera. Orren supplies directional gouache brushwork only. Use this entry's specified camera and pose. One complete inventory object, fully transparent, no figures, scene or external effects.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "01705f17abaa67a5ef9e9ad159eed7585a414f886e4961c9dd1ad6b4516b1042",
+    "reference_catalog_hashes": {
+      "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0"
+    },
+    "dependency_check": "All actual family paintings present and no named prerequisite repaint pending; TwinRotary has no after-repaint requirement, Arbalest uses kept crossbows.",
+    "expected_reference_hashes": {
+      "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    },
+    "unpacked_required_references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "unpacked_reference_hashes": {
+      "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
+      "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+      "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+      "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+    },
+    "reference_packing": {
+      "operation": "Native-size contact strip; original RGB/alpha source files unchanged, no crop or rescale. Original transparency composited on #10151F for reference viewing only. Count0.",
+      "source_hashes": {
+        "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+        "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+        "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+      },
+      "packed_path": "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "packed_sha256": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+  },
+  "reference_source_hashes": {
+    "art/icons/weapons/hellraiser_rotary.svg": "165a3d41b54779f6ca47f13ade9b9ac8822f788275aff03eb8d352bd59372023",
+    "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+    "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+    "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+  },
+  "attempt": 2,
+  "claim_comment": 7061913827,
+  "clock": {
+    "current_time": "2026-11-21 11:36:06 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061913827,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}
