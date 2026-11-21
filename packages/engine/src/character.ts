@@ -20,6 +20,7 @@ import { CONDITION_ROWS } from './condtable';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 import { feedOf } from './effects/feed';
 import { itemTags, hasTag, fixedGradeOf, ungradedWhy } from './itemtags';
+import { reachOfRes } from './door';
 export { ungradedWhy } from './itemtags'; // rules 1.93 item 8114: the one copy lives beside gradeFor, which reads it
 
 export interface Sheet {
@@ -1880,10 +1881,12 @@ function classResCap(c: Character, id: string): number | null {
   const n = r.max_by_rank[String(classRank(c))]; return typeof n === 'number' ? n : null;
 }
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
-  momentum: () => ({ id: 'momentum', max: 5, persist: false }),
+  // rules 1.97 item 8340: the chain tops at Raw Power's Reach (the Breaker's 5 retired: Reach is bought, ruling 16), the
+  // door's unbought chain below the ladder's first row
+  momentum: (c) => ({ id: 'momentum', max: momentumTop(c), persist: false }),
   // rules 1.59 (T5): a class that brings Guard (the Bulwark) holds its own pool, by its rank when its resource row says
   // so (classes.json resource.max_by_rank), else the shared cap
-  guard: (c) => ({ id: 'guard', max: classResCap(c, 'guard') ?? GUARD_RULES.max ?? 5, persist: false }),
+  guard: (c) => ({ id: 'guard', max: classResCap(c, 'guard') ?? guardPool(c), persist: false }),
   marks: () => ({ id: 'marks', max: 3, persist: false }),
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
@@ -1914,10 +1917,12 @@ export function classResources(c: Character): ClassResource[] {
   if (sh > 0 && !out.some((r) => r.id === 'shadow')) out.push({ id: 'shadow', max: sh, persist: false });
   return out;
 }
-/** Durability's Guard (rules 1.13; numbers in techniques.json rules.guard, provisional): the pool is the Durability
- * points, 5 at most; 0 without Durability. */
-const GUARD_RULES: any = (techniquesJ as any).rules?.guard || {};
-export const guardPool = (c: Pick<Character, 'skills'>): number => Math.min(GUARD_RULES.max ?? 5, Math.floor((c.skills?.durability || 0) * (GUARD_RULES.per_durability ?? 1)));
+// Rules 1.97 item 8340 (the Body doors): the pool is Durability's Reach on its door ladder (skills.json door_ladder), 0
+// without Durability. (Rules 1.13's plate a point, at most rules.guard.max, is superseded.)
+export const guardPool = (c: Pick<Character, 'skills'>): number => reachOfRes(c.skills as any, 'guard');
+/** Rules 1.97 item 8340: a character's chain tops at Raw Power's Reach; below the ladder's first row, the door's
+ *  unbought chain (techniques.json rules.momentum.max). */
+export const momentumTop = (c: Pick<Character, 'skills'>): number => reachOfRes(c.skills as any, 'momentum') || Number((techniquesJ as any).rules.momentum.max);
 /** Heavy armour's gate (rules 1.13, proposal 13.3; techniques.json rules.gear_gates.heavy_armour, provisional): outer
  * torso armour of Class 4 asks Pain Threshold 3, Class 5 asks 5. Returns the refusal, or null. */
 export function armourGateWhy(c: Pick<Character, 'skills'>, armourClass: number): string | null {

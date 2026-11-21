@@ -1,21 +1,21 @@
 // Physical 2.0, ranged Takes: the target must be Pressed; one a turn; the target loses 2 Pressure after the effect (the
 // core does all three). wasSuppressed(t) says whether the stronger line applies. Dead Centre is the lead's reference; the
 // ranged lane builds Pin Down, Rout, Stopping Shot, Storm and Last Round here.
+import { techCash, cashSteps, takePips } from './shared';
 import { technique, strike, canStrike, save, stop, ownSideOnly, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
 import { looseRound } from './press';
 import { say, alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type Unit } from '../../combat';
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
-import { PHYS_RULES } from '../data';
 import { freely } from '../../effects/cost';
 import { setBraced } from '../../unitstate';
 
-// 21. Dead Centre: one shot at +50% damage. Suppressed: its cover doesn't count. Precise: +2 to hit. Drawn: ignores 5 armour.
+// 21. Dead Centre (rules 1.97 item 8342): one shot, every pip on the target on the cash-out sum. Suppressed: its cover doesn't count. Precise: +2 to hit. Drawn: ignores 5 armour.
 technique({
   id: 'dead_centre',
   run(t) {
     const p = t.line('precise', 'drawn'), sup = wasSuppressed(t);
-    const r = strike(t, { mult: 1 + t.num('damage_pct', 50) / 100, ignoreCover: sup, extra: p === 'precise' ? t.num('precise_hit', 2) : 0, ignoreArmour: p === 'drawn' ? t.num('drawn_pierce', 5) : undefined });
+    const r = strike(t, { cash: techCash(t, 'pressure', takePips(t)), ignoreCover: sup, extra: p === 'precise' ? t.num('precise_hit', 2) : 0, ignoreArmour: p === 'drawn' ? t.num('drawn_pierce', 5) : undefined });
     if (t.preview && sup) t.note('Suppressed: its cover doesn\'t count.');
     return r.ok ? null : r.why || 'Can\'t attack that.';
   },
@@ -32,7 +32,7 @@ function walkFree(u: Unit, to: string, t: Tech, keepMoved: boolean): string | nu
 }
 const occupied = (cb: Combat, u: Unit, k: string) => cb.units.some((x) => x !== u && !x.dead && x.pos === k);
 
-// 22. Pin Down: a shot at ×0.7. On a hit the target saves (Guts or Athletics, the better) or is Pinned for 1 round.
+// 22. Pin Down (rules 1.97 item 8342): a plain shot, every pip spent. On a hit the target saves (Guts or Athletics, the better) or is Pinned for 1 round.
 //     Suppressed: the save is at −2. Auto: full damage. Drawn or Silent: nailed in place until it spends 2 AP.
 //     The nail is the base's (stop with untilAp): it holds until the unit, or an ally next to it, spends the AP to pull
 //     free (combat/pull-free; an enemy does it on its turn).
@@ -40,13 +40,15 @@ technique({
   id: 'pin_down',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('auto', 'drawn', 'silent'), sup = wasSuppressed(t), nailed = p === 'drawn' || p === 'silent', ap = t.num('nailed_ap', 2);
-    const r = strike(t, { mult: p === 'auto' ? 1 : t.num('damage_mult', 0.7), label: 'Pin Down' });
+    const p = t.line('drawn', 'silent'), sup = wasSuppressed(t), nailed = p === 'drawn' || p === 'silent', ap = t.num('nailed_ap', 2);
+    const harder = cashSteps('pressure', takePips(t)); // rules 1.97 item 8342: a plain shot; the save harder by S(n) rounded down
+    const r = strike(t, { label: 'Pin Down' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (r.cancelled) return null;
-    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (sup ? ', at −' + t.num('suppressed_save', 2) : '') + ') or ' + (nailed ? 'nailed in place until it spends ' + ap + ' AP to pull free' : 'Pinned for ' + t.num('pinned_rounds', 1) + ' round') + '.');
+    const tn = (sup ? t.num('suppressed_save', 2) : 0) + harder;
+    if (t.preview) t.note('On a hit: a save (Guts or Athletics' + (tn ? ', at −' + tn : '') + ') or ' + (nailed ? 'nailed in place until it spends ' + ap + ' AP to pull free' : 'Pinned for ' + t.num('pinned_rounds', 1) + ' round') + '.');
     const v = r.target || tgt;
-    if (t.preview || (r.hit && alive(v))) stop(t, v, 'pinned', { tnAdd: sup ? t.num('suppressed_save', 2) : 0, ...(nailed ? { untilAp: ap } : { rounds: t.num('pinned_rounds', 1) }) });
+    if (t.preview || (r.hit && alive(v))) stop(t, v, 'pinned', { tnAdd: tn, ...(nailed ? { untilAp: ap } : { rounds: t.num('pinned_rounds', 1) }) });
     return null;
   },
   ai: (t) => (t.tgt ? 7 : 0),
@@ -72,7 +74,7 @@ technique({
   check(t) { return t.tgt && !canStrike(t, t.tgt) ? 'You can\'t get a shot near ' + t.tgt.name + '.' : null; },
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('loud', 'blast'), cb = t.cb, rad = p === 'blast' ? radiusOf(t.w) : 0, cost = PHYS_RULES.pressure.take_cost;
+    const p = t.line('loud', 'blast'), cb = t.cb, rad = p === 'blast' ? radiusOf(t.w) : 0; // rules 1.97 item 8342: a Take spends every pip
     // everyone it reaches, each with whether it was Suppressed when the Take began
     const who: { v: Unit; sup: boolean }[] = [{ v: tgt, sup: wasSuppressed(t) }];
     if (rad) for (const v of cb.units) if (v !== tgt && v.side !== t.u.side && alive(v) && isPressed(v) && dist(v.pos, tgt.pos) <= rad) who.push({ v, sup: isSuppressed(v) });
@@ -87,7 +89,7 @@ technique({
         save(t, v, 'heart', tn(sup));
         const to = moveBlock(v) ? null : runTo(cb, v, t.u, tiles(v));
         if (to) (t.pv.moves ||= []).push({ unit: v.id, to }); else t.note(v.name + ' has nowhere to run.');
-        if (v !== tgt) { const now = pressureOf(v), after = Math.max(0, now - cost); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
+        if (v !== tgt) { const now = pressureOf(v), after = 0; (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
       }
       return null;
     }
@@ -101,7 +103,7 @@ technique({
       const err = walkFree(v, to, t, false); if (err) t.note(v.name + ' can\'t run: ' + err);
     }
     // Blast: it is a Take on each of them, so each pays the Take's cost (the core lowers the target itself)
-    for (const { v } of who) if (v !== tgt) lowerPressure(t, v, cost);
+    for (const { v } of who) if (v !== tgt) lowerPressure(t, v, pressureOf(v));
     return null;
   },
   ai: (t) => (t.tgt ? 5 : 0),
@@ -202,7 +204,7 @@ technique({
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     const p = t.line('quick', 'precise', 'drawn'), sup = wasSuppressed(t), reloads = !t.holds('drawn');
-    const r = strike(t, { extra: t.num('hit', 3), ignoreCover: sup, mult: p === 'quick' || p === 'precise' ? 1 + t.num('damage_pct', 50) / 100 : 1, label: 'Last Round' });
+    const r = strike(t, { extra: t.num('hit', 3), ignoreCover: sup, mult: p === 'quick' || p === 'precise' ? 1 + t.num('damage_pct', 50) / 100 : 1, cash: techCash(t, 'pressure', takePips(t)), label: 'Last Round' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview) { if (sup) t.note('Suppressed: its cover doesn\'t count.'); if (reloads) t.note('If it takes ' + tgt.name + ' out, your next speed reload is free.'); return null; }
     if (reloads && !r.cancelled && (r.killed || !alive(tgt))) { t.u.freeReload = true; t.note('The next speed reload is free.'); emitFx(t.cb, 'free_reload', { unit: t.u.id, at: t.u.pos, tech: t.def.id, ...ownSideOnly(t.cb, t.u) }); }

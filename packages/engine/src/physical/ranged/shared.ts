@@ -1,5 +1,5 @@
 // Physical 2.0, ranged: what every ranged handler file imports. The core is ../core; nothing here is a rule.
-export { technique, strike, canStrike, loseWeapon, stowedOf,  setUp, save, cond, stop, forceMove, stepUser, stepBlock, stepsWithin, standingAt, approach, holdWatch, endWatch, fireWatch, spendRounds, addPressure, lowerPressure, wasSuppressed, hitByAlly, techState, techStateOf, turnStamp } from '../core';
+export { technique, strike, canStrike, loseWeapon, stowedOf,  setUp, save, cond, stop, forceMove, stepUser, stepBlock, stepsWithin, standingAt, approach, holdWatch, endWatch, fireWatch, spendRounds, addPressure, lowerPressure, wasSuppressed, hitByAlly, techState, techStateOf, turnStamp, techCash, cashSteps, takePips } from '../core';
 // added by the ranged lane: the technique a unit is striking with; the rounds a technique uses (Load Special's chambered round, the quiver's arrows)
 export { strikingWith, strikeRound, type StrikeRound } from '../core';
 // the effects events the ranged effects key on: an event kept to its unit's side while the other side can't see it

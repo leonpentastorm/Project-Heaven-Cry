@@ -69,8 +69,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5843): one verb for every Dexterity weapon in place of the Flush rider and its blade twin",
-      "text": "{=effects.0.ap} AP, once a turn: a Pressed foe (Pressure {=effects.0.reach.if.target_res.pressure.at_least} or more) you see within {=effects.0.reach.tiles} tiles saves or is Afraid of you for {=effects.0.effects.0.rounds} round, and loses Pressure as a Take does. Never an Elite or a Boss.",
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5843): one verb for every Dexterity weapon in place of the Flush rider and its blade twin; rules 1.97 item 8342: it spends every pip, as a Take",
+      "text": "{=effects.0.ap} AP, once a turn: a Pressed foe (Pressure {=effects.0.reach.if.target_res.pressure.at_least} or more) you see within {=effects.0.reach.tiles} tiles saves or is Afraid of you for {=effects.0.effects.0.rounds} round, and loses every pip on it, as a Take does. Never an Elite or a Boss.",
       "short": "A Pressed foe you see saves or is Afraid of you",
       "effects": [
         {
@@ -119,15 +119,7 @@
               "when": "acted",
               "resource": "pressure",
               "target": "target",
-              "value": {
-                "base": 0,
-                "per": [
-                  {
-                    "of": "tech_rule:pressure.take_cost",
-                    "value": -1
-                  }
-                ]
-              }
+              "value": "zero"
             }
           ]
         }

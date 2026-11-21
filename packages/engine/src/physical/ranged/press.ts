@@ -239,7 +239,7 @@ technique({
     return null;
   },
   // cheap: when the enemy can't afford a shot, a warning shot still leans on its target
-  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !canPay(t.cb, t.u, attackApCost(t.w, 'shot')) && pressureOf(t.tgt) < pressureCap(t.tgt) && canStrike(t, t.tgt) ? 6 : 1),
+  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !canPay(t.cb, t.u, attackApCost(t.w, 'shot')) && pressureOf(t.tgt) < pressureCap(t.tgt, t.u) && canStrike(t, t.tgt) ? 6 : 1),
 });
 
 // 11. Flush: 3 AP, 1 round. Hit the target's cover (no roll; the cover takes the weapon's damage, as shooting cover does

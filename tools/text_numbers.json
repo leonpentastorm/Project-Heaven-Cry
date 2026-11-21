@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1019,
+ "ceiling": 1017,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -589,7 +589,6 @@
   "techniques:charge:text:10%": 1,
   "techniques:charge:text:3": 1,
   "techniques:cleave:lines.0.text:2": 1,
-  "techniques:coup:text:25%": 1,
   "techniques:cover_me:text:2": 1,
   "techniques:dead_centre:lines.1.text:5": 1,
   "techniques:dead_to_rights:lines.0.text:18": 1,
@@ -631,7 +630,6 @@
   "techniques:suppress:text:1": 1,
   "techniques:suppress:text:2": 1,
   "techniques:sweep:text:3": 1,
-  "techniques:throw_down:text:×1": 1,
   "traits:ace_pilot:downsides.0:0.5": 1,
   "traits:ace_pilot:text:0.5": 1,
   "traits:ace_pilot:text:1": 1,

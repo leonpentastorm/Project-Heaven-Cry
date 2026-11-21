@@ -14958,3 +14958,52 @@ its first, the general pieces (`08-primitives.md` S1, S2, S3, S5, S6, S10, S13 a
 8335. **Not tagged yet, for their lanes:** given Edge (Inspire lays it beside the feeling: ruling 41 makes the two one
       gift, which is Inspire's restatement in step 2d) and the Chaplain's Canticle verses (the song is one gift: step 2d).
       Until then they stand beside a gift as before.
+
+### Rules 1.97 (the Body doors), 0.34: step 2b of the total rebalance: Guard, Momentum and Pressure on their ladders (21 Nov 2026)
+
+Lane 2b of step 2 (`docs/design/growth/09-build-order.md`): the three Body doors read their alpha's door ladder
+(rules 1.96 item 8324) and pay their cash-outs on the cash-out source (item 8326). Every number is the bible's
+(`tools/balance/bible/body.json`, `world.json` tiers, and the lead's ruling 69). Everything is PROVISIONAL until played.
+As played after this revision:
+
+8340. **A Body door's counter tops at its Reach.** Guard holds as many plates as Durability's Reach (2 at Durability 1,
+      3 at 4, 4 at 7 with Pain Threshold 4, 6 at 10 with Pain Threshold 7 and Sensory 4); Momentum's chain tops at Raw
+      Power's Reach (3, 4, 5 with Guts 4, 7 with Guts 7 and Intimidation 4); each `res_max:<resource>` term on the
+      sheet is added. A step whose family gate is not met is not held: the step below stands. Supersedes rules 1.13's
+      Guard pool (a plate a Durability point, at most 4), rules 1.59's larger Bulwark pool (5 / 6 / 7 by rank: ruling
+      43, the class's cap becomes the door's ladder) and the Breaker's chain of 5 (ruling 16: Reach is bought). A unit
+      with no sheet (an enemy) and a character with no point in Raw Power who holds a melee weapon keep the door's
+      unbought chain (`techniques.json rules.momentum.max`, 3), with no Bite: its Finishers pay a plain blow.
+8341. **Pressure's cap on a target is the best Reach laid on it.** Each shooter who lays a pip on a foe brings its
+      Dexterity Reach (2 at Dexterity 1, 3 at 4, 4 at 7 with Athletics 4, 5 at 10 with Athletics 7 and Reaction Speed
+      4); the foe's pips stop at the best Reach laid on it this fight, less its tier row's `pressure_off` (an Elite 1,
+      a Boss 2: ruling 19). A character with no Dexterity lays none. A player still stops at the rules row's
+      `player_max` (3); a unit with no sheet (an enemy) lays up to the rules row's `max` (4). So a Dexterity-10
+      shooter's fifth pip Breaks an Elite and Suppresses a Boss, and a foe at 5 is still Broken after its turn's fall.
+      Supersedes the fixed caps of rules 1.12 (4, an Elite 3, a Boss 2).
+8342. **Every Finisher and every Take spends all, and pays on the cash-out sum** of its door at the user's own Bite:
+      x(1 + Bite x S(n)) for n units spent (rules 1.96 item 8326), the Margins of its roll added to that factor.
+      Coup is x(1 + Bite x S(n)); Run Through is x(1 + (Bite - 0.05) x S(n)) (it also pins); Throw Down is a Coup on a
+      held foe (the occupant still takes half); Cleave rolls once with no Margins and strikes 1 + S(n) rounded down
+      foes in all (at most 8); Break is a plain blow whose Body save is S(n) rounded down harder; Dead Centre and Last
+      Round are x(1 + Bite x S(n)) shots; Pin Down is a plain shot whose save is S(n) rounded down harder. A Take now
+      spends every pip on its target (it needs 2: Pressed). Supersedes the Finishers' +25% (Run Through +20%) a
+      Momentum, Break's -1 a Momentum, Dead Centre's and Last Round's +50%, Pin Down's x0.7, and a Take's 2 pips.
+8343. **The betas' point 10 keeps one.** Guts 10: a Finisher keeps 1 step of the chain. Athletics 10: a Take leaves 1
+      pip on its foe.
+8344. **The betas from their first point** (ruling 20). Athletics gives +1 Defense a point from point 1 (it was from
+      2). Pain Threshold feeds a plate's soak by 1 + 0.02 a point + 0.005 x Durability x Pain Threshold; Athletics feeds
+      the Pressure shed from you by 1 + 0.02 a point + 0.01 x Dexterity x Athletics. Guts no longer feeds a share of the
+      chain's wear: from Guts 4 the first damaging hit you take each round wears no step, and from Guts 7 walking wears
+      a step every two tiles, not every tile; Guts also adds its points to saves against Fear. Supersedes rules 1.60
+      items 4604 to 4606 (the 0.01 products, Guts' kept share).
+8345. **Brace fills the wall** (the Bulwark's): Brace raises your plates to your Reach. Supersedes rules 1.13's flat 2
+      (3 with a shield).
+8346. **Enemies' Margins by tier** (ruling 69; `enemies.json` tier rows `margins_max`): vermin and minions count no
+      Margins from the roll (a natural 20 still adds its two), a Soldier at most one, an Elite at most two, a Boss as
+      many as it rolls.
+8347. **Not in this revision** (for the lead, listed in `docs/design/handoffs/0.34-REBALANCE-STEP-2B.md`): Slam's and
+      Retort's damage (a no-roll shield blow plus the plates' weight), the three Pushes (Overbrace, Overswing,
+      Overpress), the gammas' landed calls that feed their door (Warn's plates, Threaten's Momentum, a Cued shot's pip)
+      and their solo forms, the classes' rank moves beyond Brace, the keeps tags beyond today's, and the door Marks
+      (step 3). Until each is built it keeps its 0.33 rule.

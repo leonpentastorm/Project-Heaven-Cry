@@ -5,6 +5,8 @@
   "items": [
     {
       "id": "vermin",
+      "pressure_off": 0,
+      "margins_max": 0,
       "name": "Vermin",
       "notice": 0,
       "vision": 12,
@@ -37,6 +39,8 @@
     },
     {
       "id": "minion",
+      "pressure_off": 0,
+      "margins_max": 0,
       "name": "Minion",
       "notice": 0,
       "vision": 12,
@@ -68,6 +72,8 @@
     },
     {
       "id": "soldier",
+      "pressure_off": 0,
+      "margins_max": 1,
       "name": "Soldier",
       "notice": 2,
       "vision": 12,
@@ -103,6 +109,8 @@
     },
     {
       "id": "elite",
+      "pressure_off": 1,
+      "margins_max": 2,
       "name": "Elite",
       "notice": 4,
       "vision": 12,
@@ -144,6 +152,7 @@
     },
     {
       "id": "boss",
+      "pressure_off": 2,
       "name": "Boss",
       "notice": 6,
       "vision": 12,

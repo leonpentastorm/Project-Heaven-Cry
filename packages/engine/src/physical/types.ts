@@ -61,6 +61,8 @@ export interface TechPreview {
 export interface StrikeOpts {
   target?: Unit; mode?: 'melee' | 'shot' | 'aimed';
   /** damage multiplier, shown under the technique's name */ mult?: number;
+  /** rules 1.97 item 8342: the cash-out factor of the units this strike spends (door.ts cashFactor); the roll's Margins add to it (combat.ts attackDamage's ctx.cash) */ cash?: number;
+  /** rules 1.97 item 8342: the roll counts no Margins (Cleave) */ noMargins?: boolean;
   /** flat to-hit, shown under the technique's name */ extra?: number;
   critMin?: number; /** a roll that hits is a critical */ critOnHit?: boolean; ignoreArmour?: number | true; ignoreCover?: boolean; reach?: number;
   label?: string; noMomentum?: boolean; noPressure?: boolean;

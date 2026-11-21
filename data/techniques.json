@@ -6,7 +6,6 @@
     "momentum": {
       "door": "raw_power",
       "max": 3,
-      "fighter_max": 5,
       "start": 1,
       "strike_cost": 1,
       "opener_cost": 1,
@@ -27,8 +26,6 @@
     },
     "guard": {
       "door": "durability",
-      "max": 4,
-      "per_durability": 1,
       "gain_base": 1,
       "gain_per_point": 1,
       "shield_gain": 1,
@@ -55,8 +52,6 @@
       "door": "dexterity",
       "max": 4,
       "player_max": 3,
-      "elite_max": 3,
-      "boss_max": 2,
       "pressed": 2,
       "suppressed": 3,
       "broken": 4,
@@ -70,7 +65,6 @@
       "flank_bonus": 1,
       "kill_spill": 1,
       "kill_spill_range": 3,
-      "take_cost": 2,
       "unseen_silent_hit": 2,
       "id": "pressure",
       "states": {
@@ -1070,7 +1064,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike at +25% damage per Momentum spent.",
+      "text": "One strike that cashes in the whole chain: every step of Momentum spent adds your Raw Power's Bite to the blow, on the cash-out sum (the Margins of its roll add to it).",
       "lines": [
         {
           "props": [
@@ -1090,13 +1084,13 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "per_momentum_pct": 25,
         "edge_bonus_pct": 50,
         "point_crit_hp_pct": 25
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): spends the whole chain on the cash-out sum"
     },
     {
       "id": "cleave",
@@ -1112,7 +1106,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike; then the same strike at one more adjacent enemy per Momentum spent, each at full damage.",
+      "text": "One strike, the whole chain spent, rolled once with no Margins; then the same blow at more enemies next to you, each at full damage: one more for each whole step of the chain's cash-out sum (at most {=numbers.most_foes} foes in all).",
       "lines": [
         {
           "props": [
@@ -1136,11 +1130,13 @@
       "particular": true,
       "numbers": {
         "adjacent": 1,
-        "heavy_apart": 2
+        "heavy_apart": 2,
+        "most_foes": 8
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): spends the whole chain on the cash-out sum"
     },
     {
       "id": "break",
@@ -1156,7 +1152,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike. The target makes a Body save at −{=numbers.save_per_momentum} per Momentum spent or is Stunned (bosses: Dazed).",
+      "text": "One strike, the whole chain spent. The target makes a Body save made harder by the chain's cash-out sum (rounded down) or is Stunned (bosses: Dazed).",
       "lines": [
         {
           "props": [
@@ -1176,17 +1172,19 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "save_per_momentum": 1,
         "stun_rounds": 1,
         "armour_rounds": 1
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): spends the whole chain on the cash-out sum"
     },
     {
       "id": "run_through",
-      "opt_needs": {"leave": "reach"},
+      "opt_needs": {
+        "leave": "reach"
+      },
       "name": "Run Through",
       "system": "melee",
       "group": "finisher",
@@ -1199,7 +1197,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike at +{=numbers.per_momentum_pct}% per Momentum spent. On a hit the target is Pinned where it stands until it spends {=numbers.pull_free_ap} AP to pull free.",
+      "text": "One strike that cashes in the whole chain at your Raw Power's Bite less {=numbers.bite_less|pct}% a step (it pins as well). On a hit the target is Pinned where it stands until it spends {=numbers.pull_free_ap} AP to pull free.",
       "lines": [
         {
           "props": [
@@ -1222,14 +1220,15 @@
       ],
       "particular": true,
       "numbers": {
-        "per_momentum_pct": 20,
         "point_behind_pct": 50,
         "reach_no_point_hit": 2,
-        "pull_free_ap": 2
+        "pull_free_ap": 2,
+        "bite_less": 0.05
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): spends the whole chain on the cash-out sum"
     },
     {
       "id": "throw_down",
@@ -1246,7 +1245,7 @@
         "momentum": 2,
         "held": true
       },
-      "text": "Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + {=numbers.per_momentum_pct}% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.",
+      "text": "Only on a target you have Grappled or Bound: slam it into a tile next to you, a Coup's cash-out of the whole chain, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.",
       "lines": [
         {
           "props": [
@@ -1268,14 +1267,14 @@
       ],
       "particular": true,
       "numbers": {
-        "per_momentum_pct": 25,
         "tiles": 1,
         "heavy_tiles": 2,
         "occupant_pct": 50
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy+tile"
+      "aim": "enemy+tile",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): spends the whole chain on the cash-out sum"
     },
     {
       "id": "parry",
@@ -2390,7 +2389,7 @@
       "needs": {
         "pressed": true
       },
-      "text": "One shot at +{=numbers.damage_pct}% damage.",
+      "text": "One shot that cashes in every pip on the target: each adds your Dexterity's Bite to the shot, on the cash-out sum (the Margins of its roll add to it).",
       "suppressed": "Its cover doesn't count.",
       "lines": [
         {
@@ -2414,13 +2413,13 @@
       ],
       "particular": true,
       "numbers": {
-        "damage_pct": 50,
         "precise_hit": 2,
         "drawn_pierce": 5
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): a Take spends every pip on the cash-out sum"
     },
     {
       "id": "pin_down",
@@ -2437,15 +2436,9 @@
       "needs": {
         "pressed": true
       },
-      "text": "A shot at ×{=numbers.damage_mult}. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned for 1 round.",
+      "text": "A shot, every pip on the target spent. On a hit the target saves (Guts or Athletics, whichever is better), made harder by the pips' cash-out sum (rounded down), or is Pinned for 1 round.",
       "suppressed": "The save is at −2.",
       "lines": [
-        {
-          "props": [
-            "auto"
-          ],
-          "text": "full damage."
-        },
         {
           "props": [
             "drawn",
@@ -2460,14 +2453,14 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "damage_mult": 0.7,
         "pinned_rounds": 1,
         "suppressed_save": 2,
         "nailed_ap": 2
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): a Take spends every pip on the cash-out sum"
     },
     {
       "id": "rout",
@@ -2621,7 +2614,7 @@
         "pressed": true,
         "last_round": true
       },
-      "text": "Only with the last round in the weapon: +{=numbers.hit} to hit. If it takes the target out, your next speed reload is free.",
+      "text": "Only with the last round in the weapon: +{=numbers.hit} to hit, and the shot cashes in every pip on the target, as Dead Centre does. If it takes the target out, your next speed reload is free.",
       "suppressed": "It can't be reduced by cover.",
       "lines": [
         {
@@ -2650,7 +2643,8 @@
       },
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy"
+      "aim": "enemy",
+      "source": "rules 1.97 item 8342 (the Body doors, step 2b): a Take spends every pip on the cash-out sum"
     },
     {
       "id": "overwatch",

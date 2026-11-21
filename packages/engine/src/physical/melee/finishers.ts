@@ -16,7 +16,7 @@
 //     slam (Momentum included), as Run Through's behind-strike is half of its strike. Bare: the slam always hits (no
 //     roll); Flurry's Bare mark then makes the occupant's Prone save harder.
 import { tilesN } from '../../log';
-import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
+import { technique, strike, spendMomentum, momentumOf, techCash, cashSteps, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
 import { strikingWith, loseWeapon } from '../core';
@@ -38,7 +38,7 @@ function also(t: Tech, o: StrikeOpts): StrikeResult {
   return r;
 }
 
-// 20. Coup: one strike at +25% damage per Momentum spent. Edge: +50% more against a target that is Bleeding, Dazed,
+// 20. Coup (rules 1.97 item 8342): one strike, the whole chain on the cash-out sum. Edge: +50% more against a target that is Bleeding, Dazed,
 //     Prone or Downed. Point: a hit is a critical if the target is at a quarter HP or less.
 technique({
   id: 'coup',
@@ -46,8 +46,9 @@ technique({
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     const p = t.line('edge', 'point'), m = momentumOf(t.u);
     const soft = !!tgt.bleed || !!tgt.dazedNext || !!tgt.prone || tgt.downed;
-    const mult = 1 + (m * t.num('per_momentum_pct', 25) + (p === 'edge' && soft ? t.num('edge_bonus_pct', 50) : 0)) / 100;
-    const r = strike(t, { mult, noMomentum: true, critOnHit: p === 'point' && tgt.hp <= tgt.maxHp * t.num('point_crit_hp_pct', 25) / 100, label: 'Coup, Momentum ' + m });
+    // rules 1.97 item 8342: the whole chain on the cash-out sum at the user's Bite (the Edge line's bonus stays a multiplier)
+    const mult = p === 'edge' && soft ? 1 + t.num('edge_bonus_pct', 50) / 100 : 1;
+    const r = strike(t, { mult, cash: techCash(t, 'momentum', m), noMomentum: true, critOnHit: p === 'point' && tgt.hp <= tgt.maxHp * t.num('point_crit_hp_pct', 25) / 100, label: 'Coup, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     spendMomentum(t);
     return null;
@@ -73,14 +74,16 @@ technique({
     const within = p === 'heavy' ? t.num('heavy_apart', 2) : t.num('adjacent', 1);
     const bleed = (r: StrikeResult) => { if (p === 'edge' && r.target && (t.preview || (r.hit && !r.killed && alive(r.target)))) cond(t, r.target, 'bleeding'); };
     // the arc runs through every target in order (the extras as they stand before the first strike)
-    const ex0 = t.preview ? [] : cleaveExtras(t, tgt, m, within);
+    // rules 1.97 item 8342: 1 + S(n) rounded down foes in all (at most numbers.most_foes), the first roll with no Margins
+    const more = Math.max(0, Math.min(t.num('most_foes', 8), 1 + cashSteps('momentum', m)) - 1);
+    const ex0 = t.preview ? [] : cleaveExtras(t, tgt, more, within);
     const fx = meleeFx(t, 'arc', { tiles: [tgt.pos, ...ex0.map((v) => v.pos)], struck: [tgt.id, ...ex0.map((v) => v.id)], cleave: true });
-    const r = strike(t, { noMomentum: true, label: 'Cleave' });
+    const r = strike(t, { noMomentum: true, noMargins: true, label: 'Cleave' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
     bleed(r);
-    const extras = cleaveExtras(t, tgt, m, within);
+    const extras = cleaveExtras(t, tgt, more, within);
     if (t.preview) t.note(extras.length ? 'Then ' + extras.map((v) => v.name).join(', ') + ', each at full damage.' : 'No other enemy close enough to cleave into.');
-    for (const v of extras) { const x = also(t, { target: v, noMomentum: true, label: 'Cleave', chain: true, ...(within > 1 ? { reach: within } : {}) }); if (x.ok) bleed(x); }
+    for (const v of extras) { const x = also(t, { target: v, noMomentum: true, noMargins: true, label: 'Cleave', chain: true, ...(within > 1 ? { reach: within } : {}) }); if (x.ok) bleed(x); }
     upto(t, fx);
     spendMomentum(t);
     return null;
@@ -94,13 +97,13 @@ technique({
   id: 'break',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
-    const p = t.line('blunt', 'hook'), m = momentumOf(t.u);
+    const p = t.line('blunt', 'hook'), m = momentumOf(t.u), harder = cashSteps('momentum', m); // rules 1.97 item 8342: harder by S(n) rounded down
     const r = strike(t, { noMomentum: true, label: 'Break, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     const v = r.target || tgt, boss = v.tier === 'boss'; // the unit really struck (a redirect): the riders follow it
-    if (t.preview) t.note('On a hit, ' + v.name + ' saves (Body, −' + m * t.num('save_per_momentum', 1) + ') or:');
+    if (t.preview) t.note('On a hit, ' + v.name + ' saves (Body, −' + harder + ') or:');
     if (t.preview || (r.hit && !r.killed && alive(v))) {
-      if (!save(t, v, 'body', m * t.num('save_per_momentum', 1))) {
+      if (!save(t, v, 'body', harder)) {
         meleeFx(t, 'break', { target: v.id, to: v.pos, stun: boss ? 'dazed' : 'stunned', armour: p === 'blunt', disarm: p === 'hook' });
         cond(t, v, boss ? 'dazed' : 'stunned', boss ? undefined : t.num('stun_rounds', 1));
         if (p === 'blunt') breakArmour(t, v);
@@ -148,16 +151,16 @@ technique({
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     const p = t.line('point', 'reach'), m = momentumOf(t.u), leave = p === 'reach' && t.args.opt === 'leave';
-    const mult = 1 + m * t.num('per_momentum_pct', 20) / 100;
+    const mult = 1, cash = techCash(t, 'momentum', m, t.num('bite_less', 0)); // rules 1.97 item 8342: the chain at the Bite less bite_less a step
     const extra = p === 'reach' && !t.holds('point') ? -t.num('reach_no_point_hit', 2) : 0;
     const pierce = p === 'point' ? { ignoreArmour: true as const } : {};
-    const r = strike(t, { mult, extra, noMomentum: true, ...pierce, label: 'Run Through, Momentum ' + m });
+    const r = strike(t, { mult, cash, extra, noMomentum: true, ...pierce, label: 'Run Through, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     const v = r.target || tgt; // the unit really struck (a redirect): the pin, the weapon and the line behind follow it
     const pinned = t.preview || (r.hit && !r.killed && alive(v));
     if (p === 'point' && (t.preview || r.hit)) {
       const b = behindOf(t, v);
-      if (b) also(t, { target: b, mult: mult * t.num('point_behind_pct', 50) / 100, noMomentum: true, ...pierce, reach: dist(t.u.pos, b.pos), label: 'Run Through, behind' });
+      if (b) also(t, { target: b, mult: t.num('point_behind_pct', 50) / 100, cash, noMomentum: true, ...pierce, reach: dist(t.u.pos, b.pos), label: 'Run Through, behind' });
     }
     if (pinned) {
       if (!t.preview) { const [ux, uy] = xy(t.u.pos), [x, y] = xy(v.pos), b = p === 'point' ? behindOf(t, v) : null, beyond = key(x + Math.sign(x - ux), y + Math.sign(y - uy));
@@ -233,8 +236,8 @@ technique({
     const p = t.line('bare', 'heavy'), m = momentumOf(t.u), { at, why } = slamTile(t); if (why) return why;
     const sure = p === 'bare';
     (t as any)._sure = sure; // read by this file's attack_roll listener for this use only (never saved)
-    const slam = 1 + m * t.num('per_momentum_pct', 25) / 100, flurry = sure ? setUpBonus(t, tgt) : 0; // read before the strike spends it
-    const r = strike(t, { mult: slam, noMomentum: true, label: 'Throw Down, Momentum ' + m });
+    const slam = techCash(t, 'momentum', m), flurry = sure ? setUpBonus(t, tgt) : 0; // read before the strike spends it
+    const r = strike(t, { cash: slam, noMomentum: true, label: 'Throw Down, Momentum ' + m });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     if (t.preview && sure) { for (const a of t.pv.attacks) a.pv.pct = 100; t.note('No roll needed.'); }
     if (t.preview || r.hit) {
@@ -247,7 +250,7 @@ technique({
       if (!t.preview) { const path = movedSince(t, tgt.id, mk); meleeFx(t, 'slam', { target: tgt.id, from, path: path.length ? path : [from], land: occ ? at : tgt.pos, occupant: occ ? occ.id : null, prone: !wasProne }); }
       if (t.preview || alive(tgt)) stop(t, tgt, 'prone', { save: false });
       if (occ) {
-        also(t, { target: occ, mult: slam * t.num('occupant_pct', 50) / 100, noMomentum: true, reach: Math.max(1, dist(t.u.pos, occ.pos)), label: 'Throw Down, slammed into' });
+        also(t, { target: occ, mult: t.num('occupant_pct', 50) / 100, cash: slam, noMomentum: true, reach: Math.max(1, dist(t.u.pos, occ.pos)), label: 'Throw Down, slammed into' });
         if (t.preview && flurry) t.note('Flurry: ' + occ.name + '\'s save is ' + flurry + ' harder.');
         if (t.preview || alive(occ)) stop(t, occ, 'prone', flurry ? { tnAdd: flurry } : {});
       }

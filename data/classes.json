@@ -68,13 +68,8 @@
       "tagline": "The body that doesn't fall.",
       "resource": {
         "id": "guard",
-        "max_by_rank": {
-          "1": 5,
-          "2": 6,
-          "3": 7
-        },
         "provisional": true,
-        "rule": "Guard is Durability's pool: a point for each point of Durability, up to the pool's cap, and Brace fills it. The Bulwark's own pool is larger, whatever its Durability: {=max_by_rank.1} at rank I, {=max_by_rank.2} at rank II, {=max_by_rank.3} at rank III (rules 1.59). While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend Guard and your reaction and take the hit yourself, with your own armour. Each point of Guard can also take damage off a hit on you; the Guard row on the fight screen gives the pool's size and what a point takes off, from Guard's own numbers (techniques.json rules.guard). Guard is lost when the fight ends."
+        "rule": "Guard is Durability's pool: its plates top at Durability's Reach on the door ladder, and the Bulwark's Brace fills it to the top. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend Guard and your reaction and take the hit yourself, with your own armour. Each point of Guard can also take damage off a hit on you; the Guard row on the fight screen gives the pool's size and what a point takes off, from Guard's own numbers (techniques.json rules.guard). Guard is lost when the fight ends."
       },
       "resources": [
         "guard"
@@ -370,8 +365,7 @@
       "tagline": "Close in and break them.",
       "resource": {
         "id": "momentum",
-        "max": 5,
-        "rule": "Momentum is a pool of up to 5 points; you start each fight with 1, and the Breaker's Wind-up adds 2 more (3). Each hit with a plain melee attack, a Lunge, a Riposte or a Finisher gives 1. On your first melee attack each turn you also gain 1 for each tile you closed on the target that turn, up to 2. Each tile you walk costs 1, and so does each hit you take, unless you Parry it or your Guard takes part of it. Momentum carries over from turn to turn and is lost when the fight ends."
+        "rule": "Momentum is a chain that tops at Raw Power's Reach on the door ladder; you start each fight with 1, and the Breaker's Wind-up adds 2 more. Each hit with a plain melee attack, a Lunge, a Riposte or a Finisher gives 1. On your first melee attack each turn you also gain 1 for each tile you closed on the target that turn, up to 2. Each tile you walk costs 1, and so does each hit you take, unless you Parry it or your Guard takes part of it. Momentum carries over from turn to turn and is lost when the fight ends."
       },
       "resources": [
         "momentum"
@@ -4365,12 +4359,24 @@
         "name": "Brace",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Gain Guard equal to your Durability · Braced: +{=effects.2.value} Defense until you move · Interpose: take a hit meant for a friend beside you, 1 Guard · start each fight with {=effects.4.value} Guard",
+        "text": "Fill your Guard to your Reach · Braced: +{=effects.2.value} Defense until you move · Interpose: take a hit meant for a friend beside you, 1 Guard · start each fight with {=effects.4.value} Guard",
         "effects": [
           {
             "op": "resource",
             "resource": "guard",
-            "value": "1+mod(durability)",
+            "value": {
+              "base": 0,
+              "per": [
+                {
+                  "of": "res_max:guard",
+                  "value": 1
+                },
+                {
+                  "of": "res:guard",
+                  "value": -1
+                }
+              ]
+            },
             "when": "on_use"
           },
           {
@@ -4409,7 +4415,8 @@
         "attributes": [
           "endurance"
         ],
-        "status": "active"
+        "status": "active",
+        "source": "rules 1.97 item 8345 (the Body doors, step 2b): Brace fills the wall to your Reach (it was Guard equal to 1 + your Durability's modifier)"
       },
       {
         "id": "draw_fire",

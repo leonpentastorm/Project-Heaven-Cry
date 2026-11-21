@@ -9,7 +9,7 @@ import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, noSprintClass, armourOf, oneHanded, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, marginsTakenOf, marginShareOf, marginsPlus, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
 import { type Rng, die } from './rng';
-import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms, marginsOf, marginsTerm } from './rolls';
+import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms, marginsOf, marginsTerm, MARGINS } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
@@ -209,7 +209,7 @@ export interface Unit {
    * Silent weapon's), who put it there, who hit it in which round and with which weapon (Crossfire; drill on the kill),
    * turns left of Stopped once, the Watch it holds, its melee chain this turn, per-technique state, a set-up mark, an
    * enemy's technique list, a Drawn weapon's quiver, and a free speed reload owed (Last Round). */
-  pressure?: number; pressHidden?: number; pressBy?: Record<string, string>; hitRound?: Record<string, number>; hitWith?: Record<string, string[]>;
+  pressure?: number; pressHidden?: number; pressBy?: Record<string, string>; /** rules 1.97 item 8341: the best Reach laid on it this fight */ pressReach?: number; hitRound?: Record<string, number>; hitWith?: Record<string, string[]>;
   stopped?: number; watch?: import('./physical/types').HeldWatch; chain?: { t: string; n: number; last: string | null; ended: boolean };
   tech?: Record<string, Record<string, any>>; setUp?: { t: string; target: string; hit?: number; noAnswer?: boolean; label?: string; only?: string[] };
   techs?: string[]; quiver?: Record<string, number>; freeReload?: boolean;
@@ -1505,6 +1505,14 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const who = charFor(att);
   return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: (ambushReady(att) || !!opts.ambush) && tgt.side !== att.side, via: rolled }) }; // an ambush as resolveAttack decides it (from Hidden too: outside playtest 0.31.10 row 7)
 }
+/** Rules 1.97 item 8346 (ruling 69): an enemy's Margins are limited by its tier row (enemies.json `margins_max`: vermin
+ *  and minions none, a Soldier 1, an Elite 2, a Boss what it rolls); a natural 20's two always count. A character's
+ *  (or a unit with no tier row) are what it rolls. */
+export function tierMargins(att: Unit, total: number, need: number, crit: boolean): number {
+  const most = att.charId || att.side === 'pc' ? null : (ENEMY as any)[att.tier || '']?.margins_max;
+  if (typeof most !== 'number') return marginsOf(total, need, crit);
+  return Math.min(most, marginsOf(total, need, false)) + (crit ? MARGINS.natural_20 : 0);
+}
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
 
@@ -1675,7 +1683,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     ...(opts.fx || {}), ...(rc.fx || {}) });
   let damage = 0, killed = false, injury = '', mg = 0;
   if (hit) {
-    const d = attackDamage(cb, att, tgt, mode, who, { crit, margins: typeof rc.margins === 'number' ? rc.margins : marginsOf(total, pv.need, crit), dmgMult: opts.dmgMult, ambush, via: pv.via }); // rules 1.96: 'attack_roll' may set the Margins as it may set the hit
+    const d = attackDamage(cb, att, tgt, mode, who, { crit, margins: typeof rc.margins === 'number' ? rc.margins : tierMargins(att, total, pv.need, crit), dmgMult: opts.dmgMult, ambush, via: pv.via }); // rules 1.96: 'attack_roll' may set the Margins as it may set the hit
     damage = landed(d.total, d.armour); mg = d.margins;
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed; if (mg) ev.margins = mg; // rules 1.96: the hit's Margins, for the screen

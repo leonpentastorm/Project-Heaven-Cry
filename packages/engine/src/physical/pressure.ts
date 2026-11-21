@@ -5,16 +5,30 @@ import { say, type Combat, type Unit, emitFx, alive, coverOf, coverTileFor, unit
 import { isSilent } from '../tactics';
 import { PHYS_RULES } from './data';
 import { foesOf } from '../kit';
-import { setResSetter, setResMax } from '../effects/cost';
+import { setResSetter, setResMax, resMaxPlus } from '../effects/cost';
+import { charOfUnit } from '../effects/hooks';
+import { reachOfRes } from '../door';
+import { ENEMY } from '../data';
 import { addReactBlock } from '../tactics';
 
 export type PressState = '' | 'pressed' | 'suppressed' | 'broken';
 const P = () => PHYS_RULES.pressure;
 export const pressureOf = (u: Unit | null | undefined): number => (u as any)?.pressure || 0;
-/** Where a unit's Pressure stops: players at 3 (never Broken), elites at 3, bosses at 2 (Pressed, never Suppressed). */
-export function pressureCap(u: Unit): number {
+/** Rules 1.97 item 8341: the Reach a unit lays Pressure with: a character's Dexterity Reach on its door ladder (with the
+ *  `res_max:pressure` terms on its sheet: a Push); a unit with no sheet the rules row's `max`. */
+export function layReach(by: Unit | null | undefined): number {
+  if (!by) return P().max;
+  const c = by.companion ? null : charOfUnit(by); if (!c) return P().max;
+  return Math.max(0, reachOfRes(c.skills as any, 'pressure') + resMaxPlus(by, 'pressure'));
+}
+/** Where a unit's Pressure stops (rules 1.97 item 8341): a player at the rules row's player_max (never Broken); a foe at
+ *  the best Reach laid on it this fight (with `by`'s, when it is laying now: null for a pip no unit lays), less its tier row's `pressure_off`
+ *  (enemies.json: an Elite 1, a Boss 2). */
+export function pressureCap(u: Unit, by?: Unit | null): number {
   const p = P();
-  return u.side === 'pc' ? p.player_max : u.tier === 'boss' ? p.boss_max : u.tier === 'elite' ? p.elite_max : p.max;
+  if (u.side === 'pc') return p.player_max;
+  const best = Math.max(Number((u as any).pressReach) || 0, by === undefined ? 0 : layReach(by)); // a pip laid by no one (an item's, a rule's) lays at the rules row's max
+  return Math.max(0, best - (Number((ENEMY as any)[u.tier || '']?.pressure_off) || 0));
 }
 export function pressureState(u: Unit | null | undefined): PressState {
   const n = pressureOf(u), p = P();
@@ -55,7 +69,8 @@ function set(cb: Combat, u: Unit, to: number, by: Unit | null, why: string, hidd
 export function addPressureTo(cb: Combat, target: Unit, n: number, by: Unit | null, why: string, opts: { hidden?: boolean } = {}): number {
   if (n <= 0 || !alive(target) || (by && by.side === target.side)) return 0;
   let left = n; for (const f of FILTERS) { left = f(cb, target, left, by, why); if (left <= 0) return 0; }
-  const was = pressureOf(target), to = Math.min(pressureCap(target), was + left);
+  const was = pressureOf(target), to = Math.min(pressureCap(target, by), was + left);
+  if (target.side !== 'pc' && to > was) (target as any).pressReach = Math.max(Number((target as any).pressReach) || 0, layReach(by)); // the best Reach laid on it this fight
   set(cb, target, to, by, why, !!opts.hidden);
   return to - was;
 }
@@ -95,7 +110,7 @@ export function hitPressure(cb: Combat, att: Unit, tgt: Unit): { n: number; hidd
 
 // The resource row `pressure` (data/actions.json resources; Classes 3.0 batch row): the item op `resource` gives
 // Pressure through the meter's own door (its cap, its filters, its state words), and takes it through lowerPressureOf.
-setResMax('pressure', pressureCap); // rules 1.60 (N10): a foe at its Pressure cap reads `at: "max"`
+setResMax('pressure', (u) => pressureCap(u)); // rules 1.60 (N10): a foe at its Pressure cap reads `at: "max"`
 setResSetter('pressure', (cb, u, n, by, why) => (!cb ? 0 : n >= 0 ? addPressureTo(cb, u, n, by, why || 'an item') : -lowerPressureOf(cb, u, -n, why || 'an item')));
 // Rules 1.28: Pressure's Suppressed state forbids attacking and moving reactions, never protective ones (one rule with
 // the condition Suppressed: tactics.ts reactBlocked).

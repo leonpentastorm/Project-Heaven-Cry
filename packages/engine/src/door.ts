@@ -63,3 +63,19 @@ export const cashSumOf = (res: string, n: number): number => cashSum(n, doorOfRe
 export const cashFactor = (skills: Record<string, number> | null | undefined, res: string, n: number): number => {
   const l = doorOfResource(res); return l ? 1 + biteAt(skills, l) * cashSum(n, l.cash_step) : 1;
 };
+/** Rules 1.97 item 8340: the Reach of the door whose counter is this resource, at these skill points (0 for a
+ *  resource no door owns, or below the ladder's first row). */
+export const reachOfRes = (skills: Record<string, number> | null | undefined, res: string): number => { const l = doorOfResource(res); return l ? reachAt(skills, l) : 0; };
+/** Rules 1.97 item 8343 (a beta's point 10): the units a cash-out of this resource leaves behind, read from the door's
+ *  beta skill (its attribute's beta: per_point.numbers keeps, from keeps_from); 0 when the beta names none. */
+/** The beta skill row of the door whose counter is this resource (its alpha's attribute's beta), or null. */
+export function doorBeta(res: string): any | null {
+  const l = doorOfResource(res); if (!l) return null;
+  const alpha: any = (SKILLS as any[]).find((s) => s.id === l.skill);
+  return (SKILLS as any[]).find((s) => s.attribute === alpha?.attribute && s.slot === 'beta') || null;
+}
+export function keepsOf(skills: Record<string, number> | null | undefined, res: string): number {
+  const beta = doorBeta(res); if (!beta) return 0;
+  const n = beta?.per_point?.numbers || {};
+  return typeof n.keeps === 'number' && typeof n.keeps_from === 'number' && Number(skills?.[beta.id] || 0) >= n.keeps_from ? n.keeps : 0;
+}

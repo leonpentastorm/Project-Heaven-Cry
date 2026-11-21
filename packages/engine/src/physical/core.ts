@@ -15,7 +15,8 @@ import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlocked
 import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear, weaponVia } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
-import { mod, holds as holdsGear, isShieldId, followsId, bodyArmourArm } from '../character';
+import { doorOfResource, doorBeta, biteAt, cashSum, cashSumOf, keepsOf } from '../door';
+import { mod, holds as holdsGear, isShieldId, followsId, bodyArmourArm, momentumTop } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
@@ -110,7 +111,7 @@ const shieldHand = (u: Unit, hand: 'main' | 'off') => (hand === 'off' ? !u.offWe
 export { unitSkill } from '../effects/hooks';
 /** Guard's numbers (techniques.json rules.guard): every one the engine reads must be there, checked once at load, so no
  *  fallback in code can disagree with the data (the 0.29 consolidation, SF5). */
-const GUARD_NUMBERS = ['max', 'soak', 'gain_base', 'gain_per_point', 'shield_gain', 'two_shield_mult', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;
+const GUARD_NUMBERS = ['soak', 'gain_base', 'gain_per_point', 'shield_gain', 'two_shield_mult', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;
 for (const k of GUARD_NUMBERS) if (typeof PHYS_RULES.guard?.[k] !== 'number') throw new Error('techniques.json rules.guard.' + k + ' is missing: Guard reads it.');
 const GR = (): Record<(typeof GUARD_NUMBERS)[number], number> => PHYS_RULES.guard;
 export const guardOf = (u: Unit) => resOf(u, 'guard');
@@ -168,15 +169,28 @@ const holdsMelee = (u: Unit) => weaponSystem(u.weapon) === 'melee' || (!!u.offWe
 export function ensureMomentum(u: Unit): void {
   if (!holdsMelee(u)) return;
   const rm = (u.resMax ||= {}), r = (u.res ||= {});
-  if (rm.momentum == null) { rm.momentum = PHYS_RULES.momentum.max; r.momentum ??= 0; }
+  // rules 1.97 item 8340: a character's chain tops at Raw Power's Reach (character.ts momentumTop); a unit with no sheet
+  // keeps the door's unbought chain
+  if (rm.momentum == null) { const c = u.companion ? null : charOfUnit(u); rm.momentum = c ? momentumTop(c) : PHYS_RULES.momentum.max; r.momentum ??= 0; }
 }
 export const momentumOf = (u: Unit) => resOf(u, 'momentum');
 function momentumFx(cb: Combat, u: Unit, was: number) { const now = momentumOf(u); if (now !== was) emitFx(cb, 'momentum', { unit: u.id, now, was }); }
 /** Finishers: spend all Momentum; returns what was spent. In a preview it only reports. */
+// Rules 1.97 item 8343: a Finisher keeps what the door's beta keeps at its point 10 (Guts 10: 1 step; door.ts keepsOf).
 export function spendMomentum(t: Tech): number {
-  const n = momentumOf(t.u); if (t.preview) { t.pv.momentum = { now: n, after: 0 }; return n; }
-  if (t.u.res) t.u.res.momentum = 0; momentumFx(t.cb, t.u, n); return n;
+  const n = momentumOf(t.u), keep = Math.min(n, keepsOf(t.c?.skills as any, 'momentum')); if (t.preview) { t.pv.momentum = { now: n, after: keep }; return n; }
+  if (t.u.res) t.u.res.momentum = keep; momentumFx(t.cb, t.u, n); return n;
 }
+/** Rules 1.97 item 8342: the cash-out factor of a Finisher or a Take that spends n units of this door's counter, at the
+ *  user's own Bite (door.ts cashFactor; a unit with no sheet has no Bite: x1). `less`: what each unit's Bite gives up
+ *  (Run Through's bite_less). */
+export const techCash = (t: Tech, res: string, n: number, less = 0): number => {
+  const sk = t.c?.skills as any, l = doorOfResource(res); if (!l || !sk) return 1;
+  const b = biteAt(sk, l); return b > 0 ? 1 + Math.max(0, b - less) * cashSum(n, l.cash_step) : 1;
+};
+/** Rules 1.97 item 8342: S(n) rounded down at this door's step, for a cash-out that pays in whole steps and reads no
+ *  Bite (Cleave's foes, Break's and Pin Down's save: the bible's `cash` term alone). */
+export const cashSteps = (res: string, n: number): number => Math.floor(cashSumOf(res, n) + 1e-9);
 /** Momentum a technique gives by its own text: +n. Since the Momentum rework (Leon, 10 Nov 2026) only the plain attack
  * gives Momentum (the engine's +1 for its hit); of the techniques, Parry's Light line and Shield Bash's hit (it pays
  * Guard for it: proposal section 20, item 9) alone still call this. */
@@ -230,12 +244,16 @@ export function loseMomentum(cb: Combat, u: Unit, n: number): number {
 /** Rules 1.60 item 4605 (the beta feeds: Guts): Momentum worn off by a tile walked or a hit taken (physical/rules.ts),
  * divided by the Momentum loss's feed; the part kept is carried (effects/feed.ts feedCarry), so a whole point is kept
  * when it has been earned. A spend (Raise Shield's turn of Momentum into Guard) is not worn off: loseMomentum. */
+// Rules 1.97 item 8344: the door's beta (Guts) wears the chain in whole steps: from its first_hit_free_from the first
+// damaging hit the unit takes each round wears none; from its walk_every_two_from a walk wears a step every two tiles
+// (the half carried to the next walk). Its numbers are the beta row's (skills.json per_point.numbers).
 export function wearMomentum(cb: Combat, u: Unit, n: number, site = 'wear'): number {
   n = wearOf(u, 'momentum', n, { site }, cb); if (n <= 0) return 0; // rules 1.96 item 8327 (S6): the sheet's wear:momentum at this site
-  const kept = feedCarry(u, 'momentum_loss', n - n / feedOf(u, 'momentum_loss'));
-  return loseMomentum(cb, u, n - kept);
+  const beta = doorBeta('momentum'), bn = beta?.per_point?.numbers || {}, pts = beta && !u.companion ? Number((charOfUnit(u)?.skills as any)?.[beta.id] || 0) : 0;
+  if (site === 'hit' && typeof bn.first_hit_free_from === 'number' && pts >= bn.first_hit_free_from && (u as any).hitFreeRound !== cb.round) { (u as any).hitFreeRound = cb.round; return 0; }
+  if (site === 'walk' && typeof bn.walk_every_two_from === 'number' && pts >= bn.walk_every_two_from) n = feedCarry(u, 'momentum_walk', n / 2);
+  return n > 0 ? loseMomentum(cb, u, n) : 0;
 }
-showFeedNumber('momentum_loss', (x) => Math.round(100 / feedOf(x, 'momentum_loss')) / 100);
 /** Is the Guard technique up on this unit (melee/links.ts keeps its state)? A guard keeps Momentum when you are hit. */
 export const guardUp = (u: Unit): boolean => !!u.tech?.guard?.on;
 
@@ -537,6 +555,8 @@ onHook('damage_out', (ctx: any) => {
   if (ctx.blast) return; // a blast's splash is not the strike (step a7: it fires the hook now; a technique's multiplier never reached it)
   const a = cur(ctx.att); if (!a) return;
   if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
+  if (a.o.cash != null && a.o.cash !== 1) ctx.cash = a.o.cash; // rules 1.97 item 8342: the cash-out factor (the Margins add to it)
+  if (a.o.noMargins) ctx.noMargins = true;
   // armour this strike ignores, against the unit really struck (nobody's armour is changed)
   if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + Math.round(a.o.ignoreArmour * scaleOf(ctx.att?.level)); // rules 1.36: armour in HP, × scale at the striker's level
 });
@@ -686,11 +706,15 @@ export function spendRounds(t: Tech, n: number): boolean {
 /** Extra Pressure from a technique (the ordinary +1 for a ranged hit is automatic). Returns what landed. */
 export function addPressure(t: Tech, target: Unit, n: number, why: string, opts: { hidden?: boolean } = {}): number {
   const hidden = opts.hidden ?? (t.holds('silent') && !!t.u.hidden);
-  if (t.preview) { const prior = (t.pv.pressure || []).filter((x) => x.unit === target.id).reduce((m, x) => Math.max(m, x.after), pressureOf(target)), now = prior, cap = pressureCap(target), after = target.side === t.u.side ? now : Math.min(cap, now + n); (t.pv.pressure ||= []).push({ unit: target.id, add: after - now, after, state: pressureState({ ...target, pressure: after } as any) }); return after - now; }
+  if (t.preview) { const prior = (t.pv.pressure || []).filter((x) => x.unit === target.id).reduce((m, x) => Math.max(m, x.after), pressureOf(target)), now = prior, cap = pressureCap(target, t.u), after = target.side === t.u.side ? now : Math.min(cap, now + n); (t.pv.pressure ||= []).push({ unit: target.id, add: after - now, after, state: pressureState({ ...target, pressure: after } as any) }); return after - now; }
   return addPressureTo(t.cb, target, n, t.u, why, { hidden });
 }
 export function lowerPressure(t: Tech, target: Unit, n: number): void { if (!t.preview) lowerPressureOf(t.cb, target, n, t.def.name); }
 /** Takes: was the target Suppressed when the Take began. */
+/** Rules 1.97 item 8342: the pips on a Take's target as the Take began (what it spends and cashes in). */
+export const takePips = (t: Tech): number => Number((t as any)._p0) || 0;
+/** Rules 1.97 items 8342 and 8343: what a Take leaves on its target: the door's beta's keep (Athletics 10: 1 pip). */
+export const takeLeaves = (t: Tech): number => Math.min(t.tgt ? pressureOf(t.tgt) : 0, keepsOf(t.c?.skills as any, 'pressure'));
 export const wasSuppressed = (t: Tech): boolean => !!t.tgt && wasSuppressedAt(t.tgt, (t as any)._p0);
 /** Has an ally of the user hit this target this round (Crossfire). */
 export const hitByAlly = (t: Tech, target: Unit): boolean => Object.entries(((target as any).hitRound || {}) as Record<string, number>).some(([id, r]) => r === t.cb.round && id !== t.u.id && t.cb.units.find((x) => x.id === id)?.side === t.u.side);
@@ -951,9 +975,9 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
   if (def.group !== 'take') for (const a of t.pv.attacks) {
     const v = cb.units.find((x) => x.id === a.target); if (!v || !a.pv.ok || v.side === u.side || !(scratch(t).far || []).includes(v.id) || (t.pv.pressure || []).some((x) => x.unit === v.id) || scratch(t).noPressure) continue;
     if (u.pressedThis?.t === turnStamp(cb) && u.pressedThis.ids.includes(v.id)) continue;
-    const now = pressureOf(v), after = Math.min(pressureCap(v), now + inHand(t, () => hitPressure(cb, u, v)).n); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any), onHit: true });
+    const now = pressureOf(v), after = Math.min(pressureCap(v, u), now + inHand(t, () => hitPressure(cb, u, v)).n); (t.pv.pressure ||= []).push({ unit: v.id, add: after - now, after, state: pressureState({ pressure: after } as any), onHit: true });
   }
-  if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = Math.max(0, now - PHYS_RULES.pressure.take_cost); (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
+  if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = takeLeaves(t); /* rules 1.97 item 8342: a Take spends every pip */ (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
   if (t.pv.ok) follow(t);
   return t.pv;
 }
@@ -1037,7 +1061,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
   noteChain(cb, u, id);
   follow(t); // rules 1.58 (hands 5e): the off hand's follows item strikes once after a main-hand melee technique
-  if (def.group === 'take' && t.tgt) { techState(u, '_take').t = turnStamp(cb); lowerPressureOf(cb, t.tgt, PHYS_RULES.pressure.take_cost, def.name, u); }
+  if (def.group === 'take' && t.tgt) { techState(u, '_take').t = turnStamp(cb); lowerPressureOf(cb, t.tgt, pressureOf(t.tgt) - takeLeaves(t), def.name, u); } // rules 1.97 item 8342: every pip, less the beta's keep
   u.attackedTurn = u.attackedTurn || def.system === 'melee';
   checkOver(cb);
   return null;

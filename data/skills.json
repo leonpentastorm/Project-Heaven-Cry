@@ -104,19 +104,17 @@
       "fork_runs_on": "Guard (your plates)",
       "per_point": {
         "numbers": {
-          "pool": 1,
-          "pool_max": 4,
           "guard_base": 1,
           "guard_per_point": 1,
-          "brace": 2,
           "shield": 1,
-          "two_shields": 2
+          "two_shields": 2,
+          "brace": 2
         },
         "rows": [
           {
             "at": "each",
             "grows": "guard_pool",
-            "text": "+{=per_point.numbers.pool} Guard plate held (max {=per_point.numbers.pool_max})"
+            "text": "Guard plates held: your Reach on the door ladder"
           },
           {
             "at": "at 1",
@@ -493,14 +491,15 @@
       },
       "per_point": {
         "numbers": {
-          "feed": 0.01,
+          "feed": 0.005,
           "elemental_taken": 0.06,
-          "hp_pct": 0.06
+          "hp_pct": 0.06,
+          "feed_flat": 0.02
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Guard soak"
+            "text": "+{=per_point.numbers.feed_flat|pct}% Guard soak, and +{=per_point.numbers.feed|pct}% more for each Durability point"
           },
           {
             "at": "each",
@@ -634,7 +633,10 @@
           "used_to_the_pain": "second_wind",
           "scar_tissue": "numb"
         },
-        "names": { "used_to_the_pain": "Used to the Pain", "scar_tissue": "Scar Tissue" },
+        "names": {
+          "used_to_the_pain": "Used to the Pain",
+          "scar_tissue": "Scar Tissue"
+        },
         "passives": {
           "3": "numb",
           "5": "still_standing"
@@ -1061,28 +1063,33 @@
       "core": "body",
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
-      "feed": {
-        "carrier": "momentum_loss",
-        "line": "{beta} {points}: a hit taken or a tile walked wears off {now} Momentum (what you keep adds up to whole points)",
-        "next": " (next point: {next})",
-        "provisional": true,
-        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
-      },
       "per_point": {
         "numbers": {
-          "feed": 0.01,
-          "save": 1
+          "save": 1,
+          "first_hit_free_from": 4,
+          "walk_every_two_from": 7,
+          "keeps_from": 10,
+          "keeps": 1
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Momentum kept"
+            "text": "+{=per_point.numbers.save} on Body saves"
           },
           {
-            "at": "each",
-            "text": "+{=per_point.numbers.save} on Body saves"
+            "at": "from 4",
+            "text": "From Guts {=per_point.numbers.first_hit_free_from}: the first damaging hit you take each round wears no step of the chain"
+          },
+          {
+            "at": "from 7",
+            "text": "From Guts {=per_point.numbers.walk_every_two_from}: walking wears a step of the chain every two tiles, not every tile"
+          },
+          {
+            "at": "at 10",
+            "text": "At Guts {=per_point.numbers.keeps_from}: a Finisher keeps {=per_point.numbers.keeps} step of the chain"
           }
-        ]
+        ],
+        "source": "rules 1.97 items 8343 and 8344 (the Body doors, step 2b): Guts' whole-number wear rules in place of a share of a step"
       },
       "gates": [],
       "unlocks": {
@@ -1209,7 +1216,9 @@
         "perks": {
           "iron_stomach": "steady"
         },
-        "names": { "iron_stomach": "Iron Stomach" },
+        "names": {
+          "iron_stomach": "Iron Stomach"
+        },
         "passives": {
           "3": "steady",
           "5": "point_man"
@@ -1652,16 +1661,23 @@
         "numbers": {
           "feed": 0.01,
           "defense": 1,
-          "defense_from": 2
+          "defense_from": 1,
+          "feed_flat": 0.02,
+          "keeps_from": 10,
+          "keeps": 1
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Pressure shed · Slide reach"
+            "text": "+{=per_point.numbers.feed_flat|pct}% Pressure shed, and +{=per_point.numbers.feed|pct}% more for each Dexterity point · Slide reach"
           },
           {
             "at": "each",
             "text": "+{=per_point.numbers.defense} Defense from point {=per_point.numbers.defense_from}"
+          },
+          {
+            "at": "at 10",
+            "text": "At Athletics {=per_point.numbers.keeps_from}: a Take leaves {=per_point.numbers.keeps} pip on its foe"
           }
         ]
       },
