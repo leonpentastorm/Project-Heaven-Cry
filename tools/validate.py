@@ -566,7 +566,7 @@ def _layer_outside_prayer(o, where, in_prayer=False):
 for _name, _doc in data.items():
     _layer_outside_prayer(_doc, _name)
 
-# Classes 3.0 step 5, the Chaplain (rules 1.31; chaplain-spec.md section 10): Smite is Rebuke's size; every shield
+# Classes 3.0 step 5, the Chaplain (rules 1.31; chaplain-spec.md section 10): every shield
 # layer a move names is a known one; the Judged row exists; no Virtue base-class move costs MP or Strain.
 _SHIELD_LAYERS = {"ward"}
 conds_ids = ids_of(items("conditions"))
@@ -586,8 +586,6 @@ def _walk_ops(o):
         for v in o.values(): yield from _walk_ops(v)
     elif isinstance(o, list):
         for v in o: yield from _walk_ops(v)
-_rebuke = next((w for w in (data.get("patrons") or {}).get("whispers", []) if w.get("id") == "rebuke"), None)
-_rebuke_n = -next((e.get("value") for e in (_rebuke or {}).get("effects", []) if e.get("op") == "stat_mod" and e.get("stat") == "hp"), 0)
 for c in base:
     if not isinstance(c, dict): continue
     for m in _class_moves(c):
@@ -597,10 +595,7 @@ for c in base:
             if c.get("attribute") == "virtue" and (e.get("resource") in ("mp", "strain") or any(k in ("mp", "strain") for k in (e.get("res") or {}))):
                 errors.append(f"classes:{c.get('id')}.{m.get('id')}: a Virtue class move costs no MP or Strain (rules 1.31)")
     if c.get("id") == "guardian":
-        sm = next((m for m in _class_moves(c) if m.get("id") == "smite"), None)
-        if sm is not None:
-            for k, b in (sm.get("amounts") or {}).items():
-                if b.get("base") != _rebuke_n: errors.append(f"classes:guardian.smite: amounts.{k}.base {b.get('base')} is not Rebuke's {_rebuke_n} (rules 1.31: Smite is Rebuke's size)")
+        # (rules 1.94: Smite's base is a number of its own; the check that it equals Rebuke's, a balance line, is withdrawn)
         if "judged" not in conds_ids: errors.append("conditions: the row 'judged' is missing (rules 1.31: the Chaplain's Smite puts it on)")
 
 # archetypes: creation presets (guidance only)

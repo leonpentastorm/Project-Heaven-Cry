@@ -1600,7 +1600,7 @@
   },
   "rarity": {
     "ladder": "rules 1.91 (items 7905, 7906): the rows are the one grade ladder: `order` (0 to 4), the word (`name`), `sold` (false: no shop and no Forge ever gives it, a Boss reward only) and every number; `arm` multiplies a graded worn piece's armour value only (1 for every grade until stage C fits it, PROVISIONAL). A grade is the instance's (GearState.rarity), never the row's.",
-    "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's +10% was the gun premium the all-in ceiling could not hold: PROVISIONAL, spec item 1701)",
+    "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's old +10% damage is gone: the grade buys accuracy, durability and a mod slot. PROVISIONAL, spec item 1701)",
     "provisional": true,
     "standard": {
       "name": "Standard",
@@ -1658,233 +1658,63 @@
       "arm": 1
     }
   },
-  "balance": {
-    "rules": "rules 1.26 (the re-fit, 12 Nov 2026): the balance contract. docs/design/balance-contract.md explains every number; packages/engine/test/balance-contract.test.ts measures each system and fails when it leaves its band.",
-    "provisional": true,
-    "unit": "percent of what the normal-share plain rifle deals in one 6-AP turn on the simulator's range at the same level; a heal or a shield (rules 1.36): unit_heal",
-    "ratio_allin_to_normal": 1.25,
+  "measure": {
+    "note": "Units for reading a measurement. Not targets: nothing is fitted to them and no test fails on them (Leon, 21 Nov 2026). The measuring tools in packages/engine/test/balance (npm run balance, or their own environment variables) read and report in these units; rules 1.94.",
+    "unit": "percent of what the normal-share plain rifle deals in one 6-AP turn on the simulator's range at the same level; a heal or a shield: unit_heal",
+    "unit_heal": "percent of the reference character's max HP (output.level.reference_hp) restored or shielded by one whole turn spent on the source, all in (rules 1.36)",
     "levels": [
       1,
       5,
       10,
       20
     ],
-    "tolerance": {
-      "mean": 0.12,
-      "level": 0.25,
-      "note": "a system's all-in measure, averaged over the levels, is within mean of its ceiling; no single level more than level off (a system with a ladder of its own, Devotion, has its own low end: level_lo)"
+    "rifle": {
+      "build": "plain_gun",
+      "variant": "normal",
+      "profile": "gun",
+      "pin": 7,
+      "note": "the 100% unit: the plain rifle at a normal share (test/balance/builds.ts plain_gun), its shot read at the gun profile's pin: the profile at Attribute `pin` (7, the creation ceiling of an attribute, where output.profiles.gun equals the weapon profile's flat 1.5), whatever the build's own Agility. A fixed reference, so that a percentage moves only when something it measures moves (rules 1.61 G1: a gun's damage follows its shooter's Agility). Every measure reads it through test/balance/sim.ts atYardPin. The lead's ruling R1, 16 Nov 2026 (spec item 4720)"
     },
-    "ceilings": {
-      "figments": {
-        "allin": 150,
-        "provisional": true,
-        "door_allin": 130,
-        "door_normal": 104,
-        "class_normal": 120,
-        "what": "the Rigger all in with two Figments (rules 1.34): damage through its AP plus the damage enemies spent on its bodies, in rifle-turns (the door all in 130, at a normal share 104; the Rigger at a normal share 120)",
-        "dial": "rules.json output.factors.figment (0.9), then figments.json level.hp"
-      },
-      "plain": {
-        "allin": 125,
-        "what": "the plain rifle in all-in hands (a normal share is 100 by definition)",
-        "dial": "rules.json output.profiles.weapon.k and output.level.deal"
-      },
-      "gun": {
-        "allin": 145,
-        "what": "the best gun, the best way (Masterwork)",
-        "dial": "each weapon's damage in weapons.json (rarity buys accuracy only since rules 1.26; the ceiling is measured at Masterwork)",
-        "at_pin": true,
-        "provisional": true,
-        "note": "rules 1.61 R3 (the lead's ruling, 16 Nov 2026; spec item 4722): the ceiling holds the guns' own numbers, measured with the shooter's gun profile read at the yardstick's pin (balance.yardsticks.rifle: Agility 7, x1.5), as every gun was before rules 1.61 G1. Played as it is, an all-in gunner above Agility 7 deals more on purpose (G1: the reward for the points), at most the gun profile's rise from the pin to the Attribute ceiling of its level (x1.075 at Agility 10): the live row is held under the ceiling's band times that rise. Old expectation: the live row in 145% +-12% (mean), 109 to 181% (a level)."
-      },
-      "melee": {
-        "allin": 165,
-        "what": "the heavy-melee damage dealer (the Bulwark sits lower: its own armour and Guard pay for standing in reach)",
-        "dial": "rules.json output.factors.melee"
-      },
-      "sigil_line": {
-        "allin": [
-          150,
-          200
-        ],
-        "what": "a full Line (4 glyphs) over the turns it takes to draw",
-        "dial": "sigils.json grammar.line_mult"
-      },
-      "outburst_steady": {
-        "allin": 135,
-        "what": "steady play, the early feelings",
-        "dial": "soul_modules.json damage.base"
-      },
-      "outburst_peak": {
-        "allin": 90, "allin_note": "rules 1.81 item 6903 (the 0.32 fit, 20 Nov 2026), PROVISIONAL: ONE Release counted (test/balance/magic-measure.ts peakPattern): the biggest Release takes two turns (Begin and four Pumps, then the Release), so it is that Release over its two turns. Before the fit the row counted a second Release in turn 2 made by Overdraw past the Strain limit (a Mana Short whose Stun falls outside the window): 165 was never met by one Release (0.31.11 measured 105 to 113% at levels 6 to 12, the fit 103 to 113%). Measured with the contract's own run: 61 / 106 / 89 / 92% at levels 1 / 5 / 10 / 20 (mean 87).",
-        "level_lo": 0.62,
-        "level_lo_note": "rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: the biggest all-in Release measured 123% at level 1 after the merge (the old floor 165 x 0.75 = 124); set to what is measured, for the fun-and-balance pass to judge (Leon's ruling of 19 Nov: ceilings are relative)",
-        "level_hi": 1.25,
-        "provisional": true, "fit_note": "rules 1.81 item 6903: level_lo 0.62 (level 1: 61%, the Release still walks or Pumps a turn longer there), level_hi back to 1.25 (level 5: 106%).",
-        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass. Rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: 1.295 (214), the level-5 peak measured 213% after the merge; set to what is measured",
-        "what": "the biggest Release, one turn",
-        "dial": "soul_modules.json damage.base, then cycle.stage_mult"
-      },
-      "chaplain_turn": {
-        "at_pin": true,
-        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Chaplain level 20 158% against its 156% top, from the gun in the turn: G1's own change)",
-        "allin": 125,
-        "provisional": true,
-        "what": "the Chaplain's weapon turn (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon with the AP left, Smite riding the weapon's hit (Leon, 13 Nov 2026: the god in the gun never out-hits a gunner who put everything in the gun)",
-        "dial": "classes.json guardian.smite amounts.smite.base (Rebuke's 20; 15 only if the measured all-in mean passes 140)"
-      },
-      "whisper_turn": {
-        "at_pin": true,
-        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Whisper level 20 120% against its 114% top, from the gun in the turn: G1's own change)",
-        "allin": 80,
-        "level_hi": 1.42,
-        "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.61 the rifle's damage follows the shooter's Agility, and the Faith build's Dexterity and Agility set the shape over the levels, hence the high end)",
-        "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k"
-      },
-      "hymn_turn": {
-        "allin": 150,
-        "level_lo": 0.55,
-        "what": "a turn with a Hymn (Old Overcast); Devotion 3 has Hymn I only, hence the low end at levels 1 to 5",
-        "dial": "patrons.json the Hymns' values; rules.json output.profiles.blessing.k"
-      },
-      "healer_turn": {
-        "allin": 45,
-        "unit": "heal",
-        "what": "rules 1.36: an off-heal's turn, all in, in percent of the reference character's HP: the Outburst's steady Buff heal (Begin, Pumps with Rage and Love, Release); the Sigil MEND line of 3 glyphs sits on the same line (sigil_mend.k). Was 200 Soldier-turns (rules 1.27).",
-        "dial": "soul_modules.json schools.buff.heal on output.profiles.soul_mend (the Sigil: sigils.json mend.heal, output.profiles.sigil_mend.k)",
-        "hymn_heal_cap": 65,
-        "hymn_avg": 45,
-        "whisper": 15,
-        "hymn_note": "a Hymn turn's healing (Warm Hands and Health) at most hymn_heal_cap; averaged over the Hymn's wait about hymn_avg; a Whisper (Health) about whisper"
-      },
-      "shield": {
-        "of_heal": 1.2,
-        "what": "a shield is worth 1.2 times the heal of the same cost (under the shield order, rules 1.36)"
-      },
-      "weapon_art": {
-        "what": "not built: may break the ceiling as a charged ultimate, counted in the build's fight average (steady + 10%)"
-      },
-      "miracle": {
-        "what": "exempt"
-      },
-      "shadow": {
-        "allin": 125,
-        "door_allin": 109,
-        "door_normal": 87,
-        "what": "Shadow (rules 1.32): a three-turn window with one Break, the Operative all in (the class on the ceiling; the door all in 125 / 1.15, the door at a normal share that / 1.25)",
-        "dial": "rules.json shadow.per_point (fitted after the window rows are measured)"
-      },
-      "tending_turn": {
-        "allin": 65,
-        "door_allin": 59,
-        "unit": "heal",
-        "provisional": true,
-        "what": "the Mender's healing turn through Bonds (Triage and two Mends on Bonded allies), all in, in percent of the reference character's HP (rules 1.36: the top heal, Leon); a door user about 59 (rules 1.33 measured it in Soldier-turns: 200)",
-        "dial": "rules.json output.profiles.tend.k"
-      },
-      "mender_offence": {
-        "at_pin": true,
-        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read a mean of 59% against 70% +- 12%, from the gun in the turn: G1's own change)",
-        "played_floor": 52.5,
-        "played_floor_note": "rules 1.61 (item 4966, the last review's finding): the row as played had a ceiling and no floor. Measured 16 Nov 2026 on lane 0.30-fit (balance-contract.test.ts, this build): as played 67 / 57 / 53 / 59 at levels 1 / 5 / 10 / 20 (at the pin 81 / 70 / 62 / 65). The floor is the band's own low edge at one level, allin 70 x (1 - tolerance.level 0.25) = 52.5: the Mender all in never falls under what a single level of its band allows. PROVISIONAL",
-        "allin": 70,
-        "what": "the Mender spending a whole turn on attacks against a Bonded enemy, steady, in percent of a rifle-turn (rules 1.33); the door 61",
-        "dial": "tending.json bond.per_bond"
-      },
-      "mender_window": {
-        "allin": 100,
-        "what": "the Mender's best three turns (strike, heal, strike: the Ledger included), never above a rifle-turn on average (rules 1.33)",
-        "dial": "classes.json bard.ledger numbers.factor"
-      },
-      "shield_order": {
-        "faith": 1.0,
-        "tending_shield": 0.36,
-        "sigil_ward_line": 0.33,
-        "outburst_inverse": 0.33,
-        "top_pct": 70,
-        "provisional": true,
-        "what": "rules 1.36 (Leon: the strongest shield in the game is Faith's): the strongest single use of each source, as a share of Faith's (Sanctuary's pool, about two full assaults: top_pct of the reference HP, all in). Faith, then the Mender's Tending shield, then the Sigil WARD Line and the Outburst's Inverse shield.",
-        "dial": "classes.json guardian sanctuary amounts.sanctuary_cap.base; tending.json tend.shield; sigils.json ward.shield; soul_modules.json inverse.shield"
-      }
+    "soldier_turn": {
+      "1": 18.5,
+      "3": 24.2,
+      "6": 34.1,
+      "9": 54.1,
+      "12": 77.5,
+      "20": 282.2,
+      "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns, in HP in the level scale's units (heal-shield-pass.md 1.1; rules 1.36): the unit a heal, a shield or a denied turn is read in"
     },
-    "yardsticks": {
-      "rifle": {
-        "build": "plain_gun",
-        "variant": "normal",
-        "profile": "gun",
-        "pin": 7,
-        "provisional": true,
-        "note": "the balance yardstick (100%): the plain rifle at a normal share (test/balance/builds.ts plain_gun), its shot read at the gun profile's pin: the profile at Attribute `pin` (7, the creation ceiling, where output.profiles.gun equals the weapon profile's flat 1.5), whatever the build's own Agility. A fixed reference: since rules 1.61 G1 a gun's damage follows its shooter's Agility, and a yardstick that followed its build moved every system's percentage though nothing else changed. Every measure reads it through test/balance/sim.ts atYardPin; the enemy table (rules 1.15: a Soldier is 4 of its hits) is fitted to it. The lead's ruling R1, 16 Nov 2026 (spec item 4720)"
-      },
-      "soldier_turn": {
-        "1": 18.5,
-        "3": 24.2,
-        "6": 34.1,
-        "9": 54.1,
-        "12": 77.5,
-        "20": 282.2,
-        "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns (heal-shield-pass.md 1.1); one Soldier-turn kept off the squad counts as one plain rifle's turn of damage Rules 1.36: in the level scale's units (x scale(level))."
-      },
-      "control": {
-        "denied_turn": 1.0,
-        "ap": 0.167,
-        "elite": 1.4,
-        "boss": 3.0,
-        "boss_never_whole_turn": true,
-        "same_enemy_rounds_apart": 2,
-        "note": "a whole Soldier turn denied is worth one rifle-turn (100%); one AP off it a sixth of that; an Elite x1.4, a Boss x3 and never a whole turn; never the same enemy two rounds running (the Cut Short rule, for everything)"
-      },
-      "area": {
-        "extra_target_share": 0.5,
-        "cluster": {
-          "r1": 2.4,
-          "r2": 2.8,
-          "r3": 2.95,
-          "chain": 2.0
-        },
-        "note": "an area is worth its single-target allowance plus half of it for each extra target it is expected to catch; cluster: the enemies a shape catches when aimed at one of a standard group, measured (refit-measure.ts cluster: levels 1, 6, 12, open ground, rounds 2 on)"
-      },
-      "over_time": {
-        "full_rounds": 2,
-        "long_share": 0.75,
-        "note": "damage over time counts in full for 2 rounds, x0.75 for longer (the target dies or is cleansed)"
-      },
-      "cost": {
-        "none": -0.15,
-        "upkeep": 0,
-        "session_supply": 0.05,
-        "session_supply_credits": 0.1,
-        "setup_turn": 0.1,
-        "rooted": 0.05,
-        "exposure": 0.15,
-        "note": "allowances on a ceiling for what the range leaves out (unified-damage proposal 2.6): no cost at all, a pool that empties over a session, a turn of set-up a target can waste, standing on what you prepared, standing in reach"
-      },
-      "tiers": {
-        "plain": 1.25,
-        "steady": 1.45,
-        "peak": 1.65,
-        "ultimate": 2.5,
-        "note": "the budget rule for one use: allowed = (AP / 6) x tier x (1 + cost allowances) x the area worth"
-      },
-      "full_assault": {
-        "1": 55,
-        "5": 85,
-        "10": 158,
-        "20": 708,
-        "provisional": true,
-        "note": "rules 1.36 (heal-shield-percent-spec.md section 2, Leon: accepted): what the fire doctrine puts on one character in one round of the standard encounter (the Elite focused, three quarters of a Soldier-turn), in HP, x scale"
-      },
-      "heal_floor": {
-        "1": 18,
-        "5": 27,
-        "10": 44,
-        "20": 178,
-        "recruit": 25,
-        "provisional": true,
-        "note": "rules 1.36: floor (a): one 2-AP heal action of the least trained legal healer restores at least one Soldier hit through Class 1 armour (in HP, x scale); the 125-HP level 1 Recruit's quick heal is 25 (the gate: 20%)"
-      }
+    "control": {
+      "denied_turn": 1.0,
+      "ap": 0.167,
+      "elite": 1.4,
+      "boss": 3.0,
+      "boss_never_whole_turn": true,
+      "same_enemy_rounds_apart": 2,
+      "note": "reading a denied turn: a whole Soldier turn denied reads as one rifle-turn (100%); one AP off it a sixth of that; an Elite x1.4, a Boss x3"
     },
-    "unit_heal": "rules 1.36 (heal-shield-percent-spec.md): percent of the reference character's max HP (output.level.reference_hp) restored or shielded by one whole turn spent on the source, all in"
+    "area": {
+      "extra_target_share": 0.5,
+      "cluster": {
+        "r1": 2.4,
+        "r2": 2.8,
+        "r3": 2.95,
+        "chain": 2.0
+      },
+      "note": "reading an area: its single-target reading plus half of it for each extra target it is expected to catch; cluster: the enemies a shape catches when aimed at one of a standard group, measured (refit-measure.ts cluster: levels 1, 6, 12, open ground, rounds 2 on)"
+    },
+    "over_time": {
+      "full_rounds": 2,
+      "long_share": 0.75,
+      "note": "reading damage over time: in full for 2 rounds, x0.75 for longer (the target dies or is cleansed)"
+    },
+    "full_assault": {
+      "1": 55,
+      "5": 85,
+      "10": 158,
+      "20": 708,
+      "note": "what the fire doctrine puts on one character in one round of the standard encounter (the Elite focused, three quarters of a Soldier-turn), in HP, x scale (rules 1.36, heal-shield-percent-spec.md section 2)"
+    }
   },
   "output": {
     "provisional": true,
@@ -2005,7 +1835,7 @@
         "pair": "weapon",
         "shape": "struck",
         "provisional": true,
-        "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k re-pins the all-in build (Attribute 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
+        "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k sets the all-in build (Attribute 7 at creation) at the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
       },
       "gun": {
         "k": 1.275,
@@ -2015,7 +1845,7 @@
         "pair": "weapon",
         "shape": "struck",
         "provisional": true,
-        "note": "rules 1.61 (0.30, G1; Leon 16 Nov 2026: \"add damage per attribute like others, nerf the base dmg, not to a useless degree\"): the profile of a character's gun shot, named by the gun (weapons.json phys.profile: gun); its Attribute is the gun's phys.scales_with (Agility on every gun). +attr a point of that Attribute over 1, no skill slope (Dexterity buys the hit); k re-pins the all-in gunner (Agility 7 at creation, the profile's pin) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5). The lead's ruling R2 (16 Nov 2026: the low end softer): k 1.275 so that Agility 1 deals x0.85 of what it dealt before 1.61 (G1 had k 1.15385, attr 0.05: x0.77), 3 x0.90, 5 x0.95, 7 x1.00, 10 x1.075. Its own dial, apart from the melee profile (not touched). An enemy's gun reads its tier and level, not this. PROVISIONAL (spec items 4700, 4721)"
+        "note": "rules 1.61 (0.30, G1; Leon 16 Nov 2026: \"add damage per attribute like others, nerf the base dmg, not to a useless degree\"): the profile of a character's gun shot, named by the gun (weapons.json phys.profile: gun); its Attribute is the gun's phys.scales_with (Agility on every gun). +attr a point of that Attribute over 1, no skill slope (Dexterity buys the hit); k sets the all-in gunner (Agility 7 at creation, the profile's pin) at the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5). The lead's ruling R2 (16 Nov 2026: the low end softer): k 1.275 so that Agility 1 deals x0.85 of what it dealt before 1.61 (G1 had k 1.15385, attr 0.05: x0.77), 3 x0.90, 5 x0.95, 7 x1.00, 10 x1.075. Its own dial, apart from the melee profile (not touched). An enemy's gun reads its tier and level, not this. PROVISIONAL (spec items 4700, 4721)"
       },
       "sigil": {
         "k": 1.7,
@@ -2122,7 +1952,7 @@
         "level": null,
         "pair": "figment_hp",
         "provisional": true,
-        "note": "rules 1.36: the HP of a Figment, a share of its form's, by its maker's Visualization (k x (1 + skill x points)); its level growth is the enemy table's hp_mult (figments.json level.hp). The dial of the Figments line (balance.ceilings.figments)"
+        "note": "rules 1.36: the HP of a Figment, a share of its form's, by its maker's Visualization (k x (1 + skill x points)); its level growth is the enemy table's hp_mult (figments.json level.hp)"
       },
       "repair": {
         "k": 1.392,
@@ -2136,7 +1966,7 @@
         "heal": false,
     "note": "rules 1.34: a repair (Field Repair, Field Fix, Salvage) of a machine or a Figment. Rules 1.86 item 7403 (engine lane; the lead's ruling): heal false, a repair is not a heal: the one mend path gives it with no receiver healing multiplier, no heal cap and no heal hooks"
       },
-      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k re-pins its system so that the normal share at level 1 is where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956). Rules 1.27 (the heal re-fit, Leon 12 Nov 2026): a healer's turn all in is 2.0 Soldier-turns (was 1.25), so the heal and shield profiles were scaled by 1.6 and trimmed to that ceiling: healing and mend, soul_mend (the Soul shields) and the Sigil boon's sigil_mend (a Sigil boon also multiplies by Healing given, so most of its rise came through healing); blessing_mend is the heal dial of a prayer (Blessing power times blessing_mend.k over blessing.k), capped where a Hymn turn heals 2.5 Soldier-turns at level 1. Each heal and shield profile has a floor: never under that share of a normal share's Stat term (output.floor_reference).",
+      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k keeps its system's normal share at level 1 where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956). Rules 1.27 (the heal re-fit, Leon 12 Nov 2026): a healer's turn all in is 2.0 Soldier-turns (was 1.25), so the heal and shield profiles were scaled by 1.6 and trimmed: healing and mend, soul_mend (the Soul shields) and the Sigil boon's sigil_mend (a Sigil boon also multiplies by Healing given, so most of its rise came through healing); blessing_mend is the heal dial of a prayer (Blessing power times blessing_mend.k over blessing.k), capped where a Hymn turn heals 2.5 Soldier-turns at level 1. Each heal and shield profile has a floor: never under that share of a normal share's Stat term (output.floor_reference).",
       "tend": {
         "k": 3.74,
         "attr": 0.06,
@@ -2155,11 +1985,11 @@
       "note": "Rules 1.27 (the heal re-fit; spec item 1733): a landed heal or shield profile with a floor (output.profiles: healing, mend, sigil_mend, soul_mend, blessing_mend) never has a Stat term under floor x the Stat term of a normal share, which is this many points in each Attribute and Skill of its pair. A damage profile has no floor."
     },
     "factors": {
-      "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes (Leon, 12 Nov 2026: melee's all-in ceiling is 165% of the plain rifle, the gun's 145% plus the price of standing in reach). PROVISIONAL (spec item 1702)",
+      "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes is multiplied by it (Leon, 12 Nov 2026: standing in reach pays). PROVISIONAL (spec item 1702)",
       "melee": 1.35,
       "thrown": 0.7,
       "figment": 0.9,
-      "figment_note": "rules 1.34: every attack made through a Figment deals at most this share of what the same AP of the plain rifle does; its worth over the rifle is its soak (the figments ceiling). PROVISIONAL (spec item 2160)",
+      "figment_note": "rules 1.34: every attack made through a Figment is multiplied by it; a Figment's other worth is the hits it soaks. PROVISIONAL (spec item 2160)",
       "thrown_note": "thrown: every grenade, thrown or placed charge a character sets off (frag, incendiary, satchel): on the measured cluster an area of radius 2 catches 2.8 enemies, and an area is allowed its single-target worth plus half for each extra target; a frag at 40 was 1.5 times that (spec item 1710). PROVISIONAL"
     },
     "pairs": {

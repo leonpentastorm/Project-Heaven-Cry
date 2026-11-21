@@ -9,7 +9,7 @@
     "counts_as_skill_points": false,
     "note": "Trait bonuses add to rolls only (the one exception is the Oil traits' Paper, which also takes the derived numbers its card lists); they never unlock perks, skill unlocks or classes.",
     "budget_sp_net": 3,
-    "budget_note": "Design budget: upside minus downside is about +3 SP; +1 on a roll costs 2 SP. Per-trait prices are not recorded in the source docs, so cost is null.",
+    "budget_note": "The 2020 design's rule of thumb for a trait (upside minus downside about +3 SP; +1 on a roll about 2 SP): a feel, not a price; nothing checks a trait against it. Per-trait prices are not recorded in the source docs, so cost is null.",
     "bond_traits_need_consent": true,
     "music_shared": "The three music traits share these rules. You start with a Musek Blestor, and you pick a real song as your character's Favourite Song. Starting the song costs 2 AP; it also starts on its own when you kill, revive an ally, or land a big heal or shield. While it plays, it replaces the area music or the fight music. The bonus lasts until 2 area changes have passed without the song, and the penalty starts after 4."
   },

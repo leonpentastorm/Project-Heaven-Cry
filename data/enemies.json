@@ -188,7 +188,7 @@
   ],
   "levels": {
     "provisional": true,
-    "note": "Rules 1.15 (balance pass, step 1). An enemy's numbers are its tier's row in `items` (the level 1 numbers) raised by its level's row here: HP = hp x hp_mult and armour = armour x armour_mult (both rounded), Defense = defense + defense_plus, attack bonus = attack_bonus + attack_plus, damage dealt = the weapon's (or spell's) damage x the tier's `damage` x damage_mult. Companions use the same rows at their owner's level. Fitted with the fight simulator (docs/design/handoffs/balance-sim-step1.md): HP grows a little faster than armour, so a Soldier takes 3.5 of the plain rifleman's hits at level 1 and just under 4 from level 12. The working is in the spec (Rules revision 1.15).",
+    "note": "Rules 1.15 (balance pass, step 1). An enemy's numbers are its tier's row in `items` (the level 1 numbers) raised by its level's row here: HP = hp x hp_mult and armour = armour x armour_mult (both rounded), Defense = defense + defense_plus, attack bonus = attack_bonus + attack_plus, damage dealt = the weapon's (or spell's) damage x the tier's `damage` x damage_mult. Companions use the same rows at their owner's level. Measured with the fight simulator (docs/design/handoffs/balance-sim-step1.md): HP grows a little faster than armour; a Soldier takes about 3.5 of the plain rifleman's hits at level 1 and just under 4 from level 12. The working is in the spec (Rules revision 1.15).",
     "min": 1,
     "max": 20,
     "fight_level": "the average level of the characters in the fight, rounded down",
