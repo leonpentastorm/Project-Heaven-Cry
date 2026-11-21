@@ -90,3 +90,28 @@ The fourth pass passed the checker (189 PASS) by **cutting rewards to stay under
 54. **Also to close before the build** (the final critic's blocking findings): a grade ADDS mod slots to the row's own (Standard and Fine keep the row's slots; no fitted mod is ever lost on load); the Break reads the weapon actually held (its largest hit is reported with the heaviest legal weapon); a chosen feeling poured twice is counted; the checker's fight test includes Syphon; the stale "+20%" texts agree with the JSON.
 
 **The bible is NOT READY** until 51 to 54 are applied and a critic agrees. Nothing is built from the trimmed numbers.
+
+## I. The doors' payoffs come from effort (Leon, 21 Nov 2026, after the effort ledger)
+
+The Bites in the bible JSON were set so each door's biggest hit landed under one shared number. **They are withdrawn.** Leon: "balance the number with reward and effort in mind". The ledger (`10-effort-ledger.md`) counts what each door costs to use. The rule: a cash-out pays back the attacks given up, the resources burned and the turns the counter had to survive the enemy, with interest for the risk. No door is compared with a total or made equal to another. Leon's rulings on the result:
+
+55. **Outbursts are the most consistent magic.** The choice is how to spend a turn's AP: one spell, several, or a spell and something else. Balanced as steady, "but not to a degree where the number is underwhelming".
+56. **Figments are already consistent** (placed at 7 to 8 tiles, accurate, attacking on their own with no AP spent walking): they do not also get a large cash-out. The Curtain spends the Figments it uses (they are gone and their charge with them), and is modest.
+57. **Melee and guns get Weapon Arts later:** Momentum, Pressure and Guard stand at the ledger's sizes.
+58. **Sigils pay the most, with a top.** A caster who only repeats a two-glyph Line every turn sits a little UNDER an Outburst caster of the same skill; only a creative Line that gives up everything else for power reaches the top, about 11 plain attacks' worth at Brain Power 10.
+
+**The worth of a full cash-out, in the character's own plain attacks (first numbers; each door's Bite at its first and last Reach step is derived from these two anchors, and the steps between follow the compounding):**
+
+| Door | At skill 1 | At skill 10 | Shape |
+| --- | --- | --- | --- |
+| Sigils | a two-glyph Line: a little under an Outburst turn | about 11 for the all-in Line | the biggest single thing; a plain two-glyph Line every turn stays under Outbursts |
+| Shadow | 3 | about 9 | nothing dealt while building, then one hit |
+| Prayer (the Hymn) | 2 | about 7 | once a fight, safe |
+| Momentum | 3 | about 7 | once a fight, three clean turns in melee |
+| Outbursts | 2.5 a turn | about 5 a turn | every turn, steady, never underwhelming |
+| Pressure | 2 | about 5 | laid by shots fired anyway; its reward is denying turns |
+| Bonds | 2 | about 5 | every turn |
+| Figments (the Curtain) | 2 | about 5 | spends the board; the Figments' own attacks are the door's steady reward |
+| Guard (Slam) | 2 | about 3 | every turn; the wall's reward is the soak |
+
+Unanswered and left as the game has them today: a solo shooter's pips shed each turn; Guard's plates fill in one action. The "felt" lines that named a digit count are rewritten to say what the player gets.
