@@ -115,7 +115,7 @@ describe('whole-game replays (enemy AI on) play exactly as recorded', () => {
     // If 1 fails, a preview WROTE a rule's state: a bug in the preview. If 2 fails, what was previewed changed what
     // happened: a bug in the item whose bag it is (the message names the first mark that differs).
     let reads = 0, bags = 0, moved = 0;
-    for (const name of ['cover-4v7-casters', 'proving-doors-hiding-watches', 'proving-waves']) { // rules 1.96: Margins shorten the fights; a third game keeps the reads past 100
+    for (const name of ['cover-4v7-casters', 'proving-doors-hiding-watches', 'proving-waves', 'open-4v7-casters']) { // rules 1.96: Margins shorten the fights; a third game keeps the reads past 100. Rules 1.100: the Line on its cash-out ends the casters' fights sooner; a fourth game keeps them past 100
       const s = SCENARIOS.find((x) => x.name === name)!; if (!got[name]) { const r0 = s.run(); got[name] = r0.done(); last[name] = r0.g; }
       const plain = got[name], plainG = last[name];
       const checked = s.run([], 'check'); expect(checked.errors, name).toEqual([]); expect(checked.done(), name + ': checking the reads changed the game').toEqual(plain);
