@@ -1,0 +1,3762 @@
+{
+ "_meta": {
+  "file": "gear_perks",
+  "owner": "docs/design/growth/07-gear-perks.md",
+  "status": "PROVISIONAL: every number is chosen for what a player feels; nothing is fitted to a percentage, a line or a ceiling. Facts about today carry file:line (data_line, today).",
+  "rulings": "00-rulings.md A7 to A10, C21, D25, D26, F29, F30, F32, F35, F39",
+  "shape": "tools/balance/bible/SCHEMA.md section 4 (with the extensions it names: scope plain, boons, signature_piece, repick, feeds verb and taken)"
+ },
+ "rules": {
+  "restep": {
+   "tier_i": 0.15,
+   "tier_ii": 0.3,
+   "roll_i": 2,
+   "roll_ii": 3,
+   "roll_wide": 4,
+   "why": "a conditional damage or defence perk is +15% at tier I and +30% at tier II while its condition holds: more than a sixth is seen on the next hit. A d20 term under +2 is a twentieth and goes to +2 (I) and +3 (II); the squad's one ambush roll a fight goes to +4 at II"
+  },
+  "felt_bar": "a per-point line is judged by its sum on the sheet (Athletics 3 is +3 Defense), never one point alone (critic-player-2 14); a perk is judged alone",
+  "own_door": "a sum term counts on a door's cash-out only when its item is the door's own: a perk of one of the door's three skills (acquired or Mastered), an achieved perk one of whose skills is the door's and whose text names the door's output, the door's forks and class moves (ruling 30). Everything else (traits, boons, mods, signatures, properties, achieved and ultimate perks of no door) counts on plain hits only: its term says scope plain and the profiles it reaches (hits)",
+  "one_mark": "a foe carries one mark at a time (@scale.stack.scope.foe_mark); a new mark replaces the old (a condition slot \"mark\"); a damage mark is worth the mark share to the whole squad and reaches every cash-out; a to-hit mark (Footnote, Fed) fills the same slot",
+  "not_marks": "Read (information) and the Chaplain's judged (where interventions land) are not marks",
+  "mp_restate": 0.5,
+  "mp_restate_why": "a perk's MP price is today's x this, then x mp(L) on the mp cost rule (@scale.costs.rules.mp): the pool is smaller than today's, and a price is a choice at every level",
+  "no_perk_cut": "no perk above the step is cut (Righteous keeps its numbers): a reward is not taken back; the marks are the one number that falls (Judgement Day and True Name), and their holders get the re-pick",
+  "oil_hp_share": -0.06,
+  "oil_why": "a Pain Threshold point's share (@scale.hp.pt_pct), negative"
+ },
+ "grades": "@scale.grades",
+ "grade_rows": {
+  "about": "one copy of the grade: each rules.json rarity row (:1605-1659) gains effects (roll_mod to_hit with_this = acc; damage_mult dealing with_this = dmg; mend_mult heal and shield with_this = dmg), carried by the instance through the one carried-modifier list (effects/collect.ts:220). combat.ts:580, :585 and :1536 stop reading acc and dmg (the second copy goes); armOf (character.ts:224) keeps arm",
+  "off_hand": "with_this already means that hand's weapon, or the door's focus: the off hand gets its grade, and every focus its door's output (today a graded Evoker, Emanator, Attuner or Visualizer gets durability, price and marks only)",
+  "mod_slots": "@scale.grades.masterwork.mod_slots",
+  "slotless_default": {
+   "slot": "grip",
+   "data_key": "rules.json rarity.masterwork.default_slot",
+   "why": "every hand-held thing has a grip, so the Masterwork reward is never empty (critic-consistency-2 6.3: a data default, not the word in code)"
+  },
+  "durability_price_marks": "as today (rules.json rarity dur, price, marks); one price for a grade step is pacing's (@pacing.credits)",
+  "props_list": "GearState.prop becomes props (a list; S15): a Celestial holds two; prop becomes props: [prop] on load",
+  "celestial_kept": "cappedRarity (run/rewards.ts:160-164) stops turning a Celestial into a Relic where the find's list allows Celestial"
+ },
+ "grades_by_map": {
+  "values": "@pacing.grades_by_map",
+  "vault_rule": "ruling 35: the vault gives the map's own best find grade, never the next map's; so no Relic in a vault on maps 3 and 4, and no Celestial before the map pacing names",
+  "data_form": "survival.json rewards.ceiling (:147) becomes the finds list by map; new rewards.shelf (never Celestial) and vault.grades (:580, in place of grade_up and grade_max); grade_up.relic_from_stage (:195) goes, the Forge's Relic step reads the shelf; one reader stageCeiling(stage, purpose) for finds, shelf, vault; tools/validate.py:2960 allows Celestial in finds and vault, refuses it on the shelf",
+  "boss_pick": "only a rarity row with a Celestial weight reaches the Celestial entry, and only the Boss's has one (its weights are pacing's): a Celestial is never an ordinary fight's pick"
+ },
+ "boon_room": {
+  "cap": {
+   "data": "survival.json:boon_cap.cap"
+  },
+  "properties_take_room": false,
+  "data_form": "runWorth (run/power.ts:47) stops counting gearProps (ruling 9); the cap itself is world's"
+ },
+ "properties": {
+  "prop.keen": {
+   "grade": "relic",
+   "text": "every round it sends lands harder (kept)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "gun",
+     "bow"
+    ],
+    "value": {
+     "data": "survival.json:relic_props[prop.keen].effects[0].value",
+     "plus": -1
+    },
+    "group": "property:damage"
+   },
+   "why": "today's multiplier, read as its share in the one sum (ruling 8)"
+  },
+  "prop.biting": {
+   "grade": "relic",
+   "text": "every blow bites deeper (kept)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee"
+    ],
+    "value": {
+     "data": "survival.json:relic_props[prop.biting].effects[0].value",
+     "plus": -1
+    },
+    "group": "property:damage"
+   },
+   "why": "today's multiplier, read as its share in the one sum (ruling 8)"
+  },
+  "prop.true": {
+   "grade": "relic",
+   "text": "the first attack a turn with it is +2 to hit (kept)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "momentum",
+      "value": {
+       "data": "survival.json:relic_props[prop.true].effects[0].value"
+      },
+      "group": "property_to_hit:momentum"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "guard",
+      "value": {
+       "data": "survival.json:relic_props[prop.true].effects[0].value"
+      },
+      "group": "property_to_hit:guard"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "pressure",
+      "value": {
+       "data": "survival.json:relic_props[prop.true].effects[0].value"
+      },
+      "group": "property_to_hit:pressure"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "shadow",
+      "value": {
+       "data": "survival.json:relic_props[prop.true].effects[0].value"
+      },
+      "group": "property_to_hit:shadow"
+     }
+    }
+   ]
+  },
+  "prop.deep": {
+   "grade": "relic",
+   "text": "a focus property: +1 to hit with it (kept)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "sigils",
+      "value": {
+       "data": "survival.json:relic_props[prop.deep].effects[0].value"
+      },
+      "group": "property_to_hit:sigils"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "figments",
+      "value": {
+       "data": "survival.json:relic_props[prop.deep].effects[0].value"
+      },
+      "group": "property_to_hit:figments"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "bonds",
+      "value": {
+       "data": "survival.json:relic_props[prop.deep].effects[0].value"
+      },
+      "group": "property_to_hit:bonds"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "outbursts",
+      "value": {
+       "data": "survival.json:relic_props[prop.deep].effects[0].value"
+      },
+      "group": "property_to_hit:outbursts"
+     }
+    }
+   ]
+  },
+  "prop.quick": {
+   "grade": "relic",
+   "text": "reloading it costs 1 AP less (kept)"
+  },
+  "prop.balanced": {
+   "grade": "relic",
+   "text": "kept"
+  },
+  "prop.gentle": {
+   "grade": "relic",
+   "text": "its heals and shields are bigger (kept; a mend share)"
+  },
+  "prop.padded": {
+   "grade": "relic",
+   "new": true,
+   "fits": [
+    "armour"
+   ],
+   "text": "melee blows on you -15% (damage_mult taking; the defender's side of the sum)",
+   "numbers": {
+    "taken": -0.15
+   }
+  },
+  "prop.sealed": {
+   "grade": "relic",
+   "new": true,
+   "fits": [
+    "armour"
+   ],
+   "text": "elemental damage on you -15%, inside elemental_taken_cap (rules.json:857, kept)",
+   "numbers": {
+    "taken": -0.15
+   }
+  },
+  "prop.lightened": {
+   "grade": "relic",
+   "new": true,
+   "fits": [
+    "armour"
+   ],
+   "text": "this piece's Heavy word costs no Movement (rules.json weapons_rules.heavy)"
+  }
+ },
+ "mods": {
+  "mod_red_dot": {
+   "data_line": "items.json:283",
+   "today": "no -2 in the first band past effective range",
+   "gives": "Shots, Snap Shots and Bursts +1 to hit; no penalty in the first band past effective range",
+   "costs": "Aimed Shots -1 (it is not a scope)",
+   "data_form": "bands 1, bands_modes [shot, burst, auto]; roll_mod to_hit with_this mode [shot, burst, auto] +1; roll_mod mode [aimed] -1",
+   "grade_from": "masterwork",
+   "slot": "optic",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "pressure",
+      "value": 1,
+      "group": "mod:optic:pressure"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "shadow",
+      "value": 1,
+      "group": "mod:optic:shadow"
+     }
+    }
+   ],
+   "numbers": {
+    "to_hit": 1,
+    "aimed": -1
+   },
+   "verdict": "restate"
+  },
+  "mod_scope": {
+   "data_line": "items.json:304",
+   "today": "Aimed +1, one more band",
+   "gives": "Aimed Shots +2 to hit and two more bands",
+   "costs": "Shots and Bursts -1 (tunnel)",
+   "data_form": "bands 2, bands_modes [aimed]; roll_mod aimed +2; roll_mod [shot, burst, auto] -1",
+   "grade_from": "masterwork",
+   "slot": "optic",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "pressure",
+      "value": 2,
+      "group": "mod:optic:pressure"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "shadow",
+      "value": 2,
+      "group": "mod:optic:shadow"
+     }
+    }
+   ],
+   "numbers": {
+    "aimed": 2,
+    "bands": 2,
+    "others": -1
+   },
+   "verdict": "restate"
+  },
+  "mod_suppressor": {
+   "data_line": "items.json:336",
+   "today": "silent; -2 damage (flat)",
+   "gives": "silent; a kill with it while you are Hidden gives 1 Shadow",
+   "costs": "its shots -15%",
+   "data_form": "silent 1; damage_mult dealing with_this melee false 0.85; resource shadow +1 on kill with_this self_has hidden",
+   "grade_from": "masterwork",
+   "slot": "muzzle",
+   "numbers": {
+    "shots": -0.15,
+    "shadow": 1
+   },
+   "verdict": "restate"
+  },
+  "mod_compensator": {
+   "data_line": "items.json:363",
+   "today": "Recoil -1 a shot",
+   "gives": "no Recoil from earlier shots this turn",
+   "costs": "the first shot of each turn -1 to hit (heavy muzzle)",
+   "data_form": "recoil -1; roll_mod to_hit with_this -1, limit per_turn 1",
+   "grade_from": "masterwork",
+   "slot": "muzzle",
+   "numbers": {
+    "first_shot": -1
+   },
+   "verdict": "restate"
+  },
+  "mod_extended_mag": {
+   "data_line": "items.json:381",
+   "today": "+50% capacity",
+   "gives": "+50% rounds",
+   "costs": "reloading it costs 1 AP more",
+   "data_form": "magazine_pct 50; cost_mod cost action reload with_this +1",
+   "grade_from": "masterwork",
+   "slot": "magazine",
+   "numbers": {
+    "reload_ap": 1
+   },
+   "verdict": "restate"
+  },
+  "mod_quick_release": {
+   "data_line": "items.json:399",
+   "today": "reload costs 1 AP",
+   "gives": "reload costs 1 AP",
+   "costs": "25% fewer rounds",
+   "data_form": "cost_mod set 1 (as today); magazine_pct -25",
+   "grade_from": "masterwork",
+   "slot": "magazine",
+   "numbers": {
+    "magazine_pct": -25
+   },
+   "verdict": "restate"
+  },
+  "mod_foregrip": {
+   "data_line": "items.json:428",
+   "today": "Bursts and auto +1",
+   "gives": "Bursts and full auto +2 to hit",
+   "costs": "drawing or swapping to this gun costs 1 AP more",
+   "data_form": "roll_mod [burst, auto] +2; cost_mod on swap with_this +1",
+   "grade_from": "masterwork",
+   "slot": "underbarrel",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "pressure",
+      "value": 2,
+      "group": "mod:underbarrel:pressure"
+     }
+    }
+   ],
+   "numbers": {
+    "to_hit": 2,
+    "swap_ap": 1
+   },
+   "verdict": "restate"
+  },
+  "mod_bayonet": {
+   "data_line": "items.json:457",
+   "today": "the gun's blow deals 15",
+   "gives": "the gun's blow on the factor, and it builds Momentum as any melee hit",
+   "costs": "Aimed Shots -1",
+   "data_form": "melee_damage (the factor walk); roll_mod aimed -1",
+   "grade_from": "masterwork",
+   "slot": "underbarrel",
+   "numbers": {
+    "melee_damage": {
+     "data": "items.json:items[mod_bayonet].melee_damage",
+     "x": "@scale.factor.value"
+    },
+    "aimed": -1
+   },
+   "verdict": "restate"
+  },
+  "mod_underslung": {
+   "data_line": "items.json:475",
+   "today": "holds a 40 mm round; not built",
+   "gives": "once a fight, 2 AP: a grenade at a tile within 8, a launcher round's blast, radius 1",
+   "costs": "1.5 kg, the underbarrel slot, once a fight",
+   "data_form": "grant_action (effects/actions.ts): ap 2, uses per_combat 1, reach tile 8 sight; deal an amounts block of the launcher's blast (the factor), targets of tile shape burst within 1. No new op",
+   "grade_from": "masterwork",
+   "slot": "underbarrel",
+   "numbers": {
+    "ap": 2,
+    "tiles": 8,
+    "radius": 1
+   },
+   "built_from_existing": true,
+   "verdict": "restate"
+  },
+  "mod_serrated": {
+   "data_line": "items.json:493",
+   "today": "a critical blow causes Bleeding",
+   "gives": "a critical blow (a natural 20 or the weapon's critical range) causes Bleeding, Body save skipped",
+   "costs": "blows -10%",
+   "data_form": "condition on hit crit true (as today); damage_mult dealing with_this melee 0.9",
+   "grade_from": "masterwork",
+   "slot": "edge",
+   "numbers": {
+    "blows": -0.1
+   },
+   "verdict": "restate"
+  },
+  "mod_weighted": {
+   "data_line": "items.json:524",
+   "today": "+3 damage (flat)",
+   "gives": "blows +15%",
+   "costs": "blows -1 to hit",
+   "data_form": "damage_mult with_this melee 1.15; roll_mod to_hit with_this melee -1",
+   "grade_from": "masterwork",
+   "slot": "edge",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee"
+    ],
+    "value": "@gear_perks.rules.restep.tier_i",
+    "group": "mod:edge"
+   },
+   "numbers": {
+    "to_hit": -1
+   },
+   "verdict": "restate"
+  },
+  "mod_wrapped_grip": {
+   "data_line": "items.json:550",
+   "today": "cannot be Disarmed; not built (narrator)",
+   "gives": "you cannot be Disarmed while you hold it",
+   "costs": "swapping away from it costs 1 AP more",
+   "data_form": "cancel on cond_incoming target self cond disarmed with_this; cost_mod on swap with_this +1; adjudication engine",
+   "grade_from": "masterwork",
+   "slot": "grip",
+   "numbers": {
+    "swap_ap": 1
+   },
+   "built_from_existing": true,
+   "verdict": "restate"
+  },
+  "mod_sigil_magazine": {
+   "data_line": "items.json:568",
+   "today": "holds a stored spell; not built",
+   "gives": "the first glyph you draw each turn costs 0.5 AP less (the spellslinger's pistol is an Evoker)",
+   "costs": "25% fewer rounds",
+   "data_form": "cost_mod on glyph_cost with_this -0.5, limit per_turn 1; magazine_pct -25",
+   "grade_from": "masterwork",
+   "slot": "inscription",
+   "numbers": {
+    "glyph_ap": -0.5,
+    "magazine_pct": -25
+   },
+   "built_from_existing": true,
+   "verdict": "restate"
+  },
+  "ench_fire": {
+   "data_line": "items.json:586",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "ench_storm": {
+   "data_line": "items.json:606",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "ench_frost": {
+   "data_line": "items.json:626",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "ench_stone": {
+   "data_line": "items.json:646",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "ench_gale": {
+   "data_line": "items.json:666",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "ench_acid": {
+   "data_line": "items.json:686",
+   "today": "a tone's rider; arrows x0.9",
+   "gives": "kept: already a trade",
+   "costs": "kept",
+   "data_form": "unchanged",
+   "grade_from": "masterwork",
+   "slot": "enchantment",
+   "verdict": "keep"
+  },
+  "mod_ward_light": {
+   "data_line": "items.json:1749",
+   "today": "-3 damage taken from ranged and elemental hits (flat; a ward shield's variant mod, weapons.json:5376)",
+   "gives": "ranged and elemental hits on you -10%",
+   "costs": "none (the shield's hand)",
+   "data_form": "damage_mult taking with_this by_hit 0.9 in place of damage_mod -3",
+   "grade_from": "masterwork",
+   "slot": "variant",
+   "numbers": {
+    "taken": -0.1
+   },
+   "verdict": "restate",
+   "why": "a flat -3 is nothing at level 20 (a hit is four digits); a ward stops a tenth, a sixth, a fifth of every shot at every level"
+  },
+  "mod_ward_standard": {
+   "data_line": "items.json:1771",
+   "today": "-5 (flat; weapons.json:5430)",
+   "gives": "ranged and elemental hits on you -15%",
+   "costs": "none",
+   "data_form": "damage_mult taking 0.85 in place of damage_mod -5",
+   "grade_from": "masterwork",
+   "slot": "variant",
+   "numbers": {
+    "taken": -0.15
+   },
+   "verdict": "restate"
+  },
+  "mod_ward_heavy": {
+   "data_line": "items.json:1793",
+   "today": "-7 (flat; weapons.json:5487)",
+   "gives": "ranged and elemental hits on you -20%",
+   "costs": "none",
+   "data_form": "damage_mult taking 0.8 in place of damage_mod -7",
+   "grade_from": "masterwork",
+   "slot": "variant",
+   "numbers": {
+    "taken": -0.2
+   },
+   "verdict": "restate"
+  }
+ },
+ "fit_fee": {
+  "data": "survival.json:forge.fit.rate"
+ },
+ "mods_rule": "a mod's damage is a plain-hit term (scope plain): it makes the shots and blows that build the counter harder, never a cash-out (ruling 30); every flat damage number on a mod goes; the Forge's fit fee is unchanged (fit_fee)",
+ "signature_piece": {
+  "about": "the one general piece (PROVISIONAL): a family row in data/families.json names its signature once (\"signature\": \"<items.json modifier row>\"); every weapon row of that family carries it while in a hand, through the one carried-modifier list (effects/collect.ts:220), beside variant_mods, the fitted mods and the grade row; gearNum (character.ts:1738-1742) reads the same carried list, so a signature may carry gear fields with their _modes. The per-row variant_mods entries for Arsenal and Smetanita move up to their families (one copy).",
+  "today_readers": "effects/collect.ts:217-220 (baked), effects/hooks.ts:201, effects/triggers.ts:277, gearpreview.ts:156 and :340; gearNum does not read them (why Chezknov shipped plain)",
+  "scope": "a signature's damage is gear: a plain-hit term, nothing on a cash-out; it may feed a door's counter (resource op) and read one (self_res, target_res, self_has_res)",
+  "source": "rules 1.92 items 8021, 8024, 8030 to 8035 (PHC-Core-Rules-v1.0.md:14560-14636); rules 1.93 item 8104 (:14699)"
+ },
+ "signatures": {
+  "revolvers": {
+   "maker": "the revolver makers (G2)",
+   "door": "pressure",
+   "behaviour": "a 19 is a critical too (two Margins); a critical lays 1 Pressure",
+   "feeds": "margins",
+   "data_form": "sig_revolver: crit_range 1; resource pressure +1 on hit with_this crit hostile, target",
+   "carried": "needs S13 crit_range",
+   "data": "families.json items[revolvers].signature (new key)",
+   "numbers": {
+    "crit_range": 1,
+    "pressure": 1
+   }
+  },
+  "legion_automatics": {
+   "maker": "the Legion (G4)",
+   "door": "pressure",
+   "behaviour": "shoot then move: after a shot, a move of 2 tiles or less costs 1 AP less, once a turn",
+   "feeds": "cost",
+   "data_form": "sig_legion: mark fired on attack_roll with_this own_turn; cost_mod action move flag fired path_tiles_at_most 2 -1 min 0 per_turn 1; clear on turn_end (fire_and_move's shape)",
+   "carried": "yes",
+   "data": "families.json items[legion_automatics].signature (new key)",
+   "numbers": {
+    "tiles": 2,
+    "ap": -1
+   }
+  },
+  "brigade_auto_shotguns": {
+   "maker": "Brigade (G11)",
+   "door": "pressure",
+   "behaviour": "the burst's spray presses its neighbours: +1 Pressure on a foe next to the target, once a turn each",
+   "feeds": "verb",
+   "data_form": "sig_brigade: resource pressure +1 on hit with_this mode burst auto, targets side foe within 1 aura, limit per_turn 1 each target",
+   "carried": "yes",
+   "data": "families.json items[brigade_auto_shotguns].signature (new key)",
+   "numbers": {
+    "pressure": 1
+   }
+  },
+  "adcorp": {
+   "maker": "ADCorp (G13)",
+   "behaviour": "the Forge fits, swaps and takes off its mods for half the fee",
+   "feeds": "cost",
+   "data_form": "sig_adcorp: forge_fit_rate 0.5 (no effects)",
+   "carried": "needs the extension forge_fit_rate",
+   "data": "families.json items[adcorp].signature (new key)",
+   "numbers": {
+    "forge_fit_rate": 0.5
+   }
+  },
+  "chezknov_works": {
+   "maker": "Chezknov (G14)",
+   "behaviour": "less Recoil on Bursts: the Burst's second roll keeps its aim",
+   "feeds": "to_hit",
+   "data_form": "sig_chezknov: recoil -1, recoil_modes [burst, auto]",
+   "carried": "yes, once gearNum reads the carried list (part of the piece)",
+   "data": "families.json items[chezknov_works].signature (new key)",
+   "numbers": {
+    "recoil": -1
+   }
+  },
+  "flamers": {
+   "maker": "the flamer makers (H3)",
+   "behaviour": "burning ground: a hit leaves the tile burning 2 rounds; a foe starting its turn there Burns",
+   "feeds": "verb",
+   "data_form": "sig_flamer: zone on hit with_this kind burning_ground within 0 rounds 2; condition burning on turn_start actor foe actor_in_zone (Hallow's pattern); one data row: zone kind burning_ground",
+   "carried": "yes, with one data row",
+   "data": "families.json items[flamers].signature (new key)",
+   "numbers": {
+    "rounds": 2
+   }
+  },
+  "rotary_and_belt_fed": {
+   "maker": "the rotary makers (H4)",
+   "behaviour": "Spin Up: keep firing and the next turn's Burst or auto costs 1 AP less; stop and it spools down",
+   "feeds": "cost",
+   "data_form": "sig_spin: mark fired on acted with_this; turn_end mark spun flag fired, clear spun no_flag fired, clear fired; cost_mod attack with_this mode auto burst flag spun -1",
+   "carried": "yes",
+   "data": "families.json items[rotary_and_belt_fed].signature (new key)",
+   "numbers": {
+    "ap": -1
+   }
+  },
+  "anti_materiel": {
+   "maker": "the anti-materiel makers (H5)",
+   "behaviour": "the line hit: half the hit goes on to the units on the line past the target, within 3",
+   "feeds": "verb",
+   "data_form": "sig_through: deal on hit with_this an amounts block kind damage per event:amount 0.5 armour full, targets of self shape line past true within 3",
+   "carried": "needs S14 targets.past",
+   "data": "families.json items[anti_materiel].signature (new key)",
+   "numbers": {
+    "share": 0.5,
+    "within": 3
+   }
+  },
+  "thrown": {
+   "maker": "the thrown makers (H8)",
+   "behaviour": "throw one, the second this turn costs 1 AP less (never under 1)",
+   "feeds": "cost",
+   "data_form": "sig_thrown: mark threw on hit with_this mode thrown; cost_mod throw flag threw -1 min 1 per_turn 1; clear on turn_end",
+   "carried": "yes",
+   "data": "families.json items[thrown].signature (new key)",
+   "numbers": {
+    "ap": -1
+   }
+  },
+  "power_gauntlets": {
+   "maker": "the door knocker (hellraiser_door_knocker)",
+   "door": "momentum",
+   "behaviour": "its push leaves the row's grant for its own modifier row, freeing the grant for Door Key",
+   "feeds": "verb",
+   "data_form": "variant_mods gains mod_knocker: displace on hit with_this hostile tiles (today's count); the row's grants becomes cover_damage_mult (a share)",
+   "carried": "yes, by a data move",
+   "data": "families.json items[power_gauntlets].signature (new key)",
+   "numbers": {
+    "push": {
+     "data": "weapons.json:items[hellraiser_door_knocker].grants.effect.value"
+    }
+   }
+  },
+  "rocket_tubes": {
+   "maker": "the throwaway tube (legion_throwaway_tube)",
+   "behaviour": "single use: once a fight, back after the fight",
+   "feeds": "verb",
+   "data_form": "mod_throwaway: mark spent on acted with_this; cancel on attack with_this flag spent, why \"The tube is spent.\"",
+   "carried": "yes",
+   "data": "families.json items[rocket_tubes].signature (new key)"
+  },
+  "blackpoint_wall_gun": {
+   "maker": "the wall gun (held: not shipped, rules 1.93 item 8104)",
+   "behaviour": "fires only from Prone",
+   "feeds": "verb",
+   "data_form": "mod_wall_gun: cancel on attack with_this self_lacks prone (conditions.json:295)",
+   "carried": "yes, the row can ship",
+   "data": "held row (not in weapons.json): its family gets the row when it ships",
+   "held": true
+  },
+  "thrown_darts": {
+   "maker": "the darts (throwing_darts, second skill Ingenuity 3)",
+   "behaviour": "Toxin on a hit with Ingenuity 3",
+   "feeds": "verb",
+   "data_form": "mod_darts: condition toxin on hit with_this self_skill ingenuity 3 target_alive; one data row: condition toxin (Weakened's shape)",
+   "carried": "yes, with one data row",
+   "data": "weapons.json items[throwing_darts] (family thrown: the darts' second-skill row, not a family signature)",
+   "numbers": {
+    "ingenuity": 3
+   }
+  },
+  "central_command_arsenal": {
+   "maker": "Arsenal (G15, carried today)",
+   "behaviour": "reload 1 AP less (kept)",
+   "feeds": "cost",
+   "data_form": "mod_line_arsenal (items.json:1815) moves from each row's variant_mods to the family's signature",
+   "carried": "yes (today)",
+   "data": "families.json items[central_command_arsenal].signature (new key)"
+  },
+  "smetanita_sidearms": {
+   "maker": "Smetanita (G16, carried today)",
+   "door": "pressure",
+   "behaviour": "a hit lays 1 Pressure, once a turn a foe (kept)",
+   "feeds": "verb",
+   "data_form": "mod_line_smetanita (items.json:1835) moves to the family's signature",
+   "carried": "yes (today)",
+   "data": "families.json items[smetanita_sidearms].signature (new key)"
+  }
+ },
+ "perks": {
+  "bulwark": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "+2% weapon damage a Guard held, to +10%; II +3% to +15%",
+   "tier_i": {
+    "text": "the Guard door's blows (Slam, Retort, shield blows) +5% a plate held, to +15% at 3 plates",
+    "numbers": {
+     "per_plate": 0.05,
+     "top": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+6% a plate, to +30% at 5 plates",
+    "numbers": {
+     "per_plate": 0.06,
+     "top": "@gear_perks.rules.restep.tier_ii"
+    },
+    "sum": {
+     "door": "guard",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:bulwark"
+    }
+   },
+   "scoped": true,
+   "why": "a full wall hits back a third harder; scoped to its own door (ruling 30), so a dabbler gets plates, not a second Iron Grip",
+   "skills": [
+    "durability"
+   ],
+   "data_line": "perks.json:23",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "shrug_it_off": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "hurt by a blow: +8% weapon damage to your next turn's end; II +12% and +1 Guard once a round",
+   "tier_i": {
+    "text": "hurt by a blow: the Guard door's blows +15% to your next turn's end",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30%, and +1 plate once a round",
+    "sum": {
+     "door": "guard",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:shrug_it_off"
+    },
+    "numbers": {
+     "plates": 1
+    }
+   },
+   "scoped": true,
+   "why": "the blow you took comes back with the next one",
+   "skills": [
+    "durability"
+   ],
+   "data_line": "perks.json:151",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "numb": {
+   "verdict": "restate",
+   "feeds": "margins",
+   "today": "an injured limb no penalty; II with Guard, a critical on you lands as an ordinary hit, no injury",
+   "tier_i": {
+    "text": "one injured limb no longer holds you back (kept)"
+   },
+   "tier_ii": {
+    "text": "with plates up, a hit on you counts no Margins and leaves no injury (margins_taken: all)"
+   },
+   "why": "the critical is gone (ruling 7); its guard becomes the Margins one",
+   "skills": [
+    "pain_threshold"
+   ],
+   "data_line": "perks.json:318",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "still_standing": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a last turn at 3 / 5 AP, once a fight",
+   "skills": [
+    "pain_threshold"
+   ],
+   "data_line": "perks.json:462",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "second_wind": {
+   "verdict": "keep",
+   "feeds": "hp",
+   "today": "2 AP once a fight: heal 25% of max HP; II +2 Guard",
+   "why": "a share of HP rides the scale by itself",
+   "skills": [
+    "pain_threshold"
+   ],
+   "data_line": "perks.json:566",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "close_guard": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Answer: 25% / 50% of a blow on an adjacent ally comes to you; plates soak",
+   "needs_ally": true,
+   "solo": "alone it never fires; the wall has nobody beside it to cover (a reaction, not a door step: no point bought for the top is lost)",
+   "skills": [
+    "pain_threshold"
+   ],
+   "data_line": "perks.json:699",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "wind_on_the_skin": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "fight start: the nearest / every unseen foe's tile in Vision",
+   "skills": [
+    "sensory"
+   ],
+   "data_line": "perks.json:828",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "bedside_manner": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: learn whether the next words are a lie (narrator)",
+   "tier_i": {
+    "text": "fight: a foe next to you that you touch (0 AP, once a fight) is Read (conditions.json read)"
+   },
+   "tier_ii": {
+    "text": "once a turn"
+   },
+   "fight_half": true,
+   "why": "a touch tells the medic what the hand will do next",
+   "skills": [
+    "sensory"
+   ],
+   "data_line": "perks.json:907",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "read_the_air": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: +2 / +4 on the next social roll (narrator)",
+   "tier_i": {
+    "text": "fight: a foe next to you saves against your next Call 2 harder (roll_mod on save, once a turn)",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "3 harder",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_ii"
+    }
+   },
+   "fight_half": true,
+   "why": "you felt them flinch before you spoke",
+   "skills": [
+    "sensory"
+   ],
+   "data_line": "perks.json:977",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "tremor": {
+   "verdict": "restate",
+   "feeds": "to_hit",
+   "today": "+1 / +2 to the squad's ambush roll; never caught; II starts with 2 Guard",
+   "tier_i": {
+    "text": "+2 to the ambush roll; never caught by its failure",
+    "numbers": {
+     "ambush": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+4, and 2 plates when a fight starts (kept)",
+    "numbers": {
+     "ambush": "@gear_perks.rules.restep.roll_wide",
+     "plates": 2
+    }
+   },
+   "why": "the squad's one ambush roll a fight: a d20 term under +2 is not felt",
+   "skills": [
+    "sensory"
+   ],
+   "data_line": "perks.json:1057",
+   "own_door": "guard",
+   "kind": "acquired"
+  },
+  "breaching_strike": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "after a Finisher drops a foe the next Strike or Opener costs no Momentum; II a Finisher on an Elite or Boss gives 1 Momentum",
+   "skills": [
+    "raw_power"
+   ],
+   "data_line": "perks.json:1167",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "iron_grip": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Grappled / Bound cannot Answer; +6% melee vs Grappled or Prone; II +12% (also Shaken, Afraid), push +1",
+   "tier_i": {
+    "text": "held foes cannot Answer or react; your melee blows +15% on a Grappled or Prone foe (every blow but a Finisher)",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30% (also Shaken, Afraid); pushes 1 tile further (kept)",
+    "sum": {
+     "scope": "plain",
+     "hits": [
+      "melee"
+     ],
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:iron_grip"
+    },
+    "numbers": {
+     "push_tiles": 1
+    }
+   },
+   "why": "the Momentum door's own, on the blows that build the chain, never on the Finisher that spends it: counted in the Coup it put the largest legal turn at 109,042 (ruling 8: the sum's sources are trimmed here). PROVISIONAL, for the lead",
+   "skills": [
+    "raw_power"
+   ],
+   "data_line": "perks.json:1354",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "into_the_dark": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "no Ambush bonus on you after first stepping into unseen ground",
+   "skills": [
+    "guts"
+   ],
+   "data_line": "perks.json:1480",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "steady": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Fear cannot stop you; II Fear and Nausea at most 1 round",
+   "skills": [
+    "guts"
+   ],
+   "data_line": "perks.json:1561",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "point_man": {
+   "verdict": "restate",
+   "feeds": "verb",
+   "today": "allies within 3 roll Fear with your Guts; II +1 Heart saves (data: tiers.II.effects[1].value)",
+   "tier_i": {
+    "text": "you and allies within 3 save against Fear with your Guts"
+   },
+   "tier_ii": {
+    "text": "and +2 on those Heart saves",
+    "numbers": {
+     "save": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "needs_ally": true,
+   "solo": "alone it is your own Fear save on Guts, and +2 on your Heart saves (ruling 32: an ally includes yourself)",
+   "why": "a d20 term under +2 is not felt",
+   "skills": [
+    "guts"
+   ],
+   "data_line": "perks.json:1650",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "unflinching": {
+   "verdict": "restate",
+   "feeds": "to_hit",
+   "today": "at 3+ Momentum, melee attacks on you -1; II shots too",
+   "tier_i": {
+    "text": "at 3+ Momentum, melee attacks on you -2",
+    "numbers": {
+     "to_hit_on_you": -2
+    }
+   },
+   "tier_ii": {
+    "text": "every weapon attack on you -2",
+    "numbers": {
+     "to_hit_on_you": -2
+    }
+   },
+   "why": "a d20 term under 2 is not felt",
+   "skills": [
+    "guts"
+   ],
+   "data_line": "perks.json:1770",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "grim_reaper": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a Shaken or Afraid foe's hit costs no Momentum; II a kill frightens within 8",
+   "skills": [
+    "intimidation"
+   ],
+   "data_line": "perks.json:1884",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "marrow_talk": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: a failed threat Shakes; II in a fight a saved Threaten still Shakes 1 round",
+   "tier_i": {
+    "text": "a saved Threaten still Shakes 1 round (II's fight half moves down)",
+    "numbers": {
+     "rounds": 1
+    }
+   },
+   "tier_ii": {
+    "text": "Shaken 2 rounds",
+    "numbers": {
+     "rounds": 2
+    }
+   },
+   "fight_half": true,
+   "why": "tier I had no fight half",
+   "skills": [
+    "intimidation"
+   ],
+   "data_line": "perks.json:2108",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "stare_down": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "fight start: the nearest foe saves or loses its first turn; II Shaken 3 rounds",
+   "skills": [
+    "intimidation"
+   ],
+   "data_line": "perks.json:2240",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "bone_talk": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: a truthful answer or Shaken (narrator)",
+   "tier_i": {
+    "text": "fight: 0 AP, once a fight, a foe next to you makes a Heart save or is Shaken 2 rounds and Read (grant_action, condition)",
+    "numbers": {
+     "rounds": 2
+    }
+   },
+   "tier_ii": {
+    "text": "every foe within 3",
+    "numbers": {
+     "within": 3
+    }
+   },
+   "fight_half": true,
+   "why": "the bone you named is the one they guard",
+   "skills": [
+    "intimidation"
+   ],
+   "data_line": "perks.json:2359",
+   "own_door": "momentum",
+   "kind": "acquired"
+  },
+  "wall_run": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "vault 2 / 4 tiles at no extra movement",
+   "skills": [
+    "athletics"
+   ],
+   "data_line": "perks.json:2449",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "roll_with_it": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a miss on you: 1 / 2 free tiles",
+   "skills": [
+    "athletics"
+   ],
+   "data_line": "perks.json:2524",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "untouchable": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "no torso armour (II light): attacks on you roll twice, take the worse",
+   "skills": [
+    "athletics"
+   ],
+   "data_line": "perks.json:2598",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "catch": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "catch a throw; back for 1 / 0 AP",
+   "skills": [
+    "athletics"
+   ],
+   "data_line": "perks.json:3400",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "both_hands": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "+1 Pressure on a Pressed foe, +5% vs Pressed; II +1 more on Suppressed, +5% more vs Suppressed",
+   "tier_i": {
+    "text": "the pips kept; the Pressure door's Dexterity hits +15% on a Pressed foe",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+15% on Pressed, +30% on Suppressed",
+    "sum": {
+     "door": "pressure",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:both_hands"
+    },
+    "numbers": {
+     "pressed": "@gear_perks.rules.restep.tier_i",
+     "suppressed": "@gear_perks.rules.restep.tier_ii"
+    }
+   },
+   "scoped": true,
+   "why": "the pinned foe is the one you press",
+   "skills": [
+    "dexterity"
+   ],
+   "data_line": "perks.json:2706",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "running_reload": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a hit on a Pressed foe puts it Off Balance (save; II none)",
+   "skills": [
+    "dexterity"
+   ],
+   "data_line": "perks.json:2923",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "rounding_up": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a fraction of an AP rounds up; II 1 AP carries once a fight",
+   "skills": [
+    "reaction_speed"
+   ],
+   "data_line": "perks.json:3057",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "shoot_first": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "act in a failed ambush's free turn at 3 / 4 AP",
+   "skills": [
+    "reaction_speed"
+   ],
+   "data_line": "perks.json:3135",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "cut_in": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: interrupt once / twice a scene (narrator)",
+   "tier_i": {
+    "text": "fight: once a fight, when a foe you see starts an action, 1 free AP first: a move, a swap or a reload (the interrupt op)",
+    "numbers": {
+     "ap": 1
+    }
+   },
+   "tier_ii": {
+    "text": "2 AP",
+    "numbers": {
+     "ap": 2
+    }
+   },
+   "fight_half": true,
+   "why": "Between Heartbeats' piece, smaller",
+   "skills": [
+    "reaction_speed"
+   ],
+   "data_line": "perks.json:3219",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "speed_load": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "reload 1 AP less; II a draw-attack free once a fight",
+   "skills": [
+    "reaction_speed"
+   ],
+   "data_line": "perks.json:3291",
+   "own_door": "pressure",
+   "kind": "acquired"
+  },
+  "sleight_of_hand": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "+8% / +14% while Hidden",
+   "tier_i": {
+    "text": "+15% while Hidden",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30% while Hidden",
+    "sum": {
+     "door": "shadow",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:sleight_of_hand"
+    }
+   },
+   "why": "Hidden is the Shadow door's state: it reaches a Break",
+   "skills": [
+    "ingenuity"
+   ],
+   "data_line": "perks.json:3496",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "shadow_step": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "a Hidden attack holding Shadow 1 AP less; II Shadow Run",
+   "skills": [
+    "ingenuity"
+   ],
+   "data_line": "perks.json:3588",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "jury_rig": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a Figment of yours destroyed: +1 AP; II +1 charge",
+   "skills": [
+    "proficiency"
+   ],
+   "data_line": "perks.json:3789",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "field_repair": {
+   "verdict": "restate",
+   "feeds": "hp",
+   "today": "2 AP: clear a jam, restore durability, repair 15 (profile repair)",
+   "tier_i": {
+    "text": "repair on the factor, on the mend column (profile repair)",
+    "numbers": {
+     "repair": {
+      "data": "perks.json:items[field_repair].amounts.repair.base",
+      "x": "@scale.factor.value"
+     }
+    }
+   },
+   "tier_ii": {
+    "text": "no spare part (kept)"
+   },
+   "why": "the factor, like every flat heal (ruling 1)",
+   "skills": [
+    "proficiency"
+   ],
+   "data_line": "perks.json:3949",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "hot_swap": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "one / two free swaps a turn",
+   "skills": [
+    "proficiency"
+   ],
+   "data_line": "perks.json:4047",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "tuned": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "the main hand never jams or breaks; II a core 1 AP less",
+   "skills": [
+    "proficiency"
+   ],
+   "data_line": "perks.json:4145",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "got_you_in_my_sight": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+2 AP when a seen foe hides (every 3 turns)",
+   "skills": [
+    "vigilant"
+   ],
+   "data_line": "perks.json:4232",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "eyes_in_the_back": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "cannot be flanked; II allies next to you too",
+   "needs_ally": true,
+   "solo": "alone tier I is whole; tier II has nobody beside you",
+   "skills": [
+    "vigilant"
+   ],
+   "data_line": "perks.json:4330",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "read_intent": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "your Spot Reads its target; II +1 Shadow",
+   "why": "Read is information, not a mark: it does not take the mark's place",
+   "skills": [
+    "vigilant"
+   ],
+   "data_line": "perks.json:4404",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "detectives_eye": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "The Tell: a trap or a weak point at fight start (one / two)",
+   "why": "it has its fight half",
+   "skills": [
+    "vigilant"
+   ],
+   "data_line": "perks.json:6034",
+   "own_door": "shadow",
+   "kind": "acquired"
+  },
+  "hold_the_stroke": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Sigils +6% / +12% vs a conditioned foe",
+   "tier_i": {
+    "text": "Sigils +15% on a conditioned foe",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30%",
+    "sum": {
+     "door": "sigils",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:hold_the_stroke"
+    }
+   },
+   "why": "the second clause names the burn you already lit",
+   "skills": [
+    "brain_power"
+   ],
+   "data_line": "perks.json:4541",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "parallel_thought": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "the first glyph a turn -0.5 AP; II no Flux",
+   "skills": [
+    "brain_power"
+   ],
+   "data_line": "perks.json:4660",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "footnote": {
+   "verdict": "restate",
+   "feeds": "to_hit",
+   "today": "once a fight, allies +1 / +2 to hit one foe for the round",
+   "tier_i": {
+    "text": "the foe carries your Footnote mark for the round: the squad, you included, +2 to hit it",
+    "mark": {
+     "name": "Footnote",
+     "kind": "to_hit",
+     "value": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+3, and your own Sigils count it",
+    "mark": {
+     "name": "Footnote",
+     "kind": "to_hit",
+     "value": "@gear_perks.rules.restep.roll_ii"
+    }
+   },
+   "is_mark": true,
+   "why": "a mark: a foe carries one at a time",
+   "skills": [
+    "rumination"
+   ],
+   "data_line": "perks.json:4809",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "lab_coat": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+3 saves vs known chemicals; II neutralise",
+   "skills": [
+    "rumination"
+   ],
+   "data_line": "perks.json:4905",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "index": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: one true answer; II +2 next Brain save",
+   "tier_i": {
+    "text": "in a fight, once, 0 AP: one foe's resistances and saves are shown (Analyze's reveal, no AP)"
+   },
+   "tier_ii": {
+    "text": "and the +2 Brain save (kept)"
+   },
+   "fight_half": true,
+   "skills": [
+    "rumination"
+   ],
+   "data_line": "perks.json:4988",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "proven_formula": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+3 / +5 saves vs what already hit you",
+   "skills": [
+    "rumination"
+   ],
+   "data_line": "perks.json:5108",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "overruled": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+2 AP while a foe carries your Brain debuff",
+   "skills": [
+    "eloquence"
+   ],
+   "data_line": "perks.json:5170",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "objection": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: expose a contradiction (narrator)",
+   "tier_i": {
+    "text": "fight: 0 AP, once a fight, a foe you see makes a Brain save or is Shaken 2 rounds",
+    "numbers": {
+     "rounds": 2
+    }
+   },
+   "tier_ii": {
+    "text": "and it loses 1 AP next turn (Off Balance)"
+   },
+   "fight_half": true,
+   "skills": [
+    "eloquence"
+   ],
+   "data_line": "perks.json:5265",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "opening_argument": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story debate before a fight: foes -1 AP in round 1",
+   "tier_i": {
+    "text": "at combat_start the foes' leader (their Elite or Boss, else the nearest) saves against your Eloquence or every foe has 1 AP less in round 1"
+   },
+   "tier_ii": {
+    "text": "and your first talk each fight is 0 AP (kept)"
+   },
+   "fight_half": true,
+   "skills": [
+    "eloquence"
+   ],
+   "data_line": "perks.json:5337",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "thinking_aloud": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "after a Call, the next Evoke 0 AP",
+   "skills": [
+    "eloquence"
+   ],
+   "data_line": "perks.json:5464",
+   "own_door": "sigils",
+   "kind": "acquired"
+  },
+  "mirage": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Figment blows +4% a Figment, to +12%; II +6% to +18%",
+   "tier_i": {
+    "text": "+5% a Figment kept, to +15% (3)",
+    "numbers": {
+     "per": 0.05,
+     "top": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+7.5% a Figment, to +30% (4)",
+    "numbers": {
+     "per": 0.075,
+     "top": "@gear_perks.rules.restep.tier_ii"
+    },
+    "sum": {
+     "door": "figments",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:mirage"
+    }
+   },
+   "skills": [
+    "visualization"
+   ],
+   "data_line": "perks.json:5742",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "blueprint": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a Figment kill +1 AP; II and a charge",
+   "skills": [
+    "visualization"
+   ],
+   "data_line": "perks.json:5876",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "pattern_lock": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+2 / +4 Defense vs a seen attack; II allies +1",
+   "needs_ally": true,
+   "solo": "alone its Defense is whole; the allies' line has no one to reach",
+   "skills": [
+    "analysis"
+   ],
+   "data_line": "perks.json:6105",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "quick_read": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "Analyze 1 AP less",
+   "skills": [
+    "analysis"
+   ],
+   "data_line": "perks.json:6187",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "read_them": {
+   "verdict": "restate",
+   "feeds": "taken",
+   "today": "an Analyzed foe deals 15% / 25% less to your side",
+   "tier_i": {
+    "text": "15% less (kept)",
+    "numbers": {
+     "taken": -0.15
+    }
+   },
+   "tier_ii": {
+    "text": "30% less",
+    "numbers": {
+     "taken": -0.3
+    }
+   },
+   "why": "the defender's side of the same step",
+   "skills": [
+    "analysis"
+   ],
+   "data_line": "perks.json:6293",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "still_breath": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "spot rolls on you -2 by cover",
+   "skills": [
+    "analysis"
+   ],
+   "data_line": "perks.json:6415",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "talks_broke_down": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Parley: talk them down; II +2 AP",
+   "skills": [
+    "charisma"
+   ],
+   "data_line": "perks.json:6514",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "crowd_pleaser": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "one roll for a crowd, saves 2 harder",
+   "skills": [
+    "charisma"
+   ],
+   "data_line": "perks.json:6593",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "smooth": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: a failed lie only raises suspicion (narrator)",
+   "tier_i": {
+    "text": "fight: a foe that saves against your Persuade is -2 to hit you on its next turn",
+    "numbers": {
+     "to_hit_on_you": -2
+    }
+   },
+   "tier_ii": {
+    "text": "and your first Persuade each fight is 2 TN harder to save",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "fight_half": true,
+   "skills": [
+    "charisma"
+   ],
+   "data_line": "perks.json:6674",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "showman": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "Picture 1 charge less; II a free order",
+   "skills": [
+    "charisma"
+   ],
+   "data_line": "perks.json:6745",
+   "own_door": "figments",
+   "kind": "acquired"
+  },
+  "shared_breath": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Taut Thread: +6% / +12% on a Bonded foe",
+   "tier_i": {
+    "text": "the Bonds door's damage on a foe Bonded to you +15%",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30%",
+    "sum": {
+     "door": "bonds",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:shared_breath"
+    }
+   },
+   "scoped": true,
+   "skills": [
+    "empathy"
+   ],
+   "data_line": "perks.json:6875",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "lay_down_arms": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Bitter Balm: heals you give turn 10% / 20% into Soul damage on Bonded foes",
+   "tier_i": {
+    "text": "15% of the heal",
+    "numbers": {
+     "share": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "30% of the heal",
+    "numbers": {
+     "share": "@gear_perks.rules.restep.tier_ii"
+    }
+   },
+   "why": "a share of a heal: it rides the mend column by itself",
+   "skills": [
+    "empathy"
+   ],
+   "data_line": "perks.json:6992",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "hand_off": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a friend within 1 / 3 uses your Defense",
+   "needs_ally": true,
+   "solo": "alone it has no one to lend to: it is a squad perk, and a solo player is told so on the card",
+   "skills": [
+    "camaraderie"
+   ],
+   "data_line": "perks.json:7199",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "nobody_left_behind": {
+   "verdict": "restate",
+   "feeds": "mp",
+   "today": "Stabilise 1 AP less; Downed friends take 50% less; II Raise for 36 MP",
+   "tier_i": {
+    "text": "kept"
+   },
+   "tier_ii": {
+    "text": "Raise for the MP below, on the mp rule",
+    "numbers": {
+     "mp": {
+      "data": "perks.json:items[nobody_left_behind].tiers.II.effects[2].res.mp",
+      "x": "@gear_perks.rules.mp_restate"
+     }
+    }
+   },
+   "needs_ally": true,
+   "solo": "alone it stabilises and raises nobody but the Downed you cannot be: a squad perk, said on the card",
+   "skills": [
+    "camaraderie"
+   ],
+   "data_line": "perks.json:7265",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "steady_hands": {
+   "verdict": "restate",
+   "feeds": "mp",
+   "today": "Settle 15 MP; II Soothe 18 MP",
+   "tier_i": {
+    "text": "Settle, on yourself or a friend (ruling 32)",
+    "numbers": {
+     "mp": {
+      "data": "perks.json:items[steady_hands].tiers.I.effects[0].res.mp",
+      "x": "@gear_perks.rules.mp_restate"
+     }
+    }
+   },
+   "tier_ii": {
+    "text": "Soothe, on yourself or a friend",
+    "numbers": {
+     "mp": {
+      "data": "perks.json:items[steady_hands].tiers.II.effects[1].res.mp",
+      "x": "@gear_perks.rules.mp_restate"
+     }
+    }
+   },
+   "needs_ally": true,
+   "solo": "Settle and Soothe take yourself as their target (ruling 32)",
+   "skills": [
+    "camaraderie"
+   ],
+   "data_line": "perks.json:7480",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "pull_together": {
+   "verdict": "restate",
+   "feeds": "mp",
+   "today": "Tug 12 MP; II Guide 15 MP",
+   "tier_i": {
+    "text": "Tug a Bonded unit toward you",
+    "numbers": {
+     "mp": {
+      "data": "perks.json:items[pull_together].tiers.I.effects[0].res.mp",
+      "x": "@gear_perks.rules.mp_restate"
+     }
+    }
+   },
+   "tier_ii": {
+    "text": "Guide a friend, or yourself, provoking nothing",
+    "numbers": {
+     "mp": {
+      "data": "perks.json:items[pull_together].tiers.II.effects[1].res.mp",
+      "x": "@gear_perks.rules.mp_restate"
+     }
+    }
+   },
+   "needs_ally": true,
+   "solo": "Guide moves you (ruling 32); Tug pulls a Bonded foe as today",
+   "skills": [
+    "camaraderie"
+   ],
+   "data_line": "perks.json:7822",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "between_the_lines": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story; II your Bond +2 TN",
+   "tier_i": {
+    "text": "your Bond is 2 TN harder to save",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "3 TN, and a foe Bonded to you is Read",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_ii"
+    }
+   },
+   "fight_half": true,
+   "skills": [
+    "implication"
+   ],
+   "data_line": "perks.json:8227",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "veiled_insult": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Taunt once / twice a fight",
+   "skills": [
+    "implication"
+   ],
+   "data_line": "perks.json:8313",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "quiet_thread": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "never Traced; II nor your Bonded friends",
+   "skills": [
+    "implication"
+   ],
+   "data_line": "perks.json:8478",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "open_hand": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a foe under half HP surrenders or saves",
+   "skills": [
+    "implication"
+   ],
+   "data_line": "perks.json:8595",
+   "own_door": "bonds",
+   "kind": "acquired"
+  },
+  "heart_overload": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Clenched Heart: +5% at stage 3+; II +5% at 2 and +5% more at 3+",
+   "tier_i": {
+    "text": "Releases +15% at stage 3 or higher",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+15% at stage 2, +30% at 3 or higher",
+    "numbers": {
+     "stage_2": "@gear_perks.rules.restep.tier_i",
+     "stage_3": "@gear_perks.rules.restep.tier_ii"
+    },
+    "sum": {
+     "door": "outbursts",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:heart_overload"
+    }
+   },
+   "skills": [
+    "will_power"
+   ],
+   "data_line": "perks.json:8680",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "resonance": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "+4% a Release, to +8%; II to +12%, allies' Releases count",
+   "tier_i": {
+    "text": "+5% a Release, to +15%",
+    "numbers": {
+     "per": 0.05,
+     "top": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+10% a Release, to +30%; allies' Releases count (kept)",
+    "numbers": {
+     "per": 0.1,
+     "top": "@gear_perks.rules.restep.tier_ii"
+    },
+    "sum": {
+     "door": "outbursts",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:resonance"
+    }
+   },
+   "skills": [
+    "will_power"
+   ],
+   "data_line": "perks.json:8816",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "rite_in_the_field": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "every 5th / 3rd kill, a free Crystallise",
+   "skills": [
+    "lore_master"
+   ],
+   "data_line": "perks.json:8896",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "old_tales": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story; II upper-realm parley",
+   "tier_i": {
+    "text": "upper-realm foes, Crawlers and cursed things (target_kind) are Read when the fight starts"
+   },
+   "tier_ii": {
+    "text": "and the parley (kept)"
+   },
+   "fight_half": true,
+   "skills": [
+    "lore_master"
+   ],
+   "data_line": "perks.json:9292",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "recitation": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a Call calms 1 / 2 Strain",
+   "skills": [
+    "lore_master"
+   ],
+   "data_line": "perks.json:9382",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "lore_ward": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Warding Word: a friend's next Brain or Heart save gets a bonus; II the first free",
+   "needs_ally": true,
+   "solo": "Warding Word takes yourself (ruling 32)",
+   "skills": [
+    "lore_master"
+   ],
+   "data_line": "perks.json:9493",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "flat_line": {
+   "verdict": "restate",
+   "feeds": "to_hit",
+   "today": "the deadliest foe -1 / -2 to hit while it sees you",
+   "tier_i": {
+    "text": "-2 to hit",
+    "numbers": {
+     "to_hit_on_you": -2
+    }
+   },
+   "tier_ii": {
+    "text": "-3 to hit",
+    "numbers": {
+     "to_hit_on_you": -3
+    }
+   },
+   "skills": [
+    "composure"
+   ],
+   "data_line": "perks.json:9689",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "poker_face": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story -3 to lie-readers; II +2 Brain saves",
+   "tier_i": {
+    "text": "+2 on Brain saves",
+    "numbers": {
+     "save": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+3, and the story half",
+    "numbers": {
+     "save": "@gear_perks.rules.restep.roll_ii"
+    }
+   },
+   "fight_half": true,
+   "skills": [
+    "composure"
+   ],
+   "data_line": "perks.json:9768",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "stand_still": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "-2 to hit you until you act",
+   "skills": [
+    "composure"
+   ],
+   "data_line": "perks.json:9854",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "pure_heart": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "refuse one / two Mana Shorts",
+   "skills": [
+    "composure"
+   ],
+   "data_line": "perks.json:9953",
+   "own_door": "outbursts",
+   "kind": "acquired"
+  },
+  "litany": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "the first / two Hymns 1 AP less",
+   "skills": [
+    "faith"
+   ],
+   "data_line": "perks.json:10040",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "holy_ordnance": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "Sinner's Due: prayers +8% / +12% vs a foe at half HP; II also Marked or Judged foes above",
+   "tier_i": {
+    "text": "prayers +15% on a foe at half HP or less",
+    "numbers": {
+     "value": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+30%, and on a Marked or Judged foe above half (kept)",
+    "sum": {
+     "door": "prayer",
+     "value": "@gear_perks.rules.restep.tier_ii",
+     "group": "perk:holy_ordnance"
+    }
+   },
+   "skills": [
+    "faith"
+   ],
+   "data_line": "perks.json:10193",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "red_line": {
+   "verdict": "restate",
+   "feeds": "verb",
+   "today": "+1 / +2 Heart saves; II allies +1",
+   "tier_i": {
+    "text": "+2 on Heart saves while you hold your line",
+    "numbers": {
+     "save": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "tier_ii": {
+    "text": "+3; allies near you +2",
+    "numbers": {
+     "save": "@gear_perks.rules.restep.roll_ii",
+     "allies": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "needs_ally": true,
+   "solo": "alone tier II is your +3; the allies' line reaches no one",
+   "skills": [
+    "conscience"
+   ],
+   "data_line": "perks.json:10304",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "clean_hands": {
+   "verdict": "restate",
+   "feeds": "hp",
+   "today": "a shield of 15% / 25% of max HP for sparing",
+   "tier_i": {
+    "text": "15% of max HP (kept)",
+    "numbers": {
+     "share": "@gear_perks.rules.restep.tier_i"
+    }
+   },
+   "tier_ii": {
+    "text": "30% of max HP",
+    "numbers": {
+     "share": "@gear_perks.rules.restep.tier_ii"
+    }
+   },
+   "skills": [
+    "conscience"
+   ],
+   "data_line": "perks.json:10400",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "righteous": {
+   "verdict": "keep",
+   "feeds": "mend",
+   "today": "prayer heals on a friend at half HP +20% / +40%",
+   "why": "over the step; never cut (a reward is not taken back)",
+   "needs_ally": true,
+   "solo": "a friend includes yourself (ruling 32): your own prayer heal at half HP",
+   "skills": [
+    "conscience"
+   ],
+   "data_line": "perks.json:10494",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "foresight": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story; II once a fight, a blow that would drop an ally within 4 leaves 1 HP",
+   "tier_i": {
+    "text": "once a fight, a blow that would drop you leaves you on 1 HP"
+   },
+   "tier_ii": {
+    "text": "you or an ally within 4"
+   },
+   "fight_half": true,
+   "skills": [
+    "conscience"
+   ],
+   "data_line": "perks.json:10638",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "outclassed": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+3 AP after the first kill",
+   "skills": [
+    "authority"
+   ],
+   "data_line": "perks.json:10726",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "rank_has_privileges": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: orders obeyed (narrator)",
+   "tier_i": {
+    "text": "rank-and-file foes (actor_not_tier elite, boss) are -2 to hit you while you stand",
+    "numbers": {
+     "to_hit_on_you": -2
+    }
+   },
+   "tier_ii": {
+    "text": "and their saves against your Calls are 2 harder",
+    "numbers": {
+     "tn": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "fight_half": true,
+   "skills": [
+    "authority"
+   ],
+   "data_line": "perks.json:10827",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "five_stars": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "friends bank +1 AP; II rank-and-file Shaken",
+   "why": "every friend includes you",
+   "skills": [
+    "authority"
+   ],
+   "data_line": "perks.json:10903",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "commanding_voice": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "+3 saves vs Silenced, Shaken, Fear; II immune to Silenced",
+   "skills": [
+    "authority"
+   ],
+   "data_line": "perks.json:11017",
+   "own_door": "prayer",
+   "kind": "acquired"
+  },
+  "charge": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "a straight move of 3+ ending by a foe: up to 3 AP free",
+   "skills": [
+    "intimidation",
+    "athletics"
+   ],
+   "data_line": "perks.json:12412",
+   "kind": "achieved"
+  },
+  "make_way": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "no opportunity attacks from foes you pass",
+   "skills": [
+    "intimidation",
+    "charisma"
+   ],
+   "data_line": "perks.json:12456",
+   "kind": "achieved"
+  },
+  "just_the_repairman": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "with a toolbox, 50% to stay Hidden when spotted",
+   "skills": [
+    "ingenuity",
+    "eloquence"
+   ],
+   "data_line": "perks.json:12504",
+   "kind": "achieved"
+  },
+  "spoon_feed": {
+   "verdict": "restate",
+   "feeds": "to_hit",
+   "today": "2 AP: allies +2 to hit one foe",
+   "tier_i": {
+    "text": "the foe carries your Fed mark until your next turn: the squad, you included, +2 to hit it",
+    "mark": {
+     "name": "Fed",
+     "kind": "to_hit",
+     "value": "@gear_perks.rules.restep.roll_i"
+    }
+   },
+   "is_mark": true,
+   "needs_ally": true,
+   "solo": "you are the squad (ruling 32): +2 to hit it yourself",
+   "skills": [
+    "brain_power",
+    "rumination",
+    "eloquence"
+   ],
+   "data_line": "perks.json:12547",
+   "kind": "achieved"
+  },
+  "cultured": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "+1 on two checks about art (story)",
+   "tier_i": {
+    "text": "story: +2 on those checks; fight: once a fight, you or a squadmate within 3 makes a Heart save at +2 (the old song steadies)",
+    "numbers": {
+     "check": "@gear_perks.rules.restep.roll_i",
+     "save": "@gear_perks.rules.restep.roll_i",
+     "within": 3
+    }
+   },
+   "fight_half": true,
+   "why": "ruling 21: no perk dead in Survival (critic-consistency-2 2.2)",
+   "skills": [
+    "lore_master",
+    "camaraderie"
+   ],
+   "data_line": "perks.json:12602",
+   "kind": "achieved"
+  },
+  "field_surgeon": {
+   "verdict": "restate",
+   "feeds": "hp",
+   "today": "Field Repair heals a living ally (text: 3 HP a point of Improvisation; data: an out-of-fight patch of 50% max HP)",
+   "tier_i": {
+    "text": "Field Repair's repair amount on a living ally next to you (one copy: field_repair's number); its text drops the stale '3 HP a point'"
+   },
+   "why": "one copy: the heal is Field Repair's, on the mend column",
+   "skills": [
+    "proficiency",
+    "camaraderie"
+   ],
+   "data_line": "perks.json:12649",
+   "kind": "achieved"
+  },
+  "dance_of_iron": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a miss on you, a shot back for 1 AP",
+   "skills": [
+    "dexterity",
+    "athletics"
+   ],
+   "data_line": "perks.json:12714",
+   "kind": "achieved"
+  },
+  "cold_read": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: what an Analyzed foe wants",
+   "tier_i": {
+    "text": "fight: a foe you Analyze is also Read"
+   },
+   "fight_half": true,
+   "skills": [
+    "empathy",
+    "analysis"
+   ],
+   "data_line": "perks.json:12758",
+   "kind": "achieved"
+  },
+  "fire_sermon": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "2 AP: your Blessings Shake foes within 4",
+   "skills": [
+    "faith",
+    "eloquence"
+   ],
+   "data_line": "perks.json:12798",
+   "kind": "achieved"
+  },
+  "silent_partner": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "an adjacent ally hides with you",
+   "needs_ally": true,
+   "solo": "alone you hide as you would; there is no partner",
+   "skills": [
+    "ingenuity",
+    "camaraderie"
+   ],
+   "data_line": "perks.json:12848",
+   "kind": "achieved"
+  },
+  "verse_of_war": {
+   "verdict": "keep",
+   "feeds": "sum",
+   "today": "In verse: +1 tile and +10% to an Outburst",
+   "tier_i": {
+    "text": "+10% on the Outburst cast in verse",
+    "sum": {
+     "door": "outbursts",
+     "value": {
+      "data": "perks.json:items[verse_of_war].effects[1].value",
+      "plus": -1
+     },
+     "group": "perk:verse_of_war"
+    }
+   },
+   "why": "its skills include Will Power: the Outburst door's own (ruling 30)",
+   "skills": [
+    "implication",
+    "will_power"
+   ],
+   "data_line": "perks.json:12890",
+   "own_door": "outbursts",
+   "kind": "achieved"
+  },
+  "between_heartbeats": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "once a fight, 2 free AP before a foe's action",
+   "skills": [
+    "reaction_speed",
+    "composure"
+   ],
+   "data_line": "perks.json:12937",
+   "kind": "achieved"
+  },
+  "siege_engine": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "Shove and Break 1 AP less; Guard from a Shove; unpushable",
+   "skills": [
+    "raw_power",
+    "durability"
+   ],
+   "data_line": "perks.json:12980",
+   "kind": "achieved"
+  },
+  "dead_signal": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "1 AP, disable a device while unseen",
+   "skills": [
+    "analysis",
+    "ingenuity"
+   ],
+   "data_line": "perks.json:13050",
+   "kind": "achieved"
+  },
+  "twin_souls": {
+   "verdict": "restate",
+   "feeds": "mp",
+   "today": "a third school at half strength (text: +20 MP; no number in data)",
+   "tier_i": {
+    "text": "the third school's MP is a design price (scale.costs.rules.design), set where the schools are priced (soul.json); the text's '+20 MP' leaves"
+   },
+   "why": "the design rule already prices a school; a second typed number would be a second copy",
+   "skills": [
+    "will_power",
+    "lore_master"
+   ],
+   "data_line": "perks.json:13096",
+   "kind": "achieved"
+  },
+  "the_voice": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "once a session, rank-and-file obey an order",
+   "skills": [
+    "authority",
+    "composure"
+   ],
+   "data_line": "perks.json:13143",
+   "kind": "achieved"
+  },
+  "bite_the_bullet": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "once a fight, borrowed time at 0 HP",
+   "skills": [
+    "guts",
+    "pain_threshold"
+   ],
+   "data_line": "perks.json:13193",
+   "kind": "achieved"
+  },
+  "sixth_sense": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "Hidden foes within 3 revealed",
+   "skills": [
+    "sensory",
+    "vigilant"
+   ],
+   "data_line": "perks.json:13245",
+   "kind": "achieved"
+  },
+  "what_could_be": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: a vision of the best outcome",
+   "tier_i": {
+    "text": "fight: once a fight, 0 AP: every foe you see is Read until your next turn"
+   },
+   "fight_half": true,
+   "skills": [
+    "visualization",
+    "conscience"
+   ],
+   "data_line": "perks.json:13288",
+   "kind": "achieved"
+  },
+  "war_footing": {
+   "verdict": "keep",
+   "feeds": "cost",
+   "today": "a foe ending next to you loses 2 AP (every 3 turns)",
+   "skills": [],
+   "data_line": "perks.json:13329",
+   "kind": "ultimate"
+  },
+  "last_charge": {
+   "verdict": "restate",
+   "feeds": "sum",
+   "today": "a 5+ tile charge: melee x1.5 that turn; a shield of armour value x3, at least 15",
+   "tier_i": {
+    "text": "that turn's blows +15% (a plain-hit source: it is no door's, so it does not reach a Finisher); the shield is armour value x3, at least the floor below",
+    "sum": {
+     "scope": "plain",
+     "hits": [
+      "melee"
+     ],
+     "value": "@gear_perks.rules.restep.tier_i",
+     "group": "perk:last_charge"
+    },
+    "numbers": {
+     "shield_floor": {
+      "data": "perks.json:items[last_charge].amounts.shield.base",
+      "x": "@scale.factor.value"
+     },
+     "shield_per_armour": {
+      "data": "perks.json:items[last_charge].amounts.shield_by_armour.per[0].value"
+     }
+    }
+   },
+   "why": "the charge is the turn's set-up; the multiplier joins the sum (ruling 8)",
+   "skills": [],
+   "data_line": "perks.json:13373",
+   "kind": "ultimate"
+  },
+  "angel_of_the_trenches": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "once a fight, run to a falling ally and stabilise",
+   "needs_ally": true,
+   "solo": "alone there is no one to run to: a squad perk, said on the card",
+   "skills": [],
+   "data_line": "perks.json:13436",
+   "kind": "ultimate"
+  },
+  "every_lie_is_a_door": {
+   "verdict": "rewrite",
+   "feeds": "verb",
+   "today": "story: walk into a guarded place",
+   "tier_i": {
+    "text": "fight: you start every fight Hidden (condition hidden at combat_start)"
+   },
+   "fight_half": true,
+   "skills": [],
+   "data_line": "perks.json:13472",
+   "kind": "ultimate"
+  },
+  "twin_discipline": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "a fused Sigil and Outburst cast",
+   "skills": [],
+   "data_line": "perks.json:13505",
+   "kind": "ultimate"
+  },
+  "supreme_command": {
+   "verdict": "keep",
+   "feeds": "verb",
+   "today": "once a fight, the squad takes a 2-AP action each",
+   "needs_ally": true,
+   "solo": "alone it is a 2-AP action of your own (ruling 32)",
+   "skills": [],
+   "data_line": "perks.json:13540",
+   "kind": "ultimate"
+  }
+ },
+ "mastered": {
+  "durability": {
+   "perk": "last_wall",
+   "verdict": "restate",
+   "worth": "yes",
+   "change": "and your plates refill to your Reach when it fires (resource guard at max)",
+   "own_door": "guard",
+   "data_line": "perks.json:11120"
+  },
+  "pain_threshold": {
+   "perk": "walking_wounded",
+   "verdict": "restate",
+   "worth": "no: its number was a tier I's",
+   "change": "below half HP you take 30% less (it was 20%); injuries as today",
+   "numbers": {
+    "taken": -0.3
+   },
+   "own_door": "guard",
+   "data_line": "perks.json:11204"
+  },
+  "sensory": {
+   "perk": "skin_map",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "guard",
+   "data_line": "perks.json:11248"
+  },
+  "raw_power": {
+   "perk": "earthbreaker",
+   "verdict": "rewrite",
+   "worth": "no: a fixed blow at the chain's own cap",
+   "change": "a Finisher row (techniques.json, the Finisher family): once a fight it spends the whole chain, and every unit in the 3x3 takes the Finisher's cash-out for the steps spent (the one copy of the Finisher rule, @body.attributes.strength.door), Prone, cover gone; allies still hit. Its handler in perks/a.ts goes",
+   "own_door": "momentum",
+   "data_line": "perks.json:11288"
+  },
+  "guts": {
+   "perk": "nothing_left_to_fear",
+   "verdict": "keep",
+   "worth": "yes",
+   "needs_ally": true,
+   "solo": "alone the immunity to Fear is whole",
+   "own_door": "momentum",
+   "data_line": "perks.json:11343"
+  },
+  "intimidation": {
+   "perk": "the_name_they_whisper",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "momentum",
+   "data_line": "perks.json:11409"
+  },
+  "athletics": {
+   "perk": "never_there",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "pressure",
+   "data_line": "perks.json:11450"
+  },
+  "dexterity": {
+   "perk": "trick_shot",
+   "verdict": "restate",
+   "worth": "yes",
+   "change": "and the Ricochet lays 1 Pressure on the second foe (it reads the door)",
+   "numbers": {
+    "pressure": 1
+   },
+   "own_door": "pressure",
+   "data_line": "perks.json:11490"
+  },
+  "reaction_speed": {
+   "perk": "before_the_blink",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "pressure",
+   "data_line": "perks.json:11541"
+  },
+  "ingenuity": {
+   "perk": "vanishing_act",
+   "verdict": "rewrite",
+   "worth": "no: once a fight, against a door built for it",
+   "change": "at will, for 2 AP and 3 Shadow (cost_mod res shadow): you vanish when you have built for it",
+   "numbers": {
+    "ap": 2,
+    "shadow": 3
+   },
+   "own_door": "shadow",
+   "data_line": "perks.json:11582"
+  },
+  "proficiency": {
+   "perk": "overhaul",
+   "verdict": "keep",
+   "worth": "yes",
+   "change": "its extra slot adds to Masterwork's (extraSlots)",
+   "own_door": "shadow",
+   "data_line": "perks.json:11627"
+  },
+  "vigilant": {
+   "perk": "nothing_gets_past",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "shadow",
+   "data_line": "perks.json:11681"
+  },
+  "brain_power": {
+   "perk": "clean_draw",
+   "verdict": "rewrite",
+   "worth": "no",
+   "change": "once a fight: the next spell up to your Reach (not 4) costs no charge and no Flux, and its Evoke 0 AP; one past your Reach is the Push (Overclock, ruling 17), not this",
+   "own_door": "sigils",
+   "data_line": "perks.json:11716"
+  },
+  "rumination": {
+   "perk": "established_fact",
+   "verdict": "rewrite",
+   "worth": "no (in a fight)",
+   "change": "fight: once a fight, a Brain or Heart save you fail becomes a success (auto_success); the story half kept",
+   "own_door": "sigils",
+   "data_line": "perks.json:11757"
+  },
+  "eloquence": {
+   "perk": "closing_argument",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "sigils",
+   "data_line": "perks.json:11811"
+  },
+  "visualization": {
+   "perk": "solid_image",
+   "verdict": "rewrite",
+   "worth": "no",
+   "change": "once a round, 0 AP: a Glimmer you make is a real Double until your next turn, outside your held count",
+   "own_door": "figments",
+   "data_line": "perks.json:11864"
+  },
+  "analysis": {
+   "perk": "case_closed",
+   "verdict": "restate",
+   "worth": "yes, as a mark",
+   "change": "the Analyzed foe carries your Closed mark: the squad +20% against it (the one mark, @scale.stack.scope.foe_mark) and +2 Defense against it (kept)",
+   "numbers": {
+    "defense": 2
+   },
+   "is_mark": true,
+   "mark": {
+    "name": "Closed",
+    "kind": "damage",
+    "value": "@scale.stack.scope.foe_mark.value"
+   },
+   "own_door": "figments",
+   "data_line": "perks.json:11902"
+  },
+  "charisma": {
+   "perk": "everyones_friend",
+   "verdict": "rewrite",
+   "worth": "dead in Survival",
+   "change": "fight: once a fight, a rank-and-file foe that sees you makes a Heart save or surrenders (Open Hand's piece); the story half kept",
+   "own_door": "figments",
+   "data_line": "perks.json:11959"
+  },
+  "empathy": {
+   "perk": "threads_that_hold",
+   "verdict": "restate",
+   "worth": "yes",
+   "change": "Tending to the Bonded +50% (kept), and when alone it reads Tending yourself while you hold a Bond; Bonds hold while you are Downed",
+   "needs_ally": true,
+   "solo": "Tending yourself while you hold a Bond gets the +50% (critic-player-2 2)",
+   "own_door": "bonds",
+   "data_line": "perks.json:11997"
+  },
+  "camaraderie": {
+   "perk": "many_hands",
+   "verdict": "keep",
+   "worth": "yes",
+   "needs_ally": true,
+   "solo": "alone it is a squad piece, said on the card; the Mender's solo line is Threads That Hold",
+   "own_door": "bonds",
+   "data_line": "perks.json:12066"
+  },
+  "implication": {
+   "perk": "their_own_idea",
+   "verdict": "rewrite",
+   "worth": "dead in Survival",
+   "change": "fight: once a fight, 0 AP, a foe makes a Heart save or is Confused (conditions.json confused); the story half kept",
+   "own_door": "bonds",
+   "data_line": "perks.json:12127"
+  },
+  "will_power": {
+   "perk": "the_twin_pays",
+   "verdict": "restate",
+   "worth": "no",
+   "change": "and it Begins at stage 2, and its first Push (Overdraw, Will Power's Push by ruling 17) costs no Strain",
+   "numbers": {
+    "stage": 2
+   },
+   "own_door": "outbursts",
+   "data_line": "perks.json:12161"
+  },
+  "lore_master": {
+   "perk": "true_name",
+   "verdict": "rewrite",
+   "worth": "no in Survival (a run is one session)",
+   "change": "once a fight, 0 AP: a foe you see carries your Named mark (the one mark) and its resistances and saves are shown",
+   "is_mark": true,
+   "mark": {
+    "name": "Named",
+    "kind": "damage",
+    "value": "@scale.stack.scope.foe_mark.value"
+   },
+   "own_door": "outbursts",
+   "data_line": "perks.json:12202"
+  },
+  "composure": {
+   "perk": "still_water",
+   "verdict": "keep",
+   "worth": "yes",
+   "own_door": "outbursts",
+   "data_line": "perks.json:12245"
+  },
+  "faith": {
+   "perk": "judgement_day",
+   "verdict": "rewrite",
+   "worth": "changed: one mark",
+   "change": "its next attack fails (kept), and it carries your Judgement mark: the squad gets the mark's share, where it was you x1.5",
+   "is_mark": true,
+   "mark": {
+    "name": "Judgement",
+    "kind": "damage",
+    "value": "@scale.stack.scope.foe_mark.value"
+   },
+   "own_door": "prayer",
+   "data_line": "perks.json:12284"
+  },
+  "conscience": {
+   "perk": "foreseen",
+   "verdict": "rewrite",
+   "worth": "dead in Survival",
+   "change": "fight: once a fight, a foe's attack on you or an ally within 4 is undone: it deals nothing and puts nothing on (Foresight II's piece, plus cancel on cond_incoming)",
+   "own_door": "prayer",
+   "data_line": "perks.json:12335"
+  },
+  "authority": {
+   "perk": "on_my_mark",
+   "verdict": "keep",
+   "worth": "yes",
+   "needs_ally": true,
+   "solo": "alone you are the one ordered: once a round, 1 AP buys an action of up to 4 AP for yourself, outside your turn (ruling 32)",
+   "own_door": "prayer",
+   "data_line": "perks.json:12369"
+  }
+ },
+ "margins_feeders": {
+  "crit_mult": {
+   "today": "character.ts:853-855 (CRIT_BASE, CRIT_MAX, CRIT_PER_PERCEPTION, CRIT_PER_DEXTERITY, critMult)",
+   "becomes": "gone: Perception makes a Margin bigger (@scale.margins.per_perception); Dexterity's +2% critical line goes"
+  },
+  "crit_damage": {
+   "today": "effects/stats.ts:42 (the stat crit_damage)",
+   "becomes": "renamed margins: Margins added to a hit that lands (S1's stat line; the same readers)"
+  },
+  "one_shot": {
+   "today": "traits.json:2178 crit_damage_mod +25%; perks/c.ts:441 ctx.critBonus +0.25",
+   "becomes": "+1 Margin on that first shot if it hits (stat_mod margins +1 in its context); the handler's second copy goes",
+   "numbers": {
+    "margins": 1
+   }
+  },
+  "crit_taken": {
+   "today": "character.ts:1237 critTakenPct: Perception -10% a point, Acuity -5% a point (skills.json:2509, the skill id analysis)",
+   "becomes": "renamed margins_taken; Perception's line goes; Acuity: a hit on you counts one Margin fewer at Acuity 5 and two fewer at 10 (two rows, stat_mod margins_taken -1 each; the 0.05 slope goes)",
+   "numbers": {
+    "at_points": [
+     5,
+     10
+    ],
+    "each": -1
+   }
+  },
+  "numb_ii": {
+   "today": "perks.json:318: a critical on you lands as an ordinary hit",
+   "becomes": "with plates up, a hit on you counts no Margins (margins_taken: all) and leaves no injury"
+  },
+  "sigil_critical": {
+   "today": "sigils.json:118-122 critical; spellCritMult (sigil.ts:336, :1066)",
+   "becomes": "two Margins, as a weapon's (@scale.margins.natural_20)"
+  },
+  "outburst_critical": {
+   "today": "classes/soul.ts:39",
+   "becomes": "two Margins (@scale.margins.natural_20)"
+  },
+  "crit_ranges": {
+   "today": "techniques.json:404 point_crit_min 18, :1581 and :2819 precise_crit_min 18, :2602 suppressed_crit_min 18, magic.ts:1414 Joy's 18, the weapon op aimed_crit_min (weapons.json:1770)",
+   "becomes": "kept: they set the critical range, which now means two Margins; aimed_crit_min becomes the gear field crit_range with crit_range_modes [aimed] (S13, one copy; the revolver's signature uses it)"
+  },
+  "gambler": {
+   "today": "perks/g.ts:534-537 Double or Nothing: a success becomes a critical",
+   "becomes": "kept (two Margins)"
+  },
+  "limb_criticals": {
+   "today": "Glass Runner +50% (traits.json:326), Crawler-Blooded -30% (traits.json:3683): a critical that injures a limb",
+   "becomes": "kept: they read the word critical, not the multiplier"
+  },
+  "crit_word_readers": {
+   "today": "the serrated edge (items.json:493), Joy, Calm (no critical)",
+   "becomes": "kept: they read crit"
+  }
+ },
+ "boons": {
+  "boon.edge": {
+   "data_line": "survival.json:250",
+   "text": "+10% damage: a plain-hit term",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": 0.1,
+    "group": "boon:edge"
+   }
+  },
+  "boon.true_aim": {
+   "data_line": "survival.json:256",
+   "text": "+1 to hit, every attack",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "any",
+      "value": 1,
+      "group": "boon:true_aim"
+     }
+    }
+   ]
+  },
+  "boon.sure_script": {
+   "data_line": "survival.json:304",
+   "text": "Sigils +2 to hit",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "sigils",
+      "value": 2,
+      "group": "boon:sure_script"
+     }
+    }
+   ]
+  },
+  "boon.steady_heart": {
+   "data_line": "survival.json:307",
+   "text": "Outbursts +2 to hit",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "outbursts",
+      "value": 2,
+      "group": "boon:steady_heart"
+     }
+    }
+   ]
+  },
+  "start.hot_loads": {
+   "data_line": "survival.json:332",
+   "text": "guns +5%: a plain-hit term",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "gun",
+     "bow"
+    ],
+    "value": 0.05,
+    "group": "start_boon"
+   }
+  },
+  "start.whetted": {
+   "data_line": "survival.json:341",
+   "text": "blows +5%: a plain-hit term",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee"
+    ],
+    "value": 0.05,
+    "group": "start_boon"
+   }
+  },
+  "start.cheap_shot": {
+   "data_line": "survival.json:359",
+   "text": "+8% while Hidden: a plain-hit term (a start boon is no door's own)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": 0.08,
+    "group": "start_boon"
+   }
+  },
+  "start.bright_script": {
+   "data_line": "survival.json:368",
+   "text": "Sigils +5%: a plain-hit term (a Line of two)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "sigil"
+    ],
+    "value": 0.05,
+    "group": "start_boon"
+   }
+  },
+  "start.hot_blood": {
+   "data_line": "survival.json:377",
+   "text": "Outbursts +5%: a plain-hit term (an un-Pumped Release)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "soul"
+    ],
+    "value": 0.05,
+    "group": "start_boon"
+   }
+  },
+  "start.zeroed": {
+   "data_line": "survival.json:329",
+   "text": "+1 to hit (one start boon a run)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "pressure",
+      "value": 1,
+      "group": "start_boon_to_hit:pressure"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "shadow",
+      "value": 1,
+      "group": "start_boon_to_hit:shadow"
+     }
+    }
+   ]
+  },
+  "start.balanced": {
+   "data_line": "survival.json:338",
+   "text": "+1 to hit (one start boon a run)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "momentum",
+      "value": 1,
+      "group": "start_boon_to_hit:momentum"
+     }
+    },
+    {
+     "to_hit": {
+      "door": "guard",
+      "value": 1,
+      "group": "start_boon_to_hit:guard"
+     }
+    }
+   ]
+  },
+  "start.patient_eye": {
+   "data_line": "survival.json:356",
+   "text": "+1 to hit (one start boon a run)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "shadow",
+      "value": 1,
+      "group": "start_boon_to_hit:shadow"
+     }
+    }
+   ]
+  },
+  "start.steady_line": {
+   "data_line": "survival.json:365",
+   "text": "+1 to hit (one start boon a run)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "sigils",
+      "value": 1,
+      "group": "start_boon_to_hit:sigils"
+     }
+    }
+   ]
+  },
+  "start.clear_pulse": {
+   "data_line": "survival.json:374",
+   "text": "+1 to hit (one start boon a run)",
+   "to_hit_doors": [
+    {
+     "to_hit": {
+      "door": "outbursts",
+      "value": 1,
+      "group": "start_boon_to_hit:outbursts"
+     }
+    }
+   ]
+  }
+ },
+ "boons_rule": "the boons' list, worth and cap are world's (survival.json); this file only says where each counts: a damage boon is a plain-hit term (no boon is a door's own), a to-hit boon counts wherever it rolls; Hot Loads and its siblings share one group because a run starts with one start boon",
+ "traits": {
+  "mind_without_fog": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:101"
+  },
+  "the_brightest_light": {
+   "verdict": "keep",
+   "text": "+10% a kill this fight, to +50% at five kills (the top: the per-kill share x 5, the cap in its context): a plain-hit term (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": {
+     "data": "traits.json:items[the_brightest_light].effects[0].value_pct",
+     "x": 0.05
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:154"
+  },
+  "southern_fist": {
+   "verdict": "keep",
+   "text": "+20% unarmed or with gloves (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee"
+    ],
+    "value": {
+     "data": "traits.json:items[southern_fist].effects[1].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:197"
+  },
+  "forlorn_hope": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:240"
+  },
+  "grenadiers_arm": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:284"
+  },
+  "glass_runner": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:326"
+  },
+  "blade_recluse": {
+   "verdict": "keep",
+   "text": "one extra mod slot on the named weapon: it adds to Masterwork's",
+   "today": "one extra mod slot (narrator)",
+   "data_line": "traits.json:372"
+  },
+  "pain_eater": {
+   "verdict": "keep",
+   "text": "+50% while under half HP (and +50% taken while above: the defender's side) (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": {
+     "data": "traits.json:items[pain_eater].effects[0].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:428"
+  },
+  "bottle_butts_for_eyes": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:459"
+  },
+  "the_mask": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:522"
+  },
+  "machine_faced": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:581"
+  },
+  "right_of_way": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:631"
+  },
+  "drill_echo": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:684"
+  },
+  "the_old_blood": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:729"
+  },
+  "holo_drama_addict": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:813"
+  },
+  "oil_in_my_mind": {
+   "verdict": "restate",
+   "text": "max HP -6%: a Pain Threshold point thinner, at every level (ruling 5 removes the per-level HP term)",
+   "numbers": {
+    "hp_share": "@gear_perks.rules.oil_hp_share"
+   },
+   "today": "2 less HP a level (hp_per_level -2)",
+   "data_line": "traits.json:852"
+  },
+  "oil_in_my_soul": {
+   "verdict": "restate",
+   "text": "as Oil in My Mind; both Oils pay once",
+   "numbers": {
+    "hp_share": "@gear_perks.rules.oil_hp_share"
+   },
+   "today": "2 less HP a level",
+   "data_line": "traits.json:946"
+  },
+  "lunarshine": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1042"
+  },
+  "heavyworlder": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1198"
+  },
+  "born_performer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1233"
+  },
+  "rabbits_foot": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1282"
+  },
+  "ghost_soldier": {
+   "verdict": "keep",
+   "text": "+50% on the first attack from stealth each fight (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": {
+     "data": "traits.json:items[ghost_soldier].effects[0].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:1344"
+  },
+  "symbol_of_order": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1416"
+  },
+  "rogue_element": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1459"
+  },
+  "the_soundscape_of_the_soul": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1504"
+  },
+  "headbanger": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1556"
+  },
+  "underground_sound": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1608"
+  },
+  "worldline_fracture": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1660"
+  },
+  "factory_made": {
+   "verdict": "restate",
+   "text": "Field Repair heals you per point of Improvisation on the factor, on the mend column (a heal reads mend whatever its profile)",
+   "numbers": {
+    "hp_per_point": {
+     "data": "traits.json:items[factory_made].effects[3].hp_per_point",
+     "x": "@scale.factor.value"
+    }
+   },
+   "today": "10 HP a point of Improvisation",
+   "data_line": "traits.json:1696"
+  },
+  "lowland_born": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1762"
+  },
+  "central_city_kid": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1810"
+  },
+  "daggerfall_veteran": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1844"
+  },
+  "upper_touched": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:1904"
+  },
+  "raised_by_orks": {
+   "verdict": "keep",
+   "text": "+20% melee (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee"
+    ],
+    "value": {
+     "data": "traits.json:items[raised_by_orks].effects[0].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:1950"
+  },
+  "gun_nut": {
+   "verdict": "keep",
+   "text": "one extra mod slot: it adds to Masterwork's",
+   "today": "one extra mod slot",
+   "data_line": "traits.json:2001"
+  },
+  "old_school": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2060"
+  },
+  "spray_and_pray": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2103"
+  },
+  "one_shot": {
+   "verdict": "restate",
+   "text": "Breath Held: +1 Margin on that first shot if it hits (margins_feeders.one_shot)",
+   "numbers": {
+    "margins": 1
+   },
+   "today": "+25% critical damage, never more than double",
+   "data_line": "traits.json:2153"
+  },
+  "sigil_savant": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2199"
+  },
+  "hollow_heart": {
+   "verdict": "keep",
+   "text": "+10% on Outbursts: a trait is no door's own, so it counts on an un-Pumped Release, not a Pumped one (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "soul"
+    ],
+    "value": {
+     "data": "traits.json:items[hollow_heart].effects[1].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:2244"
+  },
+  "heretic": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2290"
+  },
+  "gambler": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2350"
+  },
+  "insomniac": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2384"
+  },
+  "chain_smoker": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2426"
+  },
+  "live_to_fight_another_day": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2472"
+  },
+  "sworn_sibling": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2527"
+  },
+  "rival": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2582"
+  },
+  "humanity_first": {
+   "verdict": "keep",
+   "text": "+15% on non-humans; it leaves the +100% pool, which goes (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": {
+     "data": "traits.json:items[humanity_first].effects[0].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:2643"
+  },
+  "wanted": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2711"
+  },
+  "company_man": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2756"
+  },
+  "field_medic": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2797"
+  },
+  "squad_anchor": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2843"
+  },
+  "born_officer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2897"
+  },
+  "cold_case": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2958"
+  },
+  "interrogator": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:2998"
+  },
+  "trench_poet": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3051"
+  },
+  "grudge_bearer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3104"
+  },
+  "crowded_head": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3148"
+  },
+  "market_blood": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3191"
+  },
+  "cover_story": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3238"
+  },
+  "inner_ring_heir": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3274"
+  },
+  "slicer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3312"
+  },
+  "demolitionist": {
+   "verdict": "keep",
+   "text": "+30% explosive (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "weapon",
+     "thrown"
+    ],
+    "value": {
+     "data": "traits.json:items[demolitionist].effects[2].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:3359"
+  },
+  "drone_handler": {
+   "verdict": "restate",
+   "text": "the trait's typed hp goes (one copy); the drone reads enemies.json companions[drone] on the factor, its HP on the column of what hits it, at its owner's level; its repair is Field Repair's",
+   "numbers": {
+    "hp": {
+     "data": "enemies.json:companions[drone].hp",
+     "x": "@scale.factor.value"
+    },
+    "armour": {
+     "data": "enemies.json:companions[drone].armour",
+     "x": "@scale.factor.value"
+    }
+   },
+   "today": "drone 30 HP typed in the trait op and in enemies.json (spec item 370)",
+   "data_line": "traits.json:3409"
+  },
+  "augmented": {
+   "verdict": "keep",
+   "text": "the arm: +20% physical (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "melee",
+     "physical"
+    ],
+    "value": {
+     "data": "traits.json:items[augmented].effects[0].options.arm[0].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:3453"
+  },
+  "true_believer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3531"
+  },
+  "heavens_faithful": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3587"
+  },
+  "occultist": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3636"
+  },
+  "crawler_blooded": {
+   "verdict": "restate",
+   "text": "a Lumeri Blessing burns you for a share of your max HP, true damage",
+   "numbers": {
+    "burn_share": "@scale.costs.shares.crawler_burn"
+   },
+   "today": "10 flat (amounts.blessing_burn)",
+   "data_line": "traits.json:3683"
+  },
+  "old_timer": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3734"
+  },
+  "pacifist": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3792"
+  },
+  "moon_hunter": {
+   "verdict": "keep",
+   "text": "+30% on the first attack on a tracked creature; it leaves the +100% pool, which goes (ruling 10) (kept; a plain-hit term)",
+   "sum": {
+    "scope": "plain",
+    "hits": [
+     "any"
+    ],
+    "value": {
+     "data": "traits.json:items[moon_hunter].effects[1].value_pct",
+     "x": 0.01
+    },
+    "group": "trait",
+    "take": {
+     "data": "rules.json:character.creation.traits.max"
+    }
+   },
+   "data_line": "traits.json:3856"
+  },
+  "beast_handler": {
+   "verdict": "restate",
+   "text": "the same as the drone: enemies.json companions[beast] on the factor",
+   "numbers": {
+    "hp": {
+     "data": "enemies.json:companions[beast].hp",
+     "x": "@scale.factor.value"
+    }
+   },
+   "today": "beast 60 HP typed in the trait op",
+   "data_line": "traits.json:3910"
+  },
+  "ace_pilot": {
+   "verdict": "keep",
+   "text": "no number on the old scale: skills, rolls, AP, story and shares ride the new scale as they are",
+   "data_line": "traits.json:3957"
+  }
+ },
+ "traits_budget": "traits.json:11-12 budget_sp_net and budget_note are a note, not a price (no row has a cost; nothing reads it): keep the note and strike its \"+1 on a roll about 2 SP\" clause; no trait was priced by the withdrawn budget rule (rules 1.94)",
+ "repick": {
+  "via": "the existing re-pick (pendingRepicks, answerRepick, migrateCharacterPerks; the perkRev piece): one free re-pick of a perk step whose meaning changed; pacing owns the migration (@pacing.migration)",
+  "narrowed_to_own_door": [
+   "bulwark",
+   "shrug_it_off",
+   "both_hands",
+   "shared_breath"
+  ],
+  "marks_holders": [
+   "judgement_day",
+   "true_name"
+  ],
+  "changed_meaning": [
+   "bulwark",
+   "shrug_it_off",
+   "numb",
+   "bedside_manner",
+   "read_the_air",
+   "tremor",
+   "iron_grip",
+   "point_man",
+   "unflinching",
+   "marrow_talk",
+   "bone_talk",
+   "both_hands",
+   "cut_in",
+   "sleight_of_hand",
+   "field_repair",
+   "hold_the_stroke",
+   "footnote",
+   "index",
+   "objection",
+   "opening_argument",
+   "mirage",
+   "read_them",
+   "smooth",
+   "shared_breath",
+   "lay_down_arms",
+   "nobody_left_behind",
+   "steady_hands",
+   "pull_together",
+   "between_the_lines",
+   "heart_overload",
+   "resonance",
+   "old_tales",
+   "flat_line",
+   "poker_face",
+   "holy_ordnance",
+   "red_line",
+   "clean_hands",
+   "foresight",
+   "rank_has_privileges",
+   "spoon_feed",
+   "cultured",
+   "field_surgeon",
+   "cold_read",
+   "twin_souls",
+   "what_could_be",
+   "last_charge",
+   "every_lie_is_a_door",
+   "last_wall",
+   "walking_wounded",
+   "earthbreaker",
+   "trick_shot",
+   "vanishing_act",
+   "clean_draw",
+   "established_fact",
+   "solid_image",
+   "case_closed",
+   "everyones_friend",
+   "threads_that_hold",
+   "their_own_idea",
+   "the_twin_pays",
+   "true_name",
+   "judgement_day",
+   "foreseen"
+  ]
+ },
+ "migration": "@pacing.migration",
+ "open": [
+  "scale.json stack.scope.rule says a plain hit counts the terms of its weapon's door and the mark; this file reads ruling 30 as: a plain hit counts every term that reaches its profile (scope plain, hits) plus its door's and the mark. 01 to confirm the wording",
+  "mp_restate (0.5) should be the one copy soul.json's Tending prices read (critic-consistency-2 3.2), or this file reads soul's: whichever lands first owns it"
+ ]
+}

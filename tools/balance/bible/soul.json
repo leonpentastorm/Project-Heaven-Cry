@@ -1,0 +1,1756 @@
+{
+  "_meta": {
+    "file": "soul",
+    "owner": "docs/design/growth/04-soul.md",
+    "status": "PROVISIONAL: every number is chosen for what a player feels and is a first proposal to play; nothing is fitted to a percentage, a line or a ceiling",
+    "rulings": "00-rulings.md A4, A6 to A10, B11 to B15, C16 to C21, D22, F29 to F33, F36, F39; critic-consistency-2 1.3 to 1.5, 1.10, 1.12, 1.13, 1.14, 3.2, 4.4, 4.5, 7.2; critic-player-2 1 to 3, 6, 8, 12, 15",
+    "shape": "tools/balance/bible/SCHEMA.md, section 3 (body, mind, soul)",
+    "reads": "scale.json (every shared number), pacing.json (every rate, the clock, the gates, Devotion's track), data/*.json (today's rows, read only)"
+  },
+  "attributes": {
+    "insight": {
+      "card": {
+        "lines": [
+          {
+            "text": "+10% on every heal and shield you give (Tending, Triage, stims and kits)",
+            "slope": "@scale.cards.attr_slope",
+            "profiles": [
+              "healing",
+              "mend",
+              "tend"
+            ]
+          },
+          {
+            "text": "+8 max MP a point, on the mp column",
+            "number": "@scale.mp_pool.ins",
+            "data_key": "attributes.json insight.derived (in place of the number typed at packages/engine/src/character.ts:860)"
+          },
+          {
+            "text": "Soul MP costs 5% less a point",
+            "number": 0.05,
+            "data_key": "attributes.json insight.derived (in place of soulCostSaving typed at packages/engine/src/character.ts:901)"
+          }
+        ],
+        "felt": "every stim you crack and every Mend you cast is bigger, and the pool is deeper"
+      },
+      "door": {
+        "id": "bonds",
+        "name": "Bonds and Tending",
+        "counter": {
+          "resource": "bond",
+          "unit": "a Bond held (a tie of kind bond, friend or foe)",
+          "starts_at": 0
+        },
+        "builds": [
+          {
+            "by": "Bond",
+            "units": 1,
+            "ap": 1
+          },
+          {
+            "by": "Tending ties (Empathy 2): a Mend, Shield or Triage on someone not yet Bonded",
+            "units": 1,
+            "ap": 0
+          },
+          {
+            "by": "the Mender's free Bond, once a turn",
+            "units": 1,
+            "ap": 0
+          },
+          {
+            "by": "a failed Taunt save (Insinuation 6)",
+            "units": 1,
+            "ap": 0
+          }
+        ],
+        "spends": [
+          {
+            "by": "Snap (one Bond)",
+            "units": 1,
+            "ap": 1
+          },
+          {
+            "by": "Snap All",
+            "units": "all",
+            "min": 1,
+            "ap": 1
+          }
+        ],
+        "wears": [
+          {
+            "by": "a foe saving its way out, Let Go, a Bonded ally going Down",
+            "units": 1
+          }
+        ],
+        "plain": {
+          "name": "a lone Snap on a foe (Soul damage, no armour, the tend profile read on the deal column)",
+          "base_today": {
+            "data": "tending.json:items[tend.snap].amounts.snap.base"
+          },
+          "formula": "@soul.attributes.insight.door.plain.base_today * @scale.factor.value * stat('tend', A, S) * deal(L) * grade_dmg(G)",
+          "why": "A Snap's damage reads deal (an amount's column by its kind and dealer, scale.columns.about); its heal on a friend reads mend. No new profile."
+        },
+        "cashouts": {
+          "snap": {
+            "name": "Snap",
+            "from_point": 1,
+            "ap": 1,
+            "spends": 1,
+            "rolls": false,
+            "formula": "bite",
+            "terms": [
+              "bite"
+            ],
+            "why": "the one-Bond medic can still pull the thread it tied (ruling C18: a cash-out from point 1)"
+          },
+          "snap_all": {
+            "name": "Snap All",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "min": 1,
+            "rolls": false,
+            "formula": "bite * cash(n)",
+            "shared": "each Bond takes cash(n) / n of it (cash_share:bond): a foe as Soul damage and a Daze it saves, a friend as a heal",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "why": "every Bond spent at once is worth more than the one before it; counted in total across the Bonds it breaks (ruling 29)"
+          }
+        },
+        "verbs": {
+          "bond": {
+            "ap": 1,
+            "cost": {
+              "rule": "count"
+            },
+            "why": "a Bond's price is the AP and, on a foe, its save"
+          },
+          "let_go": {
+            "ap": 0,
+            "cost": {
+              "rule": "count"
+            },
+            "why": "unchanged"
+          },
+          "mend": {
+            "ap": 2,
+            "cost": {
+              "rule": "mp",
+              "mp": 12
+            },
+            "heal_base": {
+              "data": "tending.json:items[tend.mend].amounts.heal.base",
+              "x": "@scale.factor.value"
+            },
+            "why": "about eight to twelve Mends a pool at every level: a healer counts them"
+          },
+          "mend_self": {
+            "ap": 2,
+            "cost": {
+              "rule": "mp",
+              "mp": "@soul.attributes.insight.door.verbs.mend.cost.mp"
+            },
+            "heal_base": "@soul.attributes.insight.door.verbs.mend.heal_base",
+            "why": "the same Mend, on yourself, once a turn"
+          },
+          "shield": {
+            "ap": 2,
+            "cost": {
+              "rule": "mp",
+              "mp": 15
+            },
+            "shield_base": {
+              "data": "tending.json:items[tend.shield].amounts.shield.base",
+              "x": "@scale.factor.value"
+            },
+            "needs_ally": true,
+            "solo": "a Bonded friend or yourself (ruling 32: alone, an ally includes yourself)",
+            "why": "a shield is a little more than a Mend for a little more MP"
+          },
+          "ally_down": {
+            "cost": {
+              "rule": "mp",
+              "mp": 8
+            },
+            "why": "a Bonded ally going Down costs MP: the thread hurts, on the same scale as the pool"
+          }
+        },
+        "threads": {
+          "today": "tending.json:31 tend.threads (the 20% share and echo, +3 to hit a Bonded foe, +5% a Bond held, Tending through a Bond x1.2): kept as they are",
+          "on_snap": "a Snap ends the passives of the Bonds it breaks: the +5% a Bond held never counts on the Snap that spends them",
+          "to_hit": "a Bonded foe's +3 to hit is a roll term for any weapon, not damage"
+        },
+        "push": {
+          "point": 8,
+          "name": "Overbind",
+          "reach_plus": 1,
+          "price": "when the extra Bond breaks you lose a share of your max HP at the start of your next turn (nothing soaks it)",
+          "price_kind": "share",
+          "numbers": {
+            "hp_share": 0.1
+          },
+          "why": "once a turn, 0 AP: one more Bond than your Reach until your next Snap (res_max:bond +1 for the use); a torn thread costs more than a point of Strain because it is a whole Bond"
+        },
+        "marks": {
+          "unit": "a Bond broken by a Snap while the fight has a worthy foe (a friend's Bond counts then too)",
+          "rate": "@pacing.door_marks.bonds",
+          "gifts": {
+            "I": {
+              "text": "your first Bond each fight costs no AP and has no range limit; it stacks with the Mender's free Bond (two free Bonds in the first turn)"
+            },
+            "II": {
+              "text": "a foe saves against your Bond at a penalty",
+              "numbers": {
+                "save": -2
+              }
+            },
+            "middle": {
+              "text": "Tending through a Bond is stronger",
+              "numbers": {
+                "tend_through_mult": 1.3
+              },
+              "today": "tending.json tend.threads effects[6] 1.2"
+            },
+            "III": {
+              "text": "Overbind costs no HP once a fight"
+            }
+          }
+        },
+        "keeps_tags": [
+          {
+            "move": "Bond, Let Go, Snap",
+            "keeps": "the chain and plates (a quiet act at a distance)"
+          },
+          {
+            "move": "Mend, Shield, Triage",
+            "door": "outbursts",
+            "keeps": "counts as tending for the heart's calming (soul_modules.json:77 strain.calming row tend)"
+          },
+          {
+            "move": "Mend, Shield, Triage",
+            "door": "prayer",
+            "keeps": "the patron tags heal and protect: they lay Grace for a Faithful"
+          }
+        ],
+        "forks": {
+          "4": [
+            {
+              "id": "fork.tend.keep_the_thread",
+              "name": "Keep the Thread",
+              "text": "Snap costs MP, and on a Bonded foe it keeps the Bond",
+              "group": "fork:bonds:4"
+            },
+            {
+              "id": "fork.tend.short_thread",
+              "name": "Short Thread",
+              "text": "Tending a Bonded ally close by heals more than through a long thread",
+              "group": "fork:bonds:4"
+            }
+          ],
+          "8": [
+            {
+              "id": "fork.tend.shared_pulse",
+              "name": "Shared Pulse",
+              "text": "your Mend on a Bonded ally sends a share of it down every other Bond",
+              "group": "fork:bonds:8"
+            },
+            {
+              "id": "fork.tend.long_thread",
+              "name": "Long Thread",
+              "text": "Bond reach grows; the first Tending on each Bonded ally each round costs less AP",
+              "group": "fork:bonds:8"
+            }
+          ]
+        }
+      },
+      "ladders": {
+        "empathy": {
+          "role": "alpha",
+          "card": {
+            "text": "+5% on every heal, shield and Snap you give, a point",
+            "slope": "@scale.cards.skill_slope"
+          },
+          "points": {
+            "1": {
+              "exists": "the door: Bond, Mend, Mend Yourself, the Threads",
+              "reach": 1,
+              "bite": 1.0,
+              "new": "Snap moves here from 2 (tending.json:534-539 tend.snap requires 2 to 1), one Bond or all of them",
+              "felt": "you tie a foe and pull the thread the same turn"
+            },
+            "2": {
+              "exists": "(Snap moved to 1)",
+              "new": "Tending ties: your Mend, Shield or Triage on someone you are not Bonded to Bonds it, free, if you have room",
+              "needs_ally": true,
+              "solo": "alone, Mend Yourself ties your own thread: one Bond on yourself, which Snap All pays back to you as a heal",
+              "felt": "the friend you keep up is tied to you without spending a turn on it"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Empathy perk"
+            },
+            "4": {
+              "exists": "fork: Keep the Thread or Short Thread",
+              "reach": 2,
+              "felt": "two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps"
+            },
+            "5": {
+              "exists": "Shield",
+              "needs_ally": true,
+              "solo": "Shield yourself (ruling 32)",
+              "felt": "a shield that holds through the enemy's turn"
+            },
+            "6": {
+              "exists": "perk step; +3 Bond reach",
+              "bite": 1.4,
+              "felt": "every Bond you Snap is worth two fifths more, and you tie from further off"
+            },
+            "7": {
+              "exists": "perk step",
+              "reach": 3,
+              "needs": {
+                "camaraderie": 4
+              },
+              "felt": "a web of three: Snap All of three is worth more than four lone Snaps"
+            },
+            "8": {
+              "exists": "fork: Shared Pulse or Long Thread",
+              "new": "the Push: Overbind",
+              "felt": "one Bond past your Reach, and the tear hurts you next turn"
+            },
+            "9": {
+              "exists": "perk step",
+              "new": "Mend and Shield cost a quarter less MP (in place of the flat cut, tending.json res.mp.steps)",
+              "bite": 1.8,
+              "numbers": {
+                "mp_cut_share": 0.25
+              },
+              "felt": "a full Snap All reaches five digits at level 20, and your Mends are cheaper"
+            },
+            "10": {
+              "exists": "Mastered: Threads That Hold",
+              "reach": 4,
+              "needs": {
+                "camaraderie": 7,
+                "implication": 4
+              },
+              "felt": "the fourth Bond: a web nobody without the whole family can hold"
+            }
+          }
+        },
+        "camaraderie": {
+          "role": "beta",
+          "feed": {
+            "formula": "min(cap, (feed_flat + feed * A_alpha) * B)",
+            "feed_flat": 0.02,
+            "feed": {
+              "data": "skills.json:items[camaraderie].per_point.numbers.feed"
+            },
+            "cap": {
+              "data": "skills.json:items[camaraderie].per_point.numbers.feed_at_double"
+            },
+            "feeds": "heal_back: this share of what you heal down a Bond comes back to you (effects/feed.ts doorFeed)",
+            "why": "ruling 20: a first point of Camaraderie gives a one-Bond medic a real share back, not a hundredth"
+          },
+          "points": {
+            "1": {
+              "exists": "Share a Hit (a share of a hit on an ally beside you); +10% healing received a point (the row's numbers.heal, in place of character.ts:1247)",
+              "needs_ally": true,
+              "solo": "alone, Share a Hit turns outward: a share of a hit on you passes down a Bond to a Bonded foe as Soul damage",
+              "felt": "the friend beside you takes less, or the foe you are tied to takes your pain"
+            },
+            "2": {
+              "exists": "Share a Hit's share grows",
+              "felt": "you take a bigger share, and heals land harder on you"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Camaraderie perk"
+            },
+            "4": {
+              "new": "opens Bonds' third (ruling 13, with Empathy 7)",
+              "felt": "your web of three opens"
+            },
+            "5": {
+              "exists": "perk step; Share a Hit reaches a Bonded ally in sight",
+              "needs_ally": true,
+              "solo": "the outward Share reaches any Bonded foe in sight",
+              "felt": "the thread carries the hit across the room"
+            },
+            "6": {
+              "new": "Hold Together: your first Share a Hit each round uses no reaction",
+              "needs_ally": true,
+              "solo": "the outward Share of a hit on you uses no reaction once a round",
+              "felt": "the one you are tied to never waits for your reflexes"
+            },
+            "7": {
+              "exists": "perk step",
+              "new": "opens Bonds' fourth (ruling 13, with Empathy 10 and Insinuation 4)",
+              "felt": "the fourth Bond's beta gate"
+            },
+            "8": {
+              "new": "Both Ways: heals a Bonded friend gives you are bigger",
+              "numbers": {
+                "heal_share": 0.25
+              },
+              "needs_ally": true,
+              "solo": "alone, every heal you take is bigger while you hold a Bond",
+              "felt": "the Bond carries care back"
+            },
+            "9": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "10": {
+              "exists": "Mastered: Many Hands",
+              "new": "Snap All keeps one Bond standing (your choice): the full family cashes out again sooner",
+              "numbers": {
+                "keeps_units": 1
+              },
+              "felt": "the web never goes all the way down"
+            }
+          }
+        },
+        "implication": {
+          "role": "gamma",
+          "every_point": "its full points on checks and Asks; +1 tile of Taunt reach (skills.json implication per_point.numbers.call_range)",
+          "points": {
+            "1": {
+              "exists": "the Call Taunt, its first step",
+              "felt": "a foe comes at you and not at the friend behind you"
+            },
+            "2": {
+              "exists": "modules Anchor, Lure, Linger",
+              "new": "a foe you Taunted this round saves against your Bond at a penalty",
+              "numbers": {
+                "save": -2
+              },
+              "felt": "the barb opens the heart for the thread"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Insinuation perk"
+            },
+            "4": {
+              "exists": "Taunt's second step",
+              "new": "opens Bonds' fourth (ruling 13, with Empathy 10 and Camaraderie 7)",
+              "felt": "a sharper Taunt, and the fourth Bond's gamma gate"
+            },
+            "5": {
+              "exists": "perk step; Taunt costs less AP",
+              "felt": "you Taunt and still have the turn"
+            },
+            "6": {
+              "new": "a foe that fails your Taunt's save is Bonded to you at once, no AP, if you have room",
+              "felt": "the insult hooks the heart"
+            },
+            "7": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "8": {
+              "exists": "Taunt's third step",
+              "felt": "they cannot look away from you"
+            },
+            "9": {
+              "exists": "perk step; Taunt costs less AP again",
+              "felt": "a Taunt in passing"
+            },
+            "10": {
+              "exists": "Mastered: Their Own Idea",
+              "felt": "they think it was their idea to hate you"
+            }
+          }
+        }
+      },
+      "class": {
+        "id": "bard",
+        "name": "Mender",
+        "only_it_has": [
+          {
+            "id": "the_ledger",
+            "text": "a second counter fed by its own heals and shields and cashed by its blows: it empties into a Snap first"
+          },
+          {
+            "id": "triage",
+            "text": "a heal nobody else has, stronger and cheaper than Mend"
+          },
+          {
+            "id": "free_bond",
+            "text": "a free Bond each turn, no range"
+          }
+        ],
+        "retires": [
+          {
+            "id": "one_more_bond",
+            "why": "ruling C16: the bigger counter goes to the ladder (the fourth Bond is everyone's at Empathy 10 with its family); tending.json:1057 tend.mender_bonds retires"
+          }
+        ],
+        "dial": "the class dial row retires under the one rule for dials (critic-consistency-2 1.13; the lead states it once)",
+        "ranks": {
+          "3": [
+            {
+              "id": "triage",
+              "name": "Triage",
+              "ap": 2,
+              "cost": {
+                "rule": "mp",
+                "mp": 10
+              },
+              "heal_base": 3.4,
+              "today": {
+                "data": "classes.json:move_pool.moves[triage].amounts.heal.base"
+              },
+              "worth": "about one and a half of anyone's Mend for the same AP and less MP",
+              "needs_ally": true,
+              "solo": "Triage yourself (ruling 32)",
+              "why": "a class heal must be worth its slot: today's is a Mend and a sixth"
+            },
+            {
+              "id": "ledger",
+              "name": "The Ledger",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "cap_base": {
+                "data": "classes.json:base[bard].ranks.I.moves[ledger].amounts.cap.base",
+                "x": "@scale.factor.value"
+              },
+              "factor": {
+                "data": "classes.json:base[bard].ranks.I.moves[ledger].numbers.factor"
+              },
+              "worth": "the heals you gave come back as damage on your next blow or Snap: an add to the blow's base, not a share in the sum"
+            },
+            {
+              "id": "bond_free",
+              "name": "Bond (free)",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "a Bond a turn for no AP"
+            },
+            {
+              "id": "field_surgery",
+              "name": "Field Surgery",
+              "ap": 0,
+              "cost": {
+                "rule": "mp",
+                "mp": 30
+              },
+              "worth": "out of a fight: not a fight move"
+            }
+          ],
+          "5": [
+            {
+              "id": "inspire",
+              "name": "Inspire",
+              "ap": 1,
+              "cost": {
+                "rule": "mp",
+                "mp": 12
+              },
+              "love_base": 1.69,
+              "today": {
+                "data": "classes.json:move_pool.moves[inspire].amounts.love.base"
+              },
+              "worth": "a felt feeling to a Bonded unit; Love heals about three quarters of a Mend for 1 AP",
+              "needs_ally": true,
+              "solo": "on a Bonded foe: its foe face (today's feelings' boons on an enemy), or Love on yourself",
+              "why": "it must be worth pressing for 1 AP"
+            },
+            {
+              "id": "take_the_weight",
+              "name": "Take the Weight",
+              "ap": "reaction",
+              "cost": {
+                "rule": "share"
+              },
+              "share": {
+                "data": "classes.json:base[bard].ranks.II.moves[take_the_weight].amounts.weight.per[0].value"
+              },
+              "worth": "a friend's Down prevented, for a share of your own bar",
+              "needs_ally": true,
+              "solo": "alone, once a fight, a blow that would Down you while you hold a Bond breaks that Bond instead and leaves you on 1 HP"
+            }
+          ],
+          "15": [
+            {
+              "id": "brimming",
+              "name": "Brimming",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "passive: an overheal becomes a shield; with the half-bar heal cap gone (scale.caps.heal_cap) it is felt"
+            },
+            {
+              "id": "rally",
+              "name": "Rally",
+              "ap": 2,
+              "cost": {
+                "rule": "mp",
+                "mp": 35
+              },
+              "heal_base": {
+                "data": "classes.json:base[bard].ranks.III.moves[rally].amounts.heal.base",
+                "x": "@scale.factor.value"
+              },
+              "worth": "most of a Mend to every Bonded ally and every ally near you, once a scene",
+              "needs_ally": true,
+              "solo": "alone, Rally heals you and fills the Ledger by the same amount"
+            }
+          ]
+        },
+        "solo": "Triage, Shield, Rally and Inspire take yourself; Take the Weight and Share a Hit turn outward down a Bond; the Ledger and the free Bond need nobody (ruling 32)"
+      }
+    },
+    "determination": {
+      "card": {
+        "lines": [
+          {
+            "text": "+10% on every Outburst's damage, heal and shield",
+            "slope": "@scale.cards.attr_slope",
+            "profiles": [
+              "soul",
+              "soul_mend"
+            ]
+          },
+          {
+            "text": "+12 max MP a point, on the mp column",
+            "number": "@scale.mp_pool.det",
+            "data_key": "attributes.json determination.derived (in place of the number typed at packages/engine/src/character.ts:860)"
+          },
+          {
+            "text": "+5% mana syphoned a point",
+            "number": "@soul.attributes.determination.door.syphon.per_det",
+            "data_key": "attributes.json determination.derived (in place of syphonMult typed at packages/engine/src/character.ts:903)"
+          }
+        ],
+        "felt": "every Release lands harder, the pool is deeper and a Syphon fills more of it"
+      },
+      "door": {
+        "id": "outbursts",
+        "name": "Outbursts",
+        "counter": {
+          "resource": "stage",
+          "unit": "a stage of the held Outburst",
+          "starts_at": 0
+        },
+        "builds": [
+          {
+            "by": "Pump",
+            "units": 1,
+            "ap": 1
+          },
+          {
+            "by": "Overdraw (Will Power 2), once a turn",
+            "units": 2,
+            "ap": 1
+          },
+          {
+            "by": "a swell at your turn's start while held",
+            "units": 1,
+            "ap": 0
+          },
+          {
+            "by": "Feed (a glyph)",
+            "units": 1,
+            "ap": 1
+          },
+          {
+            "by": "the free Pump (one a turn at most)",
+            "units": 1,
+            "ap": 0
+          }
+        ],
+        "spends": [
+          {
+            "by": "Release",
+            "units": "all",
+            "ap": 1
+          }
+        ],
+        "wears": [
+          {
+            "by": "Strain over the limit (the burn, a Mana Short at the limit's third point over)",
+            "units": 0
+          }
+        ],
+        "plain": {
+          "name": "the Damage design at x1.0 (stage table at stage 1)",
+          "base": {
+            "data": "soul_modules.json:damage.base",
+            "x": "@scale.factor.value"
+          },
+          "profile": "soul",
+          "why": "soul_modules.json damage.base is the one read (magic.ts:752); the school row's damage 40 is a dead copy and goes"
+        },
+        "release_floor": {
+          "data": "soul_modules.json:cycle.stage_mult[0]"
+        },
+        "felt_top": {
+          "about": "the four strongest feeling steps in data, poured on the last four Pumps (each feeling once an Outburst, four at most: feelings.json max_feelings_per_hold); a feeling Pump steps its own number in place of the plain step (Bite is the plain Pump's, never added to a feeling)",
+          "steps": [
+            {
+              "data": "feelings.json:items[rage].step.base"
+            },
+            {
+              "data": "feelings.json:items[despair].step.max"
+            },
+            {
+              "data": "feelings.json:items[pride].step.base"
+            },
+            {
+              "data": "feelings.json:items[abandon].step.base"
+            }
+          ]
+        },
+        "cashouts": {
+          "release": {
+            "name": "Release",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": true,
+            "formula": "@soul.attributes.determination.door.release_floor + bite * cash(n)",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "rolls_when": "a Bolt or a Lance rolls (classes/soul.ts:36-39) and takes Margins; a Wave, Burst or Aura lands",
+            "why": "a heart worked to its top pays far more than a quick one: every Pump is worth grow times the one before (magic.ts:1371 outburstTerms, the one place it is built)"
+          },
+          "release_felt": {
+            "name": "Release with four feelings",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": true,
+            "formula": "@soul.attributes.determination.door.release_floor + bite * cash(n) + ((@soul.attributes.determination.door.felt_top.steps.0 - bite) * @scale.cash_out.grow ** (n - 4) if n >= 4 else 0) + ((@soul.attributes.determination.door.felt_top.steps.1 - bite) * @scale.cash_out.grow ** (n - 3) if n >= 3 else 0) + ((@soul.attributes.determination.door.felt_top.steps.2 - bite) * @scale.cash_out.grow ** (n - 2) if n >= 2 else 0) + ((@soul.attributes.determination.door.felt_top.steps.3 - bite) * @scale.cash_out.grow ** (n - 1) if n >= 1 else 0)",
+            "terms": [
+              "bite",
+              "cash",
+              "feelings"
+            ],
+            "why": "everything legal on the sheet (ruling 29): the four strongest feelings in data on the last Pumps of the heart (the strongest last, where a Pump is worth most)"
+          }
+        },
+        "verbs": {
+          "begin": {
+            "ap": 2,
+            "cost": {
+              "rule": "design"
+            },
+            "strain": 1
+          },
+          "pump": {
+            "ap": 1,
+            "cost": {
+              "rule": "design",
+              "share": "@scale.costs.pump_share"
+            },
+            "why": "a tenth of the Begin each, so a full heart costs Begin x (1 + a tenth of the stages)"
+          },
+          "release": {
+            "ap": 1,
+            "cost": {
+              "rule": "count"
+            }
+          },
+          "steady": {
+            "ap": 1,
+            "cost": {
+              "rule": "count"
+            }
+          },
+          "feed": {
+            "ap": 1,
+            "cost": {
+              "rule": "count"
+            }
+          },
+          "storm_front_extra": {
+            "cost": {
+              "rule": "mp",
+              "mp": "@soul.attributes.determination.class.ranks.5.0.cost.mp"
+            }
+          }
+        },
+        "design_costs": {
+          "data_key": "soul_modules.json schools[].base_cost, items[].cost, second_school.cost, tones[].cost",
+          "rule": "@scale.costs.rules.design",
+          "restate": "the builder restates each on the new pool by the share of a full pool it held today (scale.mp_pool against today's), so a design is the same share of a pool it was"
+        },
+        "syphon": {
+          "ap": 1,
+          "bands": [
+            10,
+            20,
+            30,
+            40
+          ],
+          "per_det": 0.05,
+          "column": "mp",
+          "formula": "band * (1 + per_det * (DET - 1)) * mp(L)",
+          "today": "rules.json mana bands syphon_mp (30 / 60 / 90 / 120) x syphonMult (character.ts:903)",
+          "why": "about two thirds of a full cash-out in normal air: the MP left, the Syphon's AP and the air it drains are a choice (ruling A6); Will Power leaves it"
+        },
+        "strain": {
+          "limit": {
+            "data": "soul_modules.json:strain.limit.base"
+          },
+          "limit_steps": "soul_modules.json strain.limit.steps (Composure 1, 2, 4, 6, 8)",
+          "burn": "@scale.costs.shares.strain_burn",
+          "shock": "@scale.costs.shares.mana_shock",
+          "short_at_over": {
+            "data": "soul_modules.json:strain.short_at_over"
+          },
+          "text_fix": "rules.json:1486 ('8 true damage per point over the limit') reads its row"
+        },
+        "push": {
+          "point": 8,
+          "name": "Overdraw past the top",
+          "reach_plus": 1,
+          "price": "Strain at once, and your Strain does not fall at the start of your next turn",
+          "price_kind": "count",
+          "numbers": {
+            "strain": 2
+          },
+          "why": "once a turn an Overdraw or a Pump may take the heart one stage past your Reach (res_max:stage +1 for the use); a heart pushed past its top stays hot"
+        },
+        "marks": {
+          "unit": "a stage Released on a worthy foe",
+          "rate": "@pacing.door_marks.outbursts",
+          "gifts": {
+            "I": {
+              "text": "your first Begin each fight starts at stage 1 (begin_stage); it adds with Afterglow in the one stat, never overlapping",
+              "numbers": {
+                "begin_stage": 1
+              }
+            },
+            "II": {
+              "text": "Strain falls faster at the start of your turn",
+              "numbers": {
+                "decay": 2
+              },
+              "today": {
+                "data": "soul_modules.json:strain.decay_per_turn"
+              }
+            },
+            "middle": {
+              "text": "once a fight, a Mana Short Dazes you instead of Stunning you"
+            },
+            "III": {
+              "text": "Overdraw past the top costs no Strain once a fight"
+            }
+          }
+        },
+        "feelings": {
+          "track": "@pacing.tracks.feelings",
+          "chosen": "a feeling at its Mark III may be poured a second time in one Outburst, within the four (the one exception to once each)"
+        },
+        "modules": {
+          "track": "@pacing.tracks.modules",
+          "gates": "soul_modules.json practice.gate_skills: the level-up screen names the module a point opens"
+        },
+        "ways": {
+          "about": "the Damage school's ways (soul_modules.json schools[damage].modes): a way's bonus against a condition goes into the one sum (ruling A8)",
+          "finish": {
+            "text": "Finish against a foe at half HP or less",
+            "sum": {
+              "door": "outbursts",
+              "value": 0.15,
+              "group": "way:damage"
+            },
+            "today": {
+              "data": "soul_modules.json:schools[damage].modes.finish.mult_low"
+            },
+            "why": "today's x1.4 at low HP, as a sum term set by the checker's top (ruling 29); the way's 0.8 elsewhere stays"
+          }
+        },
+        "keeps_tags": [
+          {
+            "move": "Begin, Pump, Steady",
+            "keeps": "plates and the chain (still acts)"
+          },
+          {
+            "move": "a held Outburst",
+            "keeps": "never Hidden: the heart glows"
+          },
+          {
+            "move": "a weapon attack, a heal, stim, shield or cleanse given, a Call with Recitation",
+            "door": "outbursts",
+            "keeps": "calm a point of Strain (soul_modules.json:77 strain.calming rows)"
+          },
+          {
+            "move": "a Whisper",
+            "door": "prayer",
+            "keeps": "calms a point of Strain once a turn (new): prayer stills the heart"
+          },
+          {
+            "move": "holding Guard",
+            "door": "guard",
+            "keeps": "counts as a still turn for the still calming row (new)"
+          }
+        ],
+        "forks": {
+          "4": [
+            {
+              "id": "fork.soul.ride_the_edge",
+              "name": "Ride the Edge",
+              "text": "a Release at or over your Strain limit deals more",
+              "today": {
+                "data": "forks.json:items[fork.soul.ride_the_edge].effects[0].value"
+              },
+              "sum": {
+                "door": "outbursts",
+                "value": 0.05,
+                "group": "fork:outbursts:4"
+              },
+              "group": "fork:outbursts:4",
+              "why": "set by the checker's top of the scale (ruling 29: the Release with Ride the Edge and Blood Price at most 99,999, with gear_perks' Outburst terms in the sum)"
+            },
+            {
+              "id": "fork.soul.slow_burn",
+              "name": "Slow Burn",
+              "text": "once a turn Steady is cheaper and calms more",
+              "group": "fork:outbursts:4"
+            }
+          ],
+          "8": [
+            {
+              "id": "fork.soul.blood_price",
+              "name": "Blood Price",
+              "text": "your heart burns you, and your next Release deals more",
+              "today": {
+                "data": "forks.json:items[fork.soul.blood_price].effects[1].value"
+              },
+              "sum": {
+                "door": "outbursts",
+                "value": 0.1,
+                "group": "fork:outbursts:8"
+              },
+              "group": "fork:outbursts:8",
+              "why": "set by the checker's top of the scale (ruling 29: the Release with Ride the Edge and Blood Price at most 99,999, with gear_perks' Outburst terms in the sum)"
+            },
+            {
+              "id": "fork.soul.clean_break",
+              "name": "Clean Break",
+              "text": "an Outburst that drops a foe takes Strain off, once a turn",
+              "group": "fork:outbursts:8"
+            }
+          ]
+        }
+      },
+      "ladders": {
+        "will_power": {
+          "role": "alpha",
+          "card": {
+            "text": "+5% on every Outburst a point (the profile reads it at last: today soul's skill slope is 0)",
+            "slope": "@scale.cards.skill_slope"
+          },
+          "points": {
+            "1": {
+              "exists": "the door",
+              "reach": 2,
+              "bite": 0.25,
+              "felt": "the door, a taste: a heart worked to stage 2 pays a third more than a quick one"
+            },
+            "2": {
+              "exists": "Overdraw; modules Size and Quiet",
+              "felt": "two stages in one Pump, once a turn"
+            },
+            "3": {
+              "exists": "perk step; a free Pump a round",
+              "felt": "the heart climbs a stage for no AP"
+            },
+            "4": {
+              "exists": "fork: Ride the Edge or Slow Burn; modules Bloom and Volley",
+              "reach": 3,
+              "felt": "stage 3: a full Release is worth most of two plain ones"
+            },
+            "5": {
+              "exists": "Two Schools",
+              "felt": "a second school rides the same Release"
+            },
+            "6": {
+              "exists": "perk step; a module slot",
+              "bite": 0.3,
+              "felt": "every Pump is worth a fifth more"
+            },
+            "7": {
+              "exists": "perk step",
+              "reach": 4,
+              "needs": {
+                "composure": 4
+              },
+              "felt": "stage 4: what everyone had, now earned and compounding"
+            },
+            "8": {
+              "exists": "fork: Blood Price or Clean Break",
+              "new": "the Push: Overdraw past the top",
+              "felt": "one stage past your top, and the heart stays hot"
+            },
+            "9": {
+              "exists": "perk step; a module slot",
+              "bite": 0.35,
+              "felt": "a full Release reaches five digits at level 20"
+            },
+            "10": {
+              "exists": "Mastered: The Twin Pays",
+              "reach": 5,
+              "needs": {
+                "composure": 7,
+                "lore_master": 4
+              },
+              "felt": "stage 5: a stage nobody without the whole family can hold"
+            }
+          }
+        },
+        "composure": {
+          "role": "beta",
+          "feed": {
+            "formula": "1 + feed_flat * B + feed * A_alpha * B",
+            "feed_flat": 0,
+            "feed": 0,
+            "feeds": "no product term: Composure counts from its first point through its own lines (+1 Heart save a point, skills.json composure per_point.numbers.save; the Strain limit's steps)",
+            "why": "ruling 20 is met by the lines themselves; a feed on top would be a second copy of the limit"
+          },
+          "points": {
+            "1": {
+              "exists": "+1 Heart save a point; the Strain limit +1",
+              "felt": "the heart holds one more point before it burns"
+            },
+            "2": {
+              "exists": "the Strain limit +1; modules",
+              "felt": "another point of headroom, and new modules"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Composure perk"
+            },
+            "4": {
+              "exists": "the Strain limit +1",
+              "new": "opens stage 4 (ruling 13, with Will Power 7)",
+              "felt": "stage 4 opens"
+            },
+            "5": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "6": {
+              "exists": "the Strain limit +1; a swell adds no Strain",
+              "felt": "a held heart climbs for free"
+            },
+            "7": {
+              "exists": "perk step",
+              "new": "opens stage 5 (ruling 13, with Will Power 10 and Lore Master 4)",
+              "felt": "stage 5's beta gate"
+            },
+            "8": {
+              "exists": "the Strain limit +1",
+              "felt": "the last point of headroom"
+            },
+            "9": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "10": {
+              "exists": "Mastered: Still Water",
+              "new": "the burn of Strain over the limit is a smaller share of your max HP",
+              "numbers": {
+                "strain_burn_share": 0.04
+              },
+              "replaces": "@scale.costs.shares.strain_burn",
+              "felt": "Mastered Composure is felt in the door it guards"
+            }
+          }
+        },
+        "lore_master": {
+          "role": "gamma",
+          "every_point": "its full points on checks and Asks; +1 tile of Name It reach (skills.json lore_master per_point.numbers.call_range)",
+          "points": {
+            "1": {
+              "exists": "the first tone; Name It's first step",
+              "felt": "your Outbursts take a colour"
+            },
+            "2": {
+              "exists": "forms and modules",
+              "felt": "four forms and new modules"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Lore Master perk"
+            },
+            "4": {
+              "exists": "modules; a ready design; Name It's second step",
+              "new": "opens stage 5 (ruling 13, with Will Power 10 and Composure 7)",
+              "felt": "a design ready, and stage 5's gamma gate"
+            },
+            "5": {
+              "exists": "perk step; Name It costs less",
+              "felt": "a perk and a cheaper Call"
+            },
+            "6": {
+              "exists": "a ready design",
+              "felt": "another design ready to Begin"
+            },
+            "7": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "8": {
+              "exists": "a ready design; Name It's third step",
+              "felt": "a design and the Call's top step"
+            },
+            "9": {
+              "exists": "perk step; Name It costs less again",
+              "felt": "a perk"
+            },
+            "10": {
+              "exists": "Mastered: True Name; a ready design",
+              "felt": "you know what the thing is called"
+            }
+          }
+        }
+      },
+      "class": {
+        "id": "channeler",
+        "name": "Channeler",
+        "only_it_has": [
+          {
+            "id": "afterglow",
+            "text": "its heart never goes cold between Outbursts: after a Release it rebuilds from a stage up"
+          },
+          {
+            "id": "heart_surge",
+            "text": "a Release one stage higher than it holds, within its top"
+          },
+          {
+            "id": "storm_front",
+            "text": "a Bolt or a Lance that arcs to more foes"
+          }
+        ],
+        "retires": [
+          {
+            "id": "shape",
+            "why": "a small bonus on one Pump is a number, not a thing (ruling C16); its bespoke handler goes (classes/i.ts:1147)"
+          }
+        ],
+        "dial": "the class dial row (classes.json:2821) retires under the one rule for dials (critic-consistency-2 1.13; the lead states it once)",
+        "ranks": {
+          "3": [
+            {
+              "id": "afterglow",
+              "name": "Afterglow",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "numbers": {
+                "begin_stage": 1,
+                "begin_stage_rank_iii": 2,
+                "after_stage": 2
+              },
+              "worth": "after a Release at stage 2 or higher, your next Begin this fight starts a stage up (begin_stage, S11): the Channeler cashes out and rebuilds faster than any Will Power point gives"
+            },
+            {
+              "id": "iron_heart",
+              "name": "Iron Heart",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "once a fight, on Mana Shock, your Strain falls to your limit and the shock ends at once"
+            }
+          ],
+          "5": [
+            {
+              "id": "storm_front",
+              "name": "Storm Front",
+              "ap": 0,
+              "cost": {
+                "rule": "mp",
+                "mp": 5
+              },
+              "numbers": {
+                "arcs": 2,
+                "within": 2
+              },
+              "cashout": {
+                "formula": "@soul.attributes.determination.door.release_floor",
+                "per": "each arc",
+                "rolls": false,
+                "why": "each arc takes the design at the stage table's floor, no Margins: the arcs are a thing, the Release is the hit"
+              },
+              "worth": "a Bolt or a Lance arcs to more foes near the first",
+              "why": "its MP restated on the new pool by Tending's ratio (critic-consistency-2 3.2); its literals move from classes/i.ts:1173-1199 into the row's numbers"
+            },
+            {
+              "id": "occult_library",
+              "name": "Occult Library",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "a free Syphon once a turn, and a tone"
+            }
+          ],
+          "15": [
+            {
+              "id": "heart_surge",
+              "name": "Heart Surge",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "a Release counts one stage more than it holds, never past the top you may hold (your Reach, or one past it with the Push): it saves a Pump; double Strain kept",
+              "why": "ruling 29 counts class moves in the top: a stage past Reach and the Push would make the Release six digits, so the Channeler's peak is tempo, not height"
+            },
+            {
+              "id": "eye_of_the_storm",
+              "name": "Eye of the Storm",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "once a scene: kept"
+            }
+          ]
+        },
+        "solo": "nothing in the Channeler's kit needs an ally"
+      }
+    },
+    "virtue": {
+      "card": {
+        "lines": [
+          {
+            "text": "+10% on every prayer's damage, heal and shield (said on the card at last)",
+            "slope": "@scale.cards.attr_slope",
+            "profiles": [
+              "blessing",
+              "blessing_mend"
+            ]
+          },
+          {
+            "text": "Hymns return sooner",
+            "number": "@soul.attributes.virtue.door.hymn_wait.per_virtue"
+          }
+        ],
+        "felt": "every prayer lands harder and the Hymn comes back sooner"
+      },
+      "door": {
+        "id": "prayer",
+        "name": "Prayer",
+        "counter": {
+          "resource": "grace",
+          "unit": "a step of Grace (in a fight; gone when it ends)",
+          "starts_at": 0
+        },
+        "builds": [
+          {
+            "by": "a prayer you say (a Whisper, Ward), one a turn from prayers",
+            "units": "@soul.attributes.virtue.door.grace.per_prayer"
+          },
+          {
+            "by": "the first act each turn your patron likes (its liked tags, detected as today)",
+            "units": "@soul.attributes.virtue.door.grace.per_liked"
+          }
+        ],
+        "spends": [
+          {
+            "by": "a Hymn, Sanctuary, Verdict",
+            "units": "all",
+            "ap": "the prayer's"
+          },
+          {
+            "by": "a Whisper, instead of laying (your choice when you say it)",
+            "units": "all",
+            "ap": 1
+          }
+        ],
+        "wears": [
+          {
+            "by": "a turn in which you neither prayed nor did a liked act",
+            "units": "@soul.attributes.virtue.door.grace.idle_wear"
+          },
+          {
+            "by": "a taboo act",
+            "units": "all"
+          }
+        ],
+        "grace": {
+          "per_prayer": 1,
+          "per_liked": 1,
+          "idle_wear": 1,
+          "taboo": "all",
+          "ends": "the fight",
+          "why": "prayer's in-fight counter (ruling C19): it fills by praying and by living as the patron likes, and one taboo clears it"
+        },
+        "devotion": {
+          "start": 0,
+          "track": "@pacing.tracks.devotion",
+          "grade": "@scale.grades.prayer",
+          "gates": {
+            "data_key": "patrons.json devotion.gates (Whisper 0, Hymns I to III, the Miracle): kept"
+          },
+          "live": "a live character keeps its Devotion XP, above the new top too (@pacing.migration; critic-consistency-2 1.10, 7.2)",
+          "why": "ruling 19: Devotion starts at 0 and follows pacing's curve; ruling 33: the grade reads the highest standing reached"
+        },
+        "plain": {
+          "name": "Judgement (a damage Hymn, the strongest in data; prayers land)",
+          "base_today": {
+            "data": "patrons.json:items[nerukhan].hymns[judgement].effects[0].value"
+          },
+          "formula": "-@soul.attributes.virtue.door.plain.base_today * @scale.factor.value * stat('blessing', A, S) * deal(L) * grade_dmg(G)",
+          "why": "blessing reads deal (scale.cards.profiles.blessing; today it reads the scale array, which goes); the grade is Devotion's (scale.grades.prayer)"
+        },
+        "rebuke_today": {
+          "data": "patrons.json:whispers[rebuke].effects[0].value"
+        },
+        "cashouts": {
+          "whisper": {
+            "name": "a Whisper that spends Grace (Rebuke)",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": false,
+            "base": "-@soul.attributes.virtue.door.rebuke_today * @scale.factor.value * stat('blessing', A, S) * deal(L) * grade_dmg(G)",
+            "formula": "1 + bite * cash(n)",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "why": "the cash-out from point 1 (ruling C18): a Faith-1 believer saves its Grace and spends it on one Whisper"
+          },
+          "hymn": {
+            "name": "a Hymn that spends Grace",
+            "from_point": 3,
+            "ap": 3,
+            "spends": "all",
+            "rolls": false,
+            "formula": "1 + bite * cash(n)",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "why": "the Hymn is what Grace is saved for; Hymns open with standing 3 (Devotion's gate)"
+          }
+        },
+        "hymn_wait": {
+          "formula": "max(floor_, ceil(base - per_faith * F - per_virtue * (V - 1)))",
+          "base": 10,
+          "per_faith": 0.5,
+          "per_virtue": 0.25,
+          "floor_": {
+            "data": "patrons.json:prayer.hymn.cooldown_rule.floor"
+          },
+          "today": "patrons.json prayer.hymn.cooldown_rule (9, 0.75, 0.25; read at character.ts:1266 HYMN_COOLDOWN, whose typed fallbacks go)",
+          "why": "every second Faith point takes a round off, up to the tenth; the floor is first met at the top; the wait is the Hymn's price now that Grace pays for waiting"
+        },
+        "miracle": {
+          "price_levels": {
+            "data": "patrons.json:prayer.miracle.devotion_cost_levels"
+          },
+          "reads": "ruling 33: the prayer grade reads the highest standing reached, so the price is paid in Hymn tiers and the next Miracle, never in every prayer's size (critic-player-2 3 is closed by the ruling)"
+        },
+        "push": {
+          "point": 8,
+          "name": "Pray above your standing",
+          "reach_plus": 0,
+          "price": "Devotion XP whether it lands or not, more if it misses",
+          "price_kind": "devotion_xp",
+          "numbers": {
+            "devotion_xp": 10,
+            "devotion_xp_miss": 20
+          },
+          "tn": {
+            "data_key": "patrons.json prayer.overreach (tn_base, tn_per_step): kept"
+          },
+          "why": "once a turn, a Hymn one tier past your Devotion standing (the tier ladder's Reach +1 for the use, S5): it raises the tier, not the Grace held, so reach_plus on Grace is 0; asking past what you earned always costs standing (patrons.json:100 overreach moves to Faith 8)"
+        },
+        "marks": {
+          "unit": "a step of Grace spent on a worthy foe",
+          "rate": "@pacing.door_marks.prayer",
+          "gifts": {
+            "I": {
+              "text": "a fight starts with Grace (op resource on combat_start)",
+              "numbers": {
+                "grace": 1
+              }
+            },
+            "II": {
+              "text": "a taboo costs half your Grace (rounded down), not all"
+            },
+            "middle": {
+              "text": "your Hymn's wait is a round shorter, never under its floor",
+              "numbers": {
+                "wait": -1
+              }
+            },
+            "III": {
+              "text": "praying above your standing costs no Devotion XP once a fight"
+            }
+          }
+        },
+        "sums": {
+          "judgement_helpless": {
+            "text": "Judgement against a foe that harmed the surrendered or Downed (today x1.3 at patrons.json nerukhan judgement effects[1])",
+            "sum": {
+              "door": "prayer",
+              "value": 0.3
+            },
+            "why": "a target's condition goes into the one sum (ruling A8)"
+          }
+        },
+        "keeps_tags": [
+          {
+            "move": "a Whisper",
+            "keeps": "Hidden, the chain and plates (it is quiet)"
+          },
+          {
+            "move": "a Hymn",
+            "keeps": "none (it is sung)"
+          },
+          {
+            "move": "every act a patron likes (Brace, Mend, FIRE and the rest: patrons.json tags)",
+            "door": "prayer",
+            "keeps": "keeps Grace: a turn spent on it does not wear a step"
+          }
+        ],
+        "forks": {
+          "4": [
+            {
+              "id": "fork.prayer.round_of_blessings",
+              "name": "Round of Blessings",
+              "text": "your first prayer each turn heals or shields more",
+              "group": "fork:prayer:4"
+            },
+            {
+              "id": "fork.prayer.steadfast",
+              "name": "Steadfast",
+              "text": "a Whisper or Ward on an ally at half HP or less costs less AP",
+              "group": "fork:prayer:4"
+            }
+          ],
+          "8": [
+            {
+              "id": "fork.prayer.benediction",
+              "name": "Benediction",
+              "text": "an answered Hymn steadies the aim of you and the allies near you",
+              "group": "fork:prayer:8"
+            },
+            {
+              "id": "fork.prayer.held_breath",
+              "name": "Swift Psalm",
+              "text": "the Hymn's wait is shorter, never under its floor",
+              "group": "fork:prayer:8"
+            }
+          ]
+        }
+      },
+      "ladders": {
+        "faith": {
+          "role": "alpha",
+          "card": {
+            "text": "+5% on every prayer a point (said on the card)",
+            "slope": "@scale.cards.skill_slope"
+          },
+          "points": {
+            "1": {
+              "exists": "Whispers",
+              "reach": 2,
+              "bite": 0.15,
+              "new": "Grace; a Whisper may spend it (the cash-out from point 1)",
+              "felt": "two Grace saved make one Whisper a third bigger"
+            },
+            "2": {
+              "exists": "Name the Sinner: a Whisper that Judges a foe; your prayers deal more to a Judged or Marked foe",
+              "sum": {
+                "door": "prayer",
+                "value": {
+                  "data": "skills.json:items[faith].unlocks.2.effects[1].value"
+                }
+              },
+              "felt": "you name the foe, and your god hits it harder"
+            },
+            "3": {
+              "exists": "perk step; Hymns open with standing 3 (critic-player-2 15)",
+              "felt": "a perk, and Hymns the day your patron trusts you"
+            },
+            "4": {
+              "exists": "fork: Round of Blessings or Steadfast",
+              "reach": 3,
+              "felt": "three Grace: a Hymn half again its size"
+            },
+            "5": {
+              "exists": "Witnessed",
+              "felt": "your patron watches the fight, and may act in it"
+            },
+            "6": {
+              "exists": "perk step",
+              "bite": 0.2,
+              "felt": "every step of Grace is worth a third more"
+            },
+            "7": {
+              "exists": "perk step",
+              "reach": 4,
+              "needs": {
+                "conscience": 4
+              },
+              "felt": "four Grace: a Hymn about twice its size"
+            },
+            "8": {
+              "exists": "fork: Benediction or Swift Psalm",
+              "new": "the Push: pray above your standing (moved here from every Faithful, ruling C17)",
+              "felt": "a Hymn your god has not yet given you, at a price in standing"
+            },
+            "9": {
+              "exists": "perk step",
+              "bite": 0.25,
+              "felt": "a full Hymn reaches five digits at level 20"
+            },
+            "10": {
+              "exists": "Mastered: Judgement Day",
+              "reach": 5,
+              "needs": {
+                "conscience": 7,
+                "authority": 4
+              },
+              "felt": "five Grace: a saint's litany nobody without the whole family can hold"
+            }
+          }
+        },
+        "conscience": {
+          "role": "beta",
+          "feed": {
+            "formula": "1 + feed_flat * B + feed * A_alpha * B",
+            "feed_flat": 0.04,
+            "feed": {
+              "data": "skills.json:items[conscience].per_point.numbers.feed"
+            },
+            "feeds": "your prayer shields (skills.json conscience unlock 1, mend_mult on shield, feed:faith)",
+            "why": "ruling 20: a first point of Conscience is felt on a Faith-1 prayer's shield"
+          },
+          "points": {
+            "1": {
+              "exists": "prayer shields grow with Faith and Conscience; +10% shields received a point (the row's numbers.shield, in place of character.ts:1249)",
+              "felt": "your god's shield holds a little longer"
+            },
+            "2": {
+              "new": "Clear Conscience: the first taboo each fight costs no Devotion XP",
+              "felt": "you saw where it led and stopped"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Conscience perk"
+            },
+            "4": {
+              "new": "Grace wears slower: an idle turn loses a step only if your last turn was idle too; opens Grace 4 (ruling 13, with Faith 7)",
+              "felt": "the believer's calm holds through one quiet turn, and Grace 4 opens"
+            },
+            "5": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "6": {
+              "new": "your prayer shield on a friend lays a Grace for you, once a turn",
+              "needs_ally": true,
+              "solo": "a prayer shield on yourself lays it (ruling 32)",
+              "felt": "protecting is praying"
+            },
+            "7": {
+              "exists": "perk step",
+              "new": "opens Grace 5 (ruling 13, with Faith 10 and Authority 4)",
+              "felt": "Grace 5's beta gate"
+            },
+            "8": {
+              "new": "when one of your prayer shields breaks, its holder has +1 Defense until your next turn",
+              "numbers": {
+                "defense": 1
+              },
+              "felt": "the god's guard does not vanish at once"
+            },
+            "9": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "10": {
+              "exists": "Mastered: Foreseen",
+              "new": "a Hymn keeps one Grace (critic-player-2 6: the full family cashes out again sooner)",
+              "numbers": {
+                "keeps_units": 1
+              },
+              "felt": "the litany never quite ends"
+            }
+          }
+        },
+        "authority": {
+          "role": "gamma",
+          "every_point": "its full points on checks and Asks; +1 tile of Order reach and Karma +1 (skills.json authority per_point.numbers)",
+          "points": {
+            "1": {
+              "exists": "the Call Order, its first step",
+              "needs_ally": true,
+              "solo": "Order yourself at the step below your own (calls.json aim self-or-ally, the value Name It uses; critic-player-2 1)",
+              "felt": "your voice moves the squad, or steadies yourself"
+            },
+            "2": {
+              "new": "a friend who acts on your Order lays a Grace for you if your patron likes what it did",
+              "needs_ally": true,
+              "solo": "your own act on your own Order lays it",
+              "felt": "the commanding priest's word is a prayer"
+            },
+            "3": {
+              "exists": "perk step",
+              "felt": "your first Authority perk"
+            },
+            "4": {
+              "exists": "Order's second step",
+              "new": "opens Grace 5 (ruling 13, with Faith 10 and Conscience 7)",
+              "felt": "a stronger Order, and Grace 5's gamma gate"
+            },
+            "5": {
+              "exists": "perk step; Order costs less",
+              "felt": "a perk and a cheaper Call"
+            },
+            "6": {
+              "new": "your Order also ends Fear and Shaken on its target",
+              "needs_ally": true,
+              "solo": "on yourself",
+              "felt": "your voice drives the fear out"
+            },
+            "7": {
+              "exists": "perk step",
+              "felt": "a perk"
+            },
+            "8": {
+              "exists": "Order's third step",
+              "felt": "the Order's top step"
+            },
+            "9": {
+              "exists": "perk step; Order costs less again",
+              "felt": "an Order in passing"
+            },
+            "10": {
+              "exists": "Mastered: On My Mark",
+              "felt": "the squad moves as one on your word"
+            }
+          }
+        }
+      },
+      "class": {
+        "id": "guardian",
+        "name": "Chaplain",
+        "only_it_has": [
+          {
+            "id": "ward_and_smite",
+            "text": "Ward (a fight-long shield as a Whisper) and Smite (a weapon hit that carries a prayer)"
+          },
+          {
+            "id": "sanctuary_and_verdict",
+            "text": "Sanctuary and Verdict: the prayers that spend Grace like a Hymn"
+          },
+          {
+            "id": "gain",
+            "text": "The Patron at Your Side, Amen, the Canticle, Holy Dread, Last Rites, Hallow (classes.json base[guardian].gain): kept"
+          }
+        ],
+        "dial": "the class dial row (classes.json:4001) retires under the one rule for dials (critic-consistency-2 1.13; the lead states it once)",
+        "ranks": {
+          "3": [
+            {
+              "id": "ward",
+              "name": "Ward",
+              "ap": 1,
+              "cost": {
+                "rule": "count"
+              },
+              "shield_base": {
+                "data": "classes.json:base[guardian].ranks.I.moves[ward].amounts.ward.base",
+                "x": "@scale.factor.value"
+              },
+              "worth": "a fight-long shield for 1 AP, several holders at once; a Whisper, so it lays Grace",
+              "needs_ally": true,
+              "solo": "Ward yourself (ruling 32)"
+            },
+            {
+              "id": "smite",
+              "name": "Smite",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "base": {
+                "data": "classes.json:base[guardian].ranks.I.moves[smite].amounts.smite.base",
+                "x": "@scale.factor.value"
+              },
+              "worth": "once a turn a weapon hit adds Blessing-power Soul damage through armour, on deal, and Judges the foe"
+            }
+          ],
+          "5": [
+            {
+              "id": "under_the_eye",
+              "name": "Under the Eye",
+              "ap": 0,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "passive: allies near you aim truer while Witnessed",
+              "needs_ally": true,
+              "solo": "you aim truer too"
+            },
+            {
+              "id": "blessed_arms",
+              "name": "Blessed Arms",
+              "ap": 3,
+              "cost": {
+                "rule": "count"
+              },
+              "worth": "a Hymn loaded into the weapon; the loaded Hymn keeps the Grace it spent"
+            }
+          ],
+          "15": [
+            {
+              "id": "sanctuary",
+              "name": "Sanctuary",
+              "ap": 3,
+              "cost": {
+                "rule": "count"
+              },
+              "pool_base": {
+                "data": "classes.json:move_pool.moves[sanctuary].amounts.sanctuary_cap.base",
+                "x": "@scale.factor.value"
+              },
+              "worth": "half damage in a small square, a pool of shielding; it spends Grace like a Hymn (the pool x the door's C)"
+            },
+            {
+              "id": "verdict",
+              "name": "Verdict",
+              "ap": 3,
+              "cost": {
+                "rule": "count",
+                "res": "devotion",
+                "units": 1
+              },
+              "cashout": {
+                "base": "the weapon's plain hit (its own pair and grade, ruling 31)",
+                "formula": "1 + bite * cash(n)",
+                "rolls": false,
+                "why": "a weapon blow that lands as a prayer: no roll, no Margins; the door's C with Grace is the only multiplier (today's (1 + Blessing power) is gone: A8)"
+              },
+              "worth": "once a fight, for one Devotion level: a weapon's plain hit x Grace's C, landed",
+              "why": "today 4 AP for a plain attack x (1 + Blessing power) is not worth pressing (classes.json:7716); 3 AP and Grace make it the Chaplain's big blow"
+            }
+          ]
+        },
+        "solo": "Ward and Under the Eye take yourself; Smite, Sanctuary and Verdict need nobody (ruling 32)"
+      }
+    }
+  },
+  "migration": "@pacing.migration"
+}

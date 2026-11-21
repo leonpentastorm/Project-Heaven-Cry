@@ -1,0 +1,423 @@
+{
+  "_meta": {
+    "file": "pacing",
+    "owner": "docs/design/growth/05-pacing.md",
+    "status": "PROVISIONAL: every number is chosen for what a player feels and is a first proposal to play; nothing is fitted to a percentage, a line or a ceiling. The time model is ASSUMED: if play is faster every hour moves earlier by the same share and every level still lands at the same Boss.",
+    "rulings": "00-rulings.md B11, B12, B15, C18, C19, D22 to D27, F33, F35 to F37, F39",
+    "shape": "tools/balance/bible/SCHEMA.md, section 'pacing.json'",
+    "read_by": "tools/balance/check.py checks (d), (e) and (g); python tools/balance/check.py --tables pacing calendar spend"
+  },
+
+  "clock": {
+    "about": "The one clock (ruling 36): the hours a map starts and ends, solo, on the reference route, and the level a squad that walks it holds on arrival and on leaving. check.py recomputes every hour from time_model and route and fails if a row here disagrees by more than tolerance_h.",
+    "gate_at_share": 0.385,
+    "first_endless_map": 6,
+    "tolerance_h": 0.06,
+    "time_model": {
+      "about": "ASSUMED: minutes a player spends; no data holds them. A fight's minutes = rounds x (a player's turn + foes x a foe's turn) + after_fight; rounds = survival.json rounds x rounds_vs_target.",
+      "turn_min_l1": 1.25,
+      "turn_min_per_level": 0.05,
+      "foe_turn_min": 0.15,
+      "foes_solo": 3,
+      "rounds_vs_target": 1.1,
+      "after_fight_min": 2.0,
+      "node_min": {"shop": 4, "forge": 3, "rest": 2, "training": 2, "shrine": 2, "event": 2, "cache": 1, "vault": 1.5},
+      "node_min_per_extra_player": 0.25,
+      "choose_min": 0.5,
+      "camp_min": 5,
+      "boon_min": 1.5,
+      "why": "read the board, choose among techniques, words and feelings, watch it resolve: 1.25 minutes a turn at level 1, more to choose each level (2.2 at 20); standard fights run about a tenth over their target (docs/design/handoffs/0.33-MEASURES.md:127); the turns to drop a same-level foe do not grow with the level, so rounds do not"
+    },
+    "route": {
+      "about": "The reference route through one map in its two halves (survival.json map.expect.path gives the ranges): half a is rows 1 to 8 and ends on the gate Elite, half b rows 9 to 15 and ends on the Boss. Counts may be halves (a node taken on every second map).",
+      "half_a": {"fight": 3, "shop": 1, "rest": 0.5, "training": 0.25, "event": 0.25, "cache": 0.25, "gate": 1},
+      "half_b": {"vault_guard": 0.5, "vault": 0.5, "fight": 3, "elite": 1, "shop": 1, "forge": 1, "rest": 0.5, "training": 0.25, "shrine": 0.5, "event": 0.25, "cache": 0.25, "boss": 1},
+      "fights": ["fight", "gate", "elite", "vault_guard", "boss"],
+      "rounds_of": {"fight": "fight", "gate": "gate", "elite": "elite", "vault_guard": "vault_guard", "boss": "boss"},
+      "depth": {"fight": 6, "gate": 8, "elite": 11, "boss": 15, "vault_guard": 9, "vault": 9, "cache": 7},
+      "worthy_fights": 9.5,
+      "why": "six fights, the gate, an Elite, the Boss and the vault's guard on every second map; every fight on the route is worthy (its level is within two of the squad's)"
+    },
+    "maps": {
+      "1":  {"start_h": 0.0,   "end_h": 2.6,  "squad_arrives": 1,  "squad_leaves": 3,  "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "2":  {"start_h": 2.6,   "end_h": 5.22, "squad_arrives": 3,  "squad_leaves": 5,  "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "3":  {"start_h": 5.22,  "end_h": 7.93, "squad_arrives": 5,  "squad_leaves": 7,  "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "4":  {"start_h": 7.93,  "end_h": 10.75, "squad_arrives": 7, "squad_leaves": 9,  "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "5":  {"start_h": 10.75, "end_h": 13.67, "squad_arrives": 9, "squad_leaves": 11, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "6":  {"start_h": 13.67, "end_h": 16.66, "squad_arrives": 11, "squad_leaves": 12, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "7":  {"start_h": 16.66, "end_h": 19.71, "squad_arrives": 12, "squad_leaves": 13, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "8":  {"start_h": 19.71, "end_h": 22.8,  "squad_arrives": 13, "squad_leaves": 14, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "9":  {"start_h": 22.8,  "end_h": 25.94, "squad_arrives": 14, "squad_leaves": 15, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "10": {"start_h": 25.94, "end_h": 29.13, "squad_arrives": 15, "squad_leaves": 16, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "11": {"start_h": 29.13, "end_h": 32.38, "squad_arrives": 16, "squad_leaves": 17, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "12": {"start_h": 32.38, "end_h": 35.67, "squad_arrives": 17, "squad_leaves": 18, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "13": {"start_h": 35.67, "end_h": 39.02, "squad_arrives": 18, "squad_leaves": 19, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "14": {"start_h": 39.02, "end_h": 42.41, "squad_arrives": 19, "squad_leaves": 20, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "15": {"start_h": 42.41, "end_h": 45.86, "squad_arrives": 20, "squad_leaves": 20, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "16": {"start_h": 45.86, "end_h": 49.31, "squad_arrives": 20, "squad_leaves": 20, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "17": {"start_h": 49.31, "end_h": 52.75, "squad_arrives": 20, "squad_leaves": 20, "worthy_fights": "@pacing.clock.route.worthy_fights"},
+      "18": {"start_h": 52.75, "end_h": 56.2,  "squad_arrives": 20, "squad_leaves": 20, "worthy_fights": "@pacing.clock.route.worthy_fights"}
+    }
+  },
+
+  "xp": {
+    "about": "XP = fight_xp at the fight's level x the node's kind x its worth to you (the gap). A level lands at a place the player sees coming (a gate, a Boss), whatever the minutes: levels.xp_total is the route's XP between those places, each level's own XP to two figures, summed (check.py recomputes it).",
+    "fight_xp": {"at_1": 50, "per_level": 1.15, "formula": "at_1 * per_level ** (L - 1)",
+                 "why": "the number on the reward panel grows as you go deeper, so a deeper map pays more by itself (survival.json xp.base, xp.per_depth and stage.xp retire: the fight's level does their work)"},
+    "kind_mult": {
+      "fight": 1,
+      "gate": {"data": "survival.json:xp.elite"},
+      "elite": {"data": "survival.json:xp.elite"},
+      "vault_guard": {"data": "survival.json:xp.vault_guard"},
+      "boss": {"data": "survival.json:xp.boss"},
+      "cache": {"data": "survival.json:xp.cache"},
+      "vault": {"data": "survival.json:xp.vault"},
+      "why": "today's kinds (survival.json:126), kept; the gate reads the Elite's row as today (survival.json rewards.reads)"
+    },
+    "worth": {
+      "by_gap": {"-5": 0, "-4": 0.33, "-3": 0.67, "-2": 1, "-1": 1, "0": 1, "1": 1.1, "2": 1.2, "3": 1.3, "4": 1.4, "5": 1.5},
+      "gap": "the fight's level minus yours, held to -5 and +5",
+      "applies_to": "every gain earned in a fight (XP, drill, study, practice, every Mark, Devotion tag XP), through the one reader growthWorth; out of a fight (a rest, a training ground, a shrine, a Narrator's award) it is 1",
+      "why": "within two levels a fight pays in full; five levels down pays nothing (those foes already die to one hit, enemies.json levels.gap.one_hit_levels_below); a fight above you pays more, so a character who rushed catches up by fighting"
+    },
+    "party_pace": {
+      "by_squad": [1, 1.6, 2.2, 2.8],
+      "multiplies": "practice gains and Devotion (drill, study, practice, every Mark, Devotion tag XP with its caps), never XP (ruling 37)",
+      "key": "survival.json growth.party_pace (named so it does not say XP: critic-consistency-2 2.5)",
+      "why": "a squad's turns are longer, so its bars fill in about the solo hours; its levels stay tied to the maps, whose foes do not follow it. PROVISIONAL until a co-op playtest"
+    },
+    "campaign_sources": {
+      "about": "rules.json xp_sources become multiples of fight_xp at the fight's or the scene's level (the level the campaign states, ruling 28); the Essence of Experience stays its own item. data.ts XP_SOURCES, COMBAT_XP and combatXp's || 50 leave code in the same change.",
+      "combat": {"easy": 0.5, "standard": 1, "hard": 2, "boss": 4},
+      "dialogue": {"min": 0.5, "max": 2},
+      "discovery": {"min": 0.5, "max": 1.5},
+      "quest": {"min": 1, "max": 6},
+      "why": "today's 25 / 50 / 100 / 200 over 50, so a level costs a campaign what it costs Survival; a campaign plays less of its time in fights, so its author gives about as much again in story beats"
+    },
+    "campaign_tiers": {
+      "about": "A campaign states its tier (ruling 28; world.campaign reads these). Levels {from, to}; hours are read off the clock for the same levels.",
+      "one_shot": {"levels": {"from": 1, "to": 3}, "rule": "from level 1 it reaches the class at 3; or one gate crossed (5, 10 or 15 to the next level or two)"},
+      "season": {"levels": {"from": 1, "to": 5}, "rule": "one tier: 1 to 5, 5 to 10, 10 to 15 or 15 to 20; it ends on the tier's gate"},
+      "campaign": {"levels": {"from": 1, "to": 15}, "rule": "1 to 15, or 5 to 20"},
+      "epic": {"levels": {"from": 1, "to": 20}, "rule": "the whole table, then the peak"}
+    }
+  },
+
+  "levels": {
+    "career": {"skill": 38, "attribute": 20, "why": "ruling 11: creation's 10 and 10 included (rules.json levels.gains)"},
+    "gains": {
+      "creation": {"skill": 10, "attribute": 10},
+      "odd": {"skill": 2, "attribute": 0},
+      "even": {"skill": 1, "attribute": 1},
+      "by_level": {"4": {"skill": 2, "attribute": 0}, "5": {"skill": 1, "attribute": 1}, "14": {"skill": 2, "attribute": 0}, "15": {"skill": 1, "attribute": 1}},
+      "why": "ruling 12: the Attribute point arrives on the level its ceiling opens; the career totals are unchanged"
+    },
+    "lands": {
+      "2": {"map": 1, "at": "gate"}, "3": {"map": 1, "at": "boss"},
+      "4": {"map": 2, "at": "gate"}, "5": {"map": 2, "at": "boss"},
+      "6": {"map": 3, "at": "gate"}, "7": {"map": 3, "at": "boss"},
+      "8": {"map": 4, "at": "gate"}, "9": {"map": 4, "at": "boss"},
+      "10": {"map": 5, "at": "gate"}, "11": {"map": 5, "at": "boss"},
+      "12": {"map": 6, "at": "boss"}, "13": {"map": 7, "at": "boss"}, "14": {"map": 8, "at": "boss"},
+      "15": {"map": 9, "at": "boss"}, "16": {"map": 10, "at": "boss"}, "17": {"map": 11, "at": "boss"},
+      "18": {"map": 12, "at": "boss"}, "19": {"map": 13, "at": "boss"}, "20": {"map": 14, "at": "boss"}
+    },
+    "lands_why": "ruling 24: two levels on each of the five maps (the gate's and the Boss's), the final boss at 11, then one level at each endless Boss to 20",
+    "xp_total": {
+      "1": 0, "2": 270, "3": 970, "4": 1330, "5": 2260, "6": 2740, "7": 3940, "8": 4570, "9": 6170, "10": 7000,
+      "11": 9200, "12": 12600, "13": 16500, "14": 21000, "15": 26200, "16": 32100, "17": 38900, "18": 46800, "19": 55800, "20": 65800
+    },
+    "past_20": "XP counts to the run's renown only (run/stage.ts:162 renownOf, unchanged)"
+  },
+
+  "gates": {
+    "ceiling_by_level": {"1": 7, "5": 8, "10": 9, "15": 10},
+    "rank_levels": {"I": 3, "II": 5, "III": 15},
+    "rank_thresholds": {"II": {"data": "classes.json:rank_thresholds.II"}, "III": {"data": "classes.json:rank_thresholds.III"}},
+    "advanced_level_min": 10,
+    "why": "ruling 12: the ceiling moves at the tier gates, so crossing one is felt; rank II with the first gate, rank III with the last ceiling; the advanced classes open at the level-10 gate (shelved in 0.34; set now so no later pass touches it)"
+  },
+
+  "tracks": {
+    "about": "Every practice rate (ruling 22). Every amount earned in a fight is x its worth and x party_pace (xp.worth, xp.party_pace). A track's thresholds are cumulative units.",
+    "drill": {
+      "earned_by": "a kill, to every weapon that hit the victim; none on the field",
+      "today": "techniques.json:99 rules.drill (per_kill 1 / 5 / 10 / 25 / 50, martial_mult 3)",
+      "per_kill": {"vermin": 20, "minion": 35, "soldier": 70, "elite": 180, "boss": 360},
+      "martial_mult": 1.5,
+      "martial_classes": ["defender", "fighter", "marksman"],
+      "thresholds": [300, 900, 1800],
+      "thresholds_why": "today's marks (techniques.json:113), kept, so no saved Mark moves",
+      "rest": {"data": "survival.json:train.drill"},
+      "training": {"data": "survival.json:training.drill"},
+      "why": "one weapon in every fight reaches Mark III in about two hours, a martial class's sooner: the weapon taken at the camp gives its signature in the first fights and its second pick before the gate"
+    },
+    "shield_soak": {
+      "earned_by": "a worthy blow a held shield's plates soak (the soak site, physical/core.ts:121 guardSoak)",
+      "today": "none: a shield is drilled only by kills",
+      "per_soak": 20,
+      "soaks_a_fight": 5,
+      "soaks_a_fight_why": "ASSUMED: worthy blows a wall's plates soak in a fight",
+      "per_fight": "@pacing.tracks.shield_soak.per_soak * @pacing.tracks.shield_soak.soaks_a_fight",
+      "why": "a shield learns by taking blows, as the wall's own door does (ruling 18)"
+    },
+    "study": {
+      "earned_by": "an Evoke: 1, +1 a glyph past the second, +1 if it hit (sigils.json:209 study; sigilgrowth.ts:40 addStudy)",
+      "today": "sigils.json:214 first 6, step 8, copy 2, mastery_study 5; survival.json train.study 5, training.study 10",
+      "first": 10, "step": 60, "copy": 10, "mastery_study": 30, "found": 10, "rest": 30, "training": 60,
+      "thresholds": {"first": 10, "every": 60},
+      "words_held": "mind.json's card (4 + 3 x Brain Power, ruling 19); sigils.json known_max becomes its number block and character.ts:890's typed 4 goes",
+      "why": "a word is an event you look forward to, about every hour and a half for a Sigil specialist; Brain Power is how many you can hold, not how fast you learn"
+    },
+    "word_marks": {
+      "earned_by": "each Evoke adds a use to each known word in it (sigils.json:233 word_mastery)",
+      "today": "Practised 10, Mastered 30",
+      "thresholds": [10, 30, 80],
+      "why": "I and II are today's; III is the word's variant, a few hours of a word in half your Evokes (05 owns the 80: critic-consistency-2 1.15)"
+    },
+    "found_spells": {
+      "earned_by": "the first time a Line (or an Outburst design) you never cast lands on a worthy foe (Law 3; the firsts piece)",
+      "today": "none",
+      "study": "@pacing.tracks.study.found",
+      "practice": "@pacing.tracks.modules.found",
+      "why": "magic's mutation becomes a collection: finding a new sentence is itself growth"
+    },
+    "modules": {
+      "earned_by": "a Release: 1, +1 a stage past 1, +1 a feeling poured (soul_modules.json:1327 practice; magic.ts:1728 addPractice)",
+      "today": "soul_modules.json:1331 thresholds [5, 15], then_every 15, mastery_bonus 5; train.practice 8, training.practice 15",
+      "thresholds_first": [10], "then_every": 80, "mastery_bonus": 40, "found": 10, "rest": 40, "training": 80,
+      "thresholds": {"first": 10, "every": 80},
+      "start": 2,
+      "start_why": "the modules of the start designs (soul_modules.json start.designs)",
+      "why": "a module about every two hours for an Outburst specialist; learned is not slotted: module slots are Will Power's Reach (soul.json)"
+    },
+    "feelings": {
+      "earned_by": "a feeling unlocks at Mark I of its own bar: each time its trigger happens in a worthy fight adds 1",
+      "today": "feelings.json: unlocked the first time (start_count 2; the felt list read at magic.ts:1154)",
+      "marks": {"common": [2, 6, 12], "rare": [1, 3, 6]},
+      "start": {"data": "feelings.json:start_count"},
+      "reading": {"first": 8, "every": 8},
+      "reading_why": "a reading until the run simulator counts each trigger: about one new feeling every eight worthy fights (two and a half hours) for an Outburst user",
+      "why": "Law 3's three steps: a common trigger needs a few happenings, a rare one fewer; soul.json says what II and III give"
+    },
+    "form_marks": {
+      "earned_by": "a Figment form held through a worthy fight to its end (the keyed Marks piece; forms known stay by Visualization, figments.json:41 forms_known)",
+      "today": "none",
+      "thresholds": [6, 20, 50],
+      "why": "a form held in every fight: Mark I in under two hours, III by the middle of endless (critic-consistency-2 1.6: this row is the one copy; mind.json reads it)"
+    },
+    "devotion": {
+      "earned_by": "liked tags, vows, rites; a rest's rite and the shrine's in a run (patrons.json:17 curve, :48 tag_caps; faith.ts:95 TAG_CAPS, :506 tallyOf)",
+      "today": "patrons.json:8 start 3; curve [0, 10, 25, 45, 70, 102, 147, 200, 270, 350, 450]; tag_caps fight 2, scene 2, session 6 (a Survival run is one session)",
+      "start": 0,
+      "thresholds": [10, 25, 42, 68, 100, 140, 185, 225, 260, 300],
+      "thresholds_why": "the XP to each standing 1 to 10 (the curve after its 0); every one is at or under today's, so no standing falls",
+      "tag_caps": {"fight": 3, "scene": {"data": "patrons.json:devotion.tag_caps.scene"}, "session": {"data": "patrons.json:devotion.tag_caps.session"}, "stage": 30},
+      "tag_caps_why": "a run reads stage (tallyOf's stage scope) in place of the session's 6, which held Devotion for a whole run; campaigns keep the session's",
+      "tags_a_fight": 2.2,
+      "tags_a_fight_why": "ASSUMED: liked tags a worthy fight for a character who plays to its patron",
+      "rest": {"data": "survival.json:train.devotion"},
+      "rest_share": 0.5,
+      "rest_share_why": "ASSUMED: a rest's one small training goes to Devotion every second time (drill, study and practice ask for it too)",
+      "shrine": {"data": "survival.json:shrine.rite"},
+      "per_fight": "min(@pacing.tracks.devotion.tags_a_fight, @pacing.tracks.devotion.tag_caps.fight) + (@pacing.tracks.devotion.rest * @pacing.tracks.devotion.rest_share * (@pacing.clock.route.half_a.rest + @pacing.clock.route.half_b.rest) + @pacing.tracks.devotion.shrine * @pacing.clock.route.half_b.shrine) / @pacing.clock.route.worthy_fights",
+      "per_fight_why": "the tags a fight, and the map's rests and shrine spread over its worthy fights",
+      "grade": "prayer's grade reads the highest standing reached (scale.grades.prayer, ruling 33)",
+      "why": "start 0 (ruling 19); standing is the faithful's grade, arriving a few hours after the same grade of gear"
+    }
+  },
+
+  "door_marks_hours": [2, 11, 17, 23],
+  "door_marks": {
+    "about": "One formula for the nine doors (ruling 22, the charter's hours): each threshold = units_per_fight x the worthy fights a specialist has walked by each of door_marks_hours (Mark I, II, the middle, III). check.py computes them (door_mark_thresholds); the door files' marks.rate points here and types no threshold. A door that measures its unit a fight differently changes its units_per_fight; the hours stay.",
+    "guard":     {"units_per_fight": 9,    "unit": "plates soaked and spent (ruling 18)"},
+    "momentum":  {"units_per_fight": 9,    "unit": "chain steps spent by a Finisher on a worthy foe"},
+    "pressure":  {"units_per_fight": 9,    "unit": "pips spent"},
+    "shadow":    {"units_per_fight": 9,    "unit": "Shadow spent in a Break"},
+    "sigils":    {"units_per_fight": 10.5, "unit": "glyphs past the first in an Evoked Line"},
+    "figments":  {"units_per_fight": 9,    "unit": "a Figment's blows, 2 for one cashed in"},
+    "bonds":     {"units_per_fight": 4.5,  "unit": "Bonds snapped"},
+    "outbursts": {"units_per_fight": 7,    "unit": "stages Released"},
+    "prayer":    {"units_per_fight": 6,    "unit": "Grace spent"}
+  },
+
+  "credits": {
+    "income": {
+      "formula": "(base + per_depth * d) * kind * (1 + stage * (s - 1))",
+      "base": {"data": "survival.json:credits.base"}, "per_depth": {"data": "survival.json:credits.per_depth"},
+      "kind": {"elite": {"data": "survival.json:credits.elite"}, "boss": {"data": "survival.json:credits.boss"}, "cache": {"data": "survival.json:credits.cache"},
+               "vault_guard": {"data": "survival.json:credits.vault_guard"}, "vault": {"data": "survival.json:credits.vault"}},
+      "stage": {"data": "survival.json:stage.credits"},
+      "why": "unchanged: the income already climbs with the map"
+    },
+    "grade_step": {
+      "formula": "max(floor[to], priceOf(item, to) - priceOf(item, from)) * place",
+      "floors": {"fine": 1500, "masterwork": 3500, "relic": 12000},
+      "place": {"shop": {"data": "survival.json:grade_up.places.shop"}, "forge": {"data": "survival.json:grade_up.places.forge"}},
+      "relic_at": "forge",
+      "grade_price": {"data": "rules.json:rarity", "value_key": "price"},
+      "retires": "survival.json grade_up.relic_from_stage (the shelf is the one gate) and the offer line's own Relic price (run/progress.ts:534)",
+      "why": "ruling 26: one formula read by the shop and the Forge, the same total whether you buy a Fine piece or step a plain one up; a dear weapon costs dearly to raise"
+    },
+    "reforge": {
+      "price": "floors[relic] * place[forge]",
+      "offer": {"data": "survival.json:grade_up.relic_offer"},
+      "why": "the peak's credit sink: once every piece is a Relic, credits buy a better property, not nothing"
+    },
+    "gear_share": {"reading": 0.5, "why": "ASSUMED: of credits earned, the share spent on grades, mods and armour (the rest buys rounds, cores, stims, repair); the gear calendar in --tables pacing reads it"}
+  },
+
+  "grades_by_map": {
+    "about": "Ruling 25 (and 35 for the vault): the grade a map finds and the grade it sells. scale.grades.where_found points here.",
+    "finds_from_map": {"fine": 1, "masterwork": 3, "relic": 5, "celestial": 10},
+    "shelf_from_map": {"fine": 1, "masterwork": 3, "relic": 6},
+    "vault": {"grade": "the map's finds grade", "grade_up": 0, "grade_max": "celestial",
+              "why": "ruling 35: the dead-end fight is the sure way to the map's best grade, never the next map's (so no Celestial before map 10)"},
+    "boss_pick": {"rarity": {"masterwork": 40, "relic": 35, "celestial": 25}, "capped_by": "finds",
+                  "why": "from map 10 one Boss pick in four is Celestial; before, the cap turns it into the map's best grade"},
+    "gate_pick": {"rarity": {"relic": 100}, "capped_by": "shelf", "weapon_card": 1,
+                  "why": "the gate is the map's turn: it pays a weapon of the grade the shops sell, so the middle of a map is a beat as its Boss is"},
+    "validator": "tools/validate.py:2791-2792 and :2959-2960 allow grade_up 0 and Celestial as the vault's top and the finds' last ceiling, never on the shelf"
+  },
+
+  "spend_plans": {
+    "about": "Four characters under the family rule (ruling 13), walked level by level by check.py (d): attribute points to the plan's attributes in order (at most the ceiling), skill points to its skills in order (each point legal and felt). Two more for the collections a door opens (ruling 23).",
+    "wall": {"label": "a wall (a Bulwark: Guard to its top, no faith)", "doors": ["guard"],
+             "attributes": [["endurance", 10], ["agility", 5], ["strength", 4], ["perception", 5]],
+             "skills": [["durability", 7], ["pain_threshold", 4], ["durability", 10], ["pain_threshold", 7], ["sensory", 4], ["pain_threshold", 10], ["athletics", 3], ["sensory", 8], ["raw_power", 3], ["ingenuity", 4]]},
+    "breaker_who_prays": {"label": "a Breaker who prays (Momentum to its top, Prayer a step under)", "doors": ["momentum", "prayer"],
+             "attributes": [["strength", 10], ["virtue", 7], ["endurance", 3], ["agility", 4]],
+             "skills": [["raw_power", 7], ["guts", 4], ["faith", 3], ["raw_power", 10], ["guts", 7], ["intimidation", 4], ["faith", 7], ["conscience", 4], ["guts", 10], ["pain_threshold", 3]]},
+    "sigilist": {"label": "a Sigilist (Sigils to its top)", "doors": ["sigils"],
+             "attributes": [["intelligence", 10], ["endurance", 5], ["perception", 5], ["agility", 4]],
+             "skills": [["brain_power", 7], ["rumination", 4], ["brain_power", 10], ["rumination", 7], ["eloquence", 4], ["rumination", 10], ["eloquence", 10], ["pain_threshold", 4], ["ingenuity", 4]]},
+    "mender_with_a_gun": {"label": "a Mender with a gun (Bonds to its top, Pressure a step under)", "doors": ["bonds", "pressure"],
+             "attributes": [["insight", 10], ["agility", 7], ["endurance", 3], ["determination", 4]],
+             "skills": [["empathy", 7], ["camaraderie", 4], ["dexterity", 4], ["empathy", 10], ["camaraderie", 7], ["implication", 4], ["dexterity", 7], ["athletics", 4], ["camaraderie", 10], ["pain_threshold", 3]]},
+    "channeler": {"label": "a Channeler (Outbursts to its top)", "doors": ["outbursts"],
+             "attributes": [["determination", 10], ["insight", 5], ["endurance", 4], ["agility", 5]],
+             "skills": [["will_power", 7], ["composure", 4], ["will_power", 10], ["composure", 7], ["lore_master", 4], ["composure", 10], ["lore_master", 10], ["empathy", 4], ["pain_threshold", 4]]},
+    "rigger": {"label": "a Rigger (Figments to its top)", "doors": ["figments"],
+             "attributes": [["expression", 10], ["agility", 5], ["endurance", 4], ["perception", 5]],
+             "skills": [["visualization", 7], ["proficiency", 4], ["visualization", 10], ["proficiency", 7], ["charisma", 4], ["proficiency", 10], ["charisma", 10], ["dexterity", 4], ["pain_threshold", 4]]}
+  },
+
+  "calendar": {
+    "about": "What each character gains in each hour 0 to 49, solo, on the reference route (check (e): no empty hour). A stream's units_per_fight is a reading of how the character plays (ASSUMED play, its why says how it is made); every rate it reads is a track above.",
+    "hours": [0, 49],
+    "level_20_between": [38, 43],
+    "map_events": [
+      {"at": 0.2, "label": "the shop: a grade step or a new piece (map {map})", "why": "half a's shop (rows 1 to 7): the one grade-step price, at the shelf's grade"},
+      {"at": "gate", "label": "the gate's pick at the shelf's grade (map {map})", "why": "grades_by_map.gate_pick"},
+      {"at": 0.6, "label": "the Forge: a grade step, a mod fitted or a property re-forged (map {map})", "why": "half b's Forge (rows 9 to 13): mods are fitted only there (survival.json forge.fit); the re-forge is the peak's sink"},
+      {"at": 0.85, "label": "the last shop before the Boss (map {map})", "why": "row 14's shop and rest"},
+      {"at": "boss", "label": "the Boss's pick (map {map})", "why": "grades_by_map.boss_pick"},
+      {"at": "boss", "label": "a boon of three (map {map})", "maps": [1, 10],
+       "why": "the boon cap (survival.json boon_cap.cap, kept by ruling A10) fills at about ten boons: past it a boon is worth nothing and is not counted as a gain (critic-player-2 11)"}
+    ],
+    "streams": {
+      "drill_main": {"label": "main weapon Mark {n}", "thresholds": "@pacing.tracks.drill.thresholds"},
+      "drill_collection": {"label": "collection weapon Mark {n}", "thresholds": {"cycle": "@pacing.tracks.drill.thresholds"}},
+      "shield": {"label": "shield Mark {n}", "thresholds": "@pacing.tracks.drill.thresholds"},
+      "words": {"label": "a word learned ({n})", "thresholds": "@pacing.tracks.study.thresholds"},
+      "modules": {"label": "a module learned ({n})", "thresholds": "@pacing.tracks.modules.thresholds"},
+      "feelings": {"label": "a feeling unlocked ({n})", "thresholds": "@pacing.tracks.feelings.reading"},
+      "forms": {"label": "a form Mark ({n})", "thresholds": {"each": "@pacing.tracks.form_marks.thresholds", "over": 8}},
+      "devotion": {"label": "Devotion standing {n}", "thresholds": "@pacing.tracks.devotion.thresholds"},
+      "door_guard": {"label": "Guard Mark {n}", "thresholds": {"door_marks": "guard"}},
+      "door_momentum": {"label": "Momentum Mark {n}", "thresholds": {"door_marks": "momentum"}},
+      "door_pressure": {"label": "Pressure Mark {n}", "thresholds": {"door_marks": "pressure"}},
+      "door_sigils": {"label": "Sigils Mark {n}", "thresholds": {"door_marks": "sigils"}},
+      "door_figments": {"label": "Figments Mark {n}", "thresholds": {"door_marks": "figments"}},
+      "door_bonds": {"label": "Bonds Mark {n}", "thresholds": {"door_marks": "bonds"}},
+      "door_outbursts": {"label": "Outbursts Mark {n}", "thresholds": {"door_marks": "outbursts"}},
+      "door_prayer": {"label": "Prayer Mark {n}", "thresholds": {"door_marks": "prayer"}}
+    },
+    "characters": {
+      "wall": {"plan": "wall", "collects": [],
+               "collects_why": "Guard opens no collection (ruling 23); this wall rotates its second hand, and its bars are counted, not chased",
+               "streams": [
+                 {"stream": "door_guard", "units_per_fight": "@pacing.door_marks.guard.units_per_fight"},
+                 {"stream": "shield", "units_per_fight": "@pacing.tracks.shield_soak.per_fight"},
+                 {"stream": "drill_collection", "units_per_fight": 110, "why": "a martial class's drill (about 197 a worthy fight on the route x 1.5) x the second hand's share of kills (0.3), and the rests' and training grounds' drill (about 21 a fight) to the hand still learning"}]},
+      "one_shield_wall": {"plan": "wall", "collects": [],
+               "collects_why": "a wall that keeps one shield and one weapon and steps their grade: critic-player-2 11's worst case; it chases nothing but its door and its gear",
+               "streams": [
+                 {"stream": "door_guard", "units_per_fight": "@pacing.door_marks.guard.units_per_fight"},
+                 {"stream": "shield", "units_per_fight": "@pacing.tracks.shield_soak.per_fight"},
+                 {"stream": "drill_main", "units_per_fight": 110, "why": "the one weapon, its share of kills and the rests' drill"}]},
+      "breaker_who_prays": {"plan": "breaker_who_prays", "collects": ["techniques"],
+               "streams": [
+                 {"stream": "door_momentum", "units_per_fight": "@pacing.door_marks.momentum.units_per_fight"},
+                 {"stream": "door_prayer", "units_per_fight": 2, "why": "a second door at about a third of its specialist's Grace"},
+                 {"stream": "devotion", "units_per_fight": "@pacing.tracks.devotion.per_fight"},
+                 {"stream": "drill_collection", "units_per_fight": 237, "why": "a martial class (x1.5) collecting: the main hand (0.8 of kills) moves to a new weapon at its Mark III"},
+                 {"stream": "drill_collection", "units_per_fight": 170, "label": "second hand weapon Mark {n}", "why": "the second hand (0.5 of kills, x1.5) and the rests' drill"}]},
+      "sigilist": {"plan": "sigilist", "collects": ["words"],
+               "streams": [
+                 {"stream": "door_sigils", "units_per_fight": "@pacing.door_marks.sigils.units_per_fight"},
+                 {"stream": "words", "units_per_fight": 12, "why": "three Evokes a fight at about 3 study each, and the rests' and training grounds' study (about 3 a fight); found spells and Mastery study come on top and are not counted here"},
+                 {"stream": "drill_collection", "units_per_fight": 70, "why": "a sidearm in about a third of the kills, not martial"}]},
+      "mender_with_a_gun": {"plan": "mender_with_a_gun", "collects": ["techniques"],
+               "streams": [
+                 {"stream": "door_bonds", "units_per_fight": "@pacing.door_marks.bonds.units_per_fight"},
+                 {"stream": "door_pressure", "units_per_fight": 4, "why": "a second door at under half its specialist's pips"},
+                 {"stream": "drill_collection", "units_per_fight": 120, "why": "the gun (0.6 of kills), not martial, moved to a new gun at its Mark III"},
+                 {"stream": "drill_collection", "units_per_fight": 90, "label": "second hand weapon Mark {n}", "why": "a sidearm (0.35 of kills) and the rests' drill"}]},
+      "channeler": {"plan": "channeler", "collects": ["modules", "feelings"],
+               "streams": [
+                 {"stream": "door_outbursts", "units_per_fight": "@pacing.door_marks.outbursts.units_per_fight"},
+                 {"stream": "modules", "units_per_fight": 12, "why": "two Releases a fight at about 4 practice each, and the rests' and training grounds' practice (about 4 a fight)"},
+                 {"stream": "feelings", "units_per_fight": 1, "why": "tracks.feelings.reading: counted in worthy fights"},
+                 {"stream": "drill_collection", "units_per_fight": 70, "why": "a sidearm in about a third of the kills"}]},
+      "rigger": {"plan": "rigger", "collects": ["forms"],
+               "streams": [
+                 {"stream": "door_figments", "units_per_fight": "@pacing.door_marks.figments.units_per_fight"},
+                 {"stream": "forms", "units_per_fight": 3, "why": "about three forms held through a fight, over the eight forms it uses"},
+                 {"stream": "drill_collection", "units_per_fight": 70, "why": "a sidearm in about a third of the kills"}]}
+    }
+  },
+
+  "collection": {
+    "about": "Ruling 23: by hour 50 a character holds about 80% of each system its doors open; techniques count against all 66. check (e) counts start + the stream's events, at most of.",
+    "target": 0.8,
+    "by_hour": 50,
+    "systems": {
+      "techniques": {"of": {"data_count": "techniques.json:items"}, "stream": ["drill_collection", "drill_main"], "start": 4,
+                     "why": "4 ready at the start; about one technique a weapon Mark (I its signature, II and III a pick)"},
+      "words": {"of": {"data_count": "sigils.json:items"}, "stream": "words", "start": {"data": "sigils.json:grammar.starting.words"},
+                "why": "held at most by mind.json's card (4 + 3 x Brain Power and the Mastered free words): the last few words are never a specialist's"},
+      "modules": {"of": 28, "of_why": "soul_modules.json items not locked (28 of 38)", "stream": "modules", "start": "@pacing.tracks.modules.start"},
+      "feelings": {"of": {"data_count": "feelings.json:items"}, "stream": "feelings", "start": "@pacing.tracks.feelings.start"},
+      "forms": {"of": {"data_count": "figments.json:forms", "x": 3}, "stream": "forms", "start": 0, "why": "three Marks a form"}
+    }
+  },
+
+  "migration": {
+    "revision": "GROWTH_REV",
+    "owner": "docs/design/growth/05-pacing.md",
+    "where": "run where every character migration runs today: at the start of each action, apply (packages/engine/src/game.ts:650-660), whose notes go to the story (the 'your sheet changed' lines); tested through that real load path, test/old-save.test.ts with a 0.33 fixture a row, loaded and played one action",
+    "plan": "one free re-spend: a live 0.33 character keeps its level, XP share, rank, moves, Devotion XP and gear, and is offered once to place all its Skill and Attribute points again under 0.34's rules (gates, the family rule, the new ladders); until it confirms, the fallback rows hold",
+    "fallback": "grandfathering: until the character re-spends (or for good, if Leon rules so), every row below marked fallback keeps what the 0.33 sheet had",
+    "rows": [
+      {"what": "HP", "who": "every character", "how": "the same share of its new max HP as it held of the old (migrateCharacterHp, character.ts:810-816)", "kind": "always"},
+      {"what": "MP", "who": "every character with a pool", "how": "the same share of its new pool (migrateCharacterMp)", "kind": "always"},
+      {"what": "points (the free re-spend)", "who": "every character", "how": "c.respend offered once: every Skill and Attribute point back to unspent and placed again under the new gates and ladders; refused or not yet taken, the fallback rows hold", "kind": "plan"},
+      {"what": "attribute ceilings", "who": "a 0.33 character above a new ceiling (today 8 from level 3, 9 from 6, 10 from 9)", "how": "c.capGrace, by attribute: the points above the new ceiling are kept and counted beside legends in legendRoom (character.ts:1327); a later ceiling absorbs them", "kind": "fallback"},
+      {"what": "Reach held", "who": "a 0.33 character whose door's Reach falls under the new ladder (a Bulwark's pool, a Breaker's chain of 5, stage 4 under Will Power 7, Broken under Dexterity 7, Lines of 4 without Brain Power)", "how": "c.reachHeld, by door: the 0.33 Reach is kept until the character re-spends; the notes say what it becomes then", "kind": "fallback"},
+      {"what": "rank III before level 15", "who": "a level 12 to 14 character holding rank III", "how": "c.rankHeld: classRank (character.ts:1385) returns at least the rank held at migration", "kind": "always"},
+      {"what": "class moves that changed rank", "who": "a character holding a move its class now grants at a later rank (Core Change, Backdraft and the like)", "how": "c.movesHeld: a move held at migration stays until the rank that now carries it", "kind": "always"},
+      {"what": "the XP table", "who": "every character", "how": "the level is kept; XP is rebased to the same share of the way into its level on the new table; past 20 the renown is kept", "kind": "always"},
+      {"what": "points at levels 4, 5, 14, 15", "who": "a character saved at level 4 or 14 (it took 1 Skill and 1 Attribute point there)", "how": "c.pointsOwed: the new rule's career totals at its level less the old rule's; a positive part is given at once as unspent, a negative part is taken from the next gain of that kind, never from points held", "kind": "always"},
+      {"what": "study and practice steps", "who": "every Sigil or Outburst user", "how": "words and modules learned are kept; the counters are rebased to the same share of the way to the next pick", "kind": "always"},
+      {"what": "feelings by Marks", "who": "every character with a felt feeling", "how": "every felt feeling's bar starts at its Mark I", "kind": "always"},
+      {"what": "Devotion", "who": "every Faithful character", "how": "its Devotion XP is kept whole (never clamped); every new threshold is at or under today's, so standing never falls; start 0 is for new characters only; prayer's grade reads the highest standing reached", "kind": "always"},
+      {"what": "perks whose meaning changed", "who": "a holder of a restated, rewritten or narrowed perk, or of a foe mark (gear_perks.json)", "how": "a free re-pick (the existing perkRev piece: pendingRepicks, answerRepick)", "kind": "always"},
+      {"what": "stored spells", "who": "a character holding a spell stored before the revision", "how": "it stays castable as stored until it is edited (or fades at the next rest), even past its caster's new Reach", "kind": "always"},
+      {"what": "drill", "who": "every drilled weapon", "how": "nothing: the thresholds are today's", "kind": "always"},
+      {"what": "a run saved between nodes", "who": "every Survival run", "how": "loads unchanged: stage keeps its meaning (the map); the next fight is built at the map's levels", "kind": "always"},
+      {"what": "a room saved in the middle of a fight", "who": "a fight in progress at the revision", "how": "ruling E: the builder proposes rescale on load or reopen the fight from its start; the lead approves before it is built", "kind": "open"}
+    ],
+    "leon_call": "keep the old Reach, or one free re-spend of all points (asked 21 Nov; the re-spend is the plan, the grandfathering the fallback)"
+  }
+}

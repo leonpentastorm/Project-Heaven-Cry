@@ -1,0 +1,609 @@
+{
+  "_meta": {
+    "file": "mind",
+    "owner": "docs/design/growth/03-mind.md",
+    "status": "PROVISIONAL: every number is chosen for what a player feels and is a first proposal to play; nothing is fitted to a percentage, a line or a ceiling. Shared numbers are references to scale.json and pacing.json; today's rows are read from data/*.json.",
+    "rulings": "00-rulings.md A to F (F wins): A4, A7 to A9, B11 to B13, C16 to C20, D22, D23, E, F29 to F32, F39",
+    "shape": "tools/balance/bible/SCHEMA.md section 3; two extensions (SCHEMA.md 1.4 and 3.1): a reach_plus term (a fork or class thing that adds units to a cash-out, read by check (a)) and units \"own\" (a move's own cost in data, kept)"
+  },
+
+  "attributes": {
+
+    "perception": {
+      "card": {
+        "lines": [
+          {"text": "+10% on every Break and every hit the Shadow door makes, a point above 1 (the Break reads Perception and Ingenuity, ruling 31)", "slope": "@scale.cards.attr_slope", "door": "shadow"},
+          {"text": "every Margin is worth one more point of the plain hit a Perception point, on every roll", "slope": "@scale.margins.per_perception"},
+          {"text": "+2 tiles of vision a point above 1", "number": {"data": "attributes.json:items[perception].derived[0].per_point_above_1"}, "data_key": "attributes.json perception.derived (vision)"}
+        ],
+        "dropped": [
+          {"today": "attributes.json perception.derived (mult_critical): +3% critical damage a point", "why": "the critical goes (ruling A7); its place is the Margin line above"},
+          {"today": "attributes.json perception.derived (crit_damage_taken_pct): -10% critical damage taken a point, dead from Perception 8 (capped 60%)", "why": "the critical goes (ruling A7); what damage taken becomes is gear_perks' margins_feeders"}
+        ],
+        "felt": "a Perception point outside Shadow is never dead: two tiles of sight and a harder Margin on every roll"
+      },
+
+      "door": {
+        "id": "shadow", "name": "Shadow",
+        "counter": {"resource": "shadow", "unit": "a Shadow", "starts_at": 0,
+                    "gains_per_turn": {"data": "rules.json:shadow.door_gains_per_turn"}},
+        "builds": [
+          {"by": "your turn ends Hidden and you made no attack", "units": 1},
+          {"by": "a cover-to-cover move nobody sees, once a turn", "units": 1},
+          {"by": "a kill nobody saw", "units": 1},
+          {"by": "First Shade: the first Hide of a fight holding none", "units": 1},
+          {"by": "Stalk, once a turn", "units": 1, "ap": 2},
+          {"by": "a Spot you make while Hidden (Vigilant 6)", "units": 1},
+          {"by": "the Operative's unseen Analyze (Tradecraft)", "units": 1},
+          {"by": "Light Fingers' unseen Lift (fork at 4), once a turn", "units": 1}
+        ],
+        "spends": [
+          {"by": "the Break", "units": "all", "min": 1, "ap": "the weapon's"},
+          {"by": "a Shadow verb (shadow.json: Fade, Open Seam, Timing, Cut the Strap, Decoy, Disable, Hijack, Rig; Lend the Dark, Lightkiller)", "units": "own", "ap": "own"},
+          {"by": "Dead Drop (the Operative's)", "units": 1, "ap": 1}
+        ],
+        "wears": [
+          {"by": "your turn starts while a foe sees you", "units": 1},
+          {"by": "you are Downed", "units": "all"},
+          {"by": "the fight ends", "units": "all"}
+        ],
+        "plain": {"name": "a long rifle shot from the dark", "weapon": "long_rifle", "profile": "gun",
+                  "pair": "perception x ingenuity (ruling 31: the Break reads its door's pair, not the gun's Agility and Dexterity)"},
+        "cashouts": {
+          "break": {
+            "name": "the Break", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 1, "rolls": true,
+            "formula": "1 + bite * cash(n)", "terms": ["bite", "cash"],
+            "ambush": {"text": "a Break from a fresh ambush: its +50% moves into the one sum (ruling A8), multiplying the whole blow",
+                       "sum": {"door": "shadow", "value": {"data": "rules.json:shadow.ambush_bonus"}, "group": "shadow:ambush"}},
+            "marked": {"today": "rules.json:shadow.marked_bonus (+0.15 against a foe you Marked)",
+                       "becomes": "the squad's one mark on the foe (scale.stack.scope.foe_mark), not a term of the Break's own"},
+            "why": "one weapon attack from Hidden that spends the whole meter, as today; each Shadow is worth a fifth more than the one before, so the player who waits in the dark is paid for the wait"
+          }
+        },
+        "push": {"point": 8, "name": "Last Shade", "reach_plus": 1,
+                 "price": "the Break that spends it leaves you Traced until the end of your next turn (conditions.json traced: always seen, no Hide)",
+                 "price_kind": "condition",
+                 "shape": "once a turn, a one-use condition on res_max:shadow +1 until your next Break (S5)"},
+        "marks": {
+          "unit": "a Shadow spent in a Break that lands on a worthy foe",
+          "rate": "@pacing.door_marks.shadow",
+          "gifts": {
+            "I": {"text": "each fight starts with 1 Shadow; it stacks with the Operative's Tradecraft start", "op": "resource shadow +1 on combat_start (exists)"},
+            "II": {"text": "being seen takes a Shadow only every other turn start", "op": "wear:shadow (S6)"},
+            "middle": {"text": "a Break that drops its target gives back 1 Shadow (under the gains a turn)"},
+            "III": {"text": "Last Shade costs nothing (no Traced) once a fight"}
+          }
+        },
+        "keeps_tags": [
+          {"move": "an Evoke of a Line with no damaging Subject (VEIL, LIGHT, WARD, MEND, STEP)", "door": "sigils", "keeps": "Shadow: a working is not a blow"},
+          {"move": "a glyph drawn, Scuff, Picture, Glimmer, every Figment order", "door": "figments", "keeps": "Shadow (already true: no attack roll; stated so the card can say it)"},
+          {"move": "a Figment's blow, on its own turn or by your order", "door": "figments", "keeps": "Shadow: the blow is the Figment's"},
+          {"move": "a Whisper; Begin and Pump of an Outburst; tending a Bond", "door": "any", "keeps": "Shadow (already true)"},
+          {"move": "Tag, Stalk, Hide, Case", "door": "momentum", "keeps_for": "guard", "keeps": "the Momentum chain and the plates: quiet steps are not walking away"}
+        ],
+        "forks": {
+          "4": [
+            {"id": "fork.shadow.light_fingers", "name": "Light Fingers", "text": "Lift costs 1 AP less; an unseen Lift gives 1 Shadow, once a turn (forks.json, kept)", "group": "fork:shadow:4"},
+            {"id": "fork.shadow.lend_the_dark", "name": "Lend the Dark", "text": "1 AP, 1 Shadow, once a turn: an ally no foe sees becomes Hidden (forks.json, kept)", "group": "fork:shadow:4",
+             "needs_ally": true, "solo": "alone, Lend the Dark hides you: 1 Shadow for a Hide when Vanish is spent this turn (the ally is you, ruling 32)"}
+          ],
+          "8": [
+            {"id": "fork.shadow.lightkiller", "name": "Lightkiller", "text": "once a fight, 1 AP, 2 Shadow: Dimmed for 2 rounds (forks.json, kept)", "group": "fork:shadow:8"},
+            {"id": "fork.shadow.spotter", "name": "Spotter", "text": "while you are Hidden, an ally's first plain weapon hit a round on a Marked foe is an ambush, for 1 Shadow (forks.json, kept); it reaches plain hits only, never another door's cash-out (ruling 30)", "group": "fork:shadow:8",
+             "needs_ally": true, "solo": "alone, the first plain weapon hit you make on a Marked foe after you leave Hidden, before your next turn, is still an ambush, for 1 Shadow (the ally is you, ruling 32)"}
+          ]
+        }
+      },
+
+      "ladders": {
+        "ingenuity": {
+          "role": "alpha",
+          "card": {"text": "+5% on every Break a point; Unseen Hand: from Hidden you roll with Ingenuity when it is higher", "slope": "@scale.cards.skill_slope"},
+          "points": {
+            "1": {"exists": "the door: Break, Go to Ground, First Shade, Tagged, Unseen Hand; Tag, Stalk", "reach": 2, "bite": 0.4,
+                  "new": "the meter holds 2 (was 1); the Bite on the cash-out sum",
+                  "felt": "your first Break spends two Shadow from the dark: about three shots in one, and you were never targeted while you built it"},
+            "2": {"exists": "Lift, Decoy; +1 to the roll foes need to spot you (every 2 points)", "numbers": {"spot": {"data": "skills.json:items[ingenuity].per_point.numbers.spot"}},
+                  "felt": "you empty a foe's pockets and throw a sound where you are not"},
+            "3": {"exists": "perk step; Ghost Kill, Case", "felt": "a kill nobody saw puts you straight back in the dark"},
+            "4": {"exists": "fork: Light Fingers or Lend the Dark; spot +1", "reach": 3, "new": "Reach 3 (today's 'holds one more' at 5 moves here)",
+                  "felt": "three Shadow: a Break worth four shots"},
+            "5": {"exists": "Fade, Douse, Scout", "felt": "vanish in plain sight, and put out the lamp that showed you"},
+            "6": {"exists": "perk step; Cut the Strap; spot +1", "bite": 0.45, "felt": "every Shadow you spend bites an eighth harder"},
+            "7": {"exists": "perk step; Open Seam", "reach": 4, "needs": {"analysis": 4},
+                  "felt": "four Shadow, once your Analysis reads the room: a Break worth five shots and more"},
+            "8": {"exists": "fork: Lightkiller or Spotter; spot +1", "new": "the Push: Last Shade",
+                  "felt": "one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it"},
+            "9": {"exists": "perk step; Timing, Parting Cut", "bite": 0.5, "felt": "the last Shadow of a full meter is worth more than a shot on its own"},
+            "10": {"exists": "Mastered: Vanishing Act; spot +1", "reach": 5, "needs": {"analysis": 7, "vigilant": 4},
+                   "felt": "five Shadow: a different machine from a 5, a Break that ends a fight's worst foe"}
+          }
+        },
+        "analysis": {
+          "role": "beta",
+          "feed": {"formula": "spot_tn + feed_flat * B, then x (1 + feed * A_alpha * B) (the feed, effects/feed.ts:37)",
+                   "feed_flat": 1, "feed": {"data": "skills.json:items[analysis].per_point.numbers.feed"},
+                   "feeds": "the TN foes need to find you while you are Hidden",
+                   "why": "ruling 20: every point counts from the first; the search roll is a number the player sees each time a foe looks"},
+          "dropped": [{"today": "skills.json analysis per_point.numbers.crit_taken (-5% critical damage taken a point)", "why": "the critical goes (ruling A7); gear_perks' margins_feeders restates it"}],
+          "points": {
+            "1": {"exists": "the feed; +1 tile Analyze reach", "new": "+1 to the TN foes need to find you while Hidden, from the first point",
+                  "felt": "a foe looking for you needs one more, and you read a foe from a tile further"},
+            "2": {"exists": "the feed; +1 tile Analyze reach", "felt": "two more to find you: the search misses that would have found you"},
+            "3": {"exists": "perk step (Pattern Lock)", "felt": "a perk, and one more on every search against you"},
+            "4": {"exists": "the feed", "new": "opens Ingenuity's Reach 4", "felt": "your fourth Shadow opens"},
+            "5": {"exists": "perk step (Quick Read)", "felt": "a perk; the search TN now beats a level-matched foe's eye"},
+            "6": {"exists": "the feed", "felt": "+1 search TN, and the feed on your Ingenuity is now a number you see"},
+            "7": {"exists": "perk step (Read Them)", "new": "opens Ingenuity's Reach 5 (with Vigilant 4)", "felt": "your fifth Shadow opens, if your eyes are ready"},
+            "8": {"exists": "the feed", "felt": "+1 search TN: an Elite looks straight through where you stand"},
+            "9": {"exists": "perk step (Still Breath)", "felt": "a perk; you hold your breath and the room forgets you"},
+            "10": {"exists": "Mastered: Case Closed", "new": "your Break keeps 1 Shadow (critic-player-2 finding 6; S3's keeps)",
+                   "felt": "the meter never empties: the next Break starts one Shadow up"}
+          }
+        },
+        "vigilant": {
+          "role": "gamma",
+          "every_point": {"exists": "+1 to notice traps and hidden foes, +1 tile notice range, +1 tile Spot reach; vision 12 + 2 x (Perception - 1) + Vigilant; as a gamma its full points on checks, Asks and passives",
+                          "numbers": {"notice": {"data": "skills.json:items[vigilant].per_point.numbers.notice"}}},
+          "call": {"id": "spot", "name": "Spot", "data": "calls.json items[call.spot]", "needs_ally": true,
+                   "solo": "alone, your own next attack on the Spotted foe uses the mark, at the step below your own (the ally is you, ruling 32)"},
+          "points": {
+            "1": {"exists": "Spot (step 1), the shared Call price; the voice", "felt": "you point out a foe and the squad's next shot on it lands easier; a tile of sight"},
+            "2": {"exists": "every point's notice, range and sight", "felt": "a trap you would have walked into, and a tile more of the map"},
+            "3": {"exists": "perk step", "felt": "a perk, and one more on every notice"},
+            "4": {"exists": "Spot's second step", "new": "opens Ingenuity's Reach 5 (with Analysis 7)", "felt": "Spot's second step, and your fifth Shadow's gate"},
+            "5": {"exists": "perk step; Spot at the price table's second row", "felt": "a perk, and Spot is cheaper"},
+            "6": {"exists": "every point's notice, range and sight", "new": "a Spot you make while Hidden gives you 1 Shadow (under the gains a turn; a resource op on the Call's row, when acted, if self_has hidden)",
+                  "felt": "the eye in the dark: pointing out a foe from Hidden builds your next Break"},
+            "7": {"exists": "perk step", "felt": "a perk, and one more on every notice"},
+            "8": {"exists": "Spot's third step", "felt": "Spot's third step: the mark tells the squad more"},
+            "9": {"exists": "perk step; Spot at the price table's third row", "felt": "a perk, and Spot is cheaper still"},
+            "10": {"exists": "Mastered: Nothing Gets Past; Spot as a reaction (the price table's last row)", "felt": "nothing in the room is hidden from you, and you call it out on their turn"}
+          }
+        }
+      },
+
+      "class": {
+        "id": "infiltrator", "name": "Operative",
+        "only_it_has": [
+          {"id": "the_read", "text": "its Analyze shows the foe's next action (Tradecraft)"},
+          {"id": "marks", "text": "Marks: three foes Marked for the whole squad, each carrying the squad's one mark"},
+          {"id": "toxins", "text": "toxins on the blade"},
+          {"id": "machine_work", "text": "Pick, Disable, Rig, Hijack"},
+          {"id": "dead_drop", "text": "Dead Drop: the Operative alone hands its Shadow to a friend (in place of its retired +1 cap, ruling C16)"}
+        ],
+        "retired": [{"today": "rules.json:shadow.operative_cap_add (+1 Shadow held)", "why": "ruling C16: the +1 is everyone's Reach from Ingenuity; Dead Drop is what the class has in its place"}],
+        "ranks": {
+          "3": [
+            {"id": "tradecraft", "name": "Tradecraft", "ap": 0, "cost": {"rule": "count"},
+             "start": {"data": "rules.json:shadow.operative_start"},
+             "worth": "starts every fight with Shadow and its unseen Analyze builds one: a Break a turn sooner than anyone else"},
+            {"id": "dead_drop", "name": "Dead Drop", "ap": 1, "cost": {"rule": "count", "res": "shadow", "units": 1},
+             "needs_ally": true, "reach_tiles": 4,
+             "solo": "alone, Dead Drop hides 1 Shadow in your kit: the fight's end and being Downed do not take it, and it is yours at the next fight's start (at most 1; the ally is you, ruling 32)",
+             "worth": "once a turn, a friend within 4 tiles who holds the Shadow door gains 1 Shadow, never past its own Reach: your spare dark becomes the squad's ambush"},
+            {"id": "mark", "name": "Mark", "ap": 1, "cost": {"rule": "clock"},
+             "lays": "@scale.stack.scope.foe_mark",
+             "to_hit": {"door": "any", "value": {"data": "conditions.json:items[marked].effects[0].value"}, "group": "foe_mark"},
+             "worth": "the squad's one mark on the foe (+20% to everyone's hit, ruling 30) and today's +1 to hit; the foe cannot Hide: worth its AP in the round it lands"},
+            {"id": "vanish", "name": "Vanish", "ap": 0, "cost": {"rule": "clock"}, "worth": "once a turn, Hide costs no AP (kept): a turn of building saves an AP"}
+          ],
+          "5": [
+            {"id": "toxin", "name": "Toxin", "ap": 1, "cost": {"rule": "count", "res": "toxin", "units": 1},
+             "worth": "no save when the coated hit comes from Hidden or is a Break, and a dose coats the next two hits; Bleeding from it is a tick on the dealer's column (scale.costs.rules.deal)"},
+            {"id": "sabotage", "name": "Sabotage", "ap": 0, "cost": {"rule": "count"},
+             "worth": "Pick, Disable, Rig (Hijack at rank III) are yours, Disable and Rig at no Shadow (kept); Rig's blast is on the factor and the deal column (scale.factor, scale.columns.deal)"}
+          ],
+          "15": [
+            {"id": "execution", "name": "Execution", "ap": 0, "cost": {"rule": "count"}, "worth": "a hit that leaves a Marked foe at a quarter HP or less kills it, not Bosses or Celestials (kept)"},
+            {"id": "called_shot", "name": "Called Shot", "ap": 2, "cost": {"rule": "clock"},
+             "today": "classes.json:6324 (3 AP)",
+             "worth": "a shot and an injury for one shot's AP (was one and a half shots' AP: not worth pressing)"}
+          ]
+        },
+        "solo": "Mark, Vanish, Toxin, Sabotage, Execution and Called Shot need no ally; Dead Drop's solo half is above"
+      }
+    },
+
+    "intelligence": {
+      "card": {
+        "lines": [
+          {"text": "+10% Sigil power a point above 1: every Line's damage, healing and shields (the sigil and sigil_mend profiles)", "slope": "@scale.cards.attr_slope", "profiles": ["sigil", "sigil_mend"]}
+        ],
+        "dropped": [
+          {"today": "attributes.json intelligence.derived (sigil_max_words: 2 + floor((Intelligence - 1) / 2), typed at character.ts:881)", "why": "ruling C19: a Line's length rides Brain Power (its Reach)"}
+        ],
+        "felt": "every point is a tenth on every Line you will ever Evoke"
+      },
+
+      "door": {
+        "id": "sigils", "name": "Sigils",
+        "counter": {"resource": "glyphs", "unit": "a glyph in your Line", "starts_at": 0,
+                    "also": "Flux (mg.flux): 1 a glyph drawn; its limit is Rumination's feed (below); over it the Evoker overloads (scale.costs.shares.flux_overload)"},
+        "builds": [
+          {"by": "drawing a glyph on your own tile (its word's charge, the Glyph AP, 1 Flux)", "units": 1, "ap": "the Glyph AP"},
+          {"by": "Twin Draw (Brain Power 5)", "units": 2, "ap": "the Glyph AP"}
+        ],
+        "spends": [
+          {"by": "the Evoke, within a tile of the Line", "units": "all", "min": 2, "ap": "own"},
+          {"by": "setting off a Stored Spell (the Sigilist's): it is your Evoke of the turn", "units": "all", "ap": 1}
+        ],
+        "wears": [
+          {"by": "a glyph's rounds running out", "units": 1},
+          {"by": "a foe's Scuff or NULL (sigils.json enemy_ai)", "units": 1}
+        ],
+        "plain": {"name": "one STONE glyph (the strongest damaging Subject)",
+                  "base": {"data": "sigils.json:items[stone].damage", "x": "@scale.factor.value"}, "profile": "sigil",
+                  "pair": "intelligence x brain_power (ruling 31)",
+                  "why": "a Line's plain hit is its Subject glyph's damage, before Bite x the cash-out sum (critic-consistency-2 1.18); Margins are on it"},
+        "cashouts": {
+          "evoke": {
+            "name": "the Evoke", "from_point": 1, "ap": "own", "spends": "all", "min": 2, "rolls": true,
+            "formula": "bite * cash(n)", "terms": ["bite", "cash"],
+            "why": "a Line is one spell and its length is its power: no '1 +', so a Line of two is the short spell and every glyph past it is worth a fifth more than the one before"
+          }
+        },
+        "words": {
+          "about": "How a Line's words read under the stack rule (scale.stack): length pays through Bite x the cash-out sum, so a word that only adds damage moves into the one sum, and a word that spreads the Line over many keeps its share as a factor of each creature caught (the Line's targets, as Cleave's).",
+          "one_subject": {"today": "rules.json output.systems.sigil_damage and sigils.json grammar.repeats: the strongest damaging Subject in full and half of every other",
+                          "becomes": "a Line deals its strongest damaging Subject's damage; every other damaging Subject adds its element and its condition, not its damage",
+                          "why": "a second fire word makes the Line burn, it does not hit twice; without it a Line of six Subjects is six digits with nothing on the sheet"},
+          "condense": {"today": "sigils.json items[condense]: x1.5, +0.5 a copy, x1.6 when Mastered",
+                       "becomes": "one target and nothing else: no damage of its own, in the sum or out of it; a one-charge glyph that lengthens a single-target Line; Mastered, it costs no charge",
+                       "why": "length pays a Line now (Bite x the cash-out sum), so a word that only multiplied paid twice: at x1.5 a short Line of STONE and CONDENSE was five digits at level 20, and a Line of two must stay four (ruling 29)"},
+          "spread_words": {"today": "SPREAD x0.6, PUSH x0.7, ARC x0.8, SENSE x0.6, STAY and WATCH x0.5, a CHAIN jump x0.75 (sigils.json items)",
+                           "becomes": "kept as each creature's share: the Line's targets factor, never the sum",
+                           "why": "the long Line is also the area Line: each creature caught takes its share of the whole spell"},
+          "inflections": {"today": "a Mastered word's inflection (sigils.json items[].inflection); STONE's +10% damage",
+                          "stone": {"sum": {"door": "sigils", "value": {"data": "sigils.json:items[stone].inflection.effects[0].value", "x": 0.01}, "group": "word:inflection"}},
+                          "becomes": "a damage inflection is a term of the Line's sum"}
+        },
+        "words_held": {"base": 4, "per_point": 3, "formula": "base + per_point x Brain Power",
+                       "today": "character.ts:890 wordsKnownCap and sigils.json grammar.known_max ('4 + brain_power')",
+                       "why": "ruling C19: the words held never stop a specialist short of the 40 by the hours pacing gives them"},
+        "glyph_top": {"becomes": "sigils.json grammar.max_glyphs is the top Reach, Overclock one past it; MAX_GLYPHS (classes/k.ts:298, ai-sigil.ts:194) reads it",
+                      "top": "@mind.attributes.intelligence.ladders.brain_power.points.10.reach"},
+        "push": {"point": 8, "name": "Overclock", "reach_plus": 1,
+                 "price": "when the Overclocked Line is Evoked, your Evoker overloads as if your Flux had gone one over: the one overload path (a share of your max HP, scale.costs.shares.flux_overload), the lock to the next round, all your Flux to the air",
+                 "price_kind": "self_damage",
+                 "shape": "once a turn, a one-use condition: stat_mod max_sigil_words +1 and a cost_mod of the glyph's extra charge, ended by the Evoke; the handler perks/skills.ts:27-60 and its key skill:brain_power.2 go",
+                 "extra_charge": {"data": "skills.json:items[brain_power].unlocks.2.effects[1].value", "x": -1}},
+        "marks": {
+          "unit": "a glyph past the first in a Line Evoked on a worthy foe",
+          "rate": "@pacing.door_marks.sigils",
+          "gifts": {
+            "I": {"text": "your first glyph of each fight costs no AP"},
+            "II": {"text": "every core your Evoker loads holds 2 more charge", "op": "stat_mod core_charge +2 (character.ts:1223 coreChargeOf)"},
+            "middle": {"text": "the Flux limit +2", "op": "stat_mod flux_max +2"},
+            "III": {"text": "Overclock without its overload once a fight"}
+          },
+          "why": "Mark II is charge, not Bite: a Bite step on Marks would carry the short Line past four digits at level 20"
+        },
+        "word_marks": {
+          "rate": "@pacing.tracks.word_marks",
+          "gifts": {
+            "I": {"text": "Practised (today a label): its glyph costs 1 charge less, never under 1 (the word_cost op)"},
+            "II": {"text": "Mastered: its inflection, always on (today's)"},
+            "III": {"text": "it may sit twice in one Line with no x0.9 for the repeat"}
+          }
+        },
+        "found_spells": {
+          "rate": "@pacing.tracks.found_spells",
+          "text": "the first time a Line whose words (as a set, counting copies) you have never Evoked lands on a worthy foe, it is written in your book with the fight it was found in, and pays study; the book never closes",
+          "built_on": "S9, firsts: a keyed set sigil:<sorted words>, shared with the Outburst designs (soul)"
+        },
+        "keeps_tags": [
+          {"move": "a glyph drawn, a step along your own Line", "door": "momentum", "keeps": "the Momentum chain (wear:momentum, S6): a Line step is not walking away"},
+          {"move": "an Evoke with no damaging Subject", "door": "shadow", "keeps": "Shadow"},
+          {"move": "Vent", "door": "outbursts", "keeps": "Strain falls by 1 (a resource op on the Vent's row): the base layer of the Sigils-Outbursts Crossing"},
+          {"move": "Crystallise, Salvage, a core made at the Forge", "door": "any", "keeps": "cores for the Line (exists)"},
+          {"move": "holding Guard, praying a Whisper, ordering a Figment", "door": "any", "keeps_for": "sigils", "keeps": "your glyphs lose no round of their time that turn"}
+        ],
+        "forks": {
+          "4": [
+            {"id": "fork.sigil.overflux", "name": "Overflux", "today": "forks.json fork.sigil.overflux: damage_mult 1.25 at the Flux limit",
+             "text": "your Lines' sum +10% while your Flux is at its limit", "sum": {"door": "sigils", "value": 0.1, "group": "fork:sigils:4"}},
+            {"id": "fork.sigil.clean_vent", "name": "Clean Vent", "text": "once a turn your Vent scorches every foe next to you and pushes them a tile (forks.json, kept; its scorch on the factor)", "group": "fork:sigils:4"}
+          ],
+          "8": [
+            {"id": "fork.sigil.written_in_advance", "name": "Written in Advance", "today": "forks.json fork.sigil.written_in_advance: damage_mult 1.2",
+             "text": "your first Evoke after a turn you ended with glyphs drawn: the Line's sum +10%", "sum": {"door": "sigils", "value": 0.1, "group": "fork:sigils:8"}},
+            {"id": "fork.sigil.running_script", "name": "Running Script", "text": "after an Evoke, your next glyph this turn costs no AP and adds no Flux (forks.json, kept)", "group": "fork:sigils:8"}
+          ]
+        },
+        "fork_why": "ruling 29 sets the forks by the checker: at x1.25 and x1.2 the Overclocked Line with both forks, a Mastered STONE, a tier-II perk and the mark was six digits; at +10% each in the sum the largest legal Line stays five"
+      },
+
+      "ladders": {
+        "brain_power": {
+          "role": "alpha",
+          "card": {"text": "+5% Sigil power a point; 3 more words held a point", "slope": "@scale.cards.skill_slope"},
+          "points": {
+            "1": {"exists": "the door: draw, walk, Evoke (the Evoker opens it)", "reach": 2, "bite": 0.8,
+                  "new": "the Line's length and the words held ride Brain Power (C19); the book of found spells",
+                  "felt": "a Line of two worth almost two glyphs, and seven words to hold"},
+            "2": {"exists": "+1 tile Sigil reach, +1 round a glyph lasts (every 2)", "new": "the first core saving (moved from 3), in place of Overclock, which moves to 8 (C17)",
+                  "felt": "a charge less on every Evoke: one more Line out of a core"},
+            "3": {"exists": "perk step", "felt": "a perk, and three more words to hold"},
+            "4": {"exists": "fork: Overflux or Clean Vent; the every-2 row", "reach": 3,
+                  "felt": "Lines of three: the third glyph is worth more than the first two together"},
+            "5": {"exists": "Twin Draw; the second core saving", "felt": "two glyphs at a stroke, and a charge less again"},
+            "6": {"exists": "perk step; the every-2 row", "bite": 0.82, "felt": "every glyph of every Line bites harder, the long Line most"},
+            "7": {"exists": "perk step", "reach": 4, "needs": {"rumination": 4},
+                  "felt": "Lines of four, once your Rumination holds the Flux they cost"},
+            "8": {"exists": "fork: Written in Advance or Running Script; the every-2 row", "new": "the Push: Overclock (moved from 2)",
+                  "felt": "one glyph past your Reach, and the hand that wrote it burns"},
+            "9": {"exists": "perk step; the third core saving", "bite": 0.85, "felt": "the longest Line you write is worth a tenth more than at 1, a Line of five over six glyphs"},
+            "10": {"exists": "Mastered: Clean Draw; the Junction; the every-2 row", "reach": 5, "needs": {"rumination": 7, "eloquence": 4},
+                   "felt": "Lines of five: a different machine from a 5, and nobody else writes them"}
+          }
+        },
+        "rumination": {
+          "role": "beta",
+          "feed": {"formula": "flux_limit + feed_flat * B (the feed's x (1 + feed x A_alpha x B) retires: on a whole-number limit it reached +1 only at Brain Power x Rumination 17)",
+                   "feed_flat": 1, "feed": 0, "flux_limit": {"data": "rules.json:mana.sigil.flux.safe_max"},
+                   "today": "skills.json rumination per_point.numbers.feed",
+                   "feeds": "the Flux limit (stat flux_max)",
+                   "why": "ruling 20: one more glyph before a Vent, from the first point"},
+          "points": {
+            "1": {"exists": "+1 on Brain saves", "new": "+1 Flux limit", "felt": "one more glyph before you must Vent"},
+            "2": {"exists": "+1 on Brain saves", "felt": "+1 Flux: a Line of three and a spare before the Vent"},
+            "3": {"exists": "perk step (Footnote); +5 study", "felt": "a perk, study, and one more Flux"},
+            "4": {"exists": "+1 on Brain saves", "new": "opens Brain Power's Lines of four", "felt": "your Line of four opens"},
+            "5": {"exists": "perk step (Lab Coat); +5 study", "felt": "a perk, study, and one more Flux"},
+            "6": {"exists": "+1 on Brain saves", "felt": "+1 Flux: two Lines between Vents"},
+            "7": {"exists": "perk step (Index); +5 study", "new": "opens Brain Power's Lines of five (with Eloquence 4)", "felt": "your Line of five opens, if your voice is ready"},
+            "8": {"exists": "+1 on Brain saves", "felt": "+1 Flux: Vent becomes a choice, not a tax"},
+            "9": {"exists": "perk step (Proven Formula); +5 study", "felt": "a perk, study, and one more Flux"},
+            "10": {"exists": "Mastered: Established Fact; a free word", "new": "your Evoke leaves its first glyph on the ground (critic-player-2 finding 6; S3's keeps)",
+                   "felt": "the next Line starts one glyph written"}
+          }
+        },
+        "eloquence": {
+          "role": "gamma",
+          "every_point": {"exists": "persuasion in a fight harder to resist; +1 tile Brief reach; 5 study at each Mastery level, a free word at 10; as a gamma its full points on checks, Asks and passives",
+                          "numbers": {"call_range": {"data": "skills.json:items[eloquence].per_point.numbers.call_range"}}},
+          "call": {"id": "brief", "name": "Brief", "data": "calls.json items[call.brief]", "needs_ally": true,
+                   "solo": "alone, you Brief yourself at the step below your own (at step 1, the least the Call gives; the ally is you, ruling 32)"},
+          "points": {
+            "1": {"exists": "Brief (step 1), the shared Call price; the voice", "felt": "a friend's next actions cost less, or your own alone; a tile of Brief reach"},
+            "2": {"exists": "every point's persuasion and reach", "felt": "a Persuade in a fight harder to shrug off, and a tile of reach"},
+            "3": {"exists": "perk step (Overruled!); +5 study", "felt": "a perk and study"},
+            "4": {"exists": "Brief's second step", "new": "opens Brain Power's Lines of five (with Rumination 7)", "felt": "Brief's second step, and your Line of five's gate"},
+            "5": {"exists": "perk step (Objection!); +5 study; Brief at the price table's second row", "felt": "a perk, study, and Brief is cheaper"},
+            "6": {"exists": "every point's persuasion and reach", "new": "a Brief you give vents 1 of your Flux (a resource op on the Call's row, when acted)",
+                  "felt": "you talk the pressure out: a Brief is also a Vent"},
+            "7": {"exists": "perk step (Opening Argument); +5 study", "felt": "a perk and study"},
+            "8": {"exists": "Brief's third step", "felt": "Brief's third step: the discount lasts"},
+            "9": {"exists": "perk step (Thinking Aloud); +5 study; Brief at the price table's third row", "felt": "a perk, study, and Brief is cheaper still"},
+            "10": {"exists": "Mastered: Closing Argument; a free word; Brief as a reaction", "felt": "the last word, a free word, and a Brief on their turn"}
+          }
+        }
+      },
+
+      "class": {
+        "id": "mage", "name": "Sigilist",
+        "only_it_has": [
+          {"id": "stored_spell", "text": "the Stored Spell: a whole Line written before the fight and set off for 1 AP, the only way in the game to skip a Line's set-up"},
+          {"id": "backdraft", "text": "Backdraft: its overload is a blow"}
+        ],
+        "retired": [{"today": "classes.json:1941, the Sigilist's dial (value 1)", "why": "a dial at 1 is no item at all (classes.json dials_note)"}],
+        "ranks": {
+          "3": [
+            {"id": "stored_spell", "name": "Stored Spell (moved from rank III)", "ap": 1, "cost": {"rule": "count", "res": "core charge", "units": "own"},
+             "worth": "a Line of three or four for 1 AP: as many stored as your Rumination modifier (at least 1); set off once a turn, and it is your Evoke of that turn; it keeps the Line multiplier of its length, never past your Reach",
+             "migration": "@pacing.migration",
+             "stored_before": "ruling 39: a spell stored before the revision, longer than its caster's new Reach, stays castable as stored until it is edited (it fades at the next rest anyway, classes/i.ts:972)"},
+            {"id": "barrage", "name": "Barrage", "ap": 0, "cost": {"rule": "count"}, "worth": "five Subjects a charge cheaper: a cheaper Line every turn (kept)"}
+          ],
+          "5": [
+            {"id": "bleed_the_flux", "name": "Bleed the Flux", "ap": 0, "cost": {"rule": "count"}, "worth": "Vent 1 AP less and the next glyph a Flux less (kept)"},
+            {"id": "core_change", "name": "Core Change (moved from rank I)", "ap": 0, "cost": {"rule": "clock"}, "worth": "a core swap 1 AP less (kept); a move a live Sigilist holds stays held (ruling 39)"}
+          ],
+          "15": [
+            {"id": "payload", "name": "Payload", "ap": 0, "cost": {"rule": "count"}, "worth": "a Line with double area, for Flux equal to its glyphs: worth it on two foes or more (kept)"},
+            {"id": "backdraft", "name": "Backdraft (moved from rank II)", "ap": 0, "cost": {"rule": "deal"},
+             "worth": "with Overclock's price, the Sigilist's planned blow: when your Evoker overloads, every foe beside you takes what the overload cost you (classes.json backdraft, event:amount, kept), now a share of your max HP"}
+          ]
+        },
+        "solo": "nothing in the Sigilist's kit needs an ally"
+      }
+    },
+
+    "expression": {
+      "card": {
+        "lines": [
+          {"text": "+10% on every Figment's blows and HP a point above 1 (the figment and figment_hp profiles; the figment factor folded into k)", "slope": "@scale.cards.attr_slope", "profiles": ["figment", "figment_hp"]},
+          {"text": "glyphs 0.1 AP cheaper a point above 1, at least 0.5", "number": {"data": "attributes.json:items[expression].derived[1].per_point_above_1"}, "data_key": "attributes.json expression.derived (glyph_ap)"}
+        ],
+        "dropped": [
+          {"today": "attributes.json expression.derived (mult_elemental: +10% elemental damage a point, 0.05 a Visualization point; false today, rules.json output.profiles attr 0)", "why": "ruling 31: one pair to a hit; a Line reads Intelligence and Brain Power, so the elemental line had no hit to land on"}
+        ],
+        "felt": "an Expression point outside Figments is never dead: cheaper glyphs for every Sigil writer"
+      },
+
+      "door": {
+        "id": "figments", "name": "Figments",
+        "counter": {"resource": "ties:owned", "unit": "a Figment held", "starts_at": 0,
+                    "also": "the Visualizer's charge (vcharge): one core, plus Proficiency's charge a point"},
+        "builds": [
+          {"by": "Picture (the form's charge, +1 a trait)", "units": 1, "ap": 2},
+          {"by": "Quick Sketch (the Rigger's), once a turn", "units": 1, "ap": 1},
+          {"by": "Double (the Rigger's): no charge, no upkeep, one at a time", "units": 1, "ap": 2}
+        ],
+        "spends": [
+          {"by": "the Curtain", "units": "all", "min": 1, "ap": 1},
+          {"by": "Cash in: one Figment, all its charge back, no blow", "units": 1, "ap": 1},
+          {"by": "Let go: half its charge back", "units": 1, "ap": 0}
+        ],
+        "wears": [
+          {"by": "a Figment destroyed: nothing back, and it Snaps you (1 AP less next turn)", "units": 1},
+          {"by": "upkeep short of charge: the newest unravels for each charge missing", "units": 1}
+        ],
+        "upkeep": {"per_held": 0.5, "rounding": "up", "ap_from": 4,
+                   "today": "figments.json upkeep: 1 charge a Figment, and 1 AP from 3 held",
+                   "why": "a full board is a choice to keep, not a drain that forbids the Reach"},
+        "limits": {"held_most": 6, "bodies": 8, "today": "figments.json limits (4 held, 6 bodies)",
+                   "why": "Reach 4, Many Hands and Overhold held, and the Rigger's Double and Sentinel beside them"},
+        "plain": {"name": "a Beast's claws", "weapon": "figment_claws", "profile": "figment",
+                  "pair": "expression x visualization (ruling 31)"},
+        "cashouts": {
+          "curtain": {
+            "name": "Curtain", "from_point": 1, "ap": 1, "spends": "all", "min": 1, "rolls": true,
+            "formula": "bite * cash(n)", "terms": ["bite", "cash"],
+            "refund": "none: Cash in and Let go keep the charge, so spending the board is a choice between a blow and the charge (critic-player 14)",
+            "why": "every Figment you hold within your projection range that can reach one foe converges on it at once, one roll, then comes apart; a board about to fall is spent for a blow instead of a Snap"
+          }
+        },
+        "push": {"point": 8, "name": "Overhold", "reach_plus": 1,
+                 "price": "while you hold more than your Reach, the extra one drinks 2 charge at each of your turn starts beside the upkeep, and its fall Snaps you for 2 AP, not 1",
+                 "price_kind": "resource",
+                 "shape": "once a turn, a condition on ties_max:owned +1 while that Figment stands (the stat exists)"},
+        "marks": {
+          "unit": "a Figment blow landed on a worthy foe, or 2 for each Figment spent in a Curtain",
+          "rate": "@pacing.door_marks.figments",
+          "gifts": {
+            "I": {"text": "each fight starts with a Figment of your first ready design beside you (its charge paid as usual)"},
+            "II": {"text": "every core your Visualizer loads holds 2 more charge", "op": "stat_mod core_charge +2"},
+            "middle": {"text": "your oldest Figment needs no upkeep"},
+            "III": {"text": "Overhold without its price once a fight"}
+          }
+        },
+        "form_marks": {
+          "unit": "a form held through a worthy fight to its end",
+          "rate": "@pacing.tracks.form_marks",
+          "gifts": {
+            "I": {"text": "+15% HP for that form, in its HP sum", "sum_hp": 0.15},
+            "II": {"text": "a second order to it each turn costs 1 AP less"},
+            "III": {"text": "one more trait slot on that form's designs"}
+          }
+        },
+        "keeps_tags": [
+          {"move": "Picture, Glimmer, every order", "door": "shadow", "keeps": "Shadow; a Figment's blow is the Figment's"},
+          {"move": "a Ward's Interpose and its soak", "door": "guard", "keeps_for": "momentum", "keeps": "your plates and the Momentum chain (wear:, S6): the hit it takes is not yours"},
+          {"move": "a Figment standing on your Line's tile", "door": "sigils", "keeps": "your glyph: it is not scuffed while the Figment stands there (the base of the Figments-Sigils Crossing)"},
+          {"move": "Expression's glyph AP; Proficiency's core charge", "door": "sigils", "keeps": "a Mind mixed character draws faster and loads fuller cores (exists, and one meaning of 'charge a core holds')"}
+        ],
+        "forks": {
+          "4": [
+            {"id": "fork.figment.hard_light", "name": "Hard Light", "text": "your Figments take 30% less damage; one destroyed gives +1 AP next turn (forks.json, kept)", "group": "fork:figments:4"},
+            {"id": "fork.figment.sharp_light", "name": "Sharp Light", "today": "forks.json fork.figment.sharp_light: damage_mult 1.2",
+             "text": "your Figments' blows and Curtains: the sum +20%; after one drops a foe your next order is cheaper (kept)",
+             "sum": {"door": "figments", "value": 0.2, "group": "fork:figments:4"}}
+          ],
+          "8": [
+            {"id": "fork.figment.many_hands", "name": "Many Hands", "text": "+1 Figment held; Picture 1 charge less, never under 1 (forks.json, kept)",
+             "reach_plus": {"door": "figments", "value": {"data": "forks.json:items[fork.figment.many_hands].effects[0].value"}, "group": "fork:figments:8"}},
+            {"id": "fork.figment.masterwork", "name": "Masterwork", "text": "name your Masterwork: +2 to hit, 25% less damage taken, a free order a round (forks.json, kept)",
+             "to_hit": {"door": "figments", "value": {"data": "forks.json:items[fork.figment.masterwork].effects[1].value"}, "group": "fork:figments:8"}}
+          ]
+        }
+      },
+
+      "ladders": {
+        "visualization": {
+          "role": "alpha",
+          "card": {"text": "+5% on every Figment's blows and HP a point; a tile of Figment reach; a form known a point (forms_known, kept)", "slope": "@scale.cards.skill_slope"},
+          "points": {
+            "1": {"exists": "the door: Picture, Redraw, Let go, Glimmer, Cash in; 2 forms known", "reach": 1, "bite": 0.6,
+                  "new": "the Curtain (ruling 18: a cash-out from point 1)",
+                  "felt": "one Figment on the field, and a Curtain when it is about to fall"},
+            "2": {"exists": "Cash in; a form known (each point from here)", "felt": "a third form to Picture, and your charge back when you need it"},
+            "3": {"exists": "perk step; two ready designs, one trait", "felt": "a perk, and two designs to Picture at a stroke"},
+            "4": {"exists": "fork: Hard Light or Sharp Light", "reach": 2, "new": "two held (today's at 5 moves here)",
+                  "felt": "two Figments at once: a Curtain of two hits harder than both alone"},
+            "5": {"exists": "three ready designs", "felt": "a third design, and a fifth form"},
+            "6": {"exists": "perk step", "bite": 0.75, "felt": "every Figment in a Curtain bites a quarter harder"},
+            "7": {"exists": "perk step; two traits a design", "reach": 3, "needs": {"proficiency": 4},
+                  "felt": "three held, once your Proficiency can feed them: a Curtain of three"},
+            "8": {"exists": "fork: Many Hands or Masterwork; four ready designs", "new": "the Push: Overhold",
+                  "felt": "one past your Reach, and it drinks your charge every turn it stands"},
+            "9": {"exists": "perk step; all ten forms known", "bite": 0.85, "felt": "every form there is, and the Curtain at its fullest bite"},
+            "10": {"exists": "Mastered: Solid Image; five ready designs", "reach": 4, "needs": {"proficiency": 7, "charisma": 4},
+                   "felt": "four held: a stage nobody else can fill"}
+          }
+        },
+        "proficiency": {
+          "role": "beta",
+          "feed": {"formula": "figment_hp x (1 + feed_flat * B + feed * A_alpha * B)",
+                   "feed_flat": 0.06, "feed": {"data": "skills.json:items[proficiency].per_point.numbers.feed"},
+                   "feeds": "every Figment's HP",
+                   "core_charge_per_point": 1,
+                   "ambush_taken_per_point": {"value": 0.06, "today": "skills.json proficiency per_point.numbers.ambush_taken (0.1 a point, capped 60% at effects/damage.ts:81: points 7 to 10 gave nothing)", "why": "the cap is kept and now reached at 10, so every point counts"},
+                   "why": "ruling 20: each point is a charge you can count and a share of HP you can see on the token"},
+          "points": {
+            "1": {"exists": "the feed on Figment HP", "new": "+6% Figment HP, +1 charge in every mana core you load (Visualizer and Evoker: stat core_charge), -6% ambush damage taken",
+                  "felt": "a charge more a core and Figments that last a hit longer"},
+            "2": {"exists": "the feed", "felt": "another charge a core: one more upkeep paid"},
+            "3": {"exists": "perk step (Jury-Rig); Field Repair", "felt": "a perk, and you mend a Figment in the field"},
+            "4": {"exists": "the feed", "new": "opens Visualization's three held", "felt": "your third Figment opens"},
+            "5": {"exists": "perk step (Field Repair)", "felt": "a perk, and a charge more a core"},
+            "6": {"exists": "the feed", "felt": "+6% Figment HP and a charge: the board holds a round longer"},
+            "7": {"exists": "perk step (Hot-Swap)", "new": "opens Visualization's four held (with Charisma 4)", "felt": "your fourth Figment opens, if the crowd is with you"},
+            "8": {"exists": "the feed", "felt": "a charge more a core, and an ambush barely scratches you"},
+            "9": {"exists": "perk step (Tuned)", "felt": "a perk, and a charge more a core"},
+            "10": {"exists": "Mastered: Overhaul", "new": "your Curtain leaves one Figment standing (critic-player-2 finding 6; S3's keeps)",
+                   "felt": "the show goes on after the Curtain: one Figment stays"}
+          }
+        },
+        "charisma": {
+          "role": "gamma",
+          "every_point": {"exists": "offers of terms harder to refuse; +1 tile Rally reach; as a gamma its full points on checks, Asks and passives",
+                          "numbers": {"call_range": {"data": "skills.json:items[charisma].per_point.numbers.call_range"}}},
+          "call": {"id": "rally", "name": "Rally", "data": "calls.json items[call.rally]", "needs_ally": true,
+                   "solo": "alone, you Rally yourself at the step below your own (at step 1, the least the Call gives; the ally is you, ruling 32)"},
+          "points": {
+            "1": {"exists": "Rally (step 1), the shared Call price; the voice", "felt": "a friend gets AP when it counts, or you do alone; a tile of Rally reach"},
+            "2": {"exists": "every point's terms and reach", "felt": "a foe takes your terms more often, and a tile of reach"},
+            "3": {"exists": "perk step (Parley)", "felt": "a perk"},
+            "4": {"exists": "Rally's second step", "new": "opens Visualization's four held (with Proficiency 7)", "felt": "Rally's second step, and your fourth Figment's gate"},
+            "5": {"exists": "perk step (Crowd Pleaser); Rally at the price table's second row", "felt": "a perk, and Rally is cheaper"},
+            "6": {"exists": "every point's terms and reach", "new": "a Rally you make puts 1 charge back in your Visualizer (a resource op on the Call's row, when acted)",
+                  "felt": "the crowd's cheer feeds the show"},
+            "7": {"exists": "perk step (Smooth)", "felt": "a perk"},
+            "8": {"exists": "Rally's third step", "felt": "Rally's third step"},
+            "9": {"exists": "perk step (Showman: Picture 1 charge less); Rally at the price table's third row", "felt": "a cheaper Picture, and Rally cheaper still"},
+            "10": {"exists": "Mastered: Everyone's Friend; Rally as a reaction", "felt": "everyone's friend, and a Rally on their turn"}
+          }
+        }
+      },
+
+      "class": {
+        "id": "trickster", "name": "Rigger",
+        "only_it_has": [
+          {"id": "free_doubles", "text": "Doubles: no charge, no upkeep"},
+          {"id": "salvage", "text": "charge from wrecks"},
+          {"id": "redline", "text": "Redline: a Figment or machine of yours acts now"},
+          {"id": "scrap_sentinel", "text": "machines from scrap"},
+          {"id": "bigger_curtain", "text": "a bigger Curtain: it counts every unit tied to you (ties:owned), so the Double and the Sentinel join the board (in place of the retired +1 held, ruling C16)",
+           "reach_plus": {"door": "figments", "value": 2, "group": "class:rigger:board"}}
+        ],
+        "retired": [
+          {"today": "classes.json:1986, the Rigger's Hands' stat_mod ties_max:owned +1", "why": "ruling C16: the +1 held is everyone's Reach from Visualization; the bigger Curtain is the class's in its place"},
+          {"today": "classes.json:2282, the Rigger's dial (value 1)", "why": "a dial at 1 is no item at all"}
+        ],
+        "ranks": {
+          "3": [
+            {"id": "riggers_hands", "name": "the Rigger's Hands", "ap": 0, "cost": {"rule": "count"}, "worth": "+1 ready design (kept); the Curtain counts the Double and the Sentinel"},
+            {"id": "false_image", "name": "Double", "ap": 2, "cost": {"rule": "count"}, "worth": "a lure for 2 AP that costs nothing more (kept)"},
+            {"id": "quick_sketch", "name": "Quick Sketch", "ap": 0, "cost": {"rule": "count"}, "worth": "once a turn, Picture 1 AP less (kept)"}
+          ],
+          "5": [
+            {"id": "salvage", "name": "Salvage", "ap": 1, "cost": {"rule": "clock"}, "worth": "charge from a wreck beside you (kept)"},
+            {"id": "overclock", "name": "Redline", "ap": 1, "cost": {"rule": "count"},
+             "worth": "2 to 3 AP of a Figment for 1; its hurt to its own Figment is on the factor (scale.factor) and the flat profile, deal (scale.costs.rules.deal)"}
+          ],
+          "15": [
+            {"id": "sleight", "name": "Sleight", "ap": 1, "cost": {"rule": "clock"}, "uses": "once a turn (was once a scene)",
+             "worth": "swap with a Figment or an ally every turn: a level-15 move worth pressing"},
+            {"id": "scrap_turret", "name": "Scrap Sentinel", "ap": 3, "cost": {"rule": "clock"}, "uses": "once a fight (was once a scene: a scene can be several fights)",
+             "worth": "about two shots a round for 3 AP, once a fight"}
+          ]
+        },
+        "solo": "Sleight swaps with a Figment as well as an ally; nothing else in the Rigger's kit needs an ally"
+      }
+    }
+  },
+
+  "migration": "@pacing.migration"
+}

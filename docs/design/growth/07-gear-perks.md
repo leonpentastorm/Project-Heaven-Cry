@@ -1,519 +1,451 @@
-# 07. Gear and perks: grades, mods, the maker signatures, every perk, Margins, the top of the scale, and traits
+# 07. Gear and perks: grades, mods, the maker signatures, every perk, Margins, the sum, and traits
 
-Drafter's file for the 0.34 rebalance, **second draft** (21 Nov 2026). Written to the charter (`docs/design/proposals/2026-11-21-the-curve.md` sections 10 to 18, its laws in sections 2 and 3, the Momentum pattern in 16) and to **the lead's rulings in `00-rulings.md`** (A7 to A10, C21, D25, D26 bind this file). **Nothing here is built.** Every proposed number is PROVISIONAL, with one line of reason a player would recognise; nothing is fitted to a percentage, a line or a ceiling. Facts about today were read in data and code at `release/0.34-final` and carry file:line.
+Drafter's file for the 0.34 rebalance, **third pass** (ruling F, 21 Nov 2026). **The numbers live in `tools/balance/bible/gear_perks.json`**; this file explains them and shows no number that file does not hold (every table below is printed from it). Shared numbers are references to `scale.json` (the factor, the grade ladder, Margins, the mark) and `pacing.json` (grades by map, prices); the JSON names them by path, so do the tables. `python tools/balance/check.py` computes each door's largest legal turn and largest plain hit at level 20 from these terms and the door files'. Written to the charter (`../proposals/2026-11-21-the-curve.md`), to `00-rulings.md` A to F (F wins) and to every finding of `critic-consistency-2.md` and `critic-player-2.md` that names 07. **Nothing here is built; every number is PROVISIONAL**, chosen for what a player feels. Facts about today carry file:line, checked at `release/0.34-final`.
 
-**Every shared number is 01's** (`01-scale.md`, final for this pass; its tables are printed by `tools/balance/scale.py`): the factor x0.6 (01 section 2, T2 and T2b), the level columns (T4), the cards (T5), HP (T6), MP and its cost rule (T7a, T7b), a plate and armour (T8, T8b), **the grade ladder (T9)**, **Margins (section 9, T10)**, **the stack rule (section 10.1)**, the enemy columns and tier rows (T12) and **each door's top (T11)**. This file quotes them by table name and types none of its own.
+## 0. What changed from the second draft
 
-## 0. What changed from the first draft
-
-1. **The stack rule is 01's (A8):** level, attribute, skill, grade and the cash-out multiply; everything else adds into one sum Σ. The first draft's thirteen multiplying kinds are withdrawn, and so is its primitive "stack kinds" (01's S12 in two kinds replaces it).
-2. **The top of the scale (section 6) is redone on 01's T11.** Two rules hold it under 100,000 with every perk still felt: **a cash-out carries its own door's sum and the foe's mark** (the rest of the sheet makes the plain hits harder), and **a foe carries one mark at a time**. The marks are +20% each. One question to the lead.
-3. **Every feeder of the old critical is restated on Margins (A7, section 5):** `crit_damage` becomes the stat `margins`, `crit_taken` becomes `margins_taken`; One Shot is +1 Margin; Acuity takes one Margin off a hit on you at 5 and at 10.
-4. **Grades, properties and the mod slot quote 01's T9 (A9); the grade by map is D25:** finds, shelf and vault as three lists; Relic is found from map 5, sold only in endless; Celestial is found only, from map 10 (the vault, and a Boss pick one time in four); `relic_from_stage` goes.
-5. **Every flat number is on 01's scale:** the bayonet 9, Field Repair 9, the traits' HP prices as 01's shares (Crawler-Blooded 7%, Oil in My Mind and Soul -6% max HP), the companions read 01's rows, MP prices x0.5 on 01's pool. Earthbreaker becomes a Finisher row (critic M9).
+- **One source.** Every number moved into `gear_perks.json`; the second draft's computed tables (its section 6.3 and its plain-hit table) are gone: the checker prints them.
+- **Ruling 30 is applied** (a cash-out counts its own door's terms and one mark). The JSON's `rules.own_door` says what is a door's own; every other damage term carries `scope: plain` and the profiles it reaches (`hits`), and the checker adds those to plain hits only.
+- **Ruling 35:** the vault gives the map's own best find grade (`grades_by_map.vault_rule`; the values are `@pacing.grades_by_map`). The second draft's vault list (one grade over the finds) is withdrawn: no Relic in a vault on maps 3 and 4.
+- **Ruling 21 in full:** Cultured gets a fight half (critic-consistency-2 2.2).
+- **Ruling 32:** every perk that names an ally says what it does alone (`needs_ally`, `solo`); Threads That Hold reads Tending yourself while you hold a Bond (critic-player-2 2).
+- **Ruling 39:** the re-pick list (`repick`): the four perks narrowed to their own door, the two marks' holders and every perk whose meaning changed (critic-consistency-2 7.4).
+- **Trimmed, by A8 ("trim in 07"):** Last Charge's turn and the weighted head now step at a tier I's share, so the largest plain blow (a Breaker's Strike with every legal source) stays five digits. **Iron Grip's tier II** became a plain-hit term (`scope: plain`, melee): counted in the Coup it put Momentum's largest legal turn over the top (the checker's reading); on the blows that build the chain it is unchanged. PROVISIONAL, for the lead.
+- **Withdrawn as second copies:** Field Surgeon's own heal (it reads Field Repair's), Twin Souls' MP (a design price, soul's), the drone's and beast's typed HP (the companion rows').
+- **Added:** the ward shields' flat cuts (`items.json:1749-1793`) become shares; the boons that reach the sum are placed (`boons`); the felt bar for a per-point line is its sum on the sheet (critic-player-2 14).
 
 ---
 
 ## 1. Grades
 
-### 1.1 Today (checked)
+The ladder is `@scale.grades` (ruling 9). This file owns how it is carried:
 
-| Grade (`data/rules.json`) | acc | dmg | dur | price | marks | arm | sold |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| standard (:1605) | 0 | 1 | 1 | x1 | 0 | 1 | yes |
-| fine (:1616) | +1 | 1 | x1.25 | x3 | 1 | 1 | yes |
-| masterwork (:1627) | +2 | 1 | x1.5 | x8 | 2 | 1 | yes |
-| relic (:1638) | +2 | 1 | x1.5 | x25 | 3 | 1 | yes |
-| celestial (:1649) | +2 | 1 | x1.5 | x50 | 4 | 1 | no |
+- **about:** one copy of the grade: each rules.json rarity row (:1605-1659) gains effects (roll_mod to_hit with_this = acc; damage_mult dealing with_this = dmg; mend_mult heal and shield with_this = dmg), carried by the instance through the one carried-modifier list (effects/collect.ts:220). combat.ts:580, :585 and :1536 stop reading acc and dmg (the second copy goes); armOf (character.ts:224) keeps arm
+- **off_hand:** with_this already means that hand's weapon, or the door's focus: the off hand gets its grade, and every focus its door's output (today a graded Evoker, Emanator, Attuner or Visualizer gets durability, price and marks only)
+- **mod_slots:** `@scale.grades.masterwork.mod_slots`
+- **slotless_default:** grip (`rules.json rarity.masterwork.default_slot`): every hand-held thing has a grip, so the Masterwork reward is never empty (critic-consistency-2 6.3: a data default, not the word in code)
+- **durability_price_marks:** as today (rules.json rarity dur, price, marks); one price for a grade step is pacing's (@pacing.credits)
+- **props_list:** GearState.prop becomes props (a list; S15): a Celestial holds two; prop becomes props: [prop] on load
+- **celestial_kept:** cappedRarity (run/rewards.ts:160-164) stops turning a Celestial into a Relic where the find's list allows Celestial
 
-Every reader of the rows:
-- `character.ts:191` builds `RARITY` from them. `:195` `maxDurOf` reads `dur`. `:224` `armOf` reads `arm` for a worn graded piece. `credits.ts:68` reads `price`.
-- `combat.ts:580` adds `acc` to the unit's attack. `combat.ts:585` puts `dmg` on the unit as `dmgMult`. `combat.ts:1536` applies it only when the striking weapon is the main-hand weapon: **an off-hand weapon's grade does nothing to its damage.**
-- Nothing in `sigil.ts`, `magic.ts` or `classes/soul.ts` reads a grade. **A graded Evoker, Emanator, Attuner or Visualizer gets durability, price and marks only.**
-- **The mod slot is not built.** The spec's rarity table (`PHC-Core-Rules-v1.0.md:680-682`) and `rules.json:1603` promise "+1 mod slot" at Fine and Masterwork; nothing reads it (`character.ts:1721` reads only the row's `mod_slots`).
-- **Relic property:** one string, `GearState.prop` (`character.ts:1124`), from `survival.json relic_props` (:224, seven rows), counted against boon room (`run/power.ts:47` `runWorth` adds `gearProps`). Armour takes none ("Armour takes no Relic property yet", `run/progress.ts:143`).
-- **Celestial is a Relic:** `cappedRarity` turns a Celestial roll into a Relic (`run/rewards.ts:160-164`); the validator refuses Celestial as a ceiling (`tools/validate.py:2960`).
-- **The ceiling:** `rewards.ceiling` is fine / masterwork / relic for stages 1 / 2 / 3+ (`survival.json:147`; `run/rewards.ts:156`); the Forge's Relic step opens from stage 3 (`survival.json:195` `relic_from_stage`); the vault gives one grade over the ceiling, at most Relic (`survival.json:580`); the Boss's pick row is masterwork 70, relic 25, celestial 5 (`survival.json:141-145`), so its Celestial is always capped away today.
+**The grade by map** (ruling 25, ruling 35): ruling 35: the vault gives the map's own best find grade, never the next map's; so no Relic in a vault on maps 3 and 4, and no Celestial before the map pacing names. The values: `@pacing.grades_by_map`. survival.json rewards.ceiling (:147) becomes the finds list by map; new rewards.shelf (never Celestial) and vault.grades (:580, in place of grade_up and grade_max); grade_up.relic_from_stage (:195) goes, the Forge's Relic step reads the shelf; one reader stageCeiling(stage, purpose) for finds, shelf, vault; tools/validate.py:2960 allows Celestial in finds and vault, refuses it on the shelf. only a rarity row with a Celestial weight reaches the Celestial entry, and only the Boss's has one (its weights are pacing's): a Celestial is never an ordinary fight's pick.
 
-### 1.2 The ladder: 01's T9, and what this file adds to it
+**Properties** (`properties`; a property costs no boon room, `boon_room`: runWorth (run/power.ts:47) stops counting gearProps (ruling 9); the cap itself is world's):
 
-The numbers are **01's T9** (ruling A9): Fine +1 to hit and x1.15, Masterwork +2 and x1.3, Relic +3 and x1.5, Celestial +3 and x1.75, on weapon damage, armour value (and a plate's soak), the four foci's doors, and Devotion for prayer. Durability, price and marks stay as today (the economy is 05's; one price for a step, D26). This file owns the slots and the properties:
-
-| Grade | Extra mod slots (`extra_slots`) | Properties | Why a player would feel it |
+| property | grade | what it does | where it counts |
 | --- | --- | --- | --- |
-| Standard | 0 | 0 | the row as listed |
-| Fine | 0 | 0 | *the first upgrade hits a sixth harder: you see it on the next hit* |
-| Masterwork | **1** | 0 | *room for the mod you have been carrying* |
-| Relic | 1 | **1** | *a name of its own* |
-| Celestial | 1 | **2** | *the best thing on the field, and two names* |
-
-The spec's "+1 mod slot" on Fine is dropped: it was never built, so nothing is taken back.
-
-**One copy of the grade.** A grade becomes a modifier row the instance carries, the way a Relic property already is (01's Built from names the same form):
-- Each `rules.json rarity` row gains `effects`: `{op: roll_mod, when: to_hit, if: {with_this: true}, value: <acc>}`; `{op: damage_mult, when: dealing, if: {with_this: true}, value: <dmg>}`; `{op: mend_mult, when: heal|shield, if: {actor: self, with_this: true}, value: <dmg>}`. The grade multiplies (A8: grade is one of the five multiplying terms), so these rows are the grade term, not Σ.
-- The carried-modifier collector (`effects/collect.ts:220`, which reads `prop`, `mods` and the row's `variant_mods`) adds the instance's grade row.
-- `with_this` already means "a weapon's event made with that hand's weapon, a door's event with that door's focus" (ENGINE-HOOKS, predicates). So **the off hand's weapon gets its grade**, and **every door's focus gets its grade on that door's output** (a Masterwork Evoker's Lines, a Fine Attuner's Tending).
-- `combat.ts:580`, `:585` and `:1536` stop reading `acc` and `dmg` (the second copy goes). `arm` keeps its one reader (`armOf`, `character.ts:224`).
-
-**The mod slot at Masterwork.** The rarity row gains `extra_slots` (0 / 0 / 1 / 1 / 1). It joins the one counter of extra slots, `extraSlots` (`perks/c.ts:211`), which today counts Gun Nut, Blade Recluse and Overhaul: an extra slot is a second mod in a slot kind the row already has. A row with no `mod_slots` (the coach gun, the sawn-off, the flamer, knuckledusters, the servo fist, thrown weapons) gains one `grip` slot at Masterwork. *Every hand-held thing has a grip, so the reward is never empty.* The grip has one mod today (the wrapped grip, section 2); a second is content for later.
-
-**Properties.**
-- **Celestial carries two.** `GearState.prop` becomes `props` (a list): a saved-shape change with a migration (`prop` becomes `props: [prop]`; critic M-7).
-- `cappedRarity` stops turning Celestial into Relic where the find's list allows Celestial (section 1.3).
-- **A property costs no boon room** (ruling A9): `runWorth` (`run/power.ts:47`) stops counting `gearProps`. The boon cap itself is the Survival drafter's.
-- **Armour gets properties**, three new rows in `relic_props` with `fits: ["armour"]` (armour takes A9's steps on its value, 01 T8b):
-  - `prop.padded`: melee blows on you -15% (a `damage_mult` taking 0.85, a part of the defender's sum);
-  - `prop.sealed`: elemental damage on you -15% (inside `elemental_taken_cap`, `rules.json:857`, a cap 01 keeps);
-  - `prop.lightened`: this piece's Heavy word costs no Movement (`rules.json weapons_rules.heavy`).
-  *A Relic plate should feel like a Relic gun.* Two small extensions: `with_this` reads a worn instance, and `FITS` (`run/power.ts`) learns `armour`.
-
-### 1.3 The grade by map (ruling D25; the clock is 05's)
-
-Three lists, one reader shape (`stageCeiling(stage, purpose)`, purposes `finds`, `shelf`, `vault`; the last entry repeats). **Finds** are what a pick after a fight can roll (each node kind's rarity row, capped by the list); **the shelf** is what a shop sells and the Forge steps to; **the vault** is the dead-end chest's grade.
-
-| Map | Finds (`rewards.ceiling`) | Vault (`vault.grades`, new) | Shelf (`rewards.shelf`, new) | Why |
-| --- | --- | --- | --- | --- |
-| 1 | Fine | Masterwork | Fine | *the first upgrade is in reach in the first hour; the dead-end fight pays a Masterwork* |
-| 2 | Fine | Masterwork | Fine | |
-| 3 | Masterwork | Relic | Masterwork | *Masterwork and its slot from map 3; a Relic for the squad that takes the dead end* |
-| 4 | Masterwork | Relic | Masterwork | |
-| 5 | **Relic** | Relic | Masterwork | *the final map's Boss and finds can give a Relic; the shop cannot* |
-| endless 6 to 9 | Relic | Relic | **Relic** (and the Forge's Relic step) | *Relic on the shelf once Survival is cleared* |
-| endless 10 on | **Celestial**, reached only by the Boss's pick | **Celestial** | Relic | *Celestial is only ever found, deep in endless: the vault, and a Boss's pick one time in four* |
-
-Data changes:
-- `rewards.ceiling` becomes `[fine, fine, masterwork, masterwork, relic, relic, relic, relic, relic, celestial]`. Only a rarity row with a Celestial weight can reach the last entry, and only the Boss's has one (05's row: masterwork 40, relic 35, celestial 25), so **a Celestial is never an ordinary fight's pick**.
-- New `rewards.shelf`: `[fine, fine, masterwork, masterwork, masterwork, relic]`.
-- New `vault.grades`: `[masterwork, masterwork, relic, relic, relic, relic, relic, relic, relic, celestial]`, in place of `grade_up` and `grade_max`. *No Celestial before map 10* (the first draft's vault gave one on maps 6 to 9; critic S11).
-- `grade_up.relic_from_stage` **goes**: the Forge's Relic step reads the shelf (one gate, not two; critic S11).
-- The validator allows Celestial in `ceiling` and `vault.grades` and refuses it in `shelf` (`tools/validate.py:2960`).
-- The hours each map takes are 05's clock (critic S12); this file quotes no hours.
+| prop.keen | relic | every round it sends lands harder (kept) | plain hits of gun,bow: `survival.json:relic_props[prop.keen].effects[0].value` -1 |
+| prop.biting | relic | every blow bites deeper (kept) | plain hits of melee: `survival.json:relic_props[prop.biting].effects[0].value` -1 |
+| prop.true | relic | the first attack a turn with it is +2 to hit (kept) | to hit on momentum, guard, pressure, shadow: `survival.json:relic_props[prop.true].effects[0].value` |
+| prop.deep | relic | a focus property: +1 to hit with it (kept) | to hit on sigils, figments, bonds, outbursts: `survival.json:relic_props[prop.deep].effects[0].value` |
+| prop.quick | relic | reloading it costs 1 AP less (kept) |  |
+| prop.balanced | relic | kept |  |
+| prop.gentle | relic | its heals and shields are bigger (kept; a mend share) |  |
+| prop.padded | relic | melee blows on you -15% (damage_mult taking; the defender's side of the sum) (new, fits armour) | taken -0.15 |
+| prop.sealed | relic | elemental damage on you -15%, inside elemental_taken_cap (rules.json:857, kept) (new, fits armour) | taken -0.15 |
+| prop.lightened | relic | this piece's Heavy word costs no Movement (rules.json weapons_rules.heavy) (new, fits armour) |  |
 
 ---
 
 ## 2. Mods: one visible trade each
 
-Today: 13 weapon mods and 6 quiver enchantments (`data/items.json:283-686`). Most change one to-hit term or a flat number. On 01's scale a flat -2 or +3 is nothing (a level-20 plain hit is four digits, 01 T3b). Each mod below gives one thing a player sees and pays one thing a player sees. A mod's damage is a part of Σ (A8); **on a door's cash-out it does not count** (section 6.1): *the mod makes the blows and shots that build the counter harder.* The Forge's fit fee (`survival.json:211` `fit.rate` 0.2) is unchanged.
+a mod's damage is a plain-hit term (scope plain): it makes the shots and blows that build the counter harder, never a cash-out (ruling 30); every flat damage number on a mod goes; the Forge's fit fee is unchanged (fit_fee).
 
-| Mod (items.json line) | Today | New: what it gives | New: what it costs | Data form (existing ops and gear fields only) |
-| --- | --- | --- | --- | --- |
-| Red dot `mod_red_dot` (283) | no -2 in the first band past effective range (`bands` 1) | Shots, Snap Shots and Bursts +1 to hit; no penalty in the first band past effective range | Aimed Shots -1 (it is not a scope) | `bands: 1, bands_modes: [shot, burst, auto]`; `roll_mod` to_hit `{with_this, mode: [shot, burst, auto]}` +1; `roll_mod` `{mode: [aimed]}` -1 |
-| Scope `mod_scope` (304) | Aimed +1, one more band | Aimed Shots +2 to hit and two more bands | Shots and Bursts -1 (tunnel) | `bands: 2, bands_modes: [aimed]`; `roll_mod` aimed +2; `roll_mod` `[shot, burst, auto]` -1 |
-| Suppressor `mod_suppressor` (336) | silent; -2 damage (flat) | silent; **a kill with it while you are Hidden gives 1 Shadow** | its shots -15% | `silent: 1`; `damage_mult` dealing `{with_this, melee: false}` 0.85; `resource` shadow +1 on `kill` `{with_this, self_has: [hidden]}` |
-| Compensator `mod_compensator` (363) | Recoil -1 a shot (all recoil gone) | no Recoil from earlier shots this turn | the first shot of each turn -1 to hit (heavy muzzle) | `recoil: -1`; `roll_mod` to_hit `{with_this}` -1, `limit {per: per_turn, n: 1}` |
-| Extended magazine `mod_extended_mag` (381) | +50% capacity | +50% rounds | reloading it costs 1 AP more | `magazine_pct: 50`; `cost_mod` cost `{action: [reload], with_this}` +1 |
-| Quick-release `mod_quick_release` (399) | reload costs 1 AP | reload costs 1 AP | 25% fewer rounds | `cost_mod` set 1 (as today); `magazine_pct: -25` |
-| Foregrip `mod_foregrip` (428) | Bursts and auto +1 | Bursts and full auto +2 to hit | drawing or swapping to this gun costs 1 AP more | `roll_mod` `[burst, auto]` +2; `cost_mod` on `swap` `{with_this}` +1 |
-| Bayonet `mod_bayonet` (457) | the gun's blow deals 15 (Dexterity) | the gun's blow deals **9** (01 T2b) and builds Momentum as any melee hit | Aimed Shots -1 | `melee_damage` 9; `roll_mod` aimed -1 |
-| Underslung launcher `mod_underslung` (475) | holds a 40 mm round; **not built** (`built: false`) | **once a fight, 2 AP: a grenade at a tile within 8**: a launcher round's blast, radius 1 | 1.5 kg, the underbarrel slot, and once a fight | `grant_action` (an item's action, `effects/actions.ts`): `ap: 2`, `uses {per: per_combat, n: 1}`, `reach {tile: true, tiles: 8, sight: true}`, effects `deal` (an `amounts` block of the launcher's blast, 01's x0.6 row) with `targets {of: tile, shape: burst, within: 1, side: any}`. No new op |
-| Serrated edge `mod_serrated` (493) | a critical blow causes Bleeding | a critical blow (a natural 20 or the weapon's critical range) causes Bleeding, Body save skipped | blows -10% (teeth bite less deep) | today's `condition` on hit `{crit: true}`; `damage_mult` dealing `{with_this, melee: true}` 0.9 |
-| Weighted head `mod_weighted` (524) | +3 damage (flat) | blows +20% | blows -1 to hit | `damage_mult` `{with_this, melee: true}` 1.2; `roll_mod` to_hit `{with_this, melee: true}` -1 |
-| Wrapped grip `mod_wrapped_grip` (550) | can't be Disarmed; **not built** (narrator) | you can't be Disarmed while you hold it | swapping away from it costs 1 AP more | `cancel` on `cond_incoming` `{target: self, cond: [disarmed], with_this}`; `cost_mod` on `swap` `{with_this}` +1. `adjudication: engine` |
-| Sigil-etched magazine `mod_sigil_magazine` (568) | holds a stored spell; **not built** | the first glyph you draw each turn costs 0.5 AP less (the spellslinger's pistol is an Evoker) | 25% fewer rounds | `cost_mod` on `glyph_cost` `{with_this}` -0.5, `limit {per: per_turn, n: 1}`; `magazine_pct: -25` |
-| The six enchantments (586-686) | a tone's rider at stage 2; arrows x0.9 | KEEP: already a trade | KEEP | unchanged |
+| mod (line) | slot | today | gives | costs | numbers | data form |
+| --- | --- | --- | --- | --- | --- | --- |
+| mod_red_dot (items.json:283) | optic | no -2 in the first band past effective range | Shots, Snap Shots and Bursts +1 to hit; no penalty in the first band past effective range | Aimed Shots -1 (it is not a scope) | to_hit 1, aimed -1 ; to hit pressure 1, shadow 1 | bands 1, bands_modes [shot, burst, auto]; roll_mod to_hit with_this mode [shot, burst, auto] +1; roll_mod mode [aimed] -1 |
+| mod_scope (items.json:304) | optic | Aimed +1, one more band | Aimed Shots +2 to hit and two more bands | Shots and Bursts -1 (tunnel) | aimed 2, bands 2, others -1 ; to hit pressure 2, shadow 2 | bands 2, bands_modes [aimed]; roll_mod aimed +2; roll_mod [shot, burst, auto] -1 |
+| mod_suppressor (items.json:336) | muzzle | silent; -2 damage (flat) | silent; a kill with it while you are Hidden gives 1 Shadow | its shots -15% | shots -0.15, shadow 1 | silent 1; damage_mult dealing with_this melee false 0.85; resource shadow +1 on kill with_this self_has hidden |
+| mod_compensator (items.json:363) | muzzle | Recoil -1 a shot | no Recoil from earlier shots this turn | the first shot of each turn -1 to hit (heavy muzzle) | first_shot -1 | recoil -1; roll_mod to_hit with_this -1, limit per_turn 1 |
+| mod_extended_mag (items.json:381) | magazine | +50% capacity | +50% rounds | reloading it costs 1 AP more | reload_ap 1 | magazine_pct 50; cost_mod cost action reload with_this +1 |
+| mod_quick_release (items.json:399) | magazine | reload costs 1 AP | reload costs 1 AP | 25% fewer rounds | magazine_pct -25 | cost_mod set 1 (as today); magazine_pct -25 |
+| mod_foregrip (items.json:428) | underbarrel | Bursts and auto +1 | Bursts and full auto +2 to hit | drawing or swapping to this gun costs 1 AP more | to_hit 2, swap_ap 1 ; to hit pressure 2 | roll_mod [burst, auto] +2; cost_mod on swap with_this +1 |
+| mod_bayonet (items.json:457) | underbarrel | the gun's blow deals 15 | the gun's blow on the factor, and it builds Momentum as any melee hit | Aimed Shots -1 | melee_damage `items.json:items[mod_bayonet].melee_damage` x `@scale.factor.value`, aimed -1 | melee_damage (the factor walk); roll_mod aimed -1 |
+| mod_underslung (items.json:475) | underbarrel | holds a 40 mm round; not built | once a fight, 2 AP: a grenade at a tile within 8, a launcher round's blast, radius 1 | 1.5 kg, the underbarrel slot, once a fight | ap 2, tiles 8, radius 1 | grant_action (effects/actions.ts): ap 2, uses per_combat 1, reach tile 8 sight; deal an amounts block of the launcher's blast (the factor), targets of tile shape burst within 1. No new op |
+| mod_serrated (items.json:493) | edge | a critical blow causes Bleeding | a critical blow (a natural 20 or the weapon's critical range) causes Bleeding, Body save skipped | blows -10% | blows -0.1 | condition on hit crit true (as today); damage_mult dealing with_this melee 0.9 |
+| mod_weighted (items.json:524) | edge | +3 damage (flat) | blows +15% | blows -1 to hit | to_hit -1 ; plain `@gear_perks.rules.restep.tier_i` | damage_mult with_this melee 1.15; roll_mod to_hit with_this melee -1 |
+| mod_wrapped_grip (items.json:550) | grip | cannot be Disarmed; not built (narrator) | you cannot be Disarmed while you hold it | swapping away from it costs 1 AP more | swap_ap 1 | cancel on cond_incoming target self cond disarmed with_this; cost_mod on swap with_this +1; adjudication engine |
+| mod_sigil_magazine (items.json:568) | inscription | holds a stored spell; not built | the first glyph you draw each turn costs 0.5 AP less (the spellslinger's pistol is an Evoker) | 25% fewer rounds | glyph_ap -0.5, magazine_pct -25 | cost_mod on glyph_cost with_this -0.5, limit per_turn 1; magazine_pct -25 |
+| ench_fire (items.json:586) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| ench_storm (items.json:606) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| ench_frost (items.json:626) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| ench_stone (items.json:646) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| ench_gale (items.json:666) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| ench_acid (items.json:686) | enchantment | a tone's rider; arrows x0.9 | kept: already a trade | kept |  | unchanged |
+| mod_ward_light (items.json:1749) | variant | -3 damage taken from ranged and elemental hits (flat; a ward shield's variant mod, weapons.json:5376) | ranged and elemental hits on you -10% | none (the shield's hand) | taken -0.1 | damage_mult taking with_this by_hit 0.9 in place of damage_mod -3 |
+| mod_ward_standard (items.json:1771) | variant | -5 (flat; weapons.json:5430) | ranged and elemental hits on you -15% | none | taken -0.15 | damage_mult taking 0.85 in place of damage_mod -5 |
+| mod_ward_heavy (items.json:1793) | variant | -7 (flat; weapons.json:5487) | ranged and elemental hits on you -20% | none | taken -0.2 | damage_mult taking 0.8 in place of damage_mod -7 |
 
-*So a mod is a choice you can read on the card before you pay for it: the scope makes you a better sniper and a worse brawler.*
-
-Every flat damage number on a mod is gone (the suppressor's and the weighted head's become shares of the sum); the bayonet's blow is 01's x0.6 row. Three dead mods are built from existing pieces (the underslung launcher, the wrapped grip, the Sigil magazine). No mod needs a new op. The `<field>_modes` limit already exists (`character.ts:1738` `gearNum`).
+*A mod is a choice you read on the card before you pay: the scope makes you a better sniper and a worse brawler.* Three dead mods are built from existing pieces (the underslung launcher, the wrapped grip, the Sigil magazine); no mod needs a new op.
 
 ---
 
 ## 3. The maker signatures
 
-### 3.1 The one general piece: the family's signature row
+### 3.1 The one general piece
 
-**Today.** A maker's signature is a modifier row in `items.json` (`mod_line_arsenal` :1815, `mod_line_smetanita` :1835), named row by row in each weapon's `variant_mods`, held while that gun is in a hand. The readers:
-- `effects/collect.ts:217-220` (`baked`), `effects/hooks.ts:201` and `effects/triggers.ts:277` read `variant_mods` for the item ops;
-- `gearpreview.ts:156`, `:340` read them for the card;
-- **`gearNum` does not** (`character.ts:1738-1742`: only the fitted `mods` it is given). So a signature cannot move a gear number (Recoil, bands, magazine). That is why Chezknov shipped plain (rules 1.92 item 8021, G14).
+- **about:** the one general piece (PROVISIONAL): a family row in data/families.json names its signature once ("signature": "<items.json modifier row>"); every weapon row of that family carries it while in a hand, through the one carried-modifier list (effects/collect.ts:220), beside variant_mods, the fitted mods and the grade row; gearNum (character.ts:1738-1742) reads the same carried list, so a signature may carry gear fields with their _modes. The per-row variant_mods entries for Arsenal and Smetanita move up to their families (one copy).
+- **today_readers:** effects/collect.ts:217-220 (baked), effects/hooks.ts:201, effects/triggers.ts:277, gearpreview.ts:156 and :340; gearNum does not read them (why Chezknov shipped plain)
+- **scope:** a signature's damage is gear: a plain-hit term, nothing on a cash-out; it may feed a door's counter (resource op) and read one (self_res, target_res, self_has_res)
+- **source:** rules 1.92 items 8021, 8024, 8030 to 8035 (PHC-Core-Rules-v1.0.md:14560-14636); rules 1.93 item 8104 (:14699)
 
-**The piece (PROVISIONAL).**
-1. A family row in `data/families.json` names its signature **once**: `"signature": "<items.json modifier row>"`.
-2. Every weapon row of that family carries it while in a hand, through the one carried-modifier list (`collect.ts:220`), beside `variant_mods`, the fitted mods and the grade row (section 1.2). The per-row `variant_mods` entries for Arsenal and Smetanita move up to their families (one copy).
-3. `gearNum` reads the same carried list, not only the fitted mods, so a signature row may carry gear fields with their `<field>_modes`, as a mod does.
+*A maker's gun plays like its maker on every row, and a new row of the family gets it for free.*
 
-A signature then **feeds a door's counter** with the `resource` op (Pressure, Momentum, Guard, Shadow, `vcharge`: `data/actions.json resources`), **reads one** with `self_res` / `target_res` / `self_has_res`, and uses `mark` / `flag`, `cost_mod`, `zone`, `displace` and `cancel` like any item. A signature's damage is gear: a part of Σ on a plain hit, nothing on a cash-out (section 6.1). *A maker's gun plays like its maker on every row, and a new row of the family gets it for free.*
+### 3.2 Each signature
 
-### 3.2 The thirteen that ship plain, and their data form
-
-Sources: rules 1.92 items 8021, 8024, 8030 to 8035 (`PHC-Core-Rules-v1.0.md:14560-14636`) and rules 1.93 item 8104 (`:14699`).
-
-| # | Signature (family) | Door it feeds or reads | Carried by the piece as it is? | Signature row (data form) |
-| --- | --- | --- | --- | --- |
-| 1 | G2 revolvers' best critical (`revolvers`) | Pressure | **needs more**: S13 `crit_range` | `sig_revolver`: `crit_range: 1` (a 19 is a critical too: two Margins, A7); `resource` pressure +1 on `hit` `{with_this, crit: true, hostile: true}`, target. *A revolver's lucky shot also pins them.* |
-| 2 | G4 Legion, shoot then move (`legion_automatics`) | Pressure (Fire and Move's pattern) | **yes** | `sig_legion`: `mark` `fired` on `attack_roll` `{with_this, own_turn: true}`; `cost_mod` on `cost` `{action: [move], flag: fired, path_tiles_at_most: 2}` -1, min 0, `limit {per: per_turn, n: 1}`; `mark` clear `fired` on `turn_end` (the `fire_and_move` row's shape, classes.json) |
-| 3 | G11 Brigade's split burst (`brigade_auto_shotguns`) | Pressure | **yes, as a door feed** ("the burst's spray presses its neighbours"; the damage split itself would be new) | `sig_brigade`: `resource` pressure +1 on `hit` `{with_this, mode: [burst, auto]}` with `targets {of: target, side: foe, within: 1, shape: aura}`, `limit {per: per_turn, n: 1, each: target}` |
-| 4 | G13 ADCorp, the Forge fits its mods for less (`adcorp`) | none: an economy signature | **needs more**: one reader line (the extension `forge_fit_rate`) | `sig_adcorp`: `forge_fit_rate: 0.5` (no effects). *Half the fee to fit, swap or take off a mod.* |
-| 5 | G14 Chezknov, less Recoil on Bursts (`chezknov_works`) | none; it feeds the Burst | **yes**, once `gearNum` reads the carried list (part of the piece) | `sig_chezknov`: `recoil: -1, recoil_modes: [burst, auto]`. *The Burst's second roll keeps its aim.* |
-| 6 | H3 flamers' burning ground (`flamers`) | none; a consequence on the map | **yes**, with one data row: zone kind `burning_ground` in `rules.json zones.kinds` | `sig_flamer`: `zone` on `hit` `{with_this}` kind `burning_ground`, at target, within 0, rounds 2; `condition` burning on `turn_start` `{actor: foe, actor_in_zone: {kind: burning_ground, owner: self}}` (the Hallow pattern, classes.json `hallow`); Burning's tick is 01's x0.6 row on the dealer's column |
-| 7 | H4 rotary's Spin Up (`rotary_and_belt_fed`) | none; AP | **yes** | `sig_spin`: `mark` `fired` on `acted` `{with_this}`; on `turn_end`: `mark` `spun` `{flag: fired}`, then `mark` clear `spun` `{no_flag: fired}`, then `mark` clear `fired`; `cost_mod` on `cost` `{action: [attack], with_this, mode: [auto, burst], flag: spun}` -1. *Keep it spinning and it costs less; stop and it spools down.* |
-| 8 | H5 anti-materiel, the line hit (`anti_materiel`) | none | **needs more**: S14 `targets.past` | `sig_through`: `deal` on `hit` `{with_this, target_alive: any}` an `amounts` block `{kind: damage, per: [{of: "event:amount", value: 0.5}], armour: full}` with `targets {of: self, shape: line, past: true, within: 3, side: any}` (a share of the hit: no flat number) |
-| 9 | H8 thrown, two targets (`thrown`) | none; AP | **yes, as a tempo** ("throw one, the second is cheaper") | `sig_thrown`: `mark` `threw` on `hit` `{with_this, mode: [thrown]}`; `cost_mod` on `cost` `{action: [throw], flag: threw}` -1, min 1, `limit {per: per_turn, n: 1}`; clear on `turn_end` |
-| 10 | the door knocker's x3 to cover (`power_gauntlets`) | Momentum | **yes, by a data move**: its push 3 leaves the grant for its own modifier row, which frees the grant for Door Key | the row's `variant_mods` gains `mod_knocker`: `displace` on `hit` `{with_this, hostile: true}` tiles 3 (today's count); the row's `grants` becomes `cover_damage_mult` 3 (a share) |
-| 11 | the throwaway tube's single use (`rocket_tubes` row `legion_throwaway_tube`) | none; consequence | **yes** (once a fight; it is back after the fight) | `mod_throwaway`: `mark` `spent` on `acted` `{with_this}`; `cancel` on `attack` `{with_this, flag: spent}` why "The tube is spent." Its text says "once a fight". |
-| 12 | the wall gun, Prone only (`blackpoint_wall_gun`, held) | none | **yes** (the row can ship) | `mod_wall_gun`: `cancel` on `attack` `{with_this, self_lacks: [prone]}` why "It fires only from Prone." (`conditions.json:295` prone) |
-| 13 | the darts' Toxin (second skill, Ingenuity 3) | none | **yes**, with one data row: condition `toxin` in `conditions.json` (a Body debuff: Weakened's row shape) | `mod_darts`: `condition` toxin on `hit` `{with_this, self_skill: {ingenuity: 3}, target_alive: true}` |
-
-Carried by the piece and existing ops: **10** (2, 3, 5, 6, 7, 9, 10, 11, 12, 13). Need more: **3** (1 S13 `crit_range`, 4 the extension `forge_fit_rate`, 8 S14 `targets.past`). Two of the "as is" rows add a data row the engine already reads generically (a zone kind, a condition row). G16 Smetanita and G15 Arsenal are carried today; they move from `variant_mods` to their families' `signature` (one copy).
+| family | maker | door | behaviour | carried by the piece? | numbers | data form |
+| --- | --- | --- | --- | --- | --- | --- |
+| revolvers | the revolver makers (G2) | pressure | a 19 is a critical too (two Margins); a critical lays 1 Pressure | needs S13 crit_range | crit_range 1, pressure 1 | sig_revolver: crit_range 1; resource pressure +1 on hit with_this crit hostile, target |
+| legion_automatics | the Legion (G4) | pressure | shoot then move: after a shot, a move of 2 tiles or less costs 1 AP less, once a turn | yes | tiles 2, ap -1 | sig_legion: mark fired on attack_roll with_this own_turn; cost_mod action move flag fired path_tiles_at_most 2 -1 min 0 per_turn 1; clear on turn_end (fire_and_move's shape) |
+| brigade_auto_shotguns | Brigade (G11) | pressure | the burst's spray presses its neighbours: +1 Pressure on a foe next to the target, once a turn each | yes | pressure 1 | sig_brigade: resource pressure +1 on hit with_this mode burst auto, targets side foe within 1 aura, limit per_turn 1 each target |
+| adcorp | ADCorp (G13) | - | the Forge fits, swaps and takes off its mods for half the fee | needs the extension forge_fit_rate | forge_fit_rate 0.5 | sig_adcorp: forge_fit_rate 0.5 (no effects) |
+| chezknov_works | Chezknov (G14) | - | less Recoil on Bursts: the Burst's second roll keeps its aim | yes, once gearNum reads the carried list (part of the piece) | recoil -1 | sig_chezknov: recoil -1, recoil_modes [burst, auto] |
+| flamers | the flamer makers (H3) | - | burning ground: a hit leaves the tile burning 2 rounds; a foe starting its turn there Burns | yes, with one data row | rounds 2 | sig_flamer: zone on hit with_this kind burning_ground within 0 rounds 2; condition burning on turn_start actor foe actor_in_zone (Hallow's pattern); one data row: zone kind burning_ground |
+| rotary_and_belt_fed | the rotary makers (H4) | - | Spin Up: keep firing and the next turn's Burst or auto costs 1 AP less; stop and it spools down | yes | ap -1 | sig_spin: mark fired on acted with_this; turn_end mark spun flag fired, clear spun no_flag fired, clear fired; cost_mod attack with_this mode auto burst flag spun -1 |
+| anti_materiel | the anti-materiel makers (H5) | - | the line hit: half the hit goes on to the units on the line past the target, within 3 | needs S14 targets.past | share 0.5, within 3 | sig_through: deal on hit with_this an amounts block kind damage per event:amount 0.5 armour full, targets of self shape line past true within 3 |
+| thrown | the thrown makers (H8) | - | throw one, the second this turn costs 1 AP less (never under 1) | yes | ap -1 | sig_thrown: mark threw on hit with_this mode thrown; cost_mod throw flag threw -1 min 1 per_turn 1; clear on turn_end |
+| power_gauntlets | the door knocker (hellraiser_door_knocker) | momentum | its push leaves the row's grant for its own modifier row, freeing the grant for Door Key | yes, by a data move | push `weapons.json:items[hellraiser_door_knocker].grants.effect.value` | variant_mods gains mod_knocker: displace on hit with_this hostile tiles (today's count); the row's grants becomes cover_damage_mult (a share) |
+| rocket_tubes | the throwaway tube (legion_throwaway_tube) | - | single use: once a fight, back after the fight | yes |  | mod_throwaway: mark spent on acted with_this; cancel on attack with_this flag spent, why "The tube is spent." |
+| blackpoint_wall_gun | the wall gun (held: not shipped, rules 1.93 item 8104) | - | fires only from Prone | yes, the row can ship |  | mod_wall_gun: cancel on attack with_this self_lacks prone (conditions.json:295) |
+| thrown_darts | the darts (throwing_darts, second skill Ingenuity 3) | - | Toxin on a hit with Ingenuity 3 | yes, with one data row | ingenuity 3 | mod_darts: condition toxin on hit with_this self_skill ingenuity 3 target_alive; one data row: condition toxin (Weakened's shape) |
+| central_command_arsenal | Arsenal (G15, carried today) | - | reload 1 AP less (kept) | yes (today) |  | mod_line_arsenal (items.json:1815) moves from each row's variant_mods to the family's signature |
+| smetanita_sidearms | Smetanita (G16, carried today) | pressure | a hit lays 1 Pressure, once a turn a foe (kept) | yes (today) |  | mod_line_smetanita (items.json:1835) moves to the family's signature |
 
 ---
 
 ## 4. Perks
 
-### 4.1 The rules I applied
+### 4.1 The rules (`rules`)
 
-- **KEEP**: a verb, or already felt (a tenth of a number the player sees, an AP of six, +2 on a d20 or more, a whole turn).
-- **RE-STEP**: a conditional damage or defence number. **Tier I is +15% and tier II +30% while the condition holds** (a part of Σ, A8). Per-stack perks are scaled so the top is the same; the stack that reaches it is named. A d20 term under +2 goes to +2 (I) and +3 or +4 (II): on a d20 with Margins a +1 is a twentieth, under the felt bar.
-- **A perk speaks for its own door.** A damage perk of a door's skill counts on that door's actions; on another door's cash-out it does not count (section 6.1). Four perks whose text said "weapon damage" or "any damage" are scoped to their door: Bulwark and Shrug It Off to the Guard door's blows (Slam, Retort, shield blows), Pressure Point to the Dexterity weapons, Taut Thread to the Bonds door's damage. *The wall's perks make the wall hit back; a Breaker who dabbles in Durability gets plates, not a second Iron Grip.*
-- **DEAD TODAY**: it gives nothing. That is chiefly the pure story perks: Survival is the only open mode (`data/modes.json`: Campaign `available: false`), and it has no Narrator scene to read them. **Each keeps its story half for campaigns and gets a fight half now** (ruling C21), from existing pieces.
-- **Marks** (section 6.2): a perk that makes the squad better against one foe puts **a mark** on it; a foe carries one mark at a time, and a mark is +20% (or its to-hit). Footnote, Spoon Feed, True Name, Case Closed and Judgement Day are marks.
-- **No perk above the step is cut** (Righteous stays at +20 / +40%): *a reward is never taken back.* The marks are the exception, and a question (section 6.4).
-- **Every flat number is 01's** (T2b x0.6; MP prices on 01's pool, T7b row "perks that cost MP": x0.5, x `mp`).
+- **The step** (`rules.restep`): tier I `0.15`, tier II `0.3`; a d20 term `2` (I) and `3` (II), the squad's one ambush roll `4`. a conditional damage or defence perk is +15% at tier I and +30% at tier II while its condition holds: more than a sixth is seen on the next hit. A d20 term under +2 is a twentieth and goes to +2 (I) and +3 (II); the squad's one ambush roll a fight goes to +4 at II. Every perk reads these by name (`@gear_perks.rules.restep.tier_ii`): one copy.
+- **The felt bar:** a per-point line is judged by its sum on the sheet (Athletics 3 is +3 Defense), never one point alone (critic-player-2 14); a perk is judged alone.
+- **A door's own** (ruling 30): a sum term counts on a door's cash-out only when its item is the door's own: a perk of one of the door's three skills (acquired or Mastered), an achieved perk one of whose skills is the door's and whose text names the door's output, the door's forks and class moves (ruling 30). Everything else (traits, boons, mods, signatures, properties, achieved and ultimate perks of no door) counts on plain hits only: its term says scope plain and the profiles it reaches (hits).
+- **One mark:** a foe carries one mark at a time (@scale.stack.scope.foe_mark); a new mark replaces the old (a condition slot "mark"); a damage mark is worth the mark share to the whole squad and reaches every cash-out; a to-hit mark (Footnote, Fed) fills the same slot. Read (information) and the Chaplain's judged (where interventions land) are not marks.
+- **MP prices:** `rules.mp_restate` = 0.5: a perk's MP price is today's x this, then x mp(L) on the mp cost rule (@scale.costs.rules.mp): the pool is smaller than today's, and a price is a choice at every level.
+- **No perk is cut:** no perk above the step is cut (Righteous keeps its numbers): a reward is not taken back; the marks are the one number that falls (Judgement Day and True Name), and their holders get the re-pick.
+- **Dead today** means it gives nothing in Survival (the only open mode, `data/modes.json`): each keeps its story half and gets a fight half from existing pieces (ruling 21; `fight_half` in the JSON).
 
-### 4.2 Acquired perks (90; `data/perks.json`, line of the row)
+### 4.2 Acquired perks (`perks`, kind acquired)
 
-| id (line) | Skill | Today, with numbers | Verdict | New (PROVISIONAL) |
-| --- | --- | --- | --- | --- |
-| bulwark (23) | Durability | +2% weapon damage per Guard held, to +10%; II +3% to +15% | RE-STEP, scoped | the Guard door's blows: I +5% a plate held, to +15% (3 plates); II +6% a plate, to +30% (5 plates). *A full wall hits back a third harder.* |
-| shrug_it_off (151) | Durability | after a blow hurts you, +8% weapon damage to your next turn's end; II +12% and +1 Guard (once a round) | RE-STEP, scoped | the Guard door's blows: I +15%; II +30% and +1 Guard |
-| numb (318) | Pain Threshold | an injured limb no penalty; II with Guard, a critical on you lands as an ordinary hit, no injury | KEEP | II now reads: with Guard up, a hit on you counts no Margins and leaves no injury (`margins_taken`, all) |
-| still_standing (462) | Pain Threshold | a last turn at 3 / 5 AP, once a fight | KEEP | |
-| second_wind (566) | Pain Threshold | 2 AP once a fight, heal 25% of max HP; II +2 Guard | KEEP | a share of HP rides the scale by itself |
-| close_guard (699) | Pain Threshold | Answer: 25% / 50% of a blow on an adjacent ally comes to you, plates soak | KEEP | a verb |
-| wind_on_the_skin (828) | Sensory | learn the nearest / every unseen foe's tile in Vision at fight start | KEEP | |
-| bedside_manner (907) | Sensory | story: learn whether the next words are a lie | DEAD TODAY | fight: I a foe next to you that you touch (0 AP, once a fight) is Read (`conditions.json:551` `read`, Read Intent's mark); II once a turn |
-| read_the_air (977) | Sensory | story: +2 / +4 on the next social roll | DEAD TODAY | fight: the save of a foe next to you against your next Call is +2 / +4 TN (`roll_mod` on `save`, `roll: tn`, `target_within: 1`, once a turn) |
-| tremor (1057) | Sensory | +1 / +2 to the squad's ambush roll; never caught; II starts with 2 Guard | RE-STEP (roll) | I +2; II +4, the rest kept |
-| breaching_strike (1167) | Raw Power | after a Finisher drops a foe, the next Strike or Opener costs no Momentum; II a Finisher on an Elite or Boss gives 1 Momentum | KEEP | a verb on the chain |
-| iron_grip (1354) | Raw Power | Grappled / Bound can't Answer; +6% melee vs Grappled or Prone; II +12% (also Shaken, Afraid), push +1 | RE-STEP | I +15%; II +30%, the rest kept (the Momentum door's: it reaches a Coup) |
-| into_the_dark (1480) | Guts | no Ambush bonus on you after first stepping into unseen ground | KEEP | |
-| steady (1561) | Guts | Fear can't stop you; II Fear and Nausea at most 1 round | KEEP | |
-| point_man (1650) | Guts | allies within 3 roll Fear with your Guts; II +2 Heart saves | KEEP | |
-| unflinching (1770) | Guts | at 3+ Momentum, melee attacks on you -1; II shots too | RE-STEP (roll) | I -2 melee; II -2 every weapon attack |
-| grim_reaper (1884) | Intimidation | a hit from a Shaken or Afraid foe costs no Momentum; II a kill frightens within 8 | KEEP | |
-| marrow_talk (2108) | Intimidation | story: a failed threat Shakes (-2); II in a fight a saved Threaten still Shakes 1 round | DEAD TODAY (I) | I takes II's fight half (Shaken 1 round); II Shaken 2 rounds |
-| stare_down (2240) | Intimidation | the nearest foe saves or is Stunned; II Shaken 3 rounds | KEEP | |
-| bone_talk (2359) | Intimidation | story: a truthful answer or Shaken | DEAD TODAY | fight: I 0 AP, once a fight, a foe next to you makes a Heart save or is Shaken 2 rounds and Read; II every foe within 3 (`grant_action`, `condition` with `targets`) |
-| wall_run (2449) | Athletics | vault 2 / 4 tiles at no extra movement | KEEP | |
-| roll_with_it (2524) | Athletics | a miss on you, 1 / 2 free tiles | KEEP | |
-| untouchable (2598) | Athletics | no torso armour (II light): attacks on you roll twice, worse | KEEP | |
-| catch (3400) | Athletics | catch a grenade; throw back 1 / 0 AP | KEEP | |
-| both_hands, Pressure Point (2706) | Dexterity | +1 Pressure on a Pressed foe; +5% vs Pressed; II +1 more on Suppressed, +5% more vs Suppressed | RE-STEP, scoped | the pips kept; with Dexterity weapons: I +15% vs Pressed; II +15% vs Pressed, +30% vs Suppressed |
-| running_reload, Keep Their Heads Down (2923) | Dexterity | a hit on a Pressed foe puts it Off Balance (save; II none) | KEEP | |
-| rounding_up (3057) | Reaction Speed | a fraction of an AP rounds up; II 1 AP carries once a fight | KEEP | |
-| shoot_first (3135) | Reaction Speed | act in a failed ambush's free turn at 3 / 4 AP | KEEP | |
-| cut_in (3219) | Reaction Speed | story: interrupt once / twice a scene | DEAD TODAY | fight: I once a fight, when a foe you see starts an action, 1 free AP first: a move, a swap or a reload; II 2 AP (Between Heartbeats' piece, the op `interrupt`) |
-| speed_load (3291) | Reaction Speed | reload 1 AP less; II a draw-attack free once a fight | KEEP | |
-| sleight_of_hand, Long Dark (3496) | Ingenuity | +8% / +14% while Hidden | RE-STEP | I +15%; II +30% (Hidden is the Shadow door's: it reaches a Break) |
-| shadow_step (3588) | Ingenuity | a Hidden attack with Shadow 1 AP less; II Shadow Run | KEEP | |
-| jury_rig (3789) | Improvisation | a Figment destroyed, +1 AP; II +1 charge | KEEP | |
-| field_repair (3949) | Improvisation | 2 AP: clear a jam, restore durability, repair 15 (profile `repair`) | KEEP, rescaled | repair **9** (01 T2b x0.6), on the heal column (01 3.1) |
-| hot_swap (4047) | Improvisation | one / two free swaps a turn | KEEP | |
-| tuned (4145) | Improvisation | the main hand never jams or breaks; II a core 1 AP less | KEEP | |
-| got_you_in_my_sight (4232) | Vigilance | +2 AP when a seen foe hides (every 3 turns) | KEEP | |
-| eyes_in_the_back (4330) | Vigilance | can't be flanked | KEEP | |
-| read_intent (4404) | Vigilance | your Spot Reads its target; II +1 Shadow | KEEP | (Read is information, not a mark: it does not take the mark's place) |
-| detectives_eye, The Tell (6034) | Vigilance | a trap or a weak point spotted at fight start (one / two) | KEEP | it has its fight half |
-| hold_the_stroke, Second Clause (4541) | Brain Power | Sigils +6% / +12% vs a conditioned foe | RE-STEP | I +15%; II +30% |
-| parallel_thought, Running Hand (4660) | Brain Power | the first glyph a turn -0.5 AP; II no Flux | KEEP | |
-| footnote (4809) | Rumination | once a fight, allies +1 / +2 to hit one foe for the round | RE-STEP (roll), a mark | the foe carries your **Footnote** mark for the round: I the squad +2 to hit it; II +3, and your own Sigils too |
-| lab_coat (4905) | Rumination | +3 saves vs known chemicals; II neutralise | KEEP | |
-| index (4988) | Rumination | story: one true answer; II +2 next Brain save | DEAD TODAY (I) | I in a fight, once, 0 AP: one foe's resistances and saves are shown (the reveal Analyze makes, no AP) |
-| proven_formula (5108) | Rumination | +3 / +5 saves vs what already hit you | KEEP | |
-| overruled (5170) | Eloquence | +2 AP while a foe carries your Brain debuff | KEEP | |
-| objection (5265) | Eloquence | story: expose a contradiction | DEAD TODAY | fight: I 0 AP, once a fight, a foe you see makes a Brain save or is Shaken 2 rounds; II and it loses 1 AP next turn (Off Balance) |
-| opening_argument (5337) | Eloquence | story debate before a fight: foes -1 AP in round 1 | DEAD TODAY | fight: I at `combat_start`, the foes' leader (their Elite or Boss, else the nearest) makes a Brain save against your Eloquence or every foe has 1 AP less in round 1; II as today, and the first Call each fight is 0 AP |
-| thinking_aloud (5464) | Eloquence | after a Call, the next Evoke 0 AP | KEEP | |
-| mirage, Many-Eyed Dream (5742) | Visualization | Figment blows +4% a Figment, to +12%; II +6% to +18% | RE-STEP | I +5% a Figment, to +15% (3); II +7.5%, to +30% (4) |
-| blueprint, Wake of the Kill (5876) | Visualization | a Figment kill, +1 AP; II and a charge | KEEP | |
-| pattern_lock (6105) | Acuity | +2 / +4 Defense vs a seen attack | KEEP | |
-| quick_read (6187) | Acuity | Analyze 1 AP less | KEEP | |
-| read_them (6293) | Acuity | an Analyzed foe deals 15% / 25% less to your side | RE-STEP | I 15% (kept); II 30% (the Analyzed foe's own sum, as a penalty) |
-| still_breath (6415) | Acuity | spot rolls on you -2 by cover | KEEP | |
-| talks_broke_down, Parley (6514) | Charisma | talk them down; II +2 AP | KEEP | |
-| crowd_pleaser (6593) | Charisma | one roll for a crowd, save 2 harder | KEEP | |
-| smooth (6674) | Charisma | story: a failed lie only raises suspicion | DEAD TODAY | fight: I a foe that saves against your Persuade is at -2 to hit you on its next turn; II and your first Persuade each fight is +2 TN |
-| showman (6745) | Charisma | Picture 1 charge less; II a free order | KEEP | |
-| shared_breath, Taut Thread (6875) | Empathy | +6% / +12% on a Bonded foe | RE-STEP, scoped | the Bonds door's damage on a Bonded foe: I +15%; II +30% |
-| lay_down_arms, Bitter Balm (6992) | Empathy | heals you give turn 10% / 20% of the HP into Soul damage on Bonded foes | RE-STEP | I 15%; II 30% (a share of the heal) |
-| hand_off (7199) | Camaraderie | a friend within 1 / 3 uses your Defense | KEEP | |
-| nobody_left_behind (7265) | Camaraderie | Stabilise 1 AP less; Downed friends take 50% less | KEEP, MP rescaled | its MP 36 becomes 18 x `mp` (01 T7b) |
-| steady_hands (7480) | Camaraderie | Settle; II Soothe | KEEP, MP rescaled | 15 and 18 MP become 8 and 9 x `mp` (01 T7b) |
-| pull_together (7822) | Camaraderie | Tug; II Guide | KEEP, MP rescaled | 12 and 15 MP become 6 and 8 x `mp` (01 T7b) |
-| between_the_lines (8227) | Insinuation | story; II your Bond +2 TN | DEAD TODAY (I) | I your Bond is +2 TN; II +3 TN, and a foe Bonded to you is Read |
-| veiled_insult (8313) | Insinuation | Taunt once / twice a fight | KEEP | |
-| quiet_thread (8478) | Insinuation | never Traced | KEEP | |
-| open_hand (8595) | Insinuation | surrender at half HP | KEEP | |
-| heart_overload, Clenched Heart (8680) | Will Power | +5% at stage 3+; II +5% at 2 and +5% more at 3+ | RE-STEP | I +15% at stage 3+; II +15% at stage 2, +30% at 3+ |
-| resonance (8816) | Will Power | +4% a Release, to +8%; II to +12% | RE-STEP | I +5% a Release, to +15%; II +10%, to +30% |
-| rite_in_the_field (8896) | Lore Master | every 5th / 3rd kill, a free Crystallise | KEEP | |
-| old_tales (9292) | Lore Master | story; II upper-realm parley | DEAD TODAY (I) | I upper-realm foes, Crawlers and cursed things (`target_kind`) are Read when the fight starts |
-| recitation (9382) | Lore Master | a Call calms 1 / 2 Strain | KEEP | |
-| lore_ward (9493) | Lore Master | Warding Word; II the first free | KEEP | |
-| flat_line (9689) | Composure | the most dangerous foe -1 / -2 to hit while it sees you | RE-STEP (roll) | I -2; II -3 |
-| poker_face (9768) | Composure | story -3 to lie-readers; II +2 Brain saves | DEAD TODAY (I) | I +2 Brain saves; II +3, and the story half |
-| stand_still (9854) | Composure | -2 to hit you until you act | KEEP | |
-| pure_heart (9953) | Composure | refuse one / two Mana Shorts | KEEP | |
-| litany (10040) | Faith | the first / two Hymns 1 AP less | KEEP | |
-| holy_ordnance, Sinner's Due (10193) | Faith | prayers +8% / +12% vs a foe at half HP | RE-STEP | I +15%; II +30% (II's Marked or Judged kept) |
-| red_line (10304) | Conscience | +1 / +2 Heart saves; II allies +1 | RE-STEP (roll) | I +2; II +3, allies +2 |
-| clean_hands (10400) | Conscience | a shield of 15% / 25% of max HP for sparing | RE-STEP | I 15%; II 30% (a share) |
-| righteous (10494) | Conscience | prayer heals on an ally at half HP +20% / +40% | KEEP | over the step; never cut |
-| foresight (10638) | Conscience | story; II once a fight, a blow that would drop an ally within 4 leaves 1 HP | DEAD TODAY (I) | I the same for yourself once a fight; II you or an ally within 4 |
-| outclassed (10726) | Authority | +3 AP after the first kill | KEEP | |
-| rank_has_privileges (10827) | Authority | story: orders obeyed | DEAD TODAY | fight: I rank-and-file foes (`actor_not_tier: [elite, boss]`) are -2 to hit you while you stand; II and their saves against your Calls are 2 harder |
-| five_stars (10903) | Authority | friends bank +1 AP; II rank-and-file Shaken | KEEP | |
-| commanding_voice (11017) | Authority | +3 saves vs Silenced, Shaken, Fear; II immune to Silenced | KEEP | |
+| id (line) | skill | own door | verdict | feeds | today | tier I | tier II | alone (ruling 32) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bulwark (23) | durability | guard | restate, scoped | sum | +2% weapon damage a Guard held, to +10%; II +3% to +15% | the Guard door's blows (Slam, Retort, shield blows) +5% a plate held, to +15% at 3 plates [per_plate 0.05, top `@gear_perks.rules.restep.tier_i`] | +6% a plate, to +30% at 5 plates [per_plate 0.06, top `@gear_perks.rules.restep.tier_ii`] (sum: guard `@gear_perks.rules.restep.tier_ii`) |  |
+| shrug_it_off (151) | durability | guard | restate, scoped | sum | hurt by a blow: +8% weapon damage to your next turn's end; II +12% and +1 Guard once a round | hurt by a blow: the Guard door's blows +15% to your next turn's end [value `@gear_perks.rules.restep.tier_i`] | +30%, and +1 plate once a round [plates 1] (sum: guard `@gear_perks.rules.restep.tier_ii`) |  |
+| numb (318) | pain_threshold | guard | restate | margins | an injured limb no penalty; II with Guard, a critical on you lands as an ordinary hit, no injury | one injured limb no longer holds you back (kept) | with plates up, a hit on you counts no Margins and leaves no injury (margins_taken: all) |  |
+| still_standing (462) | pain_threshold | guard | keep | verb | a last turn at 3 / 5 AP, once a fight |  |  |  |
+| second_wind (566) | pain_threshold | guard | keep | hp | 2 AP once a fight: heal 25% of max HP; II +2 Guard |  |  |  |
+| close_guard (699) | pain_threshold | guard | keep | verb | Answer: 25% / 50% of a blow on an adjacent ally comes to you; plates soak |  |  | alone it never fires; the wall has nobody beside it to cover (a reaction, not a door step: no point bought for the top is lost) |
+| wind_on_the_skin (828) | sensory | guard | keep | verb | fight start: the nearest / every unseen foe's tile in Vision |  |  |  |
+| bedside_manner (907) | sensory | guard | rewrite, fight half | verb | story: learn whether the next words are a lie (narrator) | fight: a foe next to you that you touch (0 AP, once a fight) is Read (conditions.json read) | once a turn |  |
+| read_the_air (977) | sensory | guard | rewrite, fight half | verb | story: +2 / +4 on the next social roll (narrator) | fight: a foe next to you saves against your next Call 2 harder (roll_mod on save, once a turn) [tn `@gear_perks.rules.restep.roll_i`] | 3 harder [tn `@gear_perks.rules.restep.roll_ii`] |  |
+| tremor (1057) | sensory | guard | restate | to_hit | +1 / +2 to the squad's ambush roll; never caught; II starts with 2 Guard | +2 to the ambush roll; never caught by its failure [ambush `@gear_perks.rules.restep.roll_i`] | +4, and 2 plates when a fight starts (kept) [ambush `@gear_perks.rules.restep.roll_wide`, plates 2] |  |
+| breaching_strike (1167) | raw_power | momentum | keep | verb | after a Finisher drops a foe the next Strike or Opener costs no Momentum; II a Finisher on an Elite or Boss gives 1 Momentum |  |  |  |
+| iron_grip (1354) | raw_power | momentum | restate, trimmed | sum | Grappled / Bound cannot Answer; +6% melee vs Grappled or Prone; II +12% (also Shaken, Afraid), push +1 | held foes cannot Answer or react; your melee blows +15% on a Grappled or Prone foe, every blow but a Finisher [value `@gear_perks.rules.restep.tier_i`] | +30% (also Shaken, Afraid); pushes 1 tile further (kept) [push_tiles 1] (sum: plain melee `@gear_perks.rules.restep.tier_ii`; a plain-hit term, so it never reaches the Coup) |  |
+| into_the_dark (1480) | guts | momentum | keep | verb | no Ambush bonus on you after first stepping into unseen ground |  |  |  |
+| steady (1561) | guts | momentum | keep | verb | Fear cannot stop you; II Fear and Nausea at most 1 round |  |  |  |
+| point_man (1650) | guts | momentum | restate | verb | allies within 3 roll Fear with your Guts; II +1 Heart saves (data: tiers.II.effects[1].value) | you and allies within 3 save against Fear with your Guts | and +2 on those Heart saves [save `@gear_perks.rules.restep.roll_i`] | alone it is your own Fear save on Guts, and +2 on your Heart saves (ruling 32: an ally includes yourself) |
+| unflinching (1770) | guts | momentum | restate | to_hit | at 3+ Momentum, melee attacks on you -1; II shots too | at 3+ Momentum, melee attacks on you -2 [to_hit_on_you -2] | every weapon attack on you -2 [to_hit_on_you -2] |  |
+| grim_reaper (1884) | intimidation | momentum | keep | verb | a Shaken or Afraid foe's hit costs no Momentum; II a kill frightens within 8 |  |  |  |
+| marrow_talk (2108) | intimidation | momentum | rewrite, fight half | verb | story: a failed threat Shakes; II in a fight a saved Threaten still Shakes 1 round | a saved Threaten still Shakes 1 round (II's fight half moves down) [rounds 1] | Shaken 2 rounds [rounds 2] |  |
+| stare_down (2240) | intimidation | momentum | keep | verb | fight start: the nearest foe saves or loses its first turn; II Shaken 3 rounds |  |  |  |
+| bone_talk (2359) | intimidation | momentum | rewrite, fight half | verb | story: a truthful answer or Shaken (narrator) | fight: 0 AP, once a fight, a foe next to you makes a Heart save or is Shaken 2 rounds and Read (grant_action, condition) [rounds 2] | every foe within 3 [within 3] |  |
+| wall_run (2449) | athletics | pressure | keep | verb | vault 2 / 4 tiles at no extra movement |  |  |  |
+| roll_with_it (2524) | athletics | pressure | keep | verb | a miss on you: 1 / 2 free tiles |  |  |  |
+| untouchable (2598) | athletics | pressure | keep | verb | no torso armour (II light): attacks on you roll twice, take the worse |  |  |  |
+| catch (3400) | athletics | pressure | keep | verb | catch a throw; back for 1 / 0 AP |  |  |  |
+| both_hands (2706) | dexterity | pressure | restate, scoped | sum | +1 Pressure on a Pressed foe, +5% vs Pressed; II +1 more on Suppressed, +5% more vs Suppressed | the pips kept; the Pressure door's Dexterity hits +15% on a Pressed foe [value `@gear_perks.rules.restep.tier_i`] | +15% on Pressed, +30% on Suppressed [pressed `@gear_perks.rules.restep.tier_i`, suppressed `@gear_perks.rules.restep.tier_ii`] (sum: pressure `@gear_perks.rules.restep.tier_ii`) |  |
+| running_reload (2923) | dexterity | pressure | keep | verb | a hit on a Pressed foe puts it Off Balance (save; II none) |  |  |  |
+| rounding_up (3057) | reaction_speed | pressure | keep | verb | a fraction of an AP rounds up; II 1 AP carries once a fight |  |  |  |
+| shoot_first (3135) | reaction_speed | pressure | keep | verb | act in a failed ambush's free turn at 3 / 4 AP |  |  |  |
+| cut_in (3219) | reaction_speed | pressure | rewrite, fight half | verb | story: interrupt once / twice a scene (narrator) | fight: once a fight, when a foe you see starts an action, 1 free AP first: a move, a swap or a reload (the interrupt op) [ap 1] | 2 AP [ap 2] |  |
+| speed_load (3291) | reaction_speed | pressure | keep | cost | reload 1 AP less; II a draw-attack free once a fight |  |  |  |
+| sleight_of_hand (3496) | ingenuity | shadow | restate | sum | +8% / +14% while Hidden | +15% while Hidden [value `@gear_perks.rules.restep.tier_i`] | +30% while Hidden (sum: shadow `@gear_perks.rules.restep.tier_ii`) |  |
+| shadow_step (3588) | ingenuity | shadow | keep | cost | a Hidden attack holding Shadow 1 AP less; II Shadow Run |  |  |  |
+| jury_rig (3789) | proficiency | shadow | keep | verb | a Figment of yours destroyed: +1 AP; II +1 charge |  |  |  |
+| field_repair (3949) | proficiency | shadow | restate | hp | 2 AP: clear a jam, restore durability, repair 15 (profile repair) | repair on the factor, on the mend column (profile repair) [repair `perks.json:items[field_repair].amounts.repair.base` x `@scale.factor.value`] | no spare part (kept) |  |
+| hot_swap (4047) | proficiency | shadow | keep | cost | one / two free swaps a turn |  |  |  |
+| tuned (4145) | proficiency | shadow | keep | verb | the main hand never jams or breaks; II a core 1 AP less |  |  |  |
+| got_you_in_my_sight (4232) | vigilant | shadow | keep | verb | +2 AP when a seen foe hides (every 3 turns) |  |  |  |
+| eyes_in_the_back (4330) | vigilant | shadow | keep | verb | cannot be flanked; II allies next to you too |  |  | alone tier I is whole; tier II has nobody beside you |
+| read_intent (4404) | vigilant | shadow | keep | verb | your Spot Reads its target; II +1 Shadow |  |  |  |
+| detectives_eye (6034) | vigilant | shadow | keep | verb | The Tell: a trap or a weak point at fight start (one / two) |  |  |  |
+| hold_the_stroke (4541) | brain_power | sigils | restate | sum | Sigils +6% / +12% vs a conditioned foe | Sigils +15% on a conditioned foe [value `@gear_perks.rules.restep.tier_i`] | +30% (sum: sigils `@gear_perks.rules.restep.tier_ii`) |  |
+| parallel_thought (4660) | brain_power | sigils | keep | cost | the first glyph a turn -0.5 AP; II no Flux |  |  |  |
+| footnote (4809) | rumination | sigils | restate | to_hit | once a fight, allies +1 / +2 to hit one foe for the round | the foe carries your Footnote mark for the round: the squad, you included, +2 to hit it (mark Footnote: to_hit `@gear_perks.rules.restep.roll_i`) | +3, and your own Sigils count it (mark Footnote: to_hit `@gear_perks.rules.restep.roll_ii`) |  |
+| lab_coat (4905) | rumination | sigils | keep | verb | +3 saves vs known chemicals; II neutralise |  |  |  |
+| index (4988) | rumination | sigils | rewrite, fight half | verb | story: one true answer; II +2 next Brain save | in a fight, once, 0 AP: one foe's resistances and saves are shown (Analyze's reveal, no AP) | and the +2 Brain save (kept) |  |
+| proven_formula (5108) | rumination | sigils | keep | verb | +3 / +5 saves vs what already hit you |  |  |  |
+| overruled (5170) | eloquence | sigils | keep | verb | +2 AP while a foe carries your Brain debuff |  |  |  |
+| objection (5265) | eloquence | sigils | rewrite, fight half | verb | story: expose a contradiction (narrator) | fight: 0 AP, once a fight, a foe you see makes a Brain save or is Shaken 2 rounds [rounds 2] | and it loses 1 AP next turn (Off Balance) |  |
+| opening_argument (5337) | eloquence | sigils | rewrite, fight half | verb | story debate before a fight: foes -1 AP in round 1 | at combat_start the foes' leader (their Elite or Boss, else the nearest) saves against your Eloquence or every foe has 1 AP less in round 1 | and your first talk each fight is 0 AP (kept) |  |
+| thinking_aloud (5464) | eloquence | sigils | keep | cost | after a Call, the next Evoke 0 AP |  |  |  |
+| mirage (5742) | visualization | figments | restate | sum | Figment blows +4% a Figment, to +12%; II +6% to +18% | +5% a Figment kept, to +15% (3) [per 0.05, top `@gear_perks.rules.restep.tier_i`] | +7.5% a Figment, to +30% (4) [per 0.075, top `@gear_perks.rules.restep.tier_ii`] (sum: figments `@gear_perks.rules.restep.tier_ii`) |  |
+| blueprint (5876) | visualization | figments | keep | verb | a Figment kill +1 AP; II and a charge |  |  |  |
+| pattern_lock (6105) | analysis | figments | keep | verb | +2 / +4 Defense vs a seen attack; II allies +1 |  |  | alone its Defense is whole; the allies' line has no one to reach |
+| quick_read (6187) | analysis | figments | keep | cost | Analyze 1 AP less |  |  |  |
+| read_them (6293) | analysis | figments | restate | taken | an Analyzed foe deals 15% / 25% less to your side | 15% less (kept) [taken -0.15] | 30% less [taken -0.3] |  |
+| still_breath (6415) | analysis | figments | keep | verb | spot rolls on you -2 by cover |  |  |  |
+| talks_broke_down (6514) | charisma | figments | keep | verb | Parley: talk them down; II +2 AP |  |  |  |
+| crowd_pleaser (6593) | charisma | figments | keep | verb | one roll for a crowd, saves 2 harder |  |  |  |
+| smooth (6674) | charisma | figments | rewrite, fight half | verb | story: a failed lie only raises suspicion (narrator) | fight: a foe that saves against your Persuade is -2 to hit you on its next turn [to_hit_on_you -2] | and your first Persuade each fight is 2 TN harder to save [tn `@gear_perks.rules.restep.roll_i`] |  |
+| showman (6745) | charisma | figments | keep | cost | Picture 1 charge less; II a free order |  |  |  |
+| shared_breath (6875) | empathy | bonds | restate, scoped | sum | Taut Thread: +6% / +12% on a Bonded foe | the Bonds door's damage on a foe Bonded to you +15% [value `@gear_perks.rules.restep.tier_i`] | +30% (sum: bonds `@gear_perks.rules.restep.tier_ii`) |  |
+| lay_down_arms (6992) | empathy | bonds | restate | sum | Bitter Balm: heals you give turn 10% / 20% into Soul damage on Bonded foes | 15% of the heal [share `@gear_perks.rules.restep.tier_i`] | 30% of the heal [share `@gear_perks.rules.restep.tier_ii`] |  |
+| hand_off (7199) | camaraderie | bonds | keep | verb | a friend within 1 / 3 uses your Defense |  |  | alone it has no one to lend to: it is a squad perk, and a solo player is told so on the card |
+| nobody_left_behind (7265) | camaraderie | bonds | restate | mp | Stabilise 1 AP less; Downed friends take 50% less; II Raise for 36 MP | kept | Raise for the MP below, on the mp rule [mp `perks.json:items[nobody_left_behind].tiers.II.effects[2].res.mp` x `@gear_perks.rules.mp_restate`] | alone it stabilises and raises nobody but the Downed you cannot be: a squad perk, said on the card |
+| steady_hands (7480) | camaraderie | bonds | restate | mp | Settle 15 MP; II Soothe 18 MP | Settle, on yourself or a friend (ruling 32) [mp `perks.json:items[steady_hands].tiers.I.effects[0].res.mp` x `@gear_perks.rules.mp_restate`] | Soothe, on yourself or a friend [mp `perks.json:items[steady_hands].tiers.II.effects[1].res.mp` x `@gear_perks.rules.mp_restate`] | Settle and Soothe take yourself as their target (ruling 32) |
+| pull_together (7822) | camaraderie | bonds | restate | mp | Tug 12 MP; II Guide 15 MP | Tug a Bonded unit toward you [mp `perks.json:items[pull_together].tiers.I.effects[0].res.mp` x `@gear_perks.rules.mp_restate`] | Guide a friend, or yourself, provoking nothing [mp `perks.json:items[pull_together].tiers.II.effects[1].res.mp` x `@gear_perks.rules.mp_restate`] | Guide moves you (ruling 32); Tug pulls a Bonded foe as today |
+| between_the_lines (8227) | implication | bonds | rewrite, fight half | verb | story; II your Bond +2 TN | your Bond is 2 TN harder to save [tn `@gear_perks.rules.restep.roll_i`] | 3 TN, and a foe Bonded to you is Read [tn `@gear_perks.rules.restep.roll_ii`] |  |
+| veiled_insult (8313) | implication | bonds | keep | verb | Taunt once / twice a fight |  |  |  |
+| quiet_thread (8478) | implication | bonds | keep | verb | never Traced; II nor your Bonded friends |  |  |  |
+| open_hand (8595) | implication | bonds | keep | verb | a foe under half HP surrenders or saves |  |  |  |
+| heart_overload (8680) | will_power | outbursts | restate | sum | Clenched Heart: +5% at stage 3+; II +5% at 2 and +5% more at 3+ | Releases +15% at stage 3 or higher [value `@gear_perks.rules.restep.tier_i`] | +15% at stage 2, +30% at 3 or higher [stage_2 `@gear_perks.rules.restep.tier_i`, stage_3 `@gear_perks.rules.restep.tier_ii`] (sum: outbursts `@gear_perks.rules.restep.tier_ii`) |  |
+| resonance (8816) | will_power | outbursts | restate | sum | +4% a Release, to +8%; II to +12%, allies' Releases count | +5% a Release, to +15% [per 0.05, top `@gear_perks.rules.restep.tier_i`] | +10% a Release, to +30%; allies' Releases count (kept) [per 0.1, top `@gear_perks.rules.restep.tier_ii`] (sum: outbursts `@gear_perks.rules.restep.tier_ii`) |  |
+| rite_in_the_field (8896) | lore_master | outbursts | keep | cost | every 5th / 3rd kill, a free Crystallise |  |  |  |
+| old_tales (9292) | lore_master | outbursts | rewrite, fight half | verb | story; II upper-realm parley | upper-realm foes, Crawlers and cursed things (target_kind) are Read when the fight starts | and the parley (kept) |  |
+| recitation (9382) | lore_master | outbursts | keep | verb | a Call calms 1 / 2 Strain |  |  |  |
+| lore_ward (9493) | lore_master | outbursts | keep | verb | Warding Word: a friend's next Brain or Heart save gets a bonus; II the first free |  |  | Warding Word takes yourself (ruling 32) |
+| flat_line (9689) | composure | outbursts | restate | to_hit | the deadliest foe -1 / -2 to hit while it sees you | -2 to hit [to_hit_on_you -2] | -3 to hit [to_hit_on_you -3] |  |
+| poker_face (9768) | composure | outbursts | rewrite, fight half | verb | story -3 to lie-readers; II +2 Brain saves | +2 on Brain saves [save `@gear_perks.rules.restep.roll_i`] | +3, and the story half [save `@gear_perks.rules.restep.roll_ii`] |  |
+| stand_still (9854) | composure | outbursts | keep | verb | -2 to hit you until you act |  |  |  |
+| pure_heart (9953) | composure | outbursts | keep | verb | refuse one / two Mana Shorts |  |  |  |
+| litany (10040) | faith | prayer | keep | cost | the first / two Hymns 1 AP less |  |  |  |
+| holy_ordnance (10193) | faith | prayer | restate | sum | Sinner's Due: prayers +8% / +12% vs a foe at half HP; II also Marked or Judged foes above | prayers +15% on a foe at half HP or less [value `@gear_perks.rules.restep.tier_i`] | +30%, and on a Marked or Judged foe above half (kept) (sum: prayer `@gear_perks.rules.restep.tier_ii`) |  |
+| red_line (10304) | conscience | prayer | restate | verb | +1 / +2 Heart saves; II allies +1 | +2 on Heart saves while you hold your line [save `@gear_perks.rules.restep.roll_i`] | +3; allies near you +2 [save `@gear_perks.rules.restep.roll_ii`, allies `@gear_perks.rules.restep.roll_i`] | alone tier II is your +3; the allies' line reaches no one |
+| clean_hands (10400) | conscience | prayer | restate | hp | a shield of 15% / 25% of max HP for sparing | 15% of max HP (kept) [share `@gear_perks.rules.restep.tier_i`] | 30% of max HP [share `@gear_perks.rules.restep.tier_ii`] |  |
+| righteous (10494) | conscience | prayer | keep | mend | prayer heals on a friend at half HP +20% / +40% |  |  | a friend includes yourself (ruling 32): your own prayer heal at half HP |
+| foresight (10638) | conscience | prayer | rewrite, fight half | verb | story; II once a fight, a blow that would drop an ally within 4 leaves 1 HP | once a fight, a blow that would drop you leaves you on 1 HP | you or an ally within 4 |  |
+| outclassed (10726) | authority | prayer | keep | verb | +3 AP after the first kill |  |  |  |
+| rank_has_privileges (10827) | authority | prayer | rewrite, fight half | verb | story: orders obeyed (narrator) | rank-and-file foes (actor_not_tier elite, boss) are -2 to hit you while you stand [to_hit_on_you -2] | and their saves against your Calls are 2 harder [tn `@gear_perks.rules.restep.roll_i`] |  |
+| five_stars (10903) | authority | prayer | keep | verb | friends bank +1 AP; II rank-and-file Shaken |  |  |  |
+| commanding_voice (11017) | authority | prayer | keep | verb | +3 saves vs Silenced, Shaken, Fear; II immune to Silenced |  |  |  |
 
-Tally (90): KEEP 57 (three with MP rescaled, one with its repair rescaled); RE-STEP 19 (bulwark, shrug_it_off, tremor, iron_grip, unflinching, both_hands, sleight_of_hand, hold_the_stroke, footnote, mirage, read_them, shared_breath, lay_down_arms, heart_overload, resonance, flat_line, holy_ordnance, red_line, clean_hands), four of them scoped to their door; DEAD TODAY, given a fight half: 14. None becomes a verb: every small unconditional number in the acquired list is already a whole AP or a verb.
+Tally (90): keep 51, restate 25, rewrite 14. Fight halves given: 14. Scoped to their own door: bulwark, shrug_it_off, both_hands, shared_breath.
 
-### 4.3 Achieved (19) and ultimate (6)
+### 4.3 Achieved and ultimate perks
 
-| id (line) | Today | Verdict | New |
-| --- | --- | --- | --- |
-| charge (12412) | a straight move of 3+ ending by a foe: up to 3 AP free | KEEP | |
-| make_way (12456) | no opportunity attacks from foes you pass | KEEP | |
-| just_the_repairman (12504) | with a toolbox, 50% to stay Hidden when spotted | KEEP | |
-| spoon_feed (12547) | 2 AP: allies +2 to hit one foe | KEEP, a mark | the foe carries your **Fed** mark until your next turn (the squad +2 to hit it) |
-| cultured (12602) | +1 on two checks about art | RE-STEP (roll) | +2 (story; an achieved perk may be story) |
-| field_surgeon (12649) | Field Repair heals a living ally, 3 HP a point of Improvisation | KEEP, rescaled | **1.8** a point (01 T2b x0.6), on the heal column |
-| dance_of_iron (12714) | a miss on you, a free shot back | KEEP | |
-| cold_read (12758) | story: what an Analyzed foe wants | DEAD TODAY | fight: a foe you Analyze is also Read |
-| fire_sermon (12798) | 2 AP: your Blessings Shake foes within 4 | KEEP | |
-| silent_partner (12848) | an adjacent ally hides with you | KEEP | |
-| verse_of_war (12890) | In verse: +1 tile and +10% to an Outburst | KEEP | +10% in Σ, the Outburst door's (it reaches a Release) |
-| between_heartbeats (12937) | once a fight, 2 free AP before a foe's action | KEEP | |
-| siege_engine (12980) | Shove and Break 1 AP less; Guard from a Shove; unpushable | KEEP | |
-| dead_signal (13050) | 1 AP, disable a device while unseen | KEEP | |
-| twin_souls (13096) | a third school at half strength, +20 MP | KEEP, MP rescaled | **+12 x `mp`** (one Determination point's worth on 01's pool, T7a) |
-| the_voice (13143) | once a session, rank-and-file obey an order | KEEP | |
-| bite_the_bullet (13193) | once a fight, borrowed time at 0 HP | KEEP | |
-| sixth_sense (13245) | Hidden foes within 3 revealed | KEEP | |
-| what_could_be (13288) | story: a vision of the best outcome | DEAD TODAY | fight: once a fight, 0 AP: every foe you see is Read until your next turn |
-| war_footing (13329) | a foe ending next to you loses 2 AP (every 3 turns) | KEEP | |
-| last_charge (13373) | a 5+ tile charge: melee x1.5 that turn; a shield of armour value x3 (at least 15) | RE-STEP | **+30%** in Σ on that turn's blows (a tier II's worth: *the charge is the turn's set-up*); the shield armour value x3, at least **9** (01 T2b x0.6), riding 01's armour (T8b) and the grade's `arm`. Not a door's own: it does not reach a Finisher |
-| angel_of_the_trenches (13436) | once a fight, run to a falling ally and stabilise | KEEP | |
-| every_lie_is_a_door (13472) | story: walk into a guarded place | DEAD TODAY | fight: you start every fight Hidden (`condition` hidden at `combat_start`, `same_entry`) |
-| twin_discipline (13505) | a fused Sigil and Outburst cast | KEEP | |
-| supreme_command (13540) | once a fight, the squad takes a 2-AP action each | KEEP | |
-
-### 4.4 The Mastered perks: worth a tier's wait? (27; skill 10, level 15 at the earliest)
-
-The test: at level 15, a Mastered perk must change how the character plays its door or its job at least as much as a tier II perk. A once-a-fight trick that a tier II perk out-plays is not worth five levels.
-
-| id (line) | Skill | Today | Worth the wait? | What it becomes, if not |
-| --- | --- | --- | --- | --- |
-| last_wall (11120) | Durability | once a fight, a killing hit leaves 1 HP and you take nothing until your next turn | yes | add: your plates refill to your Reach when it fires (`resource` guard at max) |
-| walking_wounded (11204) | Pain Threshold | injuries cost no AP or Movement; below half HP, 20% less damage | no (the number is tier I's) | below half HP, **30% less**; injuries as today |
-| skin_map (11248) | Sensory | no foe within 6 stays Hidden from you | yes | (endless skulk kits make it a job) |
-| earthbreaker (11288) | Raw Power | once a fight, 4 AP: your melee damage on a 3x3, Prone, cover gone | no (a fixed blow at the chain's own cap) | **a Finisher row** (`techniques.json`, the Finisher family; critic M9): once a fight, it spends the whole chain and every unit in the 3x3 (`targets`) takes the Finisher's cash-out for the steps spent (S3, the one copy of the Finisher rule), Prone, cover gone; allies still hit. Its handler in `perks/a.ts` goes |
-| nothing_left_to_fear (11343) | Guts | immune to Fear; allies within 3 can't be Afraid | yes | |
-| the_name_they_whisper (11409) | Intimidation | every foe Afraid 2 rounds; surrender at half | yes | |
-| never_there (11450) | Athletics | first move draws nothing; later moves -4 to shots at you | yes | |
-| trick_shot (11490) | Dexterity | once a turn, a Ricochet: half the damage to the nearest foe within 2 | yes | add: the Ricochet lays 1 Pressure on the second foe (it reads the door) |
-| before_the_blink (11541) | Reaction Speed | always first in round 1; two reactions | yes | |
-| vanishing_act (11582) | Ingenuity | once a fight, 2 AP, Hidden where you stand | no (once a fight against a door built for it) | **2 AP and 3 Shadow, at will**: you vanish when you have built for it (`cost_mod` res shadow) |
-| overhaul (11627) | Improvisation | Field Repair 1 AP, doubled; a permanent extra slot once a weapon | yes | its slot adds to Masterwork's (`extraSlots`) |
-| nothing_gets_past (11681) | Vigilance | every foe that moves in sight is Spotted | yes | |
-| clean_draw (11716) | Brain Power | once a fight, the next spell (up to 4 glyphs) costs no charge and no Flux | no | up to **your Reach** (not 4), and its Evoke 0 AP; once a fight. (The first draft's "counts one glyph longer" is dropped: one past your Reach is the Push, Overclock, ruling C17) |
-| established_fact (11757) | Rumination | story fact; once, your own Overload deals you nothing | no (in a fight) | fight: once a fight, a Brain or Heart save you fail becomes a success (`auto_success`) |
-| closing_argument (11811) | Eloquence | story; once, your Persuade gets no save | yes | |
-| solid_image (11864) | Visualization | once a fight, the Glimmer becomes a real Double | no | **once a round**, 0 AP: a Glimmer you make is a real Double until your next turn, outside your held count |
-| case_closed (11902) | Acuity | full reveal; squad +2 Defense and +20% damage vs the Analyzed | yes, as a mark | the Analyzed foe carries your **Closed** mark: the squad +20% against it (a mark: it reaches a cash-out) and +2 Defense against it. *A whole squad's +20% outweighs one character's +30%* |
-| everyones_friend (11959) | Charisma | story: a trusted friend for a scene | DEAD TODAY | fight: once a fight, a rank-and-file foe that sees you makes a Heart save or surrenders (Open Hand's piece) |
-| threads_that_hold (11997) | Empathy | Tending to the Bonded +50%; Bonds hold while you are Downed | yes | |
-| many_hands (12066) | Camaraderie | Share a Hit within 3; lend your reaction | yes | |
-| their_own_idea (12127) | Insinuation | story: a planted suggestion | DEAD TODAY | fight: once a fight, 0 AP, a foe makes a Heart save or is Confused (`conditions.json:399`) |
-| the_twin_pays (12161) | Will Power | once a fight, a free Begin and no Strain to hold it | no | add: it Begins at **stage 2**, and its first Push (Overdraw, Will Power's Push by C17) costs no Strain |
-| true_name (12202) | Lore Master | once a session, the squad +50% vs a named foe | no in Survival (a run is one session) | **once a fight**, 0 AP: a foe you see carries your **Named** mark (the squad +20% against it) and its resistances and saves are shown |
-| still_water (12245) | Composure | immune to Brain debuffs; unreadable | yes | |
-| judgement_day (12284) | Faith | once a fight, 3 AP: its next attack fails, your attacks +50% | changed (one mark) | its next attack fails (kept), and it carries your **Judgement** mark: **the squad** +20% against it, where it was you +50%. *The miracle is the failed blow; the squad shares the verdict* |
-| foreseen (12335) | Conscience | once a session, a table rewind | DEAD TODAY (Survival) | fight: once a fight, a foe's attack on you or an ally within 4 is undone: it deals nothing and puts nothing on (Foresight II's piece, `would_drop` / `taking`, plus `cancel` on `cond_incoming`) |
-| on_my_mark (12369) | Authority | once a round, 1 AP: an ally acts now with up to 4 AP | yes | |
-
-Worth it as they are: 15. Changed so that they are: 12 (8 not worth the wait, 4 dead in Survival). Judgement Day and True Name lose damage for the holder (+50% to +20%) and give it to the squad: that is the marks' question (section 6.4). Every changed meaning is offered again through the existing re-pick (`pendingRepicks`, `answerRepick`, `migrateCharacterPerks`; critic M-4), so a step chosen under the old text can be chosen again.
-
----
-
-## 5. Margins replace the critical: every feeder (ruling A7)
-
-01 section 9 owns the rule (a Margin a full 4 over the Defense or TN; a natural 20 adds two; each adds a quarter of the plain hit plus a point of Perception, T10) and deletes `CRIT_BASE`, `CRIT_MAX`, `CRIT_PER_PERCEPTION`, `CRIT_PER_DEXTERITY` (`character.ts:853-855`), `critMult`, `sigils.json critical` (:118-122) and the Outburst critical (`classes/soul.ts:39`). **A critical stays a word**: a natural 20, or a roll in the weapon's or the technique's critical range (`critMin`, `combat.ts:1644`, which an ambush already widens to 19); a critical lands and adds two Margins. Every feeder:
-
-| Feeder | Today | Now |
-| --- | --- | --- |
-| Perception +3% a point, Dexterity +2% a point (`critMult`, `character.ts:855`) | the critical's size | **01's** (4.2, 9): Perception makes a Margin a point bigger; Dexterity's line is +5% damage |
-| The stat `crit_damage` (`effects/stats.ts:42`) | the critical multiplier | **renamed `margins`**: Margins added to a hit that lands (the same readers, one stat; S1's stat line) |
-| One Shot's Breath Held `crit_damage_mod` +25% (`traits.json:2178`) and its handler's `ctx.critBonus` +0.25 (`perks/c.ts:441`) | +25% critical damage, inside the x2 | **+1 Margin** on that first shot if it hits (`stat_mod margins` +1 in its context); the handler's second copy goes |
-| The stat `crit_taken`: Perception -10% a point and Acuity -5% a point (`character.ts:1237` `critTakenPct`; `skills.json:2509`, the skill id `analysis`) | cuts a critical's extra on you | **renamed `margins_taken`**. Perception's line is gone (01 4.2). **Acuity: a hit on you counts one Margin fewer at Acuity 5, and two fewer at Acuity 10** (two rows on `skills.json analysis`, `stat_mod margins_taken` -1 each; the 0.05 slope goes). *A whole step you see on the dice line, twice in the climb* |
-| Numb II (`perks.json:318`) | a critical on you lands as an ordinary hit | with Guard up, a hit on you counts **no** Margins (`margins_taken`, all) and leaves no injury |
-| Sigil critical x1.5 to 2.0 (`sigils.json:118-122`; `spellCritMult`, `sigil.ts:336`, `:1066`); Outburst critical (`classes/soul.ts:39`) | the spell's critical | two Margins, as a weapon's (01 9) |
-| Critical ranges: `point_crit_min` 18 (`techniques.json:404`), `precise_crit_min` 18 (:1581, :2819), `suppressed_crit_min` 18 (:2602), Joy's 18 (`magic.ts:1414`), the weapon op `aimed_crit_min` | when a roll is a critical | KEEP: they set the critical range, which now means two Margins. `aimed_crit_min` becomes the gear field `crit_range` with `crit_range_modes: [aimed]` (S13, one copy; the revolver's signature uses it, 3.2 row 1) |
-| Gambler's Double or Nothing (`perks/g.ts:534-537`) | a success becomes a critical | KEEP (two Margins) |
-| Glass Runner (+50%), Crawler-Blooded (-30%): a critical that injures a limb | damage taken | KEEP (they read "critical", the word, not the multiplier) |
-| The serrated edge; Joy; Calm ("no critical") | read `crit` | KEEP |
-
----
-
-## 6. The sum and the top of the scale (ruling A8)
-
-### 6.1 What adds, and where (01's stack rule, scoped)
-
-01's formula (section 10.1): **dealt = max(1, floor(B x Lv x Stat x Gr x (C + per x m) x (1 + Σ)) - armour)**. Level, the two cards, the grade and the cash-out multiply; Margins add to C; **everything else is one sum Σ**, held at -90% at least, with no top (A10: `VS_CAP` goes). This file owns most of Σ's sources, and sets **where** each counts. One scoping rule (PROVISIONAL):
-
-**On a door's cash-out, Σ counts the door's own sources and the foe's mark. Every other source on the sheet counts on plain hits.**
-- **A cash-out** is an action that spends more of a door's counter than the door's least use (a Finisher, a Take, a Break, a Slam, a Line of 3 or more, a Pumped Release, a Hymn with Grace, Snap All, Curtain): S3's `cash:<resource>` count, over the door row's least. A door's least use (a Strike or a shot, a Line of two, an un-Pumped Release, a lone Snap, a Hymn with no Grace) is a plain hit and carries everything.
-- **A door's own sources:** the perks of the door's three skills (acquired and Mastered), the door's class moves and passives (02, 03, 04), and a source whose condition names the door's own damage or state (Bright Script and Sure Script name Sigils; Hot Blood, Steady Heart, Hollow Heart and Verse of War name Outbursts; Cheap Shot names Hidden).
-- **The foe's mark** (6.2) counts everywhere.
-- **Everything else** (mods and signatures, properties, run boons that name no door, traits, achieved and ultimate perks of no door, another door's perks) counts on plain hits: *your gear, your run and your nature make the blows and shots that build the counter harder; the counter's cash-out is your door's own.*
-
-In data: a Σ term gains `cash: true` when it is a door's own or a mark (the reader defaults it from the row's file and condition, as 01's stack rule reads a term's kind); on a cash-out, `stackDamage` (`effects/output.ts:131`) keeps only the terms with `cash: true`. One field on 01's S12, read with S3 (Needs a new primitive).
-
-### 6.2 A foe carries one mark
-
-A **mark** is a condition on a foe that makes the squad's attacks on it better: today's `marked` (`conditions.json:521`, +1 to hit the marker's squad) and the five perks of section 4 (Footnote, Fed from Spoon Feed, Named from True Name, Closed from Case Closed, Judgement from Judgement Day). **A foe carries one at a time: a new mark replaces the old** (condition rows gain `slot: "mark"`; a condition of a filled slot replaces the one there). A damage mark is **+20%** for the marker's squad, and counts on cash-outs (6.1). *A foe singled out once is singled out; the squad chooses whose verdict stands.* Read (information) and the Chaplain's `judged` (`conditions.json:712`, where interventions land) are not marks. Faith's unlock against the Judged or Marked (`skills.json:5277`, `damage_vs` 0.4) is the prayer door's own term that reads a mark; it stays +40% on prayers.
-
-*Why +20%:* it is more than a tier I and less than a tier II, because four players share it; and on the tightest cash-out (the Coup, 6.3) it is what the budget holds beside one tier II perk.
-
-### 6.3 The largest legal turn of each door at level 20 (01's T11, with this file's sources)
-
-The doors' numbers are **01's T11** (level 20, door attribute and alpha 10, Perception 10 where the door rolls, Celestial, the door's Push, a natural 20 on a foe four levels under). 01 counts 9 Margins at +16 to hit; this file's sources add to-hit (a Celestial's True property +2 on the first attack a turn, `survival.json` `prop.true`; True Aim +1, `boon.true_aim`; Sure Script or Steady Heart +2 for the casters; a Deep focus +1; a drill Mark II +1, 02's), which reach **10 Margins** at most (+20 to +23 to hit against Defense 8). The table counts 10. Margins are each 0.35 of the plain hit (01 T10, Perception 10).
-
-**Cash-outs** (Σ = the door's own + one mark):
-
-| door | the door's own sources (this file's; a class move's are its door file's) | own | with the mark | 01 T11 largest, 9 Margins | at 10 Margins | with the sum | room left for the door's class terms |
+| id (line) | kind | skills | own door | verdict | today | new | alone |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Guard: Slam (per foe) | Bulwark II, 5 plates +30% + Shrug It Off II +30% | +60% | +80% | 8,325 | 8,325 (no roll) | 14,985 | +1021% |
-| Momentum: Coup | Iron Grip II (Grappled or Prone) +30% | +30% | +50% | 63,661 | 65,906 | **98,859** | **+2%** |
-| Pressure: Dead Centre | Pressure Point II (Suppressed) +30% | +30% | +50% | 35,419 | 37,158 | 55,737 | +119% |
-| Shadow: the Break | Long Dark II (Hidden) +30% + Cheap Shot +8% + the fresh ambush (03's) +50% | +88% | +108% | 72,420 | 74,159 | **154,250** | **-73%** |
-| Sigils: one Subject | Second Clause II (a conditioned foe) +30% + Bright Script +5% | +35% | +55% | 61,983 | 63,581 | **98,550** | **+2%** |
-| Figments: Curtain | Many-Eyed Dream II (4 Figments) +30% | +30% | +50% | 30,602 | 31,690 | 47,535 | +166% |
-| Bonds: Snap All (total) | Taut Thread II (Bonded) +30% | +30% | +50% | 12,736 | 12,736 (no roll) | 19,104 | +635% |
-| Outbursts: the Release | Clenched Heart II +30% + Resonance II +30% + Verse of War +10% + Hot Blood +5% + Hollow Heart +10% | +85% | +105% | 44,097 | 45,637 | 93,557 | +14% |
-| Prayer: a Hymn | Sinner's Due II (half HP) +30% + Faith's unlock vs the Judged or Marked +40% | +70% | +90% | 16,685 | 16,685 (no roll) | 31,702 | +409% |
+| charge (12412) | achieved | intimidation,athletics | - | keep | a straight move of 3+ ending by a foe: up to 3 AP free | kept |  |
+| make_way (12456) | achieved | intimidation,charisma | - | keep | no opportunity attacks from foes you pass | kept |  |
+| just_the_repairman (12504) | achieved | ingenuity,eloquence | - | keep | with a toolbox, 50% to stay Hidden when spotted | kept |  |
+| spoon_feed (12547) | achieved | brain_power,rumination,eloquence | - | restate | 2 AP: allies +2 to hit one foe | the foe carries your Fed mark until your next turn: the squad, you included, +2 to hit it (mark Fed: to_hit `@gear_perks.rules.restep.roll_i`) | you are the squad (ruling 32): +2 to hit it yourself |
+| cultured (12602) | achieved | lore_master,camaraderie | - | rewrite, fight half | +1 on two checks about art (story) | story: +2 on those checks; fight: once a fight, you or a squadmate within 3 makes a Heart save at +2 (the old song steadies) [check `@gear_perks.rules.restep.roll_i`, save `@gear_perks.rules.restep.roll_i`, within 3] |  |
+| field_surgeon (12649) | achieved | proficiency,camaraderie | - | restate | Field Repair heals a living ally (text: 3 HP a point of Improvisation; data: an out-of-fight patch of 50% max HP) | Field Repair's repair amount on a living ally next to you (one copy: field_repair's number); its text drops the stale '3 HP a point' |  |
+| dance_of_iron (12714) | achieved | dexterity,athletics | - | keep | a miss on you, a shot back for 1 AP | kept |  |
+| cold_read (12758) | achieved | empathy,analysis | - | rewrite, fight half | story: what an Analyzed foe wants | fight: a foe you Analyze is also Read |  |
+| fire_sermon (12798) | achieved | faith,eloquence | - | keep | 2 AP: your Blessings Shake foes within 4 | kept |  |
+| silent_partner (12848) | achieved | ingenuity,camaraderie | - | keep | an adjacent ally hides with you | kept | alone you hide as you would; there is no partner |
+| verse_of_war (12890) | achieved | implication,will_power | outbursts | keep | In verse: +1 tile and +10% to an Outburst | +10% on the Outburst cast in verse (sum: outbursts `perks.json:items[verse_of_war].effects[1].value` -1) |  |
+| between_heartbeats (12937) | achieved | reaction_speed,composure | - | keep | once a fight, 2 free AP before a foe's action | kept |  |
+| siege_engine (12980) | achieved | raw_power,durability | - | keep | Shove and Break 1 AP less; Guard from a Shove; unpushable | kept |  |
+| dead_signal (13050) | achieved | analysis,ingenuity | - | keep | 1 AP, disable a device while unseen | kept |  |
+| twin_souls (13096) | achieved | will_power,lore_master | - | restate | a third school at half strength (text: +20 MP; no number in data) | the third school's MP is a design price (scale.costs.rules.design), set where the schools are priced (soul.json); the text's '+20 MP' leaves |  |
+| the_voice (13143) | achieved | authority,composure | - | keep | once a session, rank-and-file obey an order | kept |  |
+| bite_the_bullet (13193) | achieved | guts,pain_threshold | - | keep | once a fight, borrowed time at 0 HP | kept |  |
+| sixth_sense (13245) | achieved | sensory,vigilant | - | keep | Hidden foes within 3 revealed | kept |  |
+| what_could_be (13288) | achieved | visualization,conscience | - | rewrite, fight half | story: a vision of the best outcome | fight: once a fight, 0 AP: every foe you see is Read until your next turn |  |
+| war_footing (13329) | ultimate | - | - | keep | a foe ending next to you loses 2 AP (every 3 turns) | kept |  |
+| last_charge (13373) | ultimate | - | - | restate | a 5+ tile charge: melee x1.5 that turn; a shield of armour value x3, at least 15 | that turn's blows +15% (a plain-hit source: it is no door's, so it does not reach a Finisher); the shield is armour value x3, at least the floor below [shield_floor `perks.json:items[last_charge].amounts.shield.base` x `@scale.factor.value`, shield_per_armour `perks.json:items[last_charge].amounts.shield_by_armour.per[0].value`] (sum: plain melee `@gear_perks.rules.restep.tier_i`) |  |
+| angel_of_the_trenches (13436) | ultimate | - | - | keep | once a fight, run to a falling ally and stabilise | kept | alone there is no one to run to: a squad perk, said on the card |
+| every_lie_is_a_door (13472) | ultimate | - | - | rewrite, fight half | story: walk into a guarded place | fight: you start every fight Hidden (condition hidden at combat_start) |  |
+| twin_discipline (13505) | ultimate | - | - | keep | a fused Sigil and Outburst cast | kept |  |
+| supreme_command (13540) | ultimate | - | - | keep | once a fight, the squad takes a 2-AP action each | kept | alone it is a 2-AP action of your own (ruling 32) |
 
-**Plain hits** (Σ = everything legal on one hit; the largest plain hit of the three weapon doors, 10 Margins, 11 with One Shot):
+### 4.4 The Mastered perks (`mastered`, by skill): worth a tier's wait?
 
-| plain hit | plain (01 T11) | Margins | Σ: its sources | Σ | the hit |
-| --- | --- | --- | --- | --- | --- |
-| Momentum: a wreck saw Strike | 6,414 | 10 | Iron Grip II 30, Biting 10, Edge 10, Whetted 5, the weighted head 20, Last Charge 30, Pain Eater 50, The Brightest Light at 5 kills 50, the mark 20 | +225% | 93,805 (room for 02's class terms on plain blows: +21%) |
-| Pressure: a long rifle shot | 4,968 | 11 | Pressure Point II 30, Keen 10, Edge 10, Hot Loads 5, Pain Eater 50, The Brightest Light 50, the mark 20 | +175% | 66,261 |
-| Shadow: a long rifle shot from Hidden (no Shadow spent) | 4,968 | 11 | Long Dark II 30, Cheap Shot 8, Keen 10, Edge 10, Hot Loads 5, the fresh ambush (03's) 50, Ghost Soldier 50, Pain Eater 50, the mark 20 | +233% | 80,236 |
+The test: at skill 10 a Mastered perk must change how the character plays its door at least as much as a tier II perk does.
 
-**The ordinary big turn**, for scale: a level-20 Breaker in Relic (01's stated attacker's grade at 20), a x7 Coup without the Push, one Margin, Iron Grip II and no mark: 5,498 x (5.52 + 0.35) x 1.3, **about 42,000**. Five digits, as the charter asks of a full cash-out.
-
-**What the table says** (each item for the file named):
-1. **Nothing reaches six digits** except the Break, which is 03's: with its own fresh ambush (+50%, 03's term) and this file's +38% and the mark, **03 holds Shadow's Bite at 9 at about 0.52** (01 10.3 item 4 said 0.56 for a +57% sum; the mark and the tenth Margin take the rest), or moves the fresh ambush out of the Break's own sum.
-2. **The Coup and the Line have about +2% left for their class terms** (02, 03): a full Coup and a full Line carry no class percentage. By ruling C16 the class's edge is something only it can use (its counter, its moves), not a bigger number on the same cash-out.
-3. **The Outburst has +14% left** (04's class terms on a full Release), Pressure +119%, the others far more.
-4. **Without 6.1 and 6.2** the Coup would carry today's squad set-up (01's +220%) at 10 Margins: about 210,900. Trimming the numbers instead, with every source reaching every hit, would leave the Coup's +57% for an own-door tier II (+30%) and everything else together: every trait, mod, property, boon and mark would sit at a point or two, under the felt bar. That is why this file scopes rather than trims (section 6.4).
-
-### 6.4 The two rules, for the lead
-
-The scoping rule (6.1) and the one-mark rule (6.2) are this file's answer to A8's "trim in 07 until none does", read with the lead's "every perk is still felt". They are rules a player sees (the damage line says "cash-out: your door's sum"), not caps on a number: no source is wasted on the hit its card names. The marks' +20% is the one number that falls (Judgement Day and True Name from +50%): Question 1.
+| skill | perk (line) | own door | verdict | worth the wait? | what it becomes | alone |
+| --- | --- | --- | --- | --- | --- | --- |
+| durability | last_wall (11120) | guard | restate | yes | and your plates refill to your Reach when it fires (resource guard at max) |  |
+| pain_threshold | walking_wounded (11204) | guard | restate | no: its number was a tier I's | below half HP you take 30% less (it was 20%); injuries as today [taken -0.3] |  |
+| sensory | skin_map (11248) | guard | keep | yes | kept |  |
+| raw_power | earthbreaker (11288) | momentum | rewrite | no: a fixed blow at the chain's own cap | a Finisher row (techniques.json, the Finisher family): once a fight it spends the whole chain, and every unit in the 3x3 takes the Finisher's cash-out for the steps spent (the one copy of the Finisher rule, @body.attributes.strength.door), Prone, cover gone; allies still hit. Its handler in perks/a.ts goes |  |
+| guts | nothing_left_to_fear (11343) | momentum | keep | yes | kept | alone the immunity to Fear is whole |
+| intimidation | the_name_they_whisper (11409) | momentum | keep | yes | kept |  |
+| athletics | never_there (11450) | pressure | keep | yes | kept |  |
+| dexterity | trick_shot (11490) | pressure | restate | yes | and the Ricochet lays 1 Pressure on the second foe (it reads the door) [pressure 1] |  |
+| reaction_speed | before_the_blink (11541) | pressure | keep | yes | kept |  |
+| ingenuity | vanishing_act (11582) | shadow | rewrite | no: once a fight, against a door built for it | at will, for 2 AP and 3 Shadow (cost_mod res shadow): you vanish when you have built for it [ap 2, shadow 3] |  |
+| proficiency | overhaul (11627) | shadow | keep | yes | its extra slot adds to Masterwork's (extraSlots) |  |
+| vigilant | nothing_gets_past (11681) | shadow | keep | yes | kept |  |
+| brain_power | clean_draw (11716) | sigils | rewrite | no | once a fight: the next spell up to your Reach (not 4) costs no charge and no Flux, and its Evoke 0 AP; one past your Reach is the Push (Overclock, ruling 17), not this |  |
+| rumination | established_fact (11757) | sigils | rewrite | no (in a fight) | fight: once a fight, a Brain or Heart save you fail becomes a success (auto_success); the story half kept |  |
+| eloquence | closing_argument (11811) | sigils | keep | yes | kept |  |
+| visualization | solid_image (11864) | figments | rewrite | no | once a round, 0 AP: a Glimmer you make is a real Double until your next turn, outside your held count |  |
+| analysis | case_closed (11902) | figments | restate | yes, as a mark | the Analyzed foe carries your Closed mark: the squad +20% against it (the one mark, @scale.stack.scope.foe_mark) and +2 Defense against it (kept) [defense 2] (mark Closed: `@scale.stack.scope.foe_mark.value`) |  |
+| charisma | everyones_friend (11959) | figments | rewrite | dead in Survival | fight: once a fight, a rank-and-file foe that sees you makes a Heart save or surrenders (Open Hand's piece); the story half kept |  |
+| empathy | threads_that_hold (11997) | bonds | restate | yes | Tending to the Bonded +50% (kept), and when alone it reads Tending yourself while you hold a Bond; Bonds hold while you are Downed | Tending yourself while you hold a Bond gets the +50% (critic-player-2 2) |
+| camaraderie | many_hands (12066) | bonds | keep | yes | kept | alone it is a squad piece, said on the card; the Mender's solo line is Threads That Hold |
+| implication | their_own_idea (12127) | bonds | rewrite | dead in Survival | fight: once a fight, 0 AP, a foe makes a Heart save or is Confused (conditions.json confused); the story half kept |  |
+| will_power | the_twin_pays (12161) | outbursts | restate | no | and it Begins at stage 2, and its first Push (Overdraw, Will Power's Push by ruling 17) costs no Strain [stage 2] |  |
+| lore_master | true_name (12202) | outbursts | rewrite | no in Survival (a run is one session) | once a fight, 0 AP: a foe you see carries your Named mark (the one mark) and its resistances and saves are shown (mark Named: `@scale.stack.scope.foe_mark.value`) |  |
+| composure | still_water (12245) | outbursts | keep | yes | kept |  |
+| faith | judgement_day (12284) | prayer | rewrite | changed: one mark | its next attack fails (kept), and it carries your Judgement mark: the squad gets the mark's share, where it was you x1.5 (mark Judgement: `@scale.stack.scope.foe_mark.value`) |  |
+| conscience | foreseen (12335) | prayer | rewrite | dead in Survival | fight: once a fight, a foe's attack on you or an ally within 4 is undone: it deals nothing and puts nothing on (Foresight II's piece, plus cancel on cond_incoming) |  |
+| authority | on_my_mark (12369) | prayer | keep | yes | kept | alone you are the one ordered: once a round, 1 AP buys an action of up to 4 AP for yourself, outside your turn (ruling 32) |
 
 ---
 
-## 7. Traits (`data/traits.json`, 74)
+## 5. Margins replace the critical: every feeder (ruling 7)
 
-**The budget note.** `traits.json:11-12` `budget_sp_net` 3 and `budget_note` ("+1 on a roll about 2 SP": the 2020 rule of thumb) are a note, not a price: no row has a cost (`cost` null), and nothing reads it. I recommend keeping the note and striking its "+1 on a roll" clause: with Margins, a +1 is worth more than it was. **No trait was priced by the withdrawn budget rule** (`rules.json balance` tiers, removed by rules 1.94).
+The rule is `@scale.margins`. **A critical stays a word**: a natural 20, or a roll in a weapon's or technique's critical range; it lands and adds `@scale.margins.natural_20` Margins.
 
-Numbers that sat on the old scale (every one restated on 01's):
-
-| Trait (line) | Number today | Why it is on the old scale | Restated (PROVISIONAL) |
-| --- | --- | --- | --- |
-| factory_made (1696) | Field Repair heals you 10 HP a point of Improvisation (`hp_per_point`) | a flat HP number | **6 a point** (01 T2b x0.6), on the heal column by 01's rule that a heal reads `mend` whatever its profile (01 3.1): *a point mends the same share of a bar at any level* |
-| drone_handler (3409) | the drone 30 HP and repair 10 a mastery point, typed in the trait op | the companion row (`enemies.json:379`, HP 30, settled by Leon, spec item 370) is typed a second time in the trait, and not levelled | the trait's typed `hp` goes (one copy); the drone reads `enemies.json companions.drone` (**18 HP, 3 armour**, 01 T2b), its HP on the column of what hits it (`damage_mult`, as a Figment's HP, 01 Built from) at its owner's level; the repair **6** a mastery point (x0.6), on the heal column |
-| beast_handler (3910) | the beast 60 HP, typed | as the drone | the same: `companions.beast` (**36 HP**, 01 T2b) at its owner's level on `damage_mult` |
-| oil_in_my_mind (852), oil_in_my_soul (946) | 2 less HP for each level (`hp_per_level` -2) | A5 removes the per-level HP term (01 5; T2b: "07 restates") | **max HP -6%**: *a Pain Threshold point thinner* (01 A5's card), at every level |
-| crawler_blooded (3683) | a Lumeri Blessing burns you for 10 (`amounts.blessing_burn`, no profile) | a self-paid HP price, flat (01 T2: "a share of max HP") | **7% of your max HP**, true damage (`per: [{of: self:max_hp, value: 0.07}]`): 01 section 6 rule 5, today's 10 over the old reference bar 145 |
-| one_shot (2153) | Breath Held +25% critical damage, "never more than double" | the x2 cap (A10) | **+1 Margin** if that shot hits (section 5) |
-| the_brightest_light (154), pain_eater (428), southern_fist (197), ghost_soldier (1344), raised_by_orks (1950), augmented (3453), demolitionist (3359), moon_hunter (3856), humanity_first (2643), hollow_heart (2244) | +10% a kill (to +50%), +50% bloodied (and +50% taken when fresh), +20%, +50%, +20%, +20%, +30%, +30%, +15%, +10% | none: percentages ride any scale | KEEP the numbers; each is a part of Σ (A8), counted on plain hits (6.1). Hollow Heart names Outbursts and counts on a Release. Pain Eater's +50% taken is the defender's sum. Humanity First's and Moon Hunter's leave the +100% pool, which goes (A10) |
-| gun_nut (2001), blade_recluse (372) | one extra mod slot | none | KEEP; it adds to Masterwork's (1.2) |
-
----
-
-## Questions for the lead
-
-1. **The two rules that hold the top (section 6):** a door's cash-out carries only its door's own sum and the foe's mark, and a foe carries one mark at a time (+20% for the squad, so Judgement Day and True Name go from +50% for one to +20% for the squad)? **Recommended: yes.** Under A8 alone, a level-20 Coup has room for +57% (01 T11); every perk stays felt, every trait, mod, property and boon keeps its number on the plain hits that build the counter, and the squad still sets up the big hit with its mark. The alternative (every source reaches every hit) puts every source but one perk at a point or two on the Coup, under the felt bar.
-
----
-
-## Critics' findings
-
-| Finding | Status | How, or why not |
+| feeder | today | now |
 | --- | --- | --- |
-| consistency S1 (x0.45 against x0.6; the bayonet 7) | FIXED | every number is quoted from 01 (T2b, T9, T11): the bayonet 9, Field Repair 9, Field Surgeon 1.8, Last Charge's shield at least 9; the top is on 01's T11 |
-| consistency S3 (07 5.4 against a Soldier's Defense 17) | FIXED | the top is 01's T11 (Defense 8 for the largest, 01's tier Defense); 07's own Defense is gone |
-| consistency S9 (the critical's feeders) | FIXED | section 5: `crit_damage` and `crit_taken` renamed `margins` and `margins_taken`; One Shot +1 Margin, one copy; Acuity one Margin fewer at 5 and 10; ranges kept as "a critical"; Perception's line is 01's by A7 (not the critic's "one more Margin at 4, 7, 10"), and the first draft's wider-range proposal is withdrawn |
-| consistency S11 (grade by map; 07's vault Celestial on 6 to 9) | FIXED | D25's split: Celestial only from map 10 (the vault, and the Boss's pick one in four); a vault list of its own; `relic_from_stage` goes. NOT taken: the critic's "the vault gives the next map's finds", because D25 rules 07's split (one over the finds, which on map 1 pays a Masterwork where the next map's finds would pay a Fine) |
-| consistency S12 (07 quotes 06's hours) | FIXED | the hours column is dropped; the clock is 05's |
-| consistency S13 (attribute and skill add or multiply) | NOT FIXED | ruling A4 multiplies them; 07 follows 01 |
-| consistency S14 (six digits at the top) | FIXED | A8's one sum; the table redone on 01's T11 (6.3); nothing but the Break (03's Bite) reaches six digits; the first draft's Question 2 (accept six digits) is withdrawn |
-| consistency M4 (old-magnitude numbers in 07's traits) | FIXED | section 7: Factory Made 6 a point on the heal column; Crawler-Blooded 7% of max HP (01's share rule); the companions read 01's rows (18, 36), one copy; Oil -6% max HP |
-| consistency M9 and section 5 item 3 (Earthbreaker's handler) | FIXED | a Finisher row in `techniques.json`, paid by S3; the handler goes |
-| consistency minor 6 (the boon cap) | NOT FIXED here | properties leave boon room (A9); turning the cap into slots is the Survival drafter's |
-| consistency section 4 (07's primitives) | FIXED | named by the merged list: S13 `crit_range`, S14 `targets.past`, S15 `GearState.props`; the first draft's "stack kinds" is withdrawn (A8; 01's S12 in two); the extensions keep the critic's names |
-| consistency M-4 (perks whose meaning changed) | FIXED | the existing re-pick, section 4.4 |
-| consistency M-7 (`prop` to `props`) | FIXED | `props: [prop]` on load (1.2, What re-records) |
-| player 1 (07 written to x0.45) | FIXED for 07 | as S1 |
-| player 5 (two foci, one hand) | NOT FIXED | ruling E leaves it open for 0.34 (Survival gives one free focus, the camp sells a second) |
-| player 15 (the boon cap) | NOT FIXED here | as consistency minor 6 |
-| player 17 (damage that swings by ten) | FIXED for 07's part | one sum, no kinds (A8); a cash-out carries only its door's sum (6.1), which narrows the swing; naming the Margins and the cash-out on the damage line is the client's |
+| crit_mult | character.ts:853-855 (CRIT_BASE, CRIT_MAX, CRIT_PER_PERCEPTION, CRIT_PER_DEXTERITY, critMult) | gone: Perception makes a Margin bigger (@scale.margins.per_perception); Dexterity's +2% critical line goes |
+| crit_damage | effects/stats.ts:42 (the stat crit_damage) | renamed margins: Margins added to a hit that lands (S1's stat line; the same readers) |
+| one_shot | traits.json:2178 crit_damage_mod +25%; perks/c.ts:441 ctx.critBonus +0.25 | +1 Margin on that first shot if it hits (stat_mod margins +1 in its context); the handler's second copy goes [margins 1] |
+| crit_taken | character.ts:1237 critTakenPct: Perception -10% a point, Acuity -5% a point (skills.json:2509, the skill id analysis) | renamed margins_taken; Perception's line goes; Acuity: a hit on you counts one Margin fewer at Acuity 5 and two fewer at 10 (two rows, stat_mod margins_taken -1 each; the 0.05 slope goes) [at_points [5, 10], each -1] |
+| numb_ii | perks.json:318: a critical on you lands as an ordinary hit | with plates up, a hit on you counts no Margins (margins_taken: all) and leaves no injury |
+| sigil_critical | sigils.json:118-122 critical; spellCritMult (sigil.ts:336, :1066) | two Margins, as a weapon's (@scale.margins.natural_20) |
+| outburst_critical | classes/soul.ts:39 | two Margins (@scale.margins.natural_20) |
+| crit_ranges | techniques.json:404 point_crit_min 18, :1581 and :2819 precise_crit_min 18, :2602 suppressed_crit_min 18, magic.ts:1414 Joy's 18, the weapon op aimed_crit_min (weapons.json:1770) | kept: they set the critical range, which now means two Margins; aimed_crit_min becomes the gear field crit_range with crit_range_modes [aimed] (S13, one copy; the revolver's signature uses it) |
+| gambler | perks/g.ts:534-537 Double or Nothing: a success becomes a critical | kept (two Margins) |
+| limb_criticals | Glass Runner +50% (traits.json:326), Crawler-Blooded -30% (traits.json:3683): a critical that injures a limb | kept: they read the word critical, not the multiplier |
+| crit_word_readers | the serrated edge (items.json:493), Joy, Calm (no critical) | kept: they read crit |
 
 ---
+
+## 6. The sum and the top of the scale (rulings 8, 29, 30)
+
+The formula is `@scale.stack`: level, the two cards, the grade and the cash-out multiply; Margins add to the cash-out factor; everything else adds into one sum. This file owns most of the sum's sources and says **where each counts**:
+
+- **On a door's cash-out:** the door's own terms (`rules.own_door`: its perks, its forks and class moves in the door files) and the one mark (`@scale.stack.scope.foe_mark`).
+- **On a plain hit:** the same, plus every `scope: plain` term whose `hits` names the hit's profile (traits, boons, mods, signatures, properties, perks of no door). *Your gear, your run and your nature make the blows and shots that build the counter harder; the counter's cash-out is your door's own.* The damage line says which (critic-player-2 9).
+- **To hit counts everywhere it rolls** (ruling 29: Margins from the best legal to-hit): properties, mods, boons, each as `to_hit` terms on the doors they reach.
+- **Groups:** a perk's two tiers share a group (the checker counts tier II alone); a run's one start boon is one group; the traits are one group that keeps its best `take` (a character holds `rules.json character.creation.traits.max` traits).
+
+**The check.** `python tools/balance/check.py` prints for each door its largest legal turn (the best cash-out with the Push, Margins from every legal to-hit term, the door's own sum and the mark) and its largest plain hit (the door's plain hit at Celestial with every plain term of its profile). Both must be at most `@scale.digits.largest_turn_l20.max`. The plain blow was the one this file's terms could push over: Last Charge and the weighted head were trimmed to a tier I's step for it (section 0). The cash-outs' room is set by each door's Bite and forks (ruling 29), in the door files.
+
+**Boons** (`boons`; their list, worth and cap are world's): the boons' list, worth and cap are world's (survival.json); this file only says where each counts: a damage boon is a plain-hit term (no boon is a door's own), a to-hit boon counts wherever it rolls; Hot Loads and its siblings share one group because a run starts with one start boon.
+
+| boon (line) | what it does | where it counts |
+| --- | --- | --- |
+| boon.edge (250) | +10% damage: a plain-hit term | plain hits of any: 0.1 |
+| boon.true_aim (256) | +1 to hit, every attack | to hit on any: 1 |
+| boon.sure_script (304) | Sigils +2 to hit | to hit on sigils: 2 |
+| boon.steady_heart (307) | Outbursts +2 to hit | to hit on outbursts: 2 |
+| start.hot_loads (332) | guns +5%: a plain-hit term | plain hits of gun,bow: 0.05 |
+| start.whetted (341) | blows +5%: a plain-hit term | plain hits of melee: 0.05 |
+| start.cheap_shot (359) | +8% while Hidden: a plain-hit term (a start boon is no door's own) | plain hits of any: 0.08 |
+| start.bright_script (368) | Sigils +5%: a plain-hit term (a Line of two) | plain hits of sigil: 0.05 |
+| start.hot_blood (377) | Outbursts +5%: a plain-hit term (an un-Pumped Release) | plain hits of soul: 0.05 |
+| start.zeroed (329) | +1 to hit (one start boon a run) | to hit on pressure, shadow: 1 |
+| start.balanced (338) | +1 to hit (one start boon a run) | to hit on momentum, guard: 1 |
+| start.patient_eye (356) | +1 to hit (one start boon a run) | to hit on shadow: 1 |
+| start.steady_line (365) | +1 to hit (one start boon a run) | to hit on sigils: 1 |
+| start.clear_pulse (374) | +1 to hit (one start boon a run) | to hit on outbursts: 1 |
+
+---
+
+## 7. Traits (`traits`, all of `data/traits.json`)
+
+traits.json:11-12 budget_sp_net and budget_note are a note, not a price (no row has a cost; nothing reads it): keep the note and strike its "+1 on a roll about 2 SP" clause; no trait was priced by the withdrawn budget rule (rules 1.94).
+
+| trait (line) | verdict | today | now | numbers or term |
+| --- | --- | --- | --- | --- |
+| the_brightest_light (154) | keep |  | +10% a kill this fight, to +50% at five kills (the top: the per-kill share x 5, the cap in its context): a plain-hit term (kept; a plain-hit term) | plain any: `traits.json:items[the_brightest_light].effects[0].value_pct` x 0.05 |
+| southern_fist (197) | keep |  | +20% unarmed or with gloves (kept; a plain-hit term) | plain melee: `traits.json:items[southern_fist].effects[1].value_pct` x 0.01 |
+| pain_eater (428) | keep |  | +50% while under half HP (and +50% taken while above: the defender's side) (kept; a plain-hit term) | plain any: `traits.json:items[pain_eater].effects[0].value_pct` x 0.01 |
+| oil_in_my_mind (852) | restate | 2 less HP a level (hp_per_level -2) | max HP -6%: a Pain Threshold point thinner, at every level (ruling 5 removes the per-level HP term) | hp_share `@gear_perks.rules.oil_hp_share` |
+| oil_in_my_soul (946) | restate | 2 less HP a level | as Oil in My Mind; both Oils pay once | hp_share `@gear_perks.rules.oil_hp_share` |
+| ghost_soldier (1344) | keep |  | +50% on the first attack from stealth each fight (kept; a plain-hit term) | plain any: `traits.json:items[ghost_soldier].effects[0].value_pct` x 0.01 |
+| factory_made (1696) | restate | 10 HP a point of Improvisation | Field Repair heals you per point of Improvisation on the factor, on the mend column (a heal reads mend whatever its profile) | hp_per_point `traits.json:items[factory_made].effects[3].hp_per_point` x `@scale.factor.value` |
+| raised_by_orks (1950) | keep |  | +20% melee (kept; a plain-hit term) | plain melee: `traits.json:items[raised_by_orks].effects[0].value_pct` x 0.01 |
+| one_shot (2153) | restate | +25% critical damage, never more than double | Breath Held: +1 Margin on that first shot if it hits (margins_feeders.one_shot) | margins 1 |
+| hollow_heart (2244) | keep |  | +10% on Outbursts: a trait is no door's own, so it counts on an un-Pumped Release, not a Pumped one (kept; a plain-hit term) | plain soul: `traits.json:items[hollow_heart].effects[1].value_pct` x 0.01 |
+| humanity_first (2643) | keep |  | +15% on non-humans; it leaves the +100% pool, which goes (kept; a plain-hit term) | plain any: `traits.json:items[humanity_first].effects[0].value_pct` x 0.01 |
+| demolitionist (3359) | keep |  | +30% explosive (kept; a plain-hit term) | plain weapon,thrown: `traits.json:items[demolitionist].effects[2].value_pct` x 0.01 |
+| drone_handler (3409) | restate | drone 30 HP typed in the trait op and in enemies.json (spec item 370) | the trait's typed hp goes (one copy); the drone reads enemies.json companions[drone] on the factor, its HP on the column of what hits it, at its owner's level; its repair is Field Repair's | hp `enemies.json:companions[drone].hp` x `@scale.factor.value`, armour `enemies.json:companions[drone].armour` x `@scale.factor.value` |
+| augmented (3453) | keep |  | the arm: +20% physical (kept; a plain-hit term) | plain melee,physical: `traits.json:items[augmented].effects[0].options.arm[0].value_pct` x 0.01 |
+| crawler_blooded (3683) | restate | 10 flat (amounts.blessing_burn) | a Lumeri Blessing burns you for a share of your max HP, true damage | burn_share `@scale.costs.shares.crawler_burn` |
+| moon_hunter (3856) | keep |  | +30% on the first attack on a tracked creature; it leaves the +100% pool, which goes (ruling 10) (kept; a plain-hit term) | plain any: `traits.json:items[moon_hunter].effects[1].value_pct` x 0.01 |
+| beast_handler (3910) | restate | beast 60 HP typed in the trait op | the same as the drone: enemies.json companions[beast] on the factor | hp `enemies.json:companions[beast].hp` x `@scale.factor.value` |
+
+Kept as they are (no number on the old scale): mind_without_fog, forlorn_hope, grenadiers_arm, glass_runner, blade_recluse, bottle_butts_for_eyes, the_mask, machine_faced, right_of_way, drill_echo, the_old_blood, holo_drama_addict, lunarshine, heavyworlder, born_performer, rabbits_foot, symbol_of_order, rogue_element, the_soundscape_of_the_soul, headbanger, underground_sound, worldline_fracture, lowland_born, central_city_kid, daggerfall_veteran, upper_touched, gun_nut, old_school, spray_and_pray, sigil_savant, heretic, gambler, insomniac, chain_smoker, live_to_fight_another_day, sworn_sibling, rival, wanted, company_man, field_medic, squad_anchor, born_officer, cold_case, interrogator, trench_poet, grudge_bearer, crowded_head, market_blood, cover_story, inner_ring_heir, slicer, true_believer, heavens_faithful, occultist, old_timer, pacifist, ace_pilot.
+
+---
+
+## 8. The free re-pick (ruling 39)
+
+the existing re-pick (pendingRepicks, answerRepick, migrateCharacterPerks; the perkRev piece): one free re-pick of a perk step whose meaning changed; pacing owns the migration (@pacing.migration).
+
+- **Narrowed to their own door:** bulwark, shrug_it_off, both_hands, shared_breath.
+- **The marks' holders** (their damage goes to the squad as the one mark): judgement_day, true_name.
+- **Every changed meaning:** bulwark, shrug_it_off, numb, bedside_manner, read_the_air, tremor, iron_grip, point_man, unflinching, marrow_talk, bone_talk, both_hands, cut_in, sleight_of_hand, field_repair, hold_the_stroke, footnote, index, objection, opening_argument, mirage, read_them, smooth, shared_breath, lay_down_arms, nobody_left_behind, steady_hands, pull_together, between_the_lines, heart_overload, resonance, old_tales, flat_line, poker_face, holy_ordnance, red_line, clean_hands, foresight, rank_has_privileges, spoon_feed, cultured, field_surgeon, cold_read, twin_souls, what_could_be, last_charge, every_lie_is_a_door, last_wall, walking_wounded, earthbreaker, trick_shot, vanishing_act, clean_draw, established_fact, solid_image, case_closed, everyones_friend, threads_that_hold, their_own_idea, the_twin_pays, true_name, judgement_day, foreseen.
+
+---
+
+## Critics' findings that name 07
+
+| finding | status | how, or why not |
+| --- | --- | --- |
+| consistency-2 1.8, 2.1 (the vault's grade twice; Relic on maps 3 and 4) | FIXED | ruling 35: one list, pacing's; this file holds only the rule and the data form |
+| consistency-2 2.2 (Cultured story only) | FIXED | a fight half: a Heart save at the d20 step, once a fight, you or a squadmate |
+| consistency-2 2.4 (scope or trim) | FIXED | ruling 30 accepted scope; A8's trim applied where the checker found a plain hit over the top |
+| consistency-2 4.1 to 4.5 (six digits; Snap All at Relic) | the door files' | the checker counts this file's terms and the doors'; Bites and forks are set door by door (ruling 29). The Coup: closed by Iron Grip's trim (section 0); every door passes |
+| consistency-2 6.1 (the cash flag read from a condition) | FIXED | every term states its door, or scope plain with its hits, in data; `check.py` fails a term with neither (TERMS) |
+| consistency-2 6.2 (a door's least use) | the door files' | a door row's least use is a key on the door (its plain), not this file's |
+| consistency-2 6.3 (the grip slot in code) | FIXED | `grade_rows.slotless_default`: a data default |
+| consistency-2 7.4 (the four scoped perks) | FIXED | `repick` lists them, with the marks' holders |
+| player-2 2 (the solo Mender: Threads That Hold) | FIXED for 07 | Tending yourself while you hold a Bond; every ally perk says what it does alone |
+| player-2 7 (07 on superseded Bites) | FIXED | no computed table here: the checker reads the door files' Bites |
+| player-2 9 (scoping takes rewards off a live character's cash-outs) | FIXED | ruling 30; the card says plain hits; the re-pick covers the four perks; the migration note is pacing's |
+| player-2 14 (the felt bar) | FIXED | `rules.felt_bar` |
+| player-2 11 (boon cap as slots) | NOT here | the cap is world's; properties leave it (ruling 9) |
 
 ## Built from
 
-| Rule or number | The existing piece and data key that carries it (file) | What must change |
+| rule | the existing piece and data key (file) | what must change |
 | --- | --- | --- |
-| The grade (01 T9) on hit, damage, heal, shield | `rules.json rarity` rows (:1605-1659); `with_this` (`effects/triggers.ts`); `roll_mod`, `damage_mult`, `mend_mult`; the carried-modifier list (`effects/collect.ts:220`) | each row gains `effects`; the collector adds the instance's grade row; `combat.ts:580`, `:585`, `:1536` stop reading `acc` / `dmg` (one copy) |
-| Grade on armour | `armOf` (`character.ts:224`), the rows' `arm` | 01's numbers only |
-| The Masterwork mod slot | `extraSlots` (`perks/c.ts:211`), the extra-slot fit (`:220-235`) | rows gain `extra_slots`; `extraSlots` reads the grade; a slotless row gains `grip` at Masterwork |
-| Relic and Celestial properties | `survival.json relic_props` (:224); `rollProps`, `propFits` (`run/power.ts:66-73`); `upgradeProblem` (`run/progress.ts:134-165`) | `prop` becomes `props` (S15); `cappedRarity` keeps Celestial; `runWorth` stops counting props (A9); three armour props |
-| The grade by map (D25) | `rewards.ceiling` (`survival.json:147`), `stageCeiling` / `cappedRarity` (`run/rewards.ts:156-164`), `vault` (:580), `grade_up.relic_from_stage` (:195), `rewards.rarity.boss` (:144, 05's row) | the ceiling by map; new `rewards.shelf` and `vault.grades`; `stageCeiling(stage, purpose)`; `relic_from_stage` goes; validator `:2960` |
-| Mods' new effects | items.json mod rows (:283-686); ops `roll_mod`, `damage_mult`, `cost_mod`, `resource`, `cancel`, `grant_action`, `deal`; gear fields with `_modes` (`rules.json:957`, `gearNum` `character.ts:1738`) | data only; the three unbuilt mods get `adjudication: engine` |
-| The maker signature | modifier rows (`mod_line_arsenal`, `mod_line_smetanita`), the `variant_mods` readers (`collect.ts:217-220`, `hooks.ts:201`, `triggers.ts:277`, `gearpreview.ts:156`, `:340`) | `families.json` gains `signature`; the carried list reads it; `gearNum` reads the carried list; Arsenal's and Smetanita's `variant_mods` move to their families |
-| The 13 signatures | `resource`, `mark` / `flag`, `cost_mod` (`action: move` as `fire_and_move`), `zone` (Hallow's pattern), `displace`, `cancel`, `condition`, `targets` | 13 signature rows (data); zone kind `burning_ground`; condition `toxin`; the door knocker's push moved from its grant to its row |
-| Perk re-steps, scopes and MP | each perk's `effects` / `tiers` values (perks.json, lines in 4.2); the door predicates the rows already use (`damage`, `self_has`, `melee`) | numbers, scopes and texts (`{=...}` placeholders already bound) |
-| Dead perks' fight halves | `condition` (`read`, `shaken`, `confused`, `hidden`), `roll_mod` (to_hit, save tn), `grant_action`, `targets`, `interrupt`, `auto_success`, `cancel`, `floor` | data on each row; `adjudication` to `engine` or `hybrid` |
-| Mastered perks' changes | `resource` (guard at max), `cost_mod` with `res: shadow`, the Finisher rows (`techniques.json`) with S3's cash-out, Glimmer's order site (`figment_order`), Outburst stage | data; Earthbreaker's handler (`perks/a.ts`) goes for a Finisher row |
-| Margins feeders | the stats `crit_damage`, `crit_taken` (`effects/stats.ts:42`); `critMin` on `attack_roll` (`combat.ts:1644`); the `crit` predicate; `stat_mod` with `context` | renamed `margins`, `margins_taken` (same readers, read by S1); One Shot's handler's `critBonus` goes; Acuity's two rows |
-| The sum (A8) and its scope | `stackDamage` (`effects/output.ts:131`), 01's S12 (two kinds); `damage_mult` (`effects/triggers.ts:404`) | a term's `cash` field read on a cash-out (with S3); `VS_CAP` (`output.ts:129`) goes (01); `damage_vs` becomes a `damage_mult` term |
-| The marks | `conditions.json` rows (`marked` :521); `condition` op; `damage_mult` / `roll_mod` with `target_has` | rows gain `slot: "mark"`; five new mark rows (Footnote, Fed, Named, Closed, Judgement) |
-| Traits restated | amounts blocks (`per self:max_hp`), `levelled()` for companions (`data.ts:117`), `stat_mult hp_max`, 01's heal-column rule | data; the drone's and beast's typed HP leave the trait op |
+| the grade on hit, damage, heal, shield | `rules.json rarity` (:1605-1659); `with_this`; `roll_mod`, `damage_mult`, `mend_mult`; the carried-modifier list (`effects/collect.ts:220`) | rows gain `effects`; the collector adds the instance's grade row; `combat.ts:580`, `:585`, `:1536` stop reading acc and dmg |
+| grade on armour | `armOf` (`character.ts:224`) | none |
+| the Masterwork mod slot | `extraSlots` (`perks/c.ts:211`) | it reads the grade; `rarity.masterwork.default_slot` |
+| properties | `survival.json relic_props` (:224); `rollProps`, `propFits` (`run/power.ts`); `upgradeProblem` (`run/progress.ts:134-165`) | `prop` to `props` (S15); `cappedRarity` keeps Celestial; `runWorth` stops counting props; three armour props; `FITS` learns armour |
+| the grade by map | `rewards.ceiling` (`survival.json:147`), `stageCeiling`, `cappedRarity` (`run/rewards.ts:156-164`), `vault` (:580), `relic_from_stage` (:195) | `stageCeiling(stage, purpose)`; the values are pacing's |
+| mods | items.json mod rows (:283-686, :1749-1793); `roll_mod`, `damage_mult`, `cost_mod`, `resource`, `cancel`, `grant_action`, `deal`; gear fields with `_modes` (`gearNum`, `character.ts:1738`) | data only |
+| the maker signature | `mod_line_arsenal`, `mod_line_smetanita`; the `variant_mods` readers | `families.json` gains `signature`; `gearNum` reads the carried list |
+| perk steps, scopes, MP | each perk's `effects` / `tiers`; the predicates they use | numbers and texts ({=...} placeholders) |
+| fight halves | `condition` (read, shaken, confused, hidden), `roll_mod`, `grant_action`, `targets`, `interrupt`, `auto_success`, `cancel` | data; adjudication to engine or hybrid |
+| Earthbreaker | the Finisher rows (`techniques.json`) and the Finisher's cash-out (`@body.attributes.strength.door`) | a Finisher row; its handler (`perks/a.ts`) goes |
+| Margins feeders | `crit_damage`, `crit_taken` (`effects/stats.ts:42`); `critMin` (`combat.ts:1644`) | renamed (S1); One Shot's second copy goes |
+| where a term counts | `stackDamage` (`effects/output.ts:131`): `ctx.mults` multiply, `ctx.vs` add | each term states its door or plain scope in data (no table of conditions to doors) |
+| the marks | `conditions.json` (`marked` :521); the `condition` op | S18 `slot: "mark"`; five mark rows |
+| traits | amounts blocks (`per self:max_hp`), `levelled()` for companions (`data.ts:117`), the companion rows (`enemies.json companions`) | data; the typed HP leaves the trait ops |
 
-## Needs a new primitive
+## Needs a new primitive (names from critic-consistency-2's merged list)
 
-Names from critic-consistency's merged list (its section 4) where one exists. General pieces only.
-
-| Piece | Smallest form | Why nothing existing does it |
+| piece | smallest form | why nothing existing does it |
 | --- | --- | --- |
-| **S13. `crit_range`** | one row in `rules.json weapons_rules.gear_fields` (`combine: max`, `default: 0`), read once at the attack roll (`critMin = 20 - crit_range` before the items speak); the weapon op `aimed_crit_min` becomes `crit_range` with `crit_range_modes: [aimed]` (a generalisation) | `critMin` is set only by hook code, the technique numbers and one weapon op limited to Aimed Shots |
-| **S14. `targets.past`** | a bool on a `line` set: the units on the line beyond the event's target | a line set runs from its centre and includes everything on it; nothing selects "past the struck unit" |
-| **S15. `GearState.props`** | the list replaces `prop`, with a load migration; `gearProps` reads the list | a Celestial holds two properties; the saved shape holds one |
-| **A condition `slot`** | a word on condition rows (`slot: "mark"`): a condition of a filled slot replaces the one there, in the one place a condition is put on (the `condition` op's apply) | `stacks: false` refuses a second copy of the same condition only; nothing makes two different conditions exclusive |
-| Extension of 01's **S12** and **S3**: a term's `cash` | a Σ term carries `cash` (default from its source: a door's own or a mark); `stackDamage` keeps only `cash` terms when the event's S3 count is over its door row's least | 01's S12 adds every term; nothing tells a cash-out from a plain hit outside the Body's technique groups |
-| Extension of **S1**: two stat lines | `crit_damage` renamed `margins` (Margins added to a hit that lands) and `crit_taken` renamed `margins_taken` (Margins removed from a hit on you); read by S1's judge | renames of two existing stats, so the closed list does not grow |
+| S1 (the stats part) | `crit_damage` renamed `margins`, `crit_taken` renamed `margins_taken` | renames: the closed list does not grow |
+| S13 `crit_range` | a gear field with `_modes`, read once at the attack roll; `aimed_crit_min` becomes it | `critMin` is set by hook code and one Aimed-only op |
+| S14 `targets.past` | a bool on a `line` set | nothing selects the units past the struck one |
+| S15 `GearState.props` | a list in place of `prop`, migrated on load | a Celestial holds two |
+| S18 a condition `slot` | `slot: "mark"`: a condition put in a filled slot replaces it | `stacks: false` refuses the same condition only |
+| extension: a term's scope | a sum term states its door, or `scope: plain` with `hits`; read by `stackDamage` with S3 | today every term reaches every hit |
 
-Extensions of pieces that nearly do it (the critic's names): `stageCeiling(stage, purpose)` (finds, shelf, vault); `forge_fit_rate`; `with_this` on worn armour; `FITS` learns `armour`; `extraSlots` reads the grade; `gearNum` reads the carried list; `families.json` gains `signature`.
+Extensions (one key each): `stageCeiling(stage, purpose)`, `forge_fit_rate`, `with_this` on worn armour, `FITS` armour, `extraSlots` reads the grade, `gearNum` reads the carried list, `families.json signature`, `rarity.masterwork.default_slot`.
 
 ## What re-records
 
-| What | Why it moves |
+| what | why |
 | --- | --- |
-| `test/golden/` damage tables (all 14 `golden-damage*`: builds, magic, perks, techniques, traits, classes) | the grade multiplies damage and heals; perks re-stepped and scoped; Margins in place of the critical; the target cap goes; the sum and its cash-out scope; the marks; the suppressor's and the weighted head's flat numbers become shares |
-| `golden-costs*` and `costs-*.json` | mod costs (extended magazine reload +1, foregrip and wrapped grip swap +1, the Sigil magazine's glyph, the compensator), the signatures' AP cuts (Legion, rotary, thrown), Vanishing Act's Shadow cost, the perks' MP on 01's pool |
-| `golden-itemops`, `golden-mods` | the grade as a carried row; signatures moved from `variant_mods` to families; new modifier rows; mods' new effects |
-| `golden-conditions` | the new `toxin` row; the five mark rows and the mark slot; Read, Shaken and Confused put on by the perks' fight halves |
-| `golden-rules` | Margins on criticals; `crit_range`; Acuity's `margins_taken`; Earthbreaker as a Finisher row; the door knocker's push from its row |
-| `test/golden/replays.json` (replay guard) | every seeded fight with a graded weapon, a mod, a mark or a perk on a re-stepped number |
-| `test/old-save.test.ts` and fixtures | `prop` to `props` (a new fixture beside the three); the perks' re-pick for changed meanings |
-| `survival-*.test.ts` (rewards, vault, shop, Forge, stage), `run/power` tests | the ceiling by map, the shelf, the vault list, Celestial finds from map 10, `relic_from_stage` gone, properties out of boon room, the ADCorp fee |
-| `items-b0.test.ts`, `follow-strike.test.ts` | the signatures' new home (family rows) |
-| `test/balance/*` measures | read again, never fitted (rules 1.94) |
-| `tools/validate.py` | Celestial in `ceiling` and `vault.grades`, not in `shelf`; rarity rows' `effects`; `families.json signature`; the new gear field; condition `slot`; a term's `cash` |
-| `tools/check_spec_tables.py` and the spec's rarity table (`PHC-Core-Rules-v1.0.md:676-682`), perk and trait texts in the spec | the spec first, then data |
-| text-number guard (`tools/text_numbers.json`) | new and changed texts bind their numbers; no new bare digits |
-| `apps/web/src/narrator/faith-context.test.ts` cost cap | longer perk and mod texts in the Narrator's prompt |
-| `apps/web` and `e2e` suites that read a grade's card, a mod's line, a perk's number or the damage line | displayed numbers change; the critical's label becomes Margins |
+| `test/golden/` damage tables (every `golden-damage*`) | the grade multiplies; perks re-stepped and scoped; Margins; the one sum and where it counts; the marks; mods' flat numbers become shares |
+| `golden-costs*`, `costs-*.json` | mod costs, signatures' AP cuts, Vanishing Act's Shadow cost, perks' MP |
+| `golden-itemops`, `golden-mods` | the grade as a carried row; signatures on families; mods' effects |
+| `golden-conditions` | `toxin`; the mark rows and slot; the fight halves' conditions |
+| `golden-rules` | Margins on criticals; `crit_range`; Acuity's `margins_taken`; Earthbreaker as a Finisher row |
+| `test/golden/replays.json` | every seeded fight with a graded weapon, a mod, a mark or a re-stepped perk |
+| `test/old-save.test.ts` and fixtures | `prop` to `props`; the re-pick (`repick`) |
+| `survival-*.test.ts`, `run/power` tests | grades by map, the shelf, the vault, Celestial finds, properties out of boon room, the ADCorp fee |
+| `items-b0.test.ts`, `follow-strike.test.ts` | the signatures' new home |
+| `test/balance/*` | read again, never fitted |
+| `tools/validate.py`, `tools/check_spec_tables.py`, the spec's rarity table and perk and trait texts | the spec first, then data |
+| text-number guard; `faith-context.test.ts` cost cap; web and e2e suites that read a grade, a mod, a perk or the damage line | texts and shown numbers change; the critical's label becomes Margins |
+
+## Open
+
+- scale.json stack.scope.rule says a plain hit counts the terms of its weapon's door and the mark; this file reads ruling 30 as: a plain hit counts every term that reaches its profile (scope plain, hits) plus its door's and the mark. 01 to confirm the wording
+- mp_restate (0.5) should be the one copy soul.json's Tending prices read (critic-consistency-2 3.2), or this file reads soul's: whichever lands first owns it

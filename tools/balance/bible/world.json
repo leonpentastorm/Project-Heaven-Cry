@@ -1,0 +1,224 @@
+{
+  "_meta": {
+    "file": "world",
+    "owner": "docs/design/growth/06-world.md",
+    "status": "PROVISIONAL: every number is chosen for what a player feels and is a first proposal to play; nothing is fitted to a percentage, a line or a ceiling",
+    "rulings": "00-rulings.md A1 to A3, A8, B15, C19, D24, D25, D28, F36, F38",
+    "shape": "tools/balance/bible/SCHEMA.md, section 'world.json'",
+    "clock": "Hours and the squad's level by map are pacing.json's (ruling 36: one clock); this file reads them and types none.",
+    "read_by": "tools/balance/check.py checks (b) and (e); python tools/balance/check.py --tables hits world budget"
+  },
+
+  "tiers_rule": {
+    "hp_x": "@scale.factor.value",
+    "armour_x": "@scale.factor.value",
+    "damage_x": 1.28,
+    "why": "A tier's HP and armour take the one factor (ruling A1); its damage factor takes 1.28 so a same-level Soldier's service-rifle hit lands the frail character in about four hits at every level, the count the charter asks (the enemy_damage column carries the growth)."
+  },
+
+  "tiers": {
+    "about": "The level-1 tier rows (enemies.json items[]). hp, armour, damage and attack_bonus are today's rows, read; the rule above moves them. Defense is fixed by tier and never grows (ruling A3); pressure_off is ruling 19's Pressure offset; lag is the levels a tier stands under its place's level; bulk and pressure are its cost in Soldier-equivalents (survival.json tiers).",
+    "vermin": {
+      "hp": {"data": "enemies.json:items[vermin].hp"}, "armour": {"data": "enemies.json:items[vermin].armour"},
+      "damage": {"data": "enemies.json:items[vermin].damage"}, "attack_bonus": {"data": "enemies.json:items[vermin].attack_bonus"},
+      "defense": 8, "pressure_off": 0, "lag": 1, "bulk": 0.25, "pressure": {"data": "survival.json:tiers.vermin.pressure"},
+      "why": "a rat is hit by anyone who aims at it; a swarm stands a level under its masters, so more of them fit the room"
+    },
+    "minion": {
+      "hp": {"data": "enemies.json:items[minion].hp"}, "armour": {"data": "enemies.json:items[minion].armour"},
+      "damage": {"data": "enemies.json:items[minion].damage"}, "attack_bonus": {"data": "enemies.json:items[minion].attack_bonus"},
+      "defense": 9, "pressure_off": 0, "lag": 1, "bulk": 0.5, "pressure": {"data": "survival.json:tiers.minion.pressure"},
+      "why": "a minion is a level under the line it runs with, and easier to hit than a soldier"
+    },
+    "soldier": {
+      "hp": {"data": "enemies.json:items[soldier].hp"}, "armour": {"data": "enemies.json:items[soldier].armour"},
+      "damage": {"data": "enemies.json:items[soldier].damage"}, "attack_bonus": {"data": "enemies.json:items[soldier].attack_bonus"},
+      "defense": 11, "pressure_off": 0, "lag": 0, "bulk": 1, "pressure": {"data": "survival.json:tiers.soldier.pressure"},
+      "why": "the unit every fight is counted in: at the place's level, Defense 11 (a Standard TN less one)"
+    },
+    "elite": {
+      "hp": {"data": "enemies.json:items[elite].hp"}, "armour": {"data": "enemies.json:items[elite].armour"},
+      "damage": {"data": "enemies.json:items[elite].damage"}, "attack_bonus": {"data": "enemies.json:items[elite].attack_bonus"},
+      "defense": 14, "pressure_off": 1, "lag": 0, "bulk": 2.5, "pressure": {"data": "survival.json:tiers.elite.pressure"},
+      "why": "an Elite is harder to hit (14), so it takes more of a squad's turns than its HP says (bulk 2.1 read again for Defense 14); it shakes off one pip of the best shooter's Reach"
+    },
+    "boss": {
+      "hp": {"data": "enemies.json:items[boss].hp"}, "armour": {"data": "enemies.json:items[boss].armour"},
+      "damage": {"data": "enemies.json:items[boss].damage"}, "attack_bonus": {"data": "enemies.json:items[boss].attack_bonus"},
+      "defense": 15, "pressure_off": 2, "lag": 0, "bulk": 9.8, "pressure": {"data": "survival.json:tiers.boss.pressure"},
+      "why": "a Boss is the hardest to hit (15): bulk 7.9 read again for it; it shakes off two pips"
+    }
+  },
+
+  "enemy_weapon": {
+    "weapon": "hellraiser_service_rifle",
+    "why": "the foe's hit the hit tables count: the line's service rifle (weapons.json), in a tier's hands x its damage factor x enemy_damage"
+  },
+
+  "stated_attacker": {
+    "about": "Whom the enemy HP column is written for (the charter: a specialist in the grade one step under the map's best). Its points follow pacing.gates.ceiling_by_level (attribute and alpha at the ceiling); its grade is one under the finds grade of the map where the squad is at that level (pacing.grades_by_map); its ordinary sum is what a sheet carries without a cash-out (perks and passives that touch a plain hit).",
+    "levels": [1, 5, 10, 15, 20],
+    "ordinary_sum_per_level": 0.02,
+    "min_exchanges": "1 + @scale.margins.per",
+    "min_exchanges_why": "a same-level foe survives the hardest plain blow on the sheet even with one Margin on it, so every foe takes a second blow (the maul specialist's Soldier falls to its second blow at every level, the rifle's to its third: --tables hits)",
+    "against": ["soldier", "elite", "boss"],
+    "builds": [
+      {"id": "maul", "weapon": "maul", "why": "the two-handed Strength specialist, the hardest plain blow on the sheet"},
+      {"id": "rifle", "weapon": "hellraiser_service_rifle", "why": "the plain shooter, Agility and Dexterity"}
+    ],
+    "why": "a same-level foe that falls to one plain blow is not a fight (ruling A1 keeps today's counts; check (b) fails under min_exchanges)"
+  },
+
+  "stated_defender": {
+    "about": "Whom the enemy damage column is written for: the frail character in Light armour, and the hardy in Medium, against same-level foes.",
+    "against": ["soldier", "elite", "boss"],
+    "min_exchanges": 2,
+    "min_exchanges_why": "the frail character survives two blows of any same-level foe, a Boss's included: it always has one turn to answer",
+    "builds": [
+      {"id": "frail", "endurance": 1, "pain_threshold": 0, "armour": "Light"},
+      {"id": "hardy", "endurance": 7, "pain_threshold": 0, "armour": "Medium"}
+    ]
+  },
+
+  "levels": {
+    "about": "An enemy's level comes from the map and the row, never from the party (ruling 24). Rows 1 to 7 are early, 9 to 14 late; the gate Elite (row 8), every Elite node and the vault's guard take the top; the Boss at row 15. A tier then stands its lag under the row's level. Everything is capped at the enemy table's top.",
+    "cap": {"data": "enemies.json:levels.max"},
+    "rows": {"early": [1, 7], "gate": 8, "late": [9, 14], "boss": 15},
+    "fight_level_from": ["elite", "boss"],
+    "fight_level_why": "a fight of mixed levels is the level of its highest Elite or Boss if one stands, else its foes' (critic-consistency-2 6.5: the tier names are data, read by the XP and drill sites)"
+  },
+
+  "maps": {
+    "about": "Survival's five maps (the run's stage 1 to 5). Each map adds what it asks of the squad: templates that open there (from_stage, beside today's from_depth) and the tags its foes carry by tier.",
+    "1": {"early": 1, "late": 2, "top": 3, "boss": 3,
+          "templates": ["firing_line", "swarm", "rush", "machines", "elite_pack", "champion", "vault_watch"],
+          "tags": {"elite": ["plated"], "boss": ["plated"]},
+          "kit": "aim, cover and focus fire; the gate Elite and the Boss carry plates, so the Guard door is met once before it is learned",
+          "why": "the first map is two levels and the class: its Boss stands at the level a squad that walked it holds"},
+    "2": {"early": 3, "late": 4, "top": 5, "boss": 5,
+          "templates": ["ambush"],
+          "tags": {"minion": ["skulk"]},
+          "kit": "spotting and flanks: skulking minions, and Soldiers that Suppress",
+          "why": "two levels a map, the Boss at the map's top (2m + 1)"},
+    "3": {"early": 5, "late": 6, "top": 7, "boss": 7,
+          "templates": ["caster_guards", "healer_line", "warden"],
+          "tags": {"caster": ["bonded"]},
+          "kit": "spread out against FIRE, kill the healer first, break or respect the Bonds",
+          "why": "casters arrive with Masterwork's first finds, so a squad meets the words when it can answer them"},
+    "4": {"early": 7, "late": 8, "top": 9, "boss": 9,
+          "templates": ["twin_elites"],
+          "tags": {"soldier": ["plated"], "elite": ["faithful"]},
+          "kit": "armour-piercing and the big cash-out, Slam plates, Rebuke prayers",
+          "why": "the second half of Survival: the line itself carries plates"},
+    "5": {"early": 9, "late": 10, "top": 11, "boss": 11,
+          "templates": [],
+          "tags": {"elite": ["plated_ii"], "caster": ["faithful"]},
+          "kit": "all of it at once, then the final boss",
+          "why": "the final map: its Boss is the final boss, one level over a squad that reaches it at the level map 5's gate gave (pacing.levels.lands)"}
+  },
+
+  "final_boss": {
+    "template": "last_reckoning",
+    "map": 5,
+    "level": "@world.maps.5.boss",
+    "rounds": 12,
+    "pressure_kind": 1.35,
+    "slots": [
+      {"role": "the final boss", "tier": "boss", "caster": "heart_sovereign", "tags": ["plated_ii", "faithful_ii"], "required": true},
+      {"role": "a lieutenant of words", "tier": "elite", "caster": "sigil_warden", "most": 1},
+      {"role": "a lieutenant of plates", "tier": "elite", "caster": "heartfire_elite", "tags": ["plated"], "most": 1},
+      {"role": "its bonded line", "tier": "minion", "tags": ["bonded"], "most": 4}
+    ],
+    "account_reward": null,
+    "account_reward_text": "Kept for when accounts exist (the charter: not in 0.34)",
+    "after": "the boon of three as after every Boss, the Survival cleared panel with the run's score, then retire or walk on into endless",
+    "why": "it asks for everything the five maps taught: plates, words, the line held against FIRE, Bonds that pull a runner back, and a cash-out saved for the turn its plates are down"
+  },
+
+  "endless": {
+    "from_map": "@pacing.clock.first_endless_map",
+    "levels": {"early": "min(cap, m + 4)", "late": "min(cap, m + 5)", "top": "min(cap, m + 6)", "boss": "min(cap, m + 6)"},
+    "levels_why": "one level a map (ruling 24): each endless map is a level for you and a level for them, until foes stop at the table's top",
+    "past_cap": {"from_map": 16, "bulk_per_map": 0.1, "pressure_per_map": 0.1,
+                 "why": "from the first map whose every foe is at the top, each map puts a little more in the room (about one more Soldier in a four-squad's plain fight every two maps); before it, the foes' levels are the growth"},
+    "kits": {
+      "6": {"tags": {"soldier": ["plated_ii"]}, "asks": "plates on the line: armour-piercing, Slam, a cash-out for a plate-less turn"},
+      "7": {"weights": {"caster_guards": 2, "healer_line": 2}, "asks": "kill the words first"},
+      "8": {"tags": {"elite": ["faithful_ii"], "boss": ["faithful_iii"]}, "asks": "Witnessed foes: silence or Rebuke"},
+      "9": {"tags": {"minion": ["skulk_ii"]}, "asks": "spotting; flanks are never safe"},
+      "10": {"tags": {"elite": ["bonded_ii"]}, "asks": "a runner is Tugged back: break the Bond or fight in its reach"},
+      "11": {"opens": "firing_line's Elite slot from row 1", "asks": "every fight has a centre"},
+      "12": {"gate": "twin_elites", "asks": "two plated centres at once"},
+      "13": {"boss_template": "last_reckoning", "asks": "the final boss again, at the map's level"}
+    },
+    "kits_repeat": "after map 13 the list starts again at map 6's, each tag one step stronger, to _iii",
+    "boon_cap": "the boon cap stays (ruling A10, scale.caps.items.boon_cap); a boon past it is worth nothing and its card says so (critic-consistency minor 6)"
+  },
+
+  "budget": {
+    "about": "The fight budget for a squad of 1 to 4, in Soldier-equivalents. Bulk = bulk_per_char_round x n x rounds; pressure = pressure_per_char[n - 1] x n x the kind's pressure_kind; a foe costs its tier's bulk and pressure x lag_factor ** (squad level - foe level), an Elite and a Boss x their share by squad (survival.json share). The party's level is used for this alone.",
+    "lag_factor": 0.72,
+    "lag_factor_why": "a foe one level over takes about two fifths longer to drop and hits about a third harder on the columns: it fills the room like 1.4 foes of your level (x1.39)",
+    "bulk_per_char_round": {"data": "survival.json:bulk_per_char_round"},
+    "pressure_per_char": {"data": "survival.json:pressure_per_char"},
+    "bulk_band": {"data": "survival.json:bulk_band"},
+    "share": {"data": "survival.json:share"},
+    "by_difficulty": {
+      "light": {"node": "a plain fight at row 1 or 2; a campaign's easy", "rounds": {"data": "survival.json:rounds.fight_early"}, "pressure_kind": 0.85,
+                "why": "the first fights of a map are a warm-up"},
+      "standard": {"node": "a plain fight", "rounds": {"data": "survival.json:rounds.fight"}, "pressure_kind": 1.0, "why": "the unit"},
+      "hard": {"node": "an Elite, the gate, the vault's guard (x its guard_factor)", "rounds": {"data": "survival.json:rounds.elite"}, "pressure_kind": 1.15,
+               "why": "an Elite's room hurts more each round, so it is felt in the first exchange, not the sixth"},
+      "deadly": {"node": "a Boss", "rounds": {"data": "survival.json:rounds.boss"}, "pressure_kind": 1.25, "why": "a Boss's room more"},
+      "final": {"node": "the final boss", "rounds": "@world.final_boss.rounds", "pressure_kind": "@world.final_boss.pressure_kind", "why": "the last fight of Survival most"}
+    },
+    "squads": [1, 2, 3, 4],
+    "boss_alone": "Ruling 38: a four-player Boss comes alone when its own cost fills the deadly room (at the four-player share its bulk is inside the room's band); kept as it falls, read by the run simulator after the build. --tables budget prints it.",
+    "map_term": "the map term (survival.json stage.bulk, stage.pressure) counts from endless.past_cap.from_map only"
+  },
+
+  "enemy_doors": {
+    "about": "An enemy's door reads the same ladder as a character's, at its door points and its level: a tag at a Reach step carries the family that step needs (ruling 13). Plates soak on enemy_armour; amounts dealt through a door read enemy_damage; casters' Line length and top stage come from Brain Power and Will Power in their door blocks (the casters' typed max_words and reach_bonus go).",
+    "tags": {
+      "plated":       {"skills": {"durability": 4}},
+      "plated_ii":    {"skills": {"durability": 7, "pain_threshold": 4}},
+      "plated_iii":   {"skills": {"durability": 10, "pain_threshold": 7, "sensory": 4}},
+      "skulk":        {"skills": {"ingenuity": 3}, "today": "enemies.json ai.tag_doors.skulk"},
+      "skulk_ii":     {"skills": {"ingenuity": 7, "analysis": 4}},
+      "skulk_iii":    {"skills": {"ingenuity": 10, "analysis": 7, "vigilant": 4}},
+      "faithful":     {"faith": 1, "devotion": 3, "today": "enemies.json ai.tag_doors.faithful"},
+      "faithful_ii":  {"faith": 3, "devotion": 5},
+      "faithful_iii": {"faith": 5, "devotion": 7},
+      "bonded":       {"skills": {"empathy": 4}, "hands": "an Attuner"},
+      "bonded_ii":    {"skills": {"empathy": 7, "camaraderie": 4}, "hands": "an Attuner"},
+      "bonded_iii":   {"skills": {"empathy": 10, "camaraderie": 7, "implication": 4}, "hands": "an Attuner"}
+    },
+    "casters": {
+      "sigil_novice": {"brain_power": 1}, "sigil_adept": {"brain_power": 4},
+      "sigil_warden": {"brain_power": 7, "rumination": 4}, "sigil_magister": {"brain_power": 7, "rumination": 4},
+      "heart_adept": {"will_power": 4}, "heartfire_elite": {"will_power": 7, "composure": 4, "durability": 5},
+      "heart_sovereign": {"will_power": 10, "composure": 7, "lore_master": 4}
+    },
+    "casters_why": "each caster keeps today's Line length or top stage by reading the ladder at those points; a Soldier's heart fills to three, an Elite's to four, a Boss's to five, as a player's would",
+    "faith_reads": "the highest Devotion and Faith across a row's door blocks (today the last block wins, combat.ts:675)",
+    "mp": "a soul caster's mp (enemies.json soul_casters[].mp) is its level-1 pool, x scale.columns.mp at its level"
+  },
+
+  "campaign": {
+    "tiers": "@pacing.xp.campaign_tiers",
+    "fields": {
+      "tier": "top level: one of pacing.xp.campaign_tiers' ids",
+      "levels": "top level: {start, end}, checked against the tier's row",
+      "zone_level": "each zone: the place's level; every fight in the zone with no level given takes it, then the Narrator's shift",
+      "act_level": "each act, optional: a band {from, to} its zones are checked against"
+    },
+    "order": ["the fight's own level", "the encounter's", "the zone's (plus the shift)", "the campaign's levels.start (plus the shift)", "the party's (plus the shift)"],
+    "narrator_shift": {"data": "enemies.json:levels.narrator_shift"},
+    "fallback": "the party's level, with a validator warning, only for a file with no level anywhere (ruling 28)",
+    "m813": {"tier": "one_shot", "levels": {"start": 1, "end": 3},
+             "zones": {"shield_line": 1, "rear_pad": 2, "outpost": 2, "outpost_1": 3},
+             "why": "the first fight is at your level; the ramp a level up as the guns turn on you; station security the level you should have grown to by the end"}
+  },
+
+  "migration": "@pacing.migration"
+}

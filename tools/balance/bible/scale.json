@@ -1,0 +1,290 @@
+{
+  "_meta": {
+    "file": "scale",
+    "owner": "docs/design/growth/01-scale.md",
+    "status": "PROVISIONAL: every number is chosen for what a player feels and is a first proposal to play; nothing is fitted to a percentage, a line or a ceiling",
+    "rulings": "00-rulings.md A1 to A10, F29 to F31, F33",
+    "shape": "tools/balance/bible/SCHEMA.md, section 'scale.json'",
+    "read_by": "tools/balance/check.py (which also prints every table: python tools/balance/check.py --tables scale)"
+  },
+
+  "factor": {
+    "value": 0.6,
+    "why": "Damage and HP move together, so every count of hits to drop a foe, to drop you and to heal you stays what it is today for a character who spread its points; only the changes this bible names move a count (ruling A1).",
+    "rounding": {
+      "weapon_row": "half up to a whole number, never under 1",
+      "amount_base": "two places (the output formula floors at the end)",
+      "other": "a whole number when the new value is 10 or more, else two places",
+      "no_bumps": "rows of one category may meet on one number; none is bumped to keep a strict order"
+    },
+    "walk": {
+      "about": "How check.py finds every flat number in data/*.json (outside weapons.json, which is walked row by row). These are the key names and the shapes the factor moves; everything else is a share or a count and is not touched.",
+      "flat_keys": ["damage", "hp", "heal", "shield", "armour", "splash_damage", "tick", "tick_damage", "melee_damage", "burn_per_point", "hp_per_step", "self_damage", "soak", "damage_per_flux_over", "heal_enemy", "shield_enemy", "boss_damage", "hp_per_point"],
+      "amount_kinds": ["damage", "heal", "shield"],
+      "hp_ops": ["heal", "shield", "damage", "deal", "shield_grant"],
+      "share_of": "^(event:|self:max_hp|max_hp|res:ledger|damage$)",
+      "skip": [
+        {"file": "enemies.json", "path_has": ".levels"},
+        {"file": "enemies.json", "key": "damage", "path_starts": ".items", "why": "a tier's damage is a factor, moved by world.json tiers.damage_x"},
+        {"file": "skills.json", "path_has": ".per_point.numbers"},
+        {"file": "rules.json", "key": "hp", "path_has": ".gate", "why": "mending.gate.hp becomes the normal bar at level 1 (columns.mend)"}
+      ],
+      "extra_keys": [
+        {"file": "rules.json", "key": "combat.armor.classes[].value", "rule": "factor"},
+        {"file": "rules.json", "key": "combat.attack.cover.half.hp, combat.attack.cover.full.hp", "rule": "factor"},
+        {"file": "soul_modules.json", "key": "damage.base, damage.enemy_base", "rule": "factor"},
+        {"file": "patrons.json", "key": "prayer.intervention.amount.base, .per_devotion; items[mother_ember].intervention per_devotion", "rule": "factor"},
+        {"file": "enemies.json", "key": "items[].damage (a tier's damage factor)", "rule": "@world.tiers_rule.damage_x"},
+        {"file": "rules.json", "key": "mending.gate.hp", "rule": "the normal bar at level 1: columns.mend's bar"}
+      ],
+      "not_touched": "every share (*_pct, *_share, *_mult, hp_frac, min_pct, cap_pct, stim_pct, a per[] of event:*, self:max_hp, max_hp, res:ledger, damage) and every count (plates, chain, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion, AP)"
+    },
+    "self_paid": {
+      "about": "HP a character pays itself becomes a share of its own max HP (costs.rules.share); the share is today's number over the old reference bar, to a whole percent. These rows leave the factor.",
+      "old_reference_bar": {"data": "rules.json:mending.gate.hp"},
+      "rows": [
+        {"file": "soul_modules.json", "path": ".strain.burn_per_point", "share": "@scale.costs.shares.strain_burn"},
+        {"file": "feelings.json", "path": ".price.hp_per_step", "share": "@scale.costs.shares.feeling_step"},
+        {"file": "feelings.json", "path": ".items[shame].pour.self_damage", "share": "@scale.costs.shares.shame_pour"},
+        {"file": "rules.json", "path": ".mana.sigil.flux.overload.damage_per_flux_over", "share": "@scale.costs.shares.flux_overload"},
+        {"file": "rules.json", "path": ".output.amounts.flux_overload.damage.per[0](flux_over)", "share": "@scale.costs.shares.flux_overload"},
+        {"file": "traits.json", "path": ".items[crawler_blooded].amounts.blessing_burn.base", "share": "@scale.costs.shares.crawler_burn"}
+      ]
+    },
+    "restated_elsewhere": [
+      {"file": "traits.json", "path": ".items[oil_in_my_mind].effects[4].derived.hp_per_level", "by": "@gear_perks.traits.oil_in_my_mind"},
+      {"file": "traits.json", "path": ".items[oil_in_my_soul].effects[4].derived.hp_per_level", "by": "@gear_perks.traits.oil_in_my_soul"},
+      {"file": "classes.json", "path": ".move_pool.moves[triage].amounts.heal.base", "by": "@soul.attributes.insight.class"},
+      {"file": "classes.json", "path": ".move_pool.moves[inspire].amounts.love.base", "by": "@soul.attributes.insight.class"},
+      {"file": "classes.json", "path": ".base[fighter].gain[launch].amounts.launch.base", "by": "@body.attributes.strength.class"},
+      {"file": "classes.json", "path": ".base[fighter].gain[launch].amounts.launch.per[0](res:momentum)", "by": "@body.attributes.strength.class"}
+    ],
+    "own_factor": {
+      "about": "Level 1 stays one or two digits (A1). A weapon row whose level-1 plain hit by the test character would show three digits at the factor takes the largest step under the factor that keeps it two digits, one factor for every such row of a category so their order holds. Computed by check.py, never typed.",
+      "step": 0.05,
+      "test": {"level": 1, "attribute": "@scale.digits.l1_specialist.attribute", "skill": "@scale.digits.l1_specialist.skill", "raw_power": 3, "grade": "fine", "below": 100}
+    },
+    "draw_bows": {
+      "about": "A draw bow (base + per x raw_power in weapons.json) moves its draw onto the Stat term: phys.also_scales [dexterity, raw_power]; its row number is set so a normal share (Agility, Dexterity and Raw Power 4) deals today's blow x the factor.",
+      "also_scales": ["dexterity", "raw_power"],
+      "pin_points": 4
+    }
+  },
+
+  "columns": {
+    "about": "Level columns, one formula each, evaluated by check.py for L = 1 to 20. A column is named by its key; an amount reads the column of its kind and its dealer: a damage amount a character's deal (an enemy's enemy_damage), a heal or shield a character's mend (an enemy's own multipliers, as today).",
+    "deal": {
+      "formula": "end ** ((L - 1) / 19)",
+      "end": 40,
+      "reads": "every amount a character deals (every damage profile), max HP, armour values, a plate's soak, objects' HP, cover; rules.json output.level.deal; the scale array is deleted and scaleOf reads deal",
+      "why": "Every level-up makes your hit, your bar and your armour about a fifth bigger (x1.214 a level, x40 at level 20)."
+    },
+    "mend": {
+      "formula": "deal(L) * (@scale.hp.base + @scale.hp.per_end * (@scale.cards.normal_share.attribute - 1) + @scale.hp.per_level * (L - 1)) / (@scale.hp.base + @scale.hp.per_end * (@scale.cards.normal_share.attribute - 1))",
+      "reads": "every heal and shield a character gives (the healing, mend, tend, *_mend and repair profiles); the heal gate counts to the normal bar at level 1 times this column",
+      "why": "A heal that closes a third of a normal friend's bar at level 1 closes a third of it at level 20: the column is the normal bar's growth (Endurance at the normal share; Pain Threshold is a constant share and cancels). Ruling A2 said x65 from the first draft's HP formula; on A5's formula the same reason gives this column."
+    },
+    "mp": {
+      "formula": "1 + per_level * (L - 1)",
+      "per_level": 0.06,
+      "reads": "max MP and every MP price on the mp cost rule",
+      "why": "A pool holds about four full cash-outs at every level (ruling A6), so a Syphon or a design's size is a choice at level 1, 10 and 20."
+    },
+    "enemy_hp": {
+      "formula": "end ** ((L - 1) / 19)",
+      "end": 140,
+      "reads": "enemies.json levels.table[].hp_mult: every enemy's HP and its companions'",
+      "why": "Written for the stated attacker (world.json stated_attacker): a level-20 fight is a little longer than a level-1 fight in plain hits, room for the long cash-outs; check.py (b) reads it back."
+    },
+    "enemy_damage": {
+      "formula": "end ** ((L - 1) / 19)",
+      "end": 54,
+      "reads": "enemies.json levels.table[].damage_mult: every enemy hit (lvlDmg) and every amount an enemy deals; a Figment's HP (figments.json level.hp); a hazard with no dealer at the fight's level",
+      "why": "Written for the stated defender (world.json stated_defender): the frail character survives about four same-level Soldier hits at every level; check.py (b) reads it back."
+    },
+    "enemy_armour": {
+      "formula": "deal(L)",
+      "reads": "enemies.json levels.table[].armour_mult",
+      "why": "A foe's plate keeps its bite against a plain level-matched hit; your cards and your grade cut through it."
+    },
+    "defense_plus": {"formula": "0", "reads": "enemies.json levels.table[].defense_plus", "why": "Ruling A3: the roll is bounded; only the level gap touches it."},
+    "attack_plus": {"formula": "0", "reads": "enemies.json levels.table[].attack_plus", "why": "Ruling A3."}
+  },
+
+  "cards": {
+    "about": "Ruling A4: one rule for all nine. Stat = k x (1 + attr_slope x (Attribute - 1)) x (1 + skill_slope x Skill), the pair of the door that makes the hit (ruling 31: one pair to a hit). k pins a normal share to today's number x the factor at level 1.",
+    "stat_formula": "k * (1 + attr_slope * (A - 1)) * (1 + skill_slope * S)",
+    "attr_slope": 0.10,
+    "skill_slope": 0.05,
+    "combine": "multiply",
+    "normal_share": {"attribute": {"data": "rules.json:output.floor_reference.attribute"}, "skill": {"data": "rules.json:output.floor_reference.skill"}},
+    "one_pair": "A hit reads the attribute and alpha of the door that makes it: a Break reads Perception and Ingenuity, not the gun's pair as well; a plain shot from the same gun reads Agility and Dexterity (ruling 31).",
+    "dexterity_weapons": "Agility's +10% reaches every Dexterity weapon (guns, bows, light blades, thrown) through the weapon row's own pair (weapons.json phys.scales_with x phys.hits_with); no hidden pin.",
+    "dropped": {
+      "elemental": "Expression's and Visualization's elemental line and the elemental profile go (ruling 31): a Line reads Intelligence and Brain Power.",
+      "factors": "rules.json output.factors (melee, thrown, figment) fold into their profiles' k and go, with MELEE_FACTOR (packages/engine/src/combat.ts:46, :1537)."
+    },
+    "profiles": {
+      "about": "Each profile's k = the pin's today value / the bracket at the normal share; check.py computes k from data/rules.json output.profiles and output.factors. pin.today_profile: today's Stat term of that profile at the normal share (k x (1 + attr x (A - 1) + skill x S)); pin.today_k: that profile's k alone; pin.fold: a factor of output.factors folded in; pin.value: a fixed today value. slopes false: the profile reads no attribute and no skill.",
+      "melee": {"pair": "the weapon row's (scales_with x hits_with)", "pin": {"today_profile": "melee", "fold": "melee"}, "column": "deal", "grade": "weapon"},
+      "gun": {"pair": "the weapon row's (Agility x Dexterity)", "pin": {"today_profile": "gun"}, "column": "deal", "grade": "weapon"},
+      "bow": {"pair": "the weapon row's (Agility x Dexterity; a draw bow adds Raw Power on the skill bracket)", "pin": {"today_k": "weapon"}, "column": "deal", "grade": "weapon", "new_row": true},
+      "thrown": {"pair": "the weapon row's (Agility x Dexterity)", "pin": {"today_k": "weapon", "fold": "thrown"}, "column": "deal", "grade": "weapon", "new_row": true},
+      "weapon": {"pair": "none (focus weapons, a beast's bite)", "pin": {"today_k": "weapon"}, "slopes": false, "column": "deal", "grade": "weapon"},
+      "physical": {"pair": "strength x raw_power (Hurl, Grenadier's Arm)", "pin": {"today_profile": "physical"}, "column": "deal", "grade": "none"},
+      "guard": {"pair": "endurance x durability (a plate's soak)", "pin": {"value": 1.0}, "column": "deal", "grade": "armour", "new_row": true},
+      "sigil": {"pair": "intelligence x brain_power", "pin": {"today_profile": "sigil"}, "column": "deal", "grade": "evoker"},
+      "figment": {"pair": "expression x visualization", "pin": {"today_k": "figment", "fold": "figment"}, "column": "deal", "grade": "visualizer"},
+      "figment_hp": {"pair": "expression x visualization", "pin": {"today_profile": "figment_hp"}, "column": "enemy_damage", "grade": "visualizer"},
+      "soul": {"pair": "determination x will_power", "pin": {"today_profile": "soul"}, "column": "deal", "grade": "emanator"},
+      "blessing": {"pair": "virtue x faith", "pin": {"today_profile": "blessing"}, "column": "deal", "grade": "devotion"},
+      "healing": {"pair": "insight x empathy", "pin": {"today_profile": "healing"}, "column": "mend", "grade": "attuner"},
+      "mend": {"pair": "insight x empathy", "pin": {"today_profile": "mend"}, "column": "mend", "grade": "attuner"},
+      "tend": {"pair": "insight x empathy (a damage amount on it reads deal)", "pin": {"today_profile": "tend"}, "column": "mend", "grade": "attuner"},
+      "sigil_mend": {"pair": "intelligence x brain_power", "pin": {"today_profile": "sigil_mend"}, "column": "mend", "grade": "evoker"},
+      "soul_mend": {"pair": "determination x will_power", "pin": {"today_profile": "soul_mend"}, "column": "mend", "grade": "emanator"},
+      "blessing_mend": {"pair": "virtue x faith", "pin": {"today_profile": "blessing_mend"}, "column": "mend", "grade": "devotion"},
+      "repair": {"pair": "expression x proficiency (the beta's own line, ruling 20)", "pin": {"today_profile": "repair"}, "column": "mend", "grade": "none"},
+      "flat": {"pair": "none", "pin": {"value": 1.0}, "slopes": false, "column": "deal", "grade": "none"}
+    }
+  },
+
+  "hp": {
+    "formula": "round((base + per_end * (E - 1) + per_level * (L - 1)) * (1 + pt_pct * PT) * deal(L))",
+    "base": 60,
+    "per_end": 10,
+    "per_level": 1,
+    "pt_pct": 0.06,
+    "data": "attributes.json endurance.derived (base, per_point_above_1, per_level) and skills.json pain_threshold per_point.numbers.hp_pct, in place of the numbers typed at packages/engine/src/character.ts:801 (maxHp) and hpPerLevel",
+    "why": "About 60 for Endurance 1 and 120 for Endurance 7 at level 1: four same-level Soldier hits for the frail, twice that for the hardy (the charter); every Pain Threshold point is +6% of the bar from the first point, the same share at every level (ruling A5)."
+  },
+
+  "mp_pool": {
+    "formula": "(base + det * (DET - 1) + ins * (INS - 1)) * mp(L)",
+    "base": 40,
+    "det": 12,
+    "ins": 8,
+    "data": "attributes.json determination and insight derived, in place of MP_BASE and the slopes typed at packages/engine/src/character.ts:861 (maxMp)",
+    "why": "About four full cash-outs a pool at every level (ruling A6; today's pool holds six or more and is never felt)."
+  },
+
+  "costs": {
+    "about": "One rule per currency. Every cost a door, class, perk or item names says which rule it is on; its number is its owner's (body, mind, soul, gear_perks, world).",
+    "rules": {
+      "clock": "AP: never scales (rules.json combat.ap: 6 a turn, 2 to 9).",
+      "count": "plates, chain, pips, Shadow, glyphs, charge, cores, Flux, Strain, Echo, Devotion: never scale with level; the pool grows by points (Reach), the bill by what you build.",
+      "design": "an Outburst's school, modules, tone and second school are flat MP; a Pump costs pump_share of the Begin, so the bill grows with the design, never the level.",
+      "mp": "every other MP price is its number x mp(L) at the payer's level.",
+      "share": "HP you pay yourself is a share of your own max HP.",
+      "deal": "HP you deal to someone else (a trap, a barrel, a hazard, a tick) is x the factor on the dealer's column."
+    },
+    "pump_share": 0.1,
+    "shares": {
+      "strain_burn": 0.06,
+      "mana_shock": {"data": "soul_modules.json:strain.shock.hp_share"},
+      "feeling_step": 0.06,
+      "shame_pour": 0.06,
+      "flux_overload": 0.07,
+      "crawler_burn": 0.07
+    }
+  },
+
+  "plate": {
+    "formula": "soak * stat('guard', E, DUR) * deal(L) * grade_arm(G)",
+    "soak": {"data": "techniques.json:rules.guard.soak", "x": "@scale.factor.value"},
+    "then": "the Guard door's beta feed (body.json, endurance's ladders.pain_threshold.feed), read at the one site (guardSoak, packages/engine/src/physical/core.ts)",
+    "why": "A plate is what the wall is made of: the Guard door's attribute and alpha make it thicker, as every card makes its door bigger, and its armour's grade hardens it as it hardens the armour value."
+  },
+
+  "armour": {
+    "formula": "value * deal(L) * grade_arm(G)",
+    "classes": {"data": "rules.json:combat.armor.classes", "value_key": "value", "x": "@scale.factor.value"},
+    "cover": {"data": "rules.json:combat.attack.cover", "keys": ["half.hp", "full.hp"], "x": "@scale.factor.value", "column": "deal", "at": "the fight's level"}
+  },
+
+  "grades": {
+    "about": "The one ladder (rules.json rarity.<grade>: dmg, acc, arm), read by weapons, worn armour (and a plate's soak), the four foci (Evoker for Sigils, Emanator for Outbursts, Visualizer for Figments, Attuner for Bonds and Tending: their with_this rows) and prayer (from Devotion standing). Ruling A9.",
+    "order": ["standard", "fine", "masterwork", "relic", "celestial"],
+    "standard": {"dmg": 1.0, "acc": 0, "arm": 1.0, "mod_slots": 0, "properties": 0},
+    "fine": {"dmg": 1.15, "acc": 1, "arm": 1.15, "mod_slots": 0, "properties": 0},
+    "masterwork": {"dmg": 1.3, "acc": 2, "arm": 1.3, "mod_slots": 1, "properties": 0},
+    "relic": {"dmg": 1.5, "acc": 3, "arm": 1.5, "mod_slots": 1, "properties": 1},
+    "celestial": {"dmg": 1.75, "acc": 3, "arm": 1.75, "mod_slots": 1, "properties": 2},
+    "properties_cost_no_boon_room": true,
+    "prayer": {
+      "standing_for": {"fine": 3, "masterwork": 5, "relic": 7, "celestial": 10},
+      "reads": "the highest standing the character has reached with its patron (ruling 33); leaving the patron or a taboo's fall lowers it",
+      "roll": "prayers land: only the dmg multiplier applies"
+    },
+    "where_found": "@pacing.grades_by_map"
+  },
+
+  "margins": {
+    "about": "Ruling A7: Margins replace the critical entirely. Every full step over the Defense or TN is a Margin; a natural 20 lands and adds natural_20 more. Each Margin adds (per + per_perception x Perception) of the plain hit's own damage (the weapon or spell before the cash-out factor; for a Line, its Subject glyph's), added to the cash-out factor, never multiplied by it.",
+    "step": 4,
+    "per": 0.25,
+    "per_perception": 0.01,
+    "natural_20": 2,
+    "reading": "per + per_perception x Perception gives 26% at Perception 1 and 35% at 10 (01's reading of '25% to 35%'; critic-consistency-2 2.6 asks the lead to choose this or per_perception x (Perception - 1)). PROVISIONAL.",
+    "skill_modifier": {"data": "skills.json:modifier_by_points"},
+    "level_gap": {"max_levels": {"data": "enemies.json:levels.gap.max_levels"}, "one_hit_below": {"data": "enemies.json:levels.gap.one_hit_levels_below"}, "best_legal": "min(max_levels, one_hit_below - 1): a foe that many levels under still takes a real hit"},
+    "landed": "A prayer, a heal, a Smite, a Slam's push, a Snap have no roll and no Margins.",
+    "goes": "CRIT_BASE, CRIT_MAX, CRIT_PER_PERCEPTION, CRIT_PER_DEXTERITY and critMult (packages/engine/src/character.ts:853-855), soul_modules.json damage.critical, sigils.json grammar.critical, Perception's +3% and Dexterity's +2% critical damage; every feeder is restated in gear_perks.json margins_feeders."
+  },
+
+  "cash_out": {
+    "about": "Law 2: each unit spent in one cash-out is worth grow times the one before. S(n) is the sum; a door's cash-out formula (body, mind, soul .json) uses it as cash(n).",
+    "grow": 1.2,
+    "sum_formula": "(grow ** n - 1) / (grow - 1)",
+    "data": "rules.json output.cash_out.step"
+  },
+
+  "stack": {
+    "formula": "max(1, floor(B * Lv * Stat * Gr * (C + per * m) * (1 + SUM)) - armour)",
+    "multiplies": ["level column (Lv)", "Stat: the attribute and the skill of one pair", "grade (Gr)", "the cash-out factor (C), with Margins added to it"],
+    "adds": "SUM: everything else on the sheet and the field (perks, class moves and passives, faith, the target's conditions and position, boons, mods, Relic and Celestial properties, special rounds, a technique's own bonus, Weakened and Sharpened, wear); penalties are negative parts of the same sum",
+    "sum_floor": -0.9,
+    "sum_top": null,
+    "scope": {
+      "rule": "A cash-out counts only its own door's sum terms, plus one mark on the foe (ruling 30). A plain hit counts the terms of its weapon's door and the mark.",
+      "foe_mark": {"value": 0.2, "one_at_a_time": true, "why": "A foe carries one mark at a time (Judged, True Name, Case Closed and the rest), worth the same to the whole squad."}
+    },
+    "sum_term_shape": "a dict {\"sum\": {\"door\": <door id or \"any\">, \"value\": <share>, \"group\": <optional exclusive group>}} anywhere in body, mind, soul or gear_perks (SCHEMA.md)"
+  },
+
+  "digits": {
+    "about": "Leon's rule (the curve section 17 item 2; ruling A8, F29): a hit is one or two digits at level 1, four at level 20, five for something super, never six.",
+    "l1_specialist": {"level": 1, "attribute": {"data": "rules.json:character.creation.attributes.cap_at_creation"}, "skill": {"data": "rules.json:character.creation.attributes.cap_at_creation"}, "grades": ["standard", "fine"]},
+    "l20_specialist": {"level": 20, "attribute": 10, "skill": 10, "perception": 10, "grades": ["relic", "celestial"]},
+    "plain_l1": {"min": 1, "max": 99},
+    "plain_l20": {"min": 1000, "max": 9999},
+    "full_cashout_l20": {"min": 10000, "grade": "relic", "with": "nothing but the door's ladder (Reach at 10 with its family, Bite at 9)"},
+    "largest_turn_l20": {"max": 99999, "grade": "celestial", "with": "everything ruling 29 lists: the Bite, the forks (the best of each pair), perks at tier II, class moves, the grade, Margins from the best legal to-hit, the Push, one mark on the foe"}
+  },
+
+  "caps": {
+    "about": "Ruling A10: caps that only held a reward down go; caps a player sees as rules stay.",
+    "items": {
+      "vs_cap": {"today": "VS_CAP 1.0, packages/engine/src/effects/output.ts:129", "ruling": "remove", "keep": "the sum floor (stack.sum_floor)", "why": "one sum with no top (A8); past the cap a seventh bonus was a point not felt"},
+      "crit_max": {"today": "CRIT_MAX 2.0, packages/engine/src/character.ts:853", "ruling": "replace", "by": "@scale.margins", "why": "A7"},
+      "sigil_cap": {"today": "SIGIL_CAP 350, SIGIL_CAP_CRIT 500, packages/engine/src/sigil.ts:329 (dead)", "ruling": "remove", "why": "dead, and 350 means nothing on the new scale"},
+      "heal_cap": {"today": "rules.json:1590 mending.cap_pct 0.5", "ruling": "remove", "keep": "the per-round brake (mending.brake)", "why": "a healer's full cash-out may save a friend outright; the brake already prices a stream"},
+      "reduction_cap": {"today": "rules.json:23 reduction_cap_pct 60", "ruling": "remove", "why": "no reader"},
+      "reference_hp": {"today": "rules.json:1791 output.level.reference_hp", "ruling": "remove", "why": "no reader"},
+      "opener_cap": {"today": "techniques.json:285 max_pct 50", "ruling": "replace", "by": "the Momentum door's Reach (body.json)", "why": "a run is a counter; Reach is bought with points"},
+      "elite_up": {"today": "survival.json:61 stage.elite_up {per 2, max 4}", "ruling": "replace", "by": "@world.maps", "why": "an enemy's level comes from where it lives, never from the party"},
+      "boon_cap": {"today": "survival.json:219 boon_cap", "ruling": "keep", "with": "@gear_perks.boon_room", "why": "a rule a player sees"},
+      "start_boon_worth": {"today": "survival.json start_boon.max_worth 6", "ruling": "keep", "why": "a menu, not a held reward"},
+      "shrine_token_worth": {"today": "survival.json shrine.token_max_worth 8", "ruling": "keep", "why": "a menu, not a held reward"},
+      "variant_worth": {"today": "variants.json worth_cap 20", "ruling": "keep", "why": "it keeps a variant the same weapon"},
+      "finds_ceiling": {"today": "survival.json:147 rewards.ceiling", "ruling": "keep", "with": "@pacing.grades_by_map", "why": "the chase: a higher grade is found by going deeper"},
+      "budget_bands": {"today": "survival.json bulk_band, pressure_band, max_foes", "ruling": "keep", "why": "the generator's shape"},
+      "camp_budget": {"today": "survival.json loadout.budget 300", "ruling": "keep", "why": "credits, not HP"},
+      "devotion_caps": {"today": "patrons.json tag_caps", "ruling": "keep", "with": "@pacing.tracks.devotion", "why": "they pace the faith"},
+      "elemental_taken_cap": {"today": "rules.json:857 combat.elemental_taken_cap 0.8", "ruling": "keep", "why": "nothing is immune by stacking"},
+      "structural": {"today": "the Elite and Boss full-HP guard, the one-hit rule five levels down, the level gap to 5, AP 2 to 9, the attribute and skill caps, Echo 3, the Strain limit, Light armour's cap", "ruling": "keep", "why": "rules a player sees"}
+    }
+  },
+
+  "migration": "@pacing.migration"
+}
