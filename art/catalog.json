@@ -33635,6 +33635,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 21
       }
+    },
+    "weapon-kemizuchi_side_sword--masterwork": {
+      "label": "Kemizuchi Side Sword — Masterwork",
+      "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
+      "sha256": "29b646987279ae97e1797083c3c5b058eb42411843b933f30ee7c524f4d54e2a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-21-retry-continuation",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-kemizuchi_side_sword",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.843273054995004,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 40
+      }
     }
   },
   "survival_art": {

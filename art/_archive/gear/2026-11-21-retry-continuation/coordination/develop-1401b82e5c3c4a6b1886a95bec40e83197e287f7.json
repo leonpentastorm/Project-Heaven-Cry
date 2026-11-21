@@ -1,0 +1,31 @@
+{
+  "repository_full_name": "leonpentastorm/Project-Heaven-Cry",
+  "base": "cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+  "head": "1401b82e5c3c4a6b1886a95bec40e83197e287f7",
+  "status": "ahead",
+  "ahead_by": 1,
+  "behind_by": 0,
+  "total_commits": 1,
+  "too_large": null,
+  "base_commit": {
+    "sha": "cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+    "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+    "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/cc52d3d808da0aebdddf40b7f75070eeb70c50bd"
+  },
+  "merge_base_commit": {
+    "sha": "cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+    "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+    "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/cc52d3d808da0aebdddf40b7f75070eeb70c50bd"
+  },
+  "files": [
+    {
+      "filename": "docs/design/proposals/2026-11-21-the-curve.md",
+      "status": "modified",
+      "additions": 122,
+      "deletions": 97,
+      "changes": 219,
+      "previous_filename": null
+    }
+  ],
+  "art_impact": "Proposed curve design document only; no art prompt, style, source reference or asset changes."
+}

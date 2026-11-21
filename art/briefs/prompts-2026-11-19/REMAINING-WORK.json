@@ -1,7 +1,7 @@
 {
-  "selected": 527,
+  "selected": 528,
   "requested": 871,
-  "remaining": 344,
+  "remaining": 343,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 372,
+      "selected": 373,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 284,
+    "grade": 283,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 80,
+    "service-blocked-or-preceding-grade-dependent": 79,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -533,14 +533,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
       "standard": "weapon-broadback_sabre",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-kemizuchi_side_sword--masterwork",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
-      "standard": "weapon-kemizuchi_side_sword",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2847,7 +2839,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "figment-scrap-sentinel",
+  "last_delivered": "weapon-kemizuchi_side_sword--masterwork",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

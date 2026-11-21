@@ -933,6 +933,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_side_sword--masterwork",
+      "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
+      "sha256": "29b646987279ae97e1797083c3c5b058eb42411843b933f30ee7c524f4d54e2a",
+      "label": "Kemizuchi Side Sword — Masterwork",
+      "family": "weapon-kemizuchi_side_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--masterwork.png",
+        "sha256": "1a95a1bf089c033516be5f1441fe2797be71ab5d0d3fadcb8d879f9b7f0845d7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-kemizuchi_side_sword--masterwork.png",
+        "sha256": "29b646987279ae97e1797083c3c5b058eb42411843b933f30ee7c524f4d54e2a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-kemizuchi_side_sword--masterwork.txt",
+        "sha256": "4da9eee71df7e442513f7c0bf3f36012d30aca7b2e53aa3feda499cc70aa4320"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_side_sword.png",
+          "sha256": "ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_side_sword--fine.png",
+          "sha256": "3aac902c12828a2d413e144d7ee5b8b1ea41a6d46bdb87bb4a1cc26a5a5f9022"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png",
+          "sha256": "77cb7f7c217c2dcfe16d884006634aa99f23fec5f35ce477cd5ae12a23eb02c6"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "4f3d04fb291acaa5857589be653df9ff36d8129c9a456532d2e8e3316b5456f2",
+        "128": "07c18758db89cacb1838aa6766256314ee0d2cd09d0169d303424be1ba3b986a",
+        "64": "8ad9ed59811131283e109309eeb8808dd19eaf51c48990c67b99be6f17abb9c9",
+        "32": "663362fbac731d1cf9d7655335e2683c858134f610f8b49fd15e8c150285c9d2"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-kemizuchi_side_sword",
+      "outline": {
+        "solid_alpha_iou": 0.843273054995004,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 40
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
