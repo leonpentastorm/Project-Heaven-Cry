@@ -1,0 +1,9 @@
+{
+  "id": "weapon-smetanita_thumper",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 93427138-90ee-4276-9fba-abe5133b10a8. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "clock": {
+    "current_time": "2026-11-21 11:49:17 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-smetanita_thumper/001/request.json"
+}
