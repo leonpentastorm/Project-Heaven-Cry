@@ -1,7 +1,7 @@
 {
-  "selected": 543,
+  "selected": 544,
   "requested": 871,
-  "remaining": 328,
+  "remaining": 327,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 388,
+      "selected": 389,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 268,
+    "grade": 267,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 64,
+    "service-blocked-or-preceding-grade-dependent": 63,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -517,14 +517,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-ork_machete--celestial.png",
       "standard": "weapon-ork_machete",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-war_axe--fine",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-war_axe--fine.png",
-      "standard": "weapon-war_axe",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2719,7 +2711,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-war_hammer--celestial",
+  "last_delivered": "weapon-war_axe--fine",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

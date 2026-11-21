@@ -26,6 +26,7 @@
     "weapon-long_draw--celestial",
     "weapon-kemizuchi_side_sword--celestial",
     "weapon-ork_cleaver_glaive--celestial",
+    "weapon-war_axe--fine",
     "weapon-war_pick--fine",
     "weapon-war_pick--masterwork",
     "weapon-war_pick--relic",
@@ -41,7 +42,6 @@
     "weapon-ork_machete--masterwork",
     "weapon-ork_machete--relic",
     "weapon-ork_machete--celestial",
-    "weapon-war_axe--fine",
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
@@ -60,7 +60,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T02:47:44.285388+00:00",
-  "project_distinct_count": 543,
+  "updated_utc": "2026-11-21T02:49:27.346714+00:00",
+  "project_distinct_count": 544,
   "total": 41
 }
