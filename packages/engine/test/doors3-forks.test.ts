@@ -199,7 +199,7 @@ describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read
     return { f, me: f.unit(me.id), a: f.unit(a.id), b: f.unit(b.id), c: f.unit(c.id) };
   }
   it('Stand Fast: every foe within reach Taunted with no save (they passed every save), nobody pushed; Slam\'s Guard price unchanged; no plate back', () => {
-    const r = slam(['fork.guard.stand_fast'], 'pass'), price = SLAM().res.guard;
+    const r = slam(['fork.guard.stand_fast'], 'pass'), price = 4; // rules 1.98 item 8350: Slam spends every plate held (SLAM().res.guard: res:guard, at least its min)
     expect(FK['fork.guard.stand_fast'].numbers.within).toBe(2);
     expect(condOn(r.a, 'taunted')).toBe(true); expect(condOn(r.b, 'taunted')).toBe(true); expect(condOn(r.c, 'taunted')).toBe(false);
     expect([r.a.pos, r.b.pos]).toEqual(['6,5', '7,3']);
@@ -210,7 +210,7 @@ describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read
     expect(condOn(r.b, 'off_balance')).toBe(true); expect([r.a.pos, r.b.pos]).toEqual(['6,5', '7,3']);
   });
   it('Drive: Slam pushes its foe 2 tiles; each foe knocked Off Balance gives a plate back; no Taunt', () => {
-    const r = slam(['fork.guard.drive'], 'fail'), price = SLAM().res.guard;
+    const r = slam(['fork.guard.drive'], 'fail'), price = 4; // rules 1.98 item 8350: Slam spends every plate held (SLAM().res.guard: res:guard, at least its min)
     expect(r.a.pos).toBe('8,5'); expect(condOn(r.a, 'off_balance')).toBe(true); expect(condOn(r.a, 'taunted')).toBe(false);
     expect(r.me.res.guard).toBe(4 - price + 1);
   });

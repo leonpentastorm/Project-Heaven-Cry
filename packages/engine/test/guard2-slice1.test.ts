@@ -174,7 +174,7 @@ describe('item 13, Slam: 2 AP and 2 Guard, every adjacent foe pushed a tile and 
     const f = fight(5, { foes: [{ at: 'D5' }, { at: 'B5' }, { at: 'G5' }] }); guard(f, 3);
     const ap = tank(f).ap, g = DOOR.effects.find((e: any) => e.action === 'guard_slam'), farAt = foes(f)[2].pos;
     f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_slam' } as any);
-    expect(tank(f).ap).toBe(ap - g.ap); expect(guard(f)).toBe(3 - g.res.guard);
+    expect(tank(f).ap).toBe(ap - g.ap); expect(guard(f)).toBe(0); // rules 1.98 item 8350: Slam spends every plate (g.res.guard: all held, at least its min)
     const [a, b, far] = foes(f).map((u) => f.unit(u.id));
     expect(dist(a.pos, tank(f).pos)).toBe(2); expect(dist(b.pos, tank(f).pos)).toBe(2); expect(far.pos).toBe(farAt);
     expect(moves(f, 'slam').length).toBe(1);

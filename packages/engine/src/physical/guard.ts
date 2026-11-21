@@ -22,6 +22,12 @@ import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, guardSoak, addGuard, spendGuard, holds } from './core';
 import { NOT_A_HIT } from './rules';
+import { shieldOf } from './core';
+import { isShieldId } from '../character';
+import { withOffHand } from '../combat';
+import { setGrantBlow } from '../effects/output';
+import { spentOf } from '../effects/cost';
+import { doorOfResource, biteAt, cashSumOf, keepsOf } from '../door';
 
 const G = (): Record<string, number> => PHYS_RULES.guard; // every number checked present at load (physical/core.ts GUARD_NUMBERS)
 const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.brace';
@@ -146,3 +152,34 @@ onHook('injury', (ctx: any, cb) => {
 });
 onHook('on_hit', () => { covered = null; });
 onHook('on_miss', () => { covered = null; });
+
+// ---------- the plates' weight: a grant's no-roll blow (rules 1.98 item 8350, ruling 73; Slam) ----------
+// The grant's `blow` row (skills.json): the units of `weight` the action spent (the cost site's spend, cash:<res>) give the
+// faced foe's blow one plate's soak before Pain Threshold's feed x the door's Bite x S(n) (body.json cashouts.slam:
+// 1 + plate x Bite x S(n) / plain); ring_base x S(n) rounded down more foes beside the user take the plain blow, at most
+// most_foes in all (slam_ring: Cleave's count). The blow is the shield's (in either hand), else the main hand's weapon:
+// its damage with no roll and no Margins (combat.ts attackDamage), against the foe's armour. The beta's point 10 keeps
+// its units after (Pain Threshold 10: a Slam keeps 1 plate; door.ts keepsOf).
+/** One no-roll weapon blow of this unit at a foe, with a flat weight added before armour; the damage dealt. */
+export function plainBlow(cb: Combat, u: Unit, v: Unit, weight: number, label: string): number {
+  const c = charOfUnit(u), sh = shieldOf(u), off = !!sh && !isShieldId(u.weapon);
+  const work = () => attackDamage(cb, u, v, 'melee', c, { preview: true, margins: 0 });
+  const d = off ? withOffHand(u, work, { id: sh!, preview: true }) : work();
+  const dmg = landed(d.total + Math.max(0, weight), d.armour);
+  const r = applyDamage(cb, v, dmg, { ...d.src, shield: true } as any);
+  say(cb, '  ' + label + ': ' + v.name + ' takes ' + r.amount + (weight > 0 ? ' (the plates\' weight ' + Math.round(weight) + ')' : '') + (v.dead ? ' · killed' : v.hp === 0 ? ' · Downed' : '') + '.');
+  if (v.hp === 0 || v.dead) fxFell(cb, v);
+  return r.amount;
+}
+setGrantBlow((cb, u, blow, args, name) => {
+  const res = String(blow.weight || ''), l = doorOfResource(res); if (!l) return;
+  const c = charOfUnit(u), n = typeof blow.units === 'number' ? blow.units : spentOf(u, res), S = cashSumOf(res, n); // units: a fixed count (Retort's one plate), else what the action spent
+  const weight = res === 'guard' ? guardSoak(u, false) * biteAt(c?.skills as any, l) * S : 0;
+  const foes = cb.units.filter((v) => v.side !== u.side && alive(v) && dist(v.pos, u.pos) <= 1);
+  const named = args.targetId ? cb.units.find((v) => v.id === args.targetId && alive(v) && (typeof blow.units === 'number' || dist(v.pos, u.pos) <= 1)) : null; // an op's target (Retort's striker) wherever it stands; a grant's, beside the user
+  const faced = named || foes[0]; if (!faced) return;
+  const most = Math.max(1, Math.min(Number(blow.most_foes) || 1, 1 + Math.floor((Number(blow.ring_base) || 0) * S + 1e-9)));
+  const label = name + ', ' + n + (n === 1 ? ' plate' : ' plates');
+  for (const v of [faced, ...foes.filter((x) => x !== faced)].slice(0, most)) if (alive(v)) plainBlow(cb, u, v, v === faced ? weight : 0, label);
+  const keep = typeof blow.units === 'number' ? 0 : Math.min(n, keepsOf(c?.skills as any, res)); if (keep) addGuard(cb, u, keep);
+});

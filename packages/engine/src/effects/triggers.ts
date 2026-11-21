@@ -45,7 +45,7 @@ import { dropHeldShot, resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WOR
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
 import { pickedFork, forkIds } from '../doorpicks';
-import { deal, mend, amountOf, type AmountSpec } from './output';
+import { deal, mend, amountOf, runBlow, type AmountSpec } from './output';
 import { mendShown } from './core'; // (a cycle core ↔ triggers: used at run time only)
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
@@ -488,6 +488,7 @@ O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shiel
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e, label) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
+  if ((b as any).blow) { if (runBlow(ev.cb, giverOfOp(ev, e), (b as any).blow, { targetId: t.id }, label)) return; } // rules 1.98 item 8351: a no-roll weapon blow with its plates' weight (Retort; physical/guard.ts)
   // a block's `tech` (rules 1.56): a weapon's blow made with that technique (or a technique-like action: Launch), melee or ranged by its group's system
   const sys = b.tech ? techSystemOf(b.tech) : null, type = b.type || (b.tech ? 'weapon' : 'true');
   const src: any = { by: giverOfOp(ev, e), type, dmgType: b.element || (b.tech ? 'physical' : type), shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(b.door ? { door: b.door } : {}), ...(b.tech ? { tech: b.tech, melee: sys === 'melee', ranged: sys === 'ranged' } : {}), ...(e.nonlethal ? { nonlethal: true } : {}) };

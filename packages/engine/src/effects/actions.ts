@@ -25,6 +25,7 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
+import { runBlow } from './output';
 import { price, costOf as siteCost, whyNot, pay, setAp, resWhyNot, resPay, resLeft, resMaxOf, brakeGiven, type Priced } from './cost';
 /** A pool's top as a number an action reads (rules 1.96, S5: res_max:<res>); a pool with no top reads 0. */
 const finiteOr0 = (n: number): number => (Number.isFinite(n) ? n : 0);
@@ -161,6 +162,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
+        if (g.blow && h.cb && h.u) runBlow(h.cb, h.u, g.blow, args, typeof g.label === 'string' ? g.label : info.name); // rules 1.98 item 8350: the grant's no-roll weapon blow, before its own ops (the shove follows the blow)
         if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng, typeof g.label === 'string' ? g.label : undefined); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
         if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}), ...(rng ? { rng } : {}) }); // the action's own rng (rules 1.86: an enemy's door verb runs outside a bound game in a bare fight)
         return null;

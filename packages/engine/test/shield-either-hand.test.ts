@@ -145,8 +145,8 @@ describe('Durability\'s door works with shield main + focus off and with two shi
     expect(guard(f)).toBe(3); // 1 Guard in place of the Momentum
     f.put(f.foe, 'D5'); guard(f, 4);
     f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_slam' } as any);
-    expect(guard(f)).toBe(2); // Slam's 2 Guard
-    f.put(f.foe, 'D5'); f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: f.foe.id } as any); // (rules 1.60: it names a foe)
+    expect(guard(f)).toBe(0); // rules 1.98 item 8350: Slam spends every plate
+    f.put(f.foe, 'D5'); guard(f, 2); f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: f.foe.id } as any); // (rules 1.60: it names a foe)
     expect(guard(f)).toBe(1); // Challenge's 1 Guard
   });
 });

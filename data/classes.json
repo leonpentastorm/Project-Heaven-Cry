@@ -100,18 +100,17 @@
               "name": "Retort",
               "ap_cost": 0,
               "uses": "reaction",
-              "text": "An Answer: a foe hits you in melee while you hold Guard: {=effects.0.and.0.value|abs} Guard and your reaction throw {=amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies)",
-              "short": "Answer: a melee hit on your Guard: throw {=amounts.retort.per.0.value|pct}% of it back",
+              "text": "An Answer: a foe hits you in melee while you hold Guard: {=effects.0.and.0.value|abs} plate and your reaction, no AP, a one-plate Slam on the striker: your shield's blow (with no shield, your weapon's) with no roll, plus {=amounts.retort.blow.units} plate's weight (its armour applies)",
+              "short": "Answer: a melee hit on your Guard: a one-plate Slam on the striker",
               "amounts": {
                 "retort": {
                   "kind": "damage",
                   "base": 0,
-                  "per": [
-                    {
-                      "of": "event:amount",
-                      "value": 0.5
-                    }
-                  ],
+                  "blow": {
+                    "weight": "guard",
+                    "units": 1,
+                    "most_foes": 1
+                  },
                   "type": "physical",
                   "armour": "full",
                   "provisional": true
@@ -168,7 +167,7 @@
               ],
               "status": "active",
               "surface": "combat",
-              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5836): replaces Unbroken; Retort left Durability's door"
+              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5836): replaces Unbroken; Retort left Durability's door. Rules 1.98 item 8351 (ruling 73): a one-plate Slam, its amount block's blow"
             },
             {
               "id": "shrug_it_off",

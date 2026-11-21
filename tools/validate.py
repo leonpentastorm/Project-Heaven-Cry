@@ -1904,7 +1904,7 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp", "element", "door"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp", "element", "door", "blow"}
 # rules 1.56 P1 (spell damage names its door): the door a damage block's blow is made through (magic.ts SPELL_DOORS)
 AMOUNT_DOORS = {"sigil", "outburst", "prayer", "bond"}
 # Classes 3.0 step 5 (rules 1.31): an amount block's element tag (the damage's dmgType: Old Overcast's Smite is lightning)
@@ -1942,6 +1942,9 @@ def check_block(b, where):
         errors.append(f"{where}: heal_kind (the heal's kind for heal_in) is a word, on a heal or shield block only")
     if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):
         errors.append(f"{where}: mults is a map of name to number")
+    # rules 1.98 item 8351: a no-roll weapon blow with a counter's weight (Retort; physical/guard.ts), on a damage block only
+    if "blow" in b and (b.get("kind") != "damage" or not isinstance(b["blow"], dict) or b["blow"].get("weight") != "guard" or not (isinstance(b["blow"].get("units"), int) and b["blow"]["units"] >= 1)):
+        errors.append(f"{where}: blow is {{weight: guard, units: a whole number of at least 1, most_foes}}, on a damage block only")
     for k in set(b) - AMOUNT_KEYS:
         errors.append(f"{where}: unknown field '{k}' in an amount block")
     return True

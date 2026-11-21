@@ -212,10 +212,25 @@
               "op": "grant_action",
               "action": "guard_slam",
               "label": "Slam",
-              "text": "From Durability {=.if.self_skill.durability}. Every foe next to you is pushed {=.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+              "text": "From Durability {=.if.self_skill.durability}: spend all your plates (at least {=.res.guard.min}) for a blow with your shield (with no shield, your weapon) that needs no roll: the foe you face takes the plain blow plus the plates' weight (one plate's soak times your Durability's Bite, for each plate spent), and {=.blow.ring_base} more foe beside you for each plate takes the plain blow (at most {=.blow.most_foes} in all). From Durability {=.effects.0.if.self_skill.durability} every foe next to you is pushed {=.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
               "ap": 2,
               "res": {
-                "guard": 2
+                "guard": {
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "res:guard",
+                      "value": 1
+                    }
+                  ],
+                  "min": 1
+                }
+              },
+              "blow": {
+                "weight": "guard",
+                "ring_base": 1,
+                "most_foes": 8,
+                "source": "rules 1.98 item 8350 (ruling 73; body.json guard door cashouts slam and slam_ring)"
               },
               "uses": "at_will",
               "scope": [
@@ -223,7 +238,7 @@
               ],
               "if": {
                 "self_skill": {
-                  "durability": 5
+                  "durability": 1
                 }
               },
               "why": {
@@ -246,6 +261,9 @@
                   },
                   "say": "{self} slams the plates outward{then}.",
                   "if": {
+                    "self_skill": {
+                      "durability": 5
+                    },
                     "no_door_pick": [
                       "fork.guard.stand_fast"
                     ]
@@ -263,6 +281,9 @@
                     "side": "foe"
                   },
                   "if": {
+                    "self_skill": {
+                      "durability": 5
+                    },
                     "no_door_pick": [
                       "fork.guard.stand_fast",
                       "fork.guard.drive"
@@ -494,7 +515,9 @@
           "feed": 0.005,
           "elemental_taken": 0.06,
           "hp_pct": 0.06,
-          "feed_flat": 0.02
+          "feed_flat": 0.02,
+          "keeps_from": 10,
+          "keeps": 1
         },
         "rows": [
           {
@@ -509,6 +532,10 @@
           {
             "at": "each",
             "text": "+{=per_point.numbers.hp_pct|pct}% max HP"
+          },
+          {
+            "at": "at 10",
+            "text": "At Pain Threshold {=per_point.numbers.keeps_from}: a Slam keeps {=per_point.numbers.keeps} plate"
           }
         ]
       },

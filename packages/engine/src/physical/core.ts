@@ -123,10 +123,12 @@ export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
 // Rules 1.95 (the scale; tools/balance/bible/scale.json plate): the soak x the Guard door's Stat (Endurance x Durability, the
 // guard profile: a normal share soaks the row's number) x the worn armour's grade step x the deal column, then the feed.
 // An enemy (no sheet) soaks the row's number at its level.
-export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any; attrs?: any; wornState?: any }): number => {
+// fed false (rules 1.98 item 8350): the plate's weight a Slam lands, read before Pain Threshold's feed (body.json's
+// plate(L, A, S, G): the beta protects, the alpha and Endurance hit).
+export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any; attrs?: any; wornState?: any }, fed = true): number => {
   const c: any = u.attrs ? u : charOfUnit(u as Unit);
   const st = c ? statOf('guard', { attrs: c.attrs || {}, skills: c.skills || {} }) : 1, arm = c ? bodyArmourArm(c) : 1;
-  return Math.max(1, Math.round(GR().soak * st * arm * scaleOf(u.level) * feedOf(u, 'plate_soak')));
+  return Math.max(1, Math.round(GR().soak * st * arm * scaleOf(u.level) * (fed ? feedOf(u, 'plate_soak') : 1)));
 };
 // What one plate soaks now, as the Guard meter and its hint say it: the door tab's plate_soak number (physical/guard.ts
 // registers it: a Reactive Plate holder's plate soaks the plate's own stat, fed; anyone else guardSoak), so the meter,
