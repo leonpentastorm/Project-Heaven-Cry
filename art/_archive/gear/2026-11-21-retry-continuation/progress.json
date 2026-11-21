@@ -2,9 +2,10 @@
   "branch": "art/2026-11-20-reset-continuation",
   "run": "sole-20261121-0109",
   "status": "drawing",
-  "delivered": [],
+  "delivered": [
+    "weapon-legion_spear--masterwork"
+  ],
   "remaining": [
-    "weapon-legion_spear--masterwork",
     "weapon-legion_spear--relic",
     "weapon-legion_spear--celestial",
     "weapon-short_draw--fine",
@@ -34,5 +35,7 @@
   "baseline_project_pictures": 512,
   "project_total": 871,
   "image_quota": null,
-  "attempts": []
+  "attempts": [],
+  "updated_utc": "2026-11-21T01:26:30.860241+00:00",
+  "project_distinct_count": 513
 }

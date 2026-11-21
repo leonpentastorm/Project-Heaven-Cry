@@ -1,6 +1,6 @@
 # Current21November continuation
 
-512/871 selected, RunningScript complete with unchanged original marks. User expressly authorized renewed attempts on fictional-art briefs. ACTIVE lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md ; run sole-20261121-0109. Read it and liveissue3/allcomments before everyimage. Old no-retry/method-input blocks below are historical and superseded. All oldsources/errors preserved. All artistic/implementation approvals remainfalse. ScrapTurret held. No newquota/reset.
+513/871 selected. Active lane art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md, run sole-20261121-0109. User explicitly authorized renewed fictional-art attempts; all priorart/errors preserved. Read liveissue3+allcomments and remote deliveries before everyrender. RunningScript completed with original marks unchanged. All approvalsfalse;0.30 holdsremain. See PRODUCTION-STATUS.md and REMAINING-WORK.json for the latest exact count.
 
 # Historical20November handoff
 
