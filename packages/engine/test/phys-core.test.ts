@@ -176,12 +176,13 @@ describe('damage follows what the weapon is aimed with', () => {
     const { PROFILES } = await import('../src'); const k = PROFILES.weapon.k, m = PROFILES.melee;
     // rules 1.61 (0.30, G1): a gun's row names the gun profile: its damage reads its Attribute (Agility 5 here), never the skill
     const g = PROFILES.gun;
-    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(1.618708 /* rules 1.95 (the scale): was g.k * (1 + g.attr * 4) */, 9); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
-    expect(weaponMult(c, 'recurve_bow')).toBe(1.88454 /* rules 1.95 (the scale): was k */); // a bow names no profile
-    expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
-    expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
-    expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength and Raw Power'); // design item 12 (lane A4): also_scales removed, the label's intended change
-    expect(weaponMultLabel('sabre', { live: true })).toBe('Agility'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('Agility'); expect(weaponMultLabel('recurve_bow', { live: true })).toBe('');
+    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(g.k * (1 + g.attr * 4) * (1 + g.skill * 6), 9); // rules 1.95 (scale.cards): Agility 5 and Dexterity 6, the brackets multiply expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    expect(weaponMult(c, 'recurve_bow')).toBeCloseTo(PROFILES.bow.k * (1 + PROFILES.bow.attr * 4) * (1 + PROFILES.bow.skill * (6 + 2)), 9); void k; // rules 1.95 (scale.factor.draw_bows): the bow profile, Agility 5, its draw on Dexterity 6 and Raw Power 2
+    expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4) * (1 + m.skill * 6), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
+    expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2) * (1 + m.skill * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2) * (1 + m.skill * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength and Raw Power'); // design item 12 (lane A4): also_scales removed, the label's intended change
+    // rules 1.95: every card has a skill slope, so the live label names the pair's skill too (and the bow its draw)
+    expect(weaponMultLabel('sabre', { live: true })).toBe('Agility and Dexterity'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('Agility and Dexterity'); expect(weaponMultLabel('recurve_bow', { live: true })).toBe('Agility, Dexterity and Raw Power');
   });
 });
 

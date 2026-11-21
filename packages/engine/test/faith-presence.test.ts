@@ -12,6 +12,8 @@ import { mendFactor, gatePct, scaleOf,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { clearPrayerLimits, prayerMendDial } from '../src';
+import { scaled } from './helpers/scale';
+import { MEND_GATE } from '../src/effects/output';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const fx = (cb: Combat, k: string) => (cb.fx || []).filter((e: any) => e.k === k) as any[];
@@ -99,7 +101,7 @@ describe('an intervention ends Witnessed; once a fight, twice from Devotion 7 (i
     expect(h.foe.hp).toBe(hp); expect(fx(h.cb, FAITH_FX.intervention).length).toBe(1);
   });
   it('the data: once, twice from Devotion 7; 20 + 4 × Devotion', () => {
-    expect(INTERVENTION).toEqual({ perFight: 1, perFightHigh: 2, highFrom: 7, base: 20, perDevotion: 4 });
+    expect(INTERVENTION).toEqual({ perFight: 1, perFightHigh: 2, highFrom: 7, base: scaled(20), perDevotion: scaled(4) }); // rules 1.95: 20 and 4 x the factor
   });
 });
 
@@ -107,19 +109,20 @@ describe('an intervention ends Witnessed; once a fight, twice from Devotion 7 (i
 describe('the numbers scale with Devotion, × Blessing power (item 741)', () => {
   it('20 + 4 × Devotion: 32 at 3, 48 at 7, 60 at 10; × power, rounded', () => {
     const h = holy({ devotion: 3 });
-    for (const [dv, n] of [[0, 20], [3, 32], [7, 48], [10, 60]]) { h.c.devotion = dv; setDevotionXp(h.c, devotionThreshold(dv)); expect(interventionAmount(h.c)).toBe(12 /* rules 1.95 (the scale): was n */); expect(interventionAmount(h.c, 1.7)).toBe(20 /* rules 1.95 (the scale): was Math.round(n * 1.7) */); }
+    for (const dv of [0, 3, 7, 10]) { const n = INTERVENTION.base + INTERVENTION.perDevotion * dv; h.c.devotion = dv; setDevotionXp(h.c, devotionThreshold(dv)); expect(interventionAmount(h.c)).toBe(Math.round(n)); expect(interventionAmount(h.c, 1.7)).toBe(Math.round(n * 1.7)); } // rules 1.95: base + per x Devotion from the data (12 + 2.4 x Devotion)
   });
   it('Nerukhan at Devotion 7: the fx carries the amount, (20 + 28) × Blessing power', () => {
     const h = holy({ patron: 'nerukhan', devotion: 7 }); hymnAgain(h); kickDowned(h);
-    expect(fx(h.cb, FAITH_FX.intervention)[0]).toMatchObject({ unit: h.me.id, patron: 'nerukhan', trigger: 'enemy_harms_helpless', target: h.foe.id, amount: Math.round(48 * h.me.blessPower!) });
+    expect(fx(h.cb, FAITH_FX.intervention)[0]).toMatchObject({ unit: h.me.id, patron: 'nerukhan', trigger: 'enemy_harms_helpless', target: h.foe.id, amount: Math.round((INTERVENTION.base + 7 * INTERVENTION.perDevotion) * h.me.blessPower!) });
   });
   it('Mother Ember at Devotion 10 heals 28 × power × the heal Level term (rules 1.36: 7 + 2.1 × Devotion, the intervention\'s gate); Old Overcast at 10 throws 60 × power Storm', () => {
     const m = holy({ patron: 'mother_ember', devotion: 10 }); m.me.conds = { witnessed: 99 } as any; const mx = m.ally.maxHp;
     m.ally.maxHp = 1000; m.ally.hp = 1000; m.bound(() => applyDamage(m.cb, m.ally, 800, { by: m.foe, type: 'physical' } as any));
-    expect(m.ally.hp).toBe(230 /* rules 1.95 (the scale): was 200 + Math.min(500, Math.max(Math.round(28 * m.me.blessPower! * prayerMendDial() * mendFactor(m.me.level)), Math.ceil(gatePct('intervention') * Math.min(1000, 145 * scaleOf(m.me.level)) - 1e-9))) */); void mx; // rules 1.27: a heal reads Faith's heal dial
+    const em = (FAITH_PATRON as any).mother_ember.intervention.effects[0], heal = em.value + em.per_devotion * 10; // rules 1.95: Mother Ember's row (7 and 2.1 x the factor)
+    expect(m.ally.hp).toBe(200 + Math.min(500, Math.max(Math.round(heal * m.me.blessPower! * prayerMendDial() * mendFactor(m.me.level)), Math.ceil(gatePct('intervention') * Math.min(1000, MEND_GATE.hp! * scaleOf(m.me.level)) - 1e-9)))); void mx; // rules 1.27: a heal reads Faith's heal dial
     const o = holy({ patron: 'old_overcast', devotion: 10 }); o.me.conds = { witnessed: 99 } as any; o.foe2.maxHp = o.foe2.hp = 2000;
     o.bound(() => applyDamage(o.cb, o.foe, 9999, { by: o.me, type: 'physical', credit: 'hp' } as any));
-    const e = fx(o.cb, FAITH_FX.intervention)[0]; expect(e).toMatchObject({ trigger: 'you_kill', target: o.foe2.id, amount: Math.round(60 * o.me.blessPower!) });
+    const e = fx(o.cb, FAITH_FX.intervention)[0]; expect(e).toMatchObject({ trigger: 'you_kill', target: o.foe2.id, amount: Math.round((INTERVENTION.base + 10 * INTERVENTION.perDevotion) * o.me.blessPower!) });
     expect(o.foe2.hp).toBeLessThan(2000);
   });
   it('the other triggers carry their own amount: the Toll-Keeper 1, the Matchmaker the share, the Weaver none', () => {

@@ -56,7 +56,8 @@ describe('Visualization: the forks at 8 (rules 1.74 item 6041)', () => {
     expect(tiesOf(f.cb, f.unit(u.id), 'masterwork', 'from'), f.cb.log.slice(-3).join(' | ')).not.toEqual([]);
     expect(tiesOf(f.cb, f.unit(u.id), 'masterwork', 'from').map((t: any) => t.to)).toEqual([a.id]);
     expect(withGame(f.g, () => toHitTerms(f.cb, f.unit(a.id), f.foe, 'weapon')).filter((x) => x.label === 'Masterwork').map((x) => x.v)).toEqual([mw[1].value]);
-    (f.unit(a.id) as any).armour = 0; expect(hit(f, f.unit(a.id), 20, f.foe)).toBe(14 /* rules 1.95 (the scale): was Math.floor(20 * mw[2].value) */);
+    (f.unit(a.id) as any).armour = 0; const dmg = Math.floor(f.unit(a.id).maxHp / 2); // rules 1.95: a blow the Figment's new-scale bar survives
+    expect(hit(f, f.unit(a.id), dmg, f.foe)).toBe(Math.floor(dmg * mw[2].value));
     const ap = f.unit(u.id).ap; f.order(f.unit(u.id), f.unit(a.id), 'figment_redraw', { tile: '4,4' }); expect(f.unit(u.id).ap).toBe(ap);
     f.unit(u.id).mg!.vcharge = 50; f.cb.round++; f.turn(f.unit(u.id));
     f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:fork.figment.masterwork', targetId: b.id } as any);

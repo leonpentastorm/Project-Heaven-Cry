@@ -2,6 +2,7 @@
 // and knowledge pieces, conversion (Open and Jealous), apostasy, Witnessed, tags, vows, interventions, rites, voice lines,
 // story prayers, old saves and the Proving Ground's faith tool. Every rule goes through apply() (the reducer), the same
 // path a player's click takes; interventions on an enemy's blow call the damage chokepoint with the game bound.
+import { PATRONS } from '../src/tactics';
 import { condTurnEnd } from '../src/magic';
 import { describe, expect, it } from 'vitest';
 import {
@@ -112,7 +113,7 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
   it('a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; then the cooldown', () => {
     const h = holy({ devotion: 3, faith: 5 });
     h.pray('hymn', 'saints_shield', { targetId: h.ally.id });
-    expect(h.ally.shield).toBe(32 /* rules 1.95 (the scale): was Math.floor(gated(h.ally, h.me, 'hymn', 34 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) */); expect(h.me.ap).toBe(3); // 34: rules 1.36 (16 in rules 1.22); the shield sink floors
+    expect(h.ally.shield).toBe(32 /* rules 1.95 (the scale): was Math.floor(gated(h.ally, h.me, 'hymn', HV('saints_shield', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))) */); expect(h.me.ap).toBe(3); // 34: rules 1.36 (16 in rules 1.22); the shield sink floors
     expect(condOn(h.me, 'witnessed')).toBe(true); expect(fx(h.cb, FAITH_FX.witnessed).length).toBe(1);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'answered')).toBe(true);
     expect(() => h.pray('hymn', 'saints_shield', { targetId: h.ally.id })).toThrow(/wait/);
@@ -202,9 +203,11 @@ describe('the Whispers (six, and Rebuke since rules 1.21)', () => {
 // Every patron's three Hymns and Miracle (Devotion 10, Faith 9: all by standing).
 type Case = { id: string; kind?: 'hymn' | 'miracle'; setup?: (h: H) => void; args: (h: H) => any; check: (h: H, before: any) => void; seed?: number[] };
 const ALLY = (h: H) => ({ targetId: h.ally.id }), FOE = (h: H) => ({ targetId: h.foe.id });
+// rules 1.95: each prayer's number is its row's (patrons.json, x the factor), read here, never typed
+const HV = (id: string, i: number): number => (PATRONS as any[]).flatMap((p) => [...(p.hymns || p.blessings || []), p.miracle]).find((x) => x?.id === id).effects[i].value;
 const CASES: Record<string, Case[]> = {
   nerukhan: [
-    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(gated(h.ally, h.me, 'hymn', 34 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))) }, // rules 1.36; the shield sink floors
+    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(gated(h.ally, h.me, 'hymn', HV('saints_shield', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))) }, // rules 1.36; the shield sink floors
     { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×1\.3: it harmed the helpless/)).toBe(true); } }, // rules 1.21, item 1263: 30% more (it was double)
     { id: 'absolution', setup: (h) => { h.ally.hp = 40; h.ally.conds = { shaken: 2 } as any; }, args: ALLY, check: (h) => { expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.hp).toBeGreaterThan(40); } },
     { id: 'saints_verdict', kind: 'miracle', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: () => ({}), check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(h.foe2.hp).toBeLessThan(b.foe2Hp); expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true); } },
@@ -222,16 +225,16 @@ const CASES: Record<string, Case[]> = {
     { id: 'encore', kind: 'miracle', setup: (h) => { h.ally.faith = { lastRound: h.cb.round, lastSpent: 2, lastKey: 'combat/move:move' }; }, args: () => ({}), check: (h) => { expect(h.ally.faith?.encore).toMatchObject({ key: 'combat/move:move', ap: 2, started: false }); expect(condOn(h.foe, 'confused') && condOn(h.foe2, 'confused')).toBe(true); } },
   ],
   toll_keeper: [
-    { id: 'coin_for_the_ferry', setup: (h) => { Object.assign(h.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); }, args: ALLY, check: (h) => { expect(h.ally.downed).toBe(false); expect(h.ally.hp).toBe(Math.min(Math.floor(0.5 * h.ally.maxHp), Math.round(11 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))); } }, // rules 1.36: 11 (× 28/13), the cap
+    { id: 'coin_for_the_ferry', setup: (h) => { Object.assign(h.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); }, args: ALLY, check: (h) => { expect(h.ally.downed).toBe(false); expect(h.ally.hp).toBe(Math.min(Math.floor(0.5 * h.ally.maxHp), Math.round(HV('coin_for_the_ferry', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))); } }, // rules 1.36: 11 (× 28/13), the cap
     { id: 'hold_the_gate', args: () => ({}), check: (h) => { h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(1); } },
     { id: 'last_crossing', seed: [1], setup: (h) => { h.foe.hp = 10; }, args: FOE, check: (h) => expect(h.foe.dead).toBe(true) },
     { id: 'turned_back', kind: 'miracle', setup: (h) => { Object.assign(h.ally, { hp: 0, dead: true, downed: false }); }, args: () => ({}), check: (h) => { expect(h.ally.dead).toBe(false); expect(h.ally.hp).toBe(Math.ceil(h.ally.maxHp / 2)); } },
   ],
   mother_ember: [
-    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + gated(h.ally, h.me, 'hymn', Math.round(28 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)), true))) }, // rules 1.36: 28, the gate and the cap
+    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + gated(h.ally, h.me, 'hymn', Math.round(HV('warm_hands', 0) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)), true))) }, // rules 1.36: 28, the gate and the cap
     { id: 'hearthlight', setup: (h) => { h.ally.hp = 30; }, args: (h) => ({ tile: h.ally.pos }), check: (h) => { expect(((h.cb as any).faithZones || []).length).toBe(1); h.f.turn(h.ally); expect(h.ally.hp).toBeGreaterThan(30); } },
     { id: 'feed_the_fire', setup: (h) => { h.ally.ap = 0; h.ally.conds = { weakened: 2 } as any; }, args: ALLY, check: (h) => { expect(h.ally.ap).toBe(2); expect(condOn(h.ally, 'weakened')).toBe(false); } }, // rules 1.21, item 1267: +2 AP
-    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(17 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))); } },
+    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(HV('everyone_home', 2) * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level))); } },
   ],
   old_overcast: [
     { id: 'thunderclap', seed: [1, 1], args: () => ({ tile: '4,5' }), check: (h) => expect(condOn(h.foe, 'shaken') || condOn(h.foe2, 'shaken')).toBe(true) },

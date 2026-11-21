@@ -78,7 +78,7 @@ describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
   it('the Soul multiplier is the soul profile\'s k at every sheet (rules 1.26: an Outburst rolls; skill buys accuracy, level buys damage)', () => {
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const c = s.g.characters[s.chars[0].id];
     c.attrs.determination = 10; c.skills.will_power = 10;
-    expect(soulMult(c)).toBe(2.83176 /* rules 1.95 (the scale): was PROFILES.soul.k */); c.attrs.determination = 1; c.skills.will_power = 0; expect(soulMult(c)).toBe(PROFILES.soul.k);
+    expect(soulMult(c)).toBeCloseTo(PROFILES.soul.k * (1 + PROFILES.soul.attr * 9) * (1 + PROFILES.soul.skill * 10), 9); // rules 1.95 (scale.cards): the card multiplies, Determination 10 and Will Power 10 on the soul profile's slopes c.attrs.determination = 1; c.skills.will_power = 0; expect(soulMult(c)).toBe(PROFILES.soul.k);
   });
 });
 

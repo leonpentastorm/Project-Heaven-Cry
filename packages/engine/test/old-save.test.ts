@@ -424,14 +424,14 @@ describe('rules 1.91 lane A2: a 0.33.0 save with worn armour loads unchanged and
     for (const c of Object.values(g0.characters) as any[]) {
       expect(c.wornState).toBeUndefined();
       const u = g0.combat.units.find((x: any) => x.charId === c.id && !x.companion);
-      expect(u.armour).toBe(20 /* rules 1.95 (the scale): was withGame(g0, () => armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor' as any).add)) */);
+      expect(u.armour).toBe(old.combat.units.find((x: any) => x.charId === c.id && !x.companion).armour); // the armour the 0.33 save wrote, kept on load (rules 1.95 does not rescale a fight in progress: ruling E, step 6)
       expect(withGame(g0, () => heldOfChar(c))).toEqual(u.held ?? withGame(g0, () => heldOfChar(c)));
     }
     expect(g0.characters.c1.worn).toEqual({ head: 'ballistic_helmet', inner_torso: 'trauma_plate' });
   });
   it('the fight plays on; then a worn piece takes a grade, comes off with it, and goes back on with it', () => {
     const r = new Rec(load(NAME), [{ build: 'plain_blade', level: 1 }, { build: 'plain_gun', level: 1 }]), round = r.g.combat.round;
-    r.fight(12);
+    r.fight(40); // rules 1.95: the saved fight keeps its 0.33 numbers while the characters' strikes are on the new scale: it takes longer to win
     expect(r.errors).toEqual([]);
     expect(r.g.combat.round > round || !!r.g.combat.over).toBe(true);
     const g = JSON.parse(JSON.stringify(r.g)), c = g.characters.c1;

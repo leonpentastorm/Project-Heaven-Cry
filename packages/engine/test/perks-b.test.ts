@@ -1,6 +1,8 @@
 // Lane B: movement, stealth and vision perks and traits (src/perks/b.ts). Each item is shown working in play: through
 // the reducer (apply) where an action exists, else with the game bound and the engine's own functions (moveUnit,
 // resolveAttack, spotHidden…), the same calls the reducer makes.
+import { scaled } from './helpers/scale';
+import { amountBlock } from '../src/effects/amounts';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
@@ -289,13 +291,16 @@ describe('Last Charge', () => {
     expect(f.turn(f.pc).shield || 0).toBe(0);
   });
   it('rules 1.93 item 8105: by the value of the class row, not its number: classes 1 to 5 give 15 a class, the breacher plate (class 6, 18) 54', () => {
-    for (let n = 1; n <= 5; n++) expect(3 * ARMOUR_CLASSES[n].value).toBe(9 /* rules 1.95 (the scale): was 15 * n */);
+    // rules 1.95: the per-armour-value number and each class's value are both x the factor (3 and 5 a class before)
+    const per = (amountBlock('perk:last_charge', 'shield_by_armour').per as any[]).find((p) => p.of === 'armour_value').value;
+    expect(per).toBe(scaled(3));
+    for (let n = 1; n <= 5; n++) expect(per * ARMOUR_CLASSES[n].value).toBeCloseTo(scaled(3) * scaled(5 * n), 9);
     const f = fightWith([{ perks: { last_charge: 'ultimate' }, weapon: 'combat_knife' }], [{ at: 'H8' }]);
     const c = f.g.characters[f.pc.charId!]; c.armourClass = ARMOUR_CLASSES.findIndex((r: any) => r.name === 'Breacher plate');
-    expect(ARMOUR_CLASSES[c.armourClass].value).toBe(18);
+    expect(ARMOUR_CLASSES[c.armourClass].value).toBe(scaled(18));
     const pc = at(f.pc, '0,7'); const u = f.turn(pc); u.movement = 3; const before = f.pc.shield || 0;
     f.act({ type: 'combat/move', unitId: u.id, to: '6,7' });
-    expect((f.pc.shield || 0) - before).toBe(Math.round(54 * (f.pc.healRecv || 1)));
+    expect((f.pc.shield || 0) - before).toBe(Math.floor(per * ARMOUR_CLASSES[c.armourClass].value * (f.pc.healRecv || 1))); // the formula floors at the end
   });
 });
 

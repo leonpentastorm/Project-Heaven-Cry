@@ -153,7 +153,8 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     const pw = h.me.blessPower!, allyHp = h.ally().hp;
     h.pray('the_sky_answers', { tile: '5,5' });
     for (const i of [0, 1]) { const v = h.foe(i); expect(v.hp).toBeLessThan(2000); expect(v.conds!.stunned).toBe(1); expect(condOn(v, 'shaken')).toBe(true); }
-    expect(2000 - h.foe(0).hp).toBeGreaterThanOrEqual(Math.round(150 * pw) - 20); // Storm: elemental, after any resistance
+    const storm = -(FAITH_PATRON as any).old_overcast.miracle.effects[0].value; // rules 1.95: the row's 150 x the factor
+    expect(2000 - h.foe(0).hp).toBeGreaterThanOrEqual(Math.round(storm * pw) - 20); // Storm: elemental, after any resistance
     expect(h.foe(2).hp).toBe(2000); expect(h.ally().hp).toBe(allyHp); expect(condOn(h.ally(), 'stunned')).toBe(false);
     expect(fx(h.cb, FAITH_FX.miracle)[0].area.length).toBe(25);
   });

@@ -1706,7 +1706,7 @@
       "miracle": {
         "id": "the_sky_answers",
         "name": "The Sky Answers",
-        "text": "Pick a 5 × 5 area you can see. Every enemy in it takes 150 lightning damage × your Blessing power, is Stunned for {=effects.1.rounds} round and is Shaken. Your own side is never hit.",
+        "text": "Pick a 5 × 5 area you can see. Every enemy in it takes {=effects.0.value|abs} lightning damage × your Blessing power, is Stunned for {=effects.1.rounds} round and is Shaken. Your own side is never hit.",
         "target": "tile",
         "effects": [
           {

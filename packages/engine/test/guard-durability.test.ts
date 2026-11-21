@@ -5,6 +5,7 @@
 //   4. Pressure comes off Guard first
 //   5. Interpose from Durability 3
 //   6. lost when the fight ends; a hit on a unit holding Guard costs no Momentum
+import { scaled } from './helpers/scale';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, resolveAttack, previewAttack, applyDamage, classResources, guardPool, resourcesFor, viewFor, weaponActions, CLASS, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
@@ -32,7 +33,7 @@ const hit = (f: F, tgt: Unit = f.pc, mode: 'melee' | 'shot' = 'shot') => { rig({
 
 describe('1. the pool', () => {
   it('the numbers are in the data, provisional', () => {
-    expect(G).toMatchObject({ max: 4, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: 6, keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
+    expect(G).toMatchObject({ max: 4, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: scaled(6), keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
   });
   it('no Durability, no pool; the pool is the Durability points, rules.guard.max at most', () => {
     expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(2); expect(guardPool({ skills: { durability: 9 } })).toBe(G.max);
@@ -50,7 +51,7 @@ describe('1. the pool', () => {
     const f = fight([{ dur: 3 }]); guard(f, f.pc, 2);
     const u = viewFor(f.g, 'host').combat!.units.find((x) => x.id === f.pc.id)!;
     expect(u.resMax!.guard).toBe(3); expect(u.res!.guard).toBe(2);
-    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: 3, gain: 3, soak: G.soak, shield: false });
+    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: 3, gain: 3, soak: f.bound(() => phys.guardSoak(f.unit(f.pc.id))), shield: false }); // rules 1.95: the plate's soak on the unit's sheet (scale.plate)
     expect(f.bound(() => phys.physView(f.cb, f.foe, 'pc')).guard).toBeNull();
   });
 });
@@ -108,13 +109,15 @@ describe('3. Guard soaks', () => {
   const fight0 = fight; const hit0 = hit;
   it('each point takes the soak off the hit, as many as it needs but the last, after armour', () => {
     const fight = (s: Parameters<typeof fight0>[0]) => fight0(s, { foeWeapon: 'maul' }), hit = (f: F, t?: Unit) => hit0(f, t, 'melee');
-    const base = hit(fight([{ dur: 0 }])); expect(base).toBeGreaterThan(G.soak); // the same blow with no Guard
-    const need = Math.ceil(base / G.soak);
+    // rules 1.95 (scale.plate): a plate soaks guardSoak (the soak x the guard Stat x the worn grade x deal x the feed)
+    const per = (() => { const z = fight([{ dur: 5 }]); return z.bound(() => phys.guardSoak(z.unit(z.pc.id))); })();
+    const base = hit(fight([{ dur: 0 }])); expect(base).toBeGreaterThan(per); // the same blow with no Guard
+    const need = Math.ceil(base / per);
     const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; guard(f, f.pc, need + 2);
-    expect(hit(f)).toBe(0); expect(guard(f)).toBe(3); // as many points as the hit needs, no more
+    expect(hit(f)).toBe(0); expect(guard(f)).toBe((need + 2) - need); // as many points as the hit needs, no more: the two over it stay
     const two = fight([{ dur: 5 }]); guard(two, two.pc, 2);
-    expect(hit(two)).toBe(23 /* rules 1.95 (the scale): was base - G.soak */); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
-    expect(two.cb.log.some((l) => l.includes('Guard takes ' + G.soak + ' of it (1 Guard, 1 left)'))).toBe(true);
+    expect(hit(two)).toBe(base - per); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
+    expect(two.cb.log.some((l) => l.includes('Guard takes ' + per + ' of it (1 Guard, 1 left)'))).toBe(true);
     const one = fight([{ dur: 5 }]); guard(one, one.pc, 1);
     expect(hit(one)).toBe(base); expect(guard(one)).toBe(1); expect(one.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
     // armour first: a hit armour stops down to 1 costs one point, not the points the raw damage would
@@ -123,8 +126,9 @@ describe('3. Guard soaks', () => {
   });
   it('the last point is spent too when the hit would otherwise take the unit down', () => {
     const fight = (s: Parameters<typeof fight0>[0]) => fight0(s, { foeWeapon: 'maul' }), hit = (f: F, t?: Unit) => hit0(f, t, 'melee');
-    const base = hit(fight([{ dur: 0 }])), need = Math.ceil(base / G.soak);
-    const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; const hp0 = base - (need - 1) * G.soak; guard(f, f.pc, need); f.pc.hp = hp0; // need − 1 points would let what is left through: down
+    const per = (() => { const z = fight([{ dur: 5 }]); return z.bound(() => phys.guardSoak(z.unit(z.pc.id))); })(); // rules 1.95 (scale.plate)
+    const base = hit(fight([{ dur: 0 }])), need = Math.ceil(base / per);
+    const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; const hp0 = base - (need - 1) * per; guard(f, f.pc, need); f.pc.hp = hp0; // need − 1 points would let what is left through: down
     expect(hit(f)).toBe(0); expect(guard(f)).toBe(0); expect(f.pc.hp).toBe(hp0);
     const g = fight([{ dur: 5 }]); g.pc.resMax!.guard = 9; guard(g, g.pc, need); g.pc.hp = 50; // it survives what gets through: 1 kept
     expect(hit(g)).toBeGreaterThan(0); expect(guard(g)).toBe(1); expect(g.pc.hp).toBeGreaterThan(0);

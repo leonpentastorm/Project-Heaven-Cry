@@ -54,6 +54,7 @@ const at = (f: F) => f.g.combat!.log.length;
 /** On the caster's turn, Strain at the limit + (OVER − 1) and a big HP bar; then Begin and hold: the Begin's +1 shorts. */
 function shortNow(f: F, hp = 1000) {
   const u = f.toMine(); u.hp = u.maxHp = hp; u.mg!.strain = u.mg!.strainLimit + OVER - 1;
+  u.mg!.mp = u.mg!.mpMax = 999; // rules 1.95: the pool is on the new scale and the prices are restated in step 2d: the test's heart holds what its Begins cost (MP is not what it proves)
   f.act({ type: 'combat/outburst', unitId: u.id, design: f.char().outbursts![0].id, hold: true });
   return f.u;
 }
