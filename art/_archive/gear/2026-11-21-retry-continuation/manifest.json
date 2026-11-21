@@ -732,6 +732,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-dock_cutter--masterwork",
+      "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
+      "sha256": "764a2d1550f462917131044b47ca9df87b4505f62195dbf1e439294190c3e127",
+      "label": "Dock Cutter — Masterwork",
+      "family": "weapon-dock_cutter",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--masterwork.png",
+        "sha256": "fa8e2b5a609ee1dcf217a3142f0f3688d7bcd3f47a51696df38c18954f77de44"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--masterwork.png",
+        "sha256": "764a2d1550f462917131044b47ca9df87b4505f62195dbf1e439294190c3e127"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--masterwork.txt",
+        "sha256": "b869dc55a70c9c19929c0bf48c908101dc437175b44cdaeeaf2f7dbd500fa71b"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-dock_cutter.png",
+          "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+        },
+        {
+          "path": "art/icons/gear/weapon-dock_cutter--fine.png",
+          "sha256": "0061edd8e5b2297235b593eaaf92d94e91e49566b3a0a8447172afe29878ec79"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+          "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "4d0d326d22b276ed996b38bd2e2fa98f8dee968a0bcc8b07510642f9c6285a5c",
+        "128": "06ad2f7f094a94a2ba08be205c46ba2e7cd1c88f4ef9ab63870465d507875c31",
+        "64": "ae5653f88c36fad00613c95872fdf11600d41b9f364e4ab210dcbe9641dff5ba",
+        "32": "8c781c45d96c17643bb1b7f21ead8c944f663eb9079a4dbe0616c8c0690eb107"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-dock_cutter",
+      "outline": {
+        "solid_alpha_iou": 0.982258781680747,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

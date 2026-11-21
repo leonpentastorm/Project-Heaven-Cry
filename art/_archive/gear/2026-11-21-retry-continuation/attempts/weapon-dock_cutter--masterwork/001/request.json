@@ -1,0 +1,54 @@
+{
+  "head": "568052e7b665c67816e89720be6424eb0bba4a23",
+  "job": {
+    "id": "weapon-dock_cutter--masterwork",
+    "standard_id": "weapon-dock_cutter",
+    "grade": "masterwork",
+    "label": "Dock Cutter — Masterwork",
+    "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-dock_cutter.png",
+      "art/icons/gear/weapon-dock_cutter--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-dock_cutter",
+    "family_references": [
+      "art/icons/gear/weapon-dock_cutter.png",
+      "art/icons/gear/weapon-dock_cutter--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same upswept single-edged steel cutter, angular clipped point and existing three shallow spine nicks, long recessed blade flat, curved brass-edged D-shaped enclosed hand guard, dark spirally wrapped grip and rounded pointed-end pommel. Preserve every spine nick and the negative space of the hand guard.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass, matching the existing brass guard edge. Keep the exact existing spine nicks as geometry, while removing surface scratches only.",
+    "keep_line": "the same upswept single-edged steel cutter, angular clipped point and existing three shallow spine nicks, long recessed blade flat, curved brass-edged D-shaped enclosed hand guard, dark spirally wrapped grip and rounded pointed-end pommel. Preserve every spine nick and the negative space of the hand guard.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-21-retry-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png"
+    ],
+    "depends_on": "weapon-dock_cutter--fine",
+    "prior_generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json"
+    },
+    "prior_lane": "art/_archive/gear/2026-11-20-reset-continuation",
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "74699e008b4b8157afa5882f95329f5dcdd32a8d40a9ba5c6af0854cba836ec4",
+    "run": "sole-20261121-0109",
+    "standard_sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-dock_cutter.png": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb",
+    "art/icons/gear/weapon-dock_cutter--fine.png": "0061edd8e5b2297235b593eaaf92d94e91e49566b3a0a8447172afe29878ec79",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "clock": {
+    "current_time": "2026-11-21 01:53:06 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055454870,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "287a08b7c715b93b6b494a8ce3b92e214adf7317"
+}

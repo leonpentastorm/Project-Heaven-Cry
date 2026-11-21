@@ -1,7 +1,7 @@
 {
-  "selected": 523,
+  "selected": 524,
   "requested": 871,
-  "remaining": 348,
+  "remaining": 347,
   "counts": {
     "icons_tiles": {
       "selected": 87,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 369,
+      "selected": 370,
       "total": 656
     },
     "uniques": {
@@ -26,13 +26,13 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 287,
+    "grade": 286,
     "unique": 9,
     "held-portrait": 1
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 83,
+    "service-blocked-or-preceding-grade-dependent": 82,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
     "0.30-HOLD": 1
@@ -519,14 +519,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-ork_machete--celestial.png",
       "standard": "weapon-ork_machete",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-dock_cutter--masterwork",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
-      "standard": "weapon-dock_cutter",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2881,6 +2873,6 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-short_draw--celestial",
+  "last_delivered": "weapon-dock_cutter--masterwork",
   "current_run": "sole-20261121-0109"
 }
