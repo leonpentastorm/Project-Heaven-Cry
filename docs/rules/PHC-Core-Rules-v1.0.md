@@ -15037,3 +15037,41 @@ played. As played after this revision:
       (step 3), the Bulwark's Hold Their Eyes and Reforge in their new form, the rank levels 3, 5 and 15, the solo
       forms of Interpose, Cover Them and Stand Behind Me, and the Guard keeps tags. Until each is built it keeps its
       0.33 rule.
+
+### Rules 1.99 (the Shadow door), 0.34: one lane of the total rebalance: the meter on Ingenuity's ladder, the Break on the cash-out (21 Nov 2026)
+
+One door, one lane (ruling M): Perception's door, Shadow, through Ingenuity, after rules 1.98. Every number is the
+bible's (`tools/balance/bible/mind.json` perception door; rulings 13, 20, 31, 41, 62, 63 and 64) and lives in
+`data/skills.json` (Ingenuity's `door_ladder`, the Break, Analysis and Vigilant rows), `data/rules.json shadow` and
+`data/conditions.json`. Everything is PROVISIONAL until played. As played after this revision:
+
+8360. **The meter tops at Ingenuity's Reach** (rules 1.96 item 8324's ladder): 2 Shadow from Ingenuity 1, 3 from 4,
+      4 from 7 once Analysis is 4, 5 from 10 once Analysis is 7 and Vigilant 4 (ruling 13: a step whose family is
+      short is not held; the step below stands). The Operative holds the same Reach as anyone: its +1 is retired
+      (ruling C16); it keeps its start of a fight with Shadow. Supersedes rules 1.32's cap by points (1 / 2 / 3 at
+      Ingenuity 1 / 5 / 7) and its "holds one more" lines at 5 and 7, and rules 1.32's Operative +1.
+8361. **The Break is the door's cash-out.** One weapon attack from Hidden that spends every Shadow you hold (at least
+      1): its cash-out term is 1 + Ingenuity's Bite x S(n) at the door's own step (rules 1.96 item 8326), for the n
+      Shadow it spends, so a part-filled meter pays for what it holds and no more; the hit's Margins add to that term.
+      A fresh ambush is the attack's own multiplier (x1.5) on the whole blow (ruling 64: the full Break from a fresh
+      ambush at Ingenuity 10 is about nine shots). **Analysis 10: a Break keeps 1 Shadow** (the beta's point 10, as
+      Guts, Athletics and Pain Threshold 10), and pays for the Shadow it spends. Supersedes rules 1.32's one term
+      (1 + 0.6 a Shadow + the ambush + 0.15 against a Marked foe) that replaced the ambush.
+8362. **Every gain counts under the turn's two** (ruling 62): First Shade, Tradecraft's unseen Analyze and Light
+      Fingers' unseen Lift are now among the door's gains a turn (at most 2 from every source), each still once a
+      fight or once a turn. A full meter of 5 takes about three turns unseen without attacking. Supersedes rules
+      1.32's First Shade outside the cap. (In data: an item op's `limit` may be a list of limits; every one must have
+      room, and each is taken.)
+8363. **The Break's Marked term goes.** Marked is the squad's one mark (ruling 41): the squad that Marked a foe gets
+      +1 to hit it (kept, ruling 52) and its hits on it deal x1.2, for every attack, the Break among them (the mark
+      is applied as the hit lands, after armour). The Tagged +1 to hit from Hidden is kept.
+8364. **Analysis counts from its first point** (ruling 20): each point is +1 to the roll a foe needs to find you
+      while Hidden, on top of the feed (5 x 1% x Ingenuity x Analysis, rounded). Supersedes rules 1.60 item 4607's
+      feed alone.
+8365. **Vigilant 6: the eye in the dark.** With the Shadow door open, a Spot you make while Hidden gives you 1 Shadow
+      (one of the turn's gains).
+8366. **Called Shot costs 2 AP** (the Operative's rank III; was 3): a shot and an injury for one shot's AP.
+8367. **Not in this revision** (for the lead, listed in `docs/design/handoffs/0.34-REBALANCE-DOOR-shadow.md`): the Push
+      Last Shade (its AP price and the length of its Traced are not in the bible), Dead Drop, Spotter as the Spotted
+      mark, Lend the Dark's, Spot's and Dead Drop's solo forms, the keeps tags, Shadow's Marks and gifts (step 3),
+      the Operative's Toxin restated, and the rank levels 3, 5 and 15. Until each is built it keeps its 0.33 rule.
