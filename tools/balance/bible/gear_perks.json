@@ -30,7 +30,7 @@
   "value": 3,
   "today": {"data": "survival.json:loadout.focus_with.evoker[0].qty"},
   "data_form": "survival.json loadout.focus_with: 3 standard cores with the Evoker and with the Visualizer (today 4 each)",
-  "why": "ruling 49 (check.py (h)): with four cores a level-20 Sigilist paid a Line of six every turn of a fight and a Rigger a full board, so the core was no choice; three keep a full fight of pressing out of reach at 20 and still pay for several full cash-outs at level 1 (the supply pack gives the burnt cores back after each fight, survival.json ammo_pack.supply). PROVISIONAL, for the lead"
+  "why": "ruling 49 (check.py (h)): with four cores a level-20 Sigilist paid a Line of six every turn of a fight and a Rigger a full board, so the core was no choice; three keep a full fight of pressing out of reach at 20 and still pay for several full cash-outs at level 1 (the supply pack gives the burnt cores back after each fight, survival.json ammo_pack.supply). Ruling 52 keeps it because check (h) needs it: at four a level-20 Rigger carries 98 charge against a pressed fight of 90, so the charge is no choice. PROVISIONAL, for the lead"
  },
  "grade_rows": {
   "about": "one copy of the grade: each rules.json rarity row (:1605-1659) gains effects (roll_mod to_hit with_this = acc; damage_mult dealing with_this = dmg; mend_mult heal and shield with_this = dmg), carried by the instance through the one carried-modifier list (effects/collect.ts:220). combat.ts:580, :585 and :1536 stop reading acc and dmg (the second copy goes); armOf (character.ts:224) keeps arm",

@@ -57,7 +57,9 @@
           {"by": "the fight ends", "units": "all"}
         ],
         "plain": {"name": "a long rifle shot from the dark", "weapon": "long_rifle", "profile": "gun", "rolls": true,
-                  "pair": "perception x ingenuity (ruling 31: the Break reads its door's pair, not the gun's Agility and Dexterity)"},
+                  "pair": "perception x ingenuity (ruling 31: the Break reads its door's pair, not the gun's Agility and Dexterity)",
+                  "held": ["gun", "melee", "bow", "thrown"],
+                  "held_why": "ruling 54: the Break is one weapon attack from Hidden with whatever is in the hand; check (a) reports its largest hit with the heaviest legal weapon of these profiles"},
         "cashouts": {
           "break": {
             "name": "the Break",
@@ -266,10 +268,27 @@
              "needs_ally": true, "reach_tiles": 4,
              "solo": "alone, Dead Drop hides 1 Shadow in your kit: the fight's end and being Downed do not take it, and it is yours at the next fight's start (at most 1; the ally is you, ruling 32)",
              "worth": "once a turn, a friend within 4 tiles who holds the Shadow door gains 1 Shadow, never past its own Reach: your spare dark becomes the squad's ambush"},
-            {"id": "mark", "name": "Mark", "ap": 1, "cost": {"rule": "clock"},
-             "mark": {"name": "Marked", "kind": "damage", "value": "@scale.stack.squad.mark.damage", "today": {"data": "conditions.json:items[marked].effects[0].value"}},
-             "retires": "today's +1 to hit of Marked (conditions.json marked attack_mod): a mark is +20% or +2, one of the two (ruling 41); the +20% is the bigger, so the Operative loses nothing it had",
-             "worth": "the squad's one mark on the foe (+20% to everyone's hit, ruling 41); the foe cannot Hide: worth its AP in the round it lands"},
+            {
+             "id": "mark",
+             "name": "Mark",
+             "ap": 1,
+             "cost": {
+              "rule": "clock"
+             },
+             "mark": {
+              "name": "Marked",
+              "kind": "both",
+              "value": "@scale.stack.squad.mark.damage",
+              "today": {
+               "data": "conditions.json:items[marked].effects[0].value"
+              },
+              "to_hit": {
+               "data": "conditions.json:items[marked].effects[0].value"
+              }
+             },
+             "worth": "the squad's one mark on the foe (+20% to everyone's hit, ruling 41); the foe cannot Hide: worth its AP in the round it lands",
+             "keeps": "today's +1 to hit of Marked stays with its +20% (ruling 52: the trim is withdrawn)"
+            },
             {"id": "vanish", "name": "Vanish", "ap": 0, "cost": {"rule": "clock"}, "worth": "once a turn, Hide costs no AP (kept): a turn of building saves an AP"}
           ],
           "5": [
@@ -431,17 +450,37 @@
         ],
         "forks": {
           "4": [
-            {"id": "fork.sigil.overflux", "name": "Overflux", "today": "forks.json fork.sigil.overflux: damage_mult 1.25 at the Flux limit",
-             "text": "your Lines' sum +5% while your Flux is at its limit", "sum": {"door": "sigils", "value": 0.05, "group": "fork:sigils:4"}},
+            {
+             "id": "fork.sigil.overflux",
+             "name": "Overflux",
+             "today": "forks.json fork.sigil.overflux: damage_mult 1.25 at the Flux limit",
+             "text": "your Lines' sum +10% while your Flux is at its limit",
+             "sum": {
+              "door": "sigils",
+              "value": 0.1,
+              "group": "fork:sigils:4"
+             },
+             "why": "ruling 52: a fork is at least +10% or a new thing to do; the trim to +5% (set to keep a hit under a line) is withdrawn and the designed +10% restored"
+            },
             {"id": "fork.sigil.clean_vent", "name": "Clean Vent", "text": "once a turn your Vent scorches every foe next to you and pushes them a tile (forks.json, kept; its scorch on the factor)", "group": "fork:sigils:4"}
           ],
           "8": [
-            {"id": "fork.sigil.written_in_advance", "name": "Written in Advance", "today": "forks.json fork.sigil.written_in_advance: damage_mult 1.2",
-             "text": "your first Evoke after a turn you ended with glyphs drawn: the Line's sum +5%", "sum": {"door": "sigils", "value": 0.05, "group": "fork:sigils:8"}},
+            {
+             "id": "fork.sigil.written_in_advance",
+             "name": "Written in Advance",
+             "today": "forks.json fork.sigil.written_in_advance: damage_mult 1.2",
+             "text": "your first Evoke after a turn you ended with glyphs drawn: the Line's sum +10%",
+             "sum": {
+              "door": "sigils",
+              "value": 0.1,
+              "group": "fork:sigils:8"
+             },
+             "why": "ruling 52: a fork is at least +10% or a new thing to do; the trim to +5% (set to keep a hit under a line) is withdrawn and the designed +10% restored"
+            },
             {"id": "fork.sigil.running_script", "name": "Running Script", "text": "after an Evoke, your next glyph this turn costs no AP and adds no Flux (forks.json, kept)", "group": "fork:sigils:8"}
           ]
         },
-        "fork_why": "ruling 29 sets the forks by the checker: at x1.25 and x1.2 the Overclocked Line with both forks, a Mastered STONE, a tier-II perk and the mark was six digits; at +10% each it was five until ruling 41 added the squad's gift; at +5% each the largest legal Line, with the mark and the gift, stays five (each fork's other half, the Flux limit and the turn written ahead, is the felt part)"
+        "fork_why": "ruling 52 (section H): the forks are +10%, their designed number; the checker reports the largest legal Line and fails only on an ordinary turn (ruling 51); each fork's other half (the Flux limit, the turn written ahead) is the felt part"
       },
 
       "ladders": {

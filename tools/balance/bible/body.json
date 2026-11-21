@@ -422,7 +422,7 @@
           {"by": "the end of the holder's turn (2 in cover and unseen, 2 closing in), then Athletics' feed", "units": 1},
           {"by": "a melee hit sheds the attacker's own", "units": 1}
         ],
-        "plain": {"name": "a long rifle shot (a Take costs the gun's shot, so the slowest gun's Take is the largest)", "weapon": "long_rifle", "rolls": true},
+        "plain": {"name": "a long rifle shot (a Take costs the gun's shot, so the slowest gun's Take is the largest)", "weapon": "long_rifle", "rolls": true, "held": ["gun", "bow"], "held_why": "ruling 54: a Take is a Dexterity weapon's ranged attack (ruling A4: bows are Dexterity weapons); check (a) reports its largest hit with the heaviest legal weapon of these profiles"},
         "cashouts": {
           "dead_centre": {"name": "Dead Centre", "from_point": 1, "ap": "the gun's shot", "spends": "all", "min": 2, "rolls": true,
                           "formula": "1 + bite * cash(n)", "terms": ["bite", "cash"],

@@ -210,6 +210,8 @@
           "carries": "mp_pool(L, determination, A)",
           "cost": "@soul.attributes.insight.door.verbs.mend.cost.mp * mp(L) * (1 - @soul.attributes.insight.ladders.empathy.points.9.numbers.mp_cut_share * (S >= 9))",
           "press": "rounds * floor(ap / @soul.attributes.insight.door.verbs.mend.ap) * @soul.attributes.insight.door.verbs.mend.cost.mp * mp(L) * (1 - @soul.attributes.insight.ladders.empathy.points.9.numbers.mp_cut_share * (S >= 9))",
+          "syphon": "@soul.attributes.determination.door.syphon",
+          "syphon_det": "determination",
           "why": "a healer counts its Mends across a map: at level 20 a Mend for every 2 AP of a fight costs more than the pool"
         },
         "threads": {
@@ -368,7 +370,7 @@
               "numbers": {
                 "mp_cut_share": 0.15
               },
-              "mp_cut_why": "ruling 49 (check.py (h)): at a quarter less a level-20 Mender paid a Mend for every 2 AP of a whole fight, so the MP was no choice",
+              "mp_cut_why": "ruling 49 (check.py (h)): at a quarter less a level-20 Mender paid a Mend for every 2 AP of a whole fight, so the MP was no choice. Ruling 52 keeps the 15% because check (h) needs it: at 25% the level-20 Mender carries 316.7 MP against a pressed fight of 289 (the pool alone)",
               "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(8/9) = 4.517 at Reach 3: 4.517 / S(3) 3.6400 = 1.241",
               "felt": "Snap All of three worth four and a half plain attacks, and your Mends are cheaper"
             },
@@ -751,16 +753,16 @@
           "data": "soul_modules.json:cycle.stage_mult[0]"
         },
         "felt_top": {
-          "about": "the four strongest feeling steps in data, poured on the last four Pumps (each feeling once an Outburst, four at most: feelings.json max_feelings_per_hold); a feeling Pump steps its own number in place of the plain step (Bite is the plain Pump's, never added to a feeling)",
+          "about": "the strongest feeling steps in data poured on the last four Pumps (four at most: feelings.json max_feelings_per_hold), the strongest last; ruling 54: a chosen feeling (its Mark III, door.feelings.chosen) may be poured a second time, so the strongest is counted twice. A feeling Pump steps its own number in place of the plain step (Bite is the plain Pump's, never added to a feeling)",
           "steps": [
             {
-              "data": "feelings.json:items[rage].step.base"
+              "data": "feelings.json:items[pride].step.base"
             },
             {
               "data": "feelings.json:items[despair].step.max"
             },
             {
-              "data": "feelings.json:items[pride].step.base"
+              "data": "feelings.json:items[abandon].step.base"
             },
             {
               "data": "feelings.json:items[abandon].step.base"
@@ -926,6 +928,8 @@
           "carries": "mp_pool(L, A, insight)",
           "cost": "(@soul.attributes.determination.door.resource_use.school + @soul.attributes.determination.door.resource_use.form + @soul.attributes.determination.door.resource_use.tone + (1 + floor(S / 3)) * @soul.attributes.determination.door.resource_use.module) * @soul.attributes.determination.door.design_costs.restate_share * mp(L) * (1 + @scale.costs.pump_share * n) * (1 - @soul.attributes.insight.card.lines.2.number * (insight - 1))",
           "press": "rounds * (@soul.attributes.determination.door.resource_use.school + @soul.attributes.determination.door.resource_use.form + @soul.attributes.determination.door.resource_use.tone + (1 + floor(S / 3)) * @soul.attributes.determination.door.resource_use.module) * @soul.attributes.determination.door.design_costs.restate_share * mp(L) * (1 + @scale.costs.pump_share * n) * (1 - @soul.attributes.insight.card.lines.2.number * (insight - 1))",
+          "syphon": "@soul.attributes.determination.door.syphon",
+          "syphon_det": "A",
           "why": "no MP comes back between fights (survival.json ammo_pack.mp), only by Syphon: a heart every turn at level 20 empties the pool before the fight ends"
         },
         "syphon": {
@@ -1051,11 +1055,11 @@
               },
               "sum": {
                 "door": "outbursts",
-                "value": 0.05,
+                "value": 0.1,
                 "group": "fork:outbursts:4"
               },
               "group": "fork:outbursts:4",
-              "why": "set by the checker's top of the scale (ruling 29: the Release with Ride the Edge and Blood Price at most 99,999, with gear_perks' Outburst terms in the sum)"
+              "why": "ruling 52: a fork is at least +10% or a new thing to do; the trim to +5% (set to keep a hit under a line) is withdrawn and the designed +10% restored"
             },
             {
               "id": "fork.soul.slow_burn",
@@ -1074,11 +1078,11 @@
               },
               "sum": {
                 "door": "outbursts",
-                "value": 0.05,
+                "value": 0.1,
                 "group": "fork:outbursts:8"
               },
               "group": "fork:outbursts:8",
-              "why": "set by the checker's top of the scale (ruling 29, and 41: the felt Release with Ride the Edge, Blood Price, gear_perks' Outburst terms, the mark and the gift at most 99,999 a hit); its felt half is the burn and the next Release's push"
+              "why": "ruling 52: a fork is at least +10% or a new thing to do; the trim to +5% (set to keep a hit under a line) is withdrawn and the designed +10% restored"
             },
             {
               "id": "fork.soul.clean_break",

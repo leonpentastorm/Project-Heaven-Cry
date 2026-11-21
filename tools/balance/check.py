@@ -483,7 +483,7 @@ def bad_terms():
         for d in all_dicts([B.raw[f]]):
             for kind in ('sum', 'to_hit'):
                 t = d.get(kind)
-                if isinstance(t, dict) and not ('door' in t or (kind == 'sum' and t.get('scope') == 'plain' and t.get('hits'))):
+                if isinstance(t, dict) and 'data' not in t and not ('door' in t or (kind == 'sum' and t.get('scope') == 'plain' and t.get('hits'))):   # a {data} number is a mark's or gift's size
                     out.append('%s:%s.%s' % (f, d.get('id') or d.get('name') or d.get('text', '?')[:30], kind))
     return out
 
@@ -553,8 +553,13 @@ def check_digits():
                 per, tot, _ = d.cash_hit(co, 20, 10, 10, fG, n10)
                 full[k] = tot if co.get('spread') else per
             kbest = max(full, key=full.get)
-            result('a', 'PASS' if full[kbest] >= fmin else 'FAIL', 'DIGITS %s: full cash-out at 20 (%s, %s, Reach %s, Bite %s, %s) %s (at least %s)'
-                   % (d.id, kbest, 'in total' if cos[kbest].get('spread') else 'one hit', fmt(n10), d.bite(10), fG, fmt(full[kbest]), fmt(fmin)))
+            fin = fmin <= full[kbest] <= tmax
+            # ruling 51: an ordinary turn (the ladder alone) is five digits; ruling I (newer): a door whose Bite is set from its
+            # effort (its `worth` anchors) is not compared with a shared total, so outside five digits it is a NOTE for the lead
+            st = 'PASS' if fin else ('NOTE' if isinstance(d.d.get('worth'), dict) else 'FAIL')
+            result('a', st, 'DIGITS %s: full cash-out at 20 (%s, %s, Reach %s, Bite %s, %s) %s (an ordinary turn: %s to %s%s)'
+                   % (d.id, kbest, 'in total' if cos[kbest].get('spread') else 'one hit', fmt(n10), d.bite(10), fG, fmt(full[kbest]), fmt(fmin), fmt(tmax),
+                      '' if fin else '; set from its worth, ruling I: for the lead' if st == 'NOTE' else ''))
             if min_def is None: result('a', 'WAITING', 'DIGITS %s: the largest legal hit reads the lowest Defense from world.json' % d.id); continue
             push = d.d.get('push') or {}; n_push = n10 + (num(push.get('reach_plus', 0)) if push else 0)
             n_push += terms('reach_plus', d.id)   # forks and class things that add units (SCHEMA 1.4: a reach_plus term)
@@ -567,12 +572,27 @@ def check_digits():
             over = [(k, b) for k, co, b in rows if b[0][0] > tmax]
             k, co, b = max(rows, key=lambda r: r[2][0][0])
             (per, tot, tg, mm), mk, gf, th, SUM = b
-            result('a', 'FAIL' if over else 'PASS', 'DIGITS %s: largest legal hit at 20 (%s, %s units with the Push, %d Margins at +%d to hit, sum +%d%% with the mark %s and the gift %s, %s) %s%s (at most %s a hit)%s'
+            result('a', 'REPORT', 'DIGITS %s: largest legal hit at 20 (%s, %s units with the Push, %d Margins at +%d to hit, sum +%d%% with the mark %s and the gift %s, %s) %s%s (five digits is %s a hit)%s'
                    % (d.id, k, fmt(n_push), mm, th, round(100 * SUM), mk[0], gf[0], tG, fmt(per), ('; %s in total on %s foes' % (fmt(tot), fmt(tg))) if tot > per * 1.0001 else '', fmt(tmax),
-                      (': over on %s' % ', '.join('%s %s' % (kk, fmt(bb[0][0])) for kk, bb in over)) if over else ''))
+                      (': six digits on %s (ruling 51: reported, not failed; ruling 53 is for Leon)' % ', '.join('%s %s' % (kk, fmt(bb[0][0])) for kk, bb in over)) if over else ''))
             many = [(kk, bb) for kk, cc, bb in rows if bb[0][1] > bb[0][0] * 1.0001]
             if many:
                 print('        the many-foe hits of %s (ruling 40: capped a hit, the total beside it): %s' % (d.id, '; '.join('%s %s a hit, %s on %s' % (kk, fmt(bb[0][0]), fmt(bb[0][1]), fmt(bb[0][2])) for kk, bb in many)))
+            held = d.d['plain'].get('held')
+            if held:   # ruling 54: the Break (and a Take) reads the weapon actually held: the heaviest legal one, reported
+                W0 = S.weapons()[0]; cand = []
+                for w in data('weapons.json')['items']:
+                    pr = S.new_profile(w)
+                    if pr in held and not S.is_draw(w) and S.base_num(W0[w['id']]): cand.append((S.base_num(W0[w['id']]) * S.K[pr], w['id'], pr))
+                if cand:
+                    _, wid, pr = max(cand)
+                    hd = Door(d.core, d.attr, d.a); hd.d = dict(d.d); hd.d['plain'] = dict(d.d['plain'], weapon=wid, profile=pr)
+                    hrows = []
+                    for k, co in hd.hits().items():
+                        fn = lambda th, SUM, co=co: hd.cash_hit(co, 20, 10, 10, tG, n_push, P=P20, m=margins_at(co, th, min_def), SUM=SUM) + (margins_at(co, th, min_def),)
+                        hrows.append((k, best_with_squad(fn, th0, SUM0, marks, gifts)))
+                    k2, b2 = max(hrows, key=lambda r: r[1][0][0])
+                    result('a', 'REPORT', 'DIGITS %s: largest legal hit at 20 with the heaviest legal weapon held (%s, %s; %s) %s (ruling 54: the weapon actually held)' % (d.id, wid, pr, k2, fmt(b2[0][0])))
             if 'gear_perks' in B.present:   # the largest plain hit: the door's own terms, every plain-hit term of its profile, the mark and the gift
                 prof = plain_profile(d); pref = d.d['plain']
                 if 'rolls' not in pref: result('a', 'FAIL', 'DIGITS %s: the plain hit does not say whether it rolls (plain.rolls)' % d.id); continue
@@ -580,7 +600,7 @@ def check_digits():
                 base = d.plain(20, 10, 10, tG)
                 fn = lambda th, SUM: (base * (1 + S.margin_per(P20) * margins_at(pco, th, min_def)) * (1 + SUM), 0, 1, margins_at(pco, th, min_def))
                 (pv, _, _, pm), mk, gf, th, PS = best_with_squad(fn, th0, PS0, marks, gifts)
-                result('a', 'PASS' if pv <= tmax else 'FAIL', 'DIGITS %s: largest plain hit at 20 (%s, %s, %d Margins, sum +%d%% with the mark %s and the gift %s, %s) %s (at most %s)'
+                result('a', 'REPORT', 'DIGITS %s: largest plain hit at 20 (%s, %s, %d Margins, sum +%d%% with the mark %s and the gift %s, %s) %s (five digits is %s)'
                        % (d.id, prof, 'rolls' if pref['rolls'] else 'lands', pm, round(100 * PS), mk[0], gf[0], tG, fmt(pv), fmt(tmax)))
         except Waiting as w: result('a', 'WAITING', 'DIGITS %s: %s.json' % (d.id, w.args[0]))
         except (RefError, KeyError, TypeError, ValueError, StopIteration) as e: result('a', 'FAIL', 'DIGITS %s: cannot compute: %r' % (d.id, e))
@@ -1006,8 +1026,20 @@ def cost_rows(d):
         Sk = sk[d.alpha]; n = (d.reach(Sk, sk) or 0) + (num(push.get('reach_plus', 0)) if push and Sk >= num(push['point']) else 0)
         env = dict(S.env); env.update(attrs); env.update(sk)
         env.update(L=L, A=attrs[d.attr], S=Sk, B=sk[d.beta], n=n, rounds=num(fc['rounds']), ap=num(fc['ap']))
-        out.append((L, n, numf(ru['carries'], env), numf(ru['cost'], env), numf(ru['press'], env)))
+        out.append((L, n, numf(ru['carries'], env), numf(ru['cost'], env), numf(ru['press'], env), syphon_fight(ru, env)))
     return out
+def syphon_fight(ru, env):
+    """Ruling 54: the fight test counts Syphon. The MP a caster can draw over one fight from the air as data has it
+    (rules.json mana.meter: the start, each Syphon's draw off the meter, the band it is drawn in; no deaths counted), each
+    draw the bible's band x its Determination share x mp(L), and the AP those draws take from pressing."""
+    if 'syphon' not in ru: return None
+    sy = ru['syphon']; meter = data('rules.json')['mana']['meter']; bands = meter['bands']
+    draw = -next(e['delta'] for e in meter['events'] if e['event'] == 'syphon'); m = num(meter['start']); mp_total = 0.0; k = 0
+    e2 = dict(env); e2['DET'] = numf(ru['syphon_det'], env)
+    while m >= draw:
+        i = next(j for j, b in enumerate(bands) if b['min'] <= m <= b['max'])
+        e2['band'] = num(sy['bands'][i]); e2['per_det'] = num(sy['per_det']); mp_total += ev(sy['formula'], e2); m -= draw; k += 1
+    return mp_total, k * num(sy['ap'])
 def check_costs():
     if S is None or not all(f in B.present for f in CORES + ['pacing']): result('h', 'WAITING', 'COSTS: the core files and pacing.json'); return
     ds, _ = doors(); fc = S.s['costs']['fight_check']; top = num(fc['choice_at']); n_ = 0
@@ -1015,13 +1047,18 @@ def check_costs():
         if 'resource_use' not in d.d: continue
         n_ += 1
         try:
-            rows = cost_rows(d); probs = []
-            for L, n, car, one, press in rows:
+            rows = cost_rows(d); probs = []; notes = []
+            for L, n, car, one, press, sy in rows:
                 if car < one: probs.append('level %d carries %s, under one full cash-out (%s)' % (L, fmt(car, 1), fmt(one, 1)))
                 if L == top and car >= press: probs.append('level %d carries %s, enough to press everything every turn (%s): the cost is no choice' % (L, fmt(car, 1), fmt(press, 1)))
+                if sy and L == top:
+                    smp, sap = sy; press2 = press * (1 - sap / (num(fc['rounds']) * num(fc['ap'])))
+                    if car + smp >= press2: notes.append('with the Syphons the air gives (%s MP for %s AP) level %d carries %s against %s pressed with the AP left: the cost is no choice' % (fmt(smp, 1), fmt(sap), L, fmt(car + smp, 1), fmt(press2, 1)))
             result('h', 'FAIL' if probs else 'PASS', 'COSTS %s (%s, %s): %s%s' % (d.id, d.d['resource_use']['res'], d.d['resource_use']['plan'],
-                   '; '.join('L%d %s units: carries %s, one %s (%.1f), a pressed fight %s' % (L, fmt(n), fmt(car, 1), fmt(one, 1), car / one if one else 0, fmt(press, 1)) for L, n, car, one, press in rows),
+                   '; '.join('L%d %s units: carries %s%s, one %s (%.1f), a pressed fight %s' % (L, fmt(n), fmt(car, 1), (' +%s by Syphon' % fmt(sy[0], 1)) if sy else '', fmt(one, 1), car / one if one else 0, fmt(press, 1)) for L, n, car, one, press, sy in rows),
                    (': ' + '; '.join(probs)) if probs else ''))
+            # ruling 54: the Syphon reading; a cost fix is a number of the bible's, so a failing reading is for the lead
+            for nt in notes: result('h', 'NOTE', 'COSTS %s: %s (for the lead: a cost or the Syphon draw is a number of the bible)' % (d.id, nt))
         except Waiting as w: result('h', 'WAITING', 'COSTS %s: %s.json' % (d.id, w.args[0]))
         except (RefError, KeyError, TypeError, ValueError, StopIteration, IndexError) as e: result('h', 'FAIL', 'COSTS %s: cannot compute: %r' % (d.id, e))
     if not n_: result('h', 'FAIL', 'COSTS: no door states a resource_use (ruling 49)')
@@ -1310,7 +1347,7 @@ def t_costs():
     rows = []
     for d in ds:
         if 'resource_use' not in d.d: continue
-        for L, n, car, one, press in cost_rows(d):
+        for L, n, car, one, press, _sy in cost_rows(d):
             rows.append([d.id, d.d['resource_use']['res'], L, n, fmt(car, 1), fmt(one, 1), '%.1f' % (car / one if one else 0), fmt(press, 1)])
     table(['door', 'resource', 'level', 'units', 'carries', 'one full cash-out', 'cash-outs carried', 'everything, every turn'], rows)
 
@@ -1331,7 +1368,7 @@ def main(argv):
     print('The growth bible checker: %s present; %s waiting\n' % (', '.join(f for f in FILES if f in B.present) or 'nothing', ', '.join(f for f in FILES if f not in B.present) or 'nothing'))
     check_refs(); check_digits(); check_hits(); check_ladders(); check_spend(); check_hours(); check_clock(); check_costs(); check_worth(); check_solo(); check_migration()
     c = collections.Counter(s for _, s, _ in RESULTS)
-    print('\n%d PASS, %d FAIL, %d WAITING' % (c['PASS'], c['FAIL'], c['WAITING']))
+    print('\n%d PASS, %d FAIL, %d WAITING (and %d REPORT, %d NOTE for the lead: readings, never failures; rulings 51 and I)' % (c['PASS'], c['FAIL'], c['WAITING'], c['REPORT'], c['NOTE']))
     return 1 if c['FAIL'] else 0
 
 if __name__ == '__main__':

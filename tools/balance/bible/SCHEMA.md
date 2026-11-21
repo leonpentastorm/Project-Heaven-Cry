@@ -370,3 +370,18 @@ Filled example:
 | `pacing.calendar.map_events[]` | `buys` (shop or forge), `every`, `first` | a visit is a gain only when the gear share of the credits pays its cheapest grade step (`visit_price`); a node on every n-th map from `first` |
 | `pacing.calendar.characters.<id>` | `gear_share` | the character's own share of credits for gear (else `credits.gear_share.reading`) |
 | a perk with `own_door` | `plain_by_ruling` | the ruling that makes its term plain-only (Iron Grip, 44); check refs (OWN DOOR) fails any other |
+
+---
+
+## 9. Sections H, I and J of `00-rulings.md` (step 1 of the build, 21 Nov 2026), read by `check.py`
+
+| Where | Key | Meaning |
+| --- | --- | --- |
+| a door | `worth` | rulings I and J: `{at_1, at_10, cash_out, unit, formula, ruling, shape, by_point}`: the worth of one full cash-out of `cash_out` in the character's own plain attacks at skill 1 and at skill 10; every Bite on the alpha ladder is set from these two anchors (each point's `bite_why` shows its arithmetic). Check (i) WORTH fails when the Bites do not give the anchors or a point lowers the full cash-out |
+| an alpha point | `bite_why` | the arithmetic that sets the Bite at that point |
+| a door's `plain` | `held` | ruling 54: the profiles of the weapons a cash-out may be made with (the Break, a Take); check (a) REPORTS the largest legal hit with the heaviest legal weapon of those profiles |
+| a cash-out | `per_turn` with `reading_of` | a second reading that lands more than once a turn (the double Release, ruling 59); check (i) prints its worth |
+| a caster's `resource_use` | `syphon`, `syphon_det` | ruling 54: the fight test counts the Syphons the air gives over one fight (rules.json mana.meter: start, the draw, the band) and the AP they take from pressing; a cost that is then no choice is a NOTE for the lead |
+| a mark or gift | `kind: both` with `to_hit` a number or `{data}` | the damage share and the to-hit together (Marked, given Joy: ruling 52) |
+
+**Statuses.** `PASS`, `FAIL`, `WAITING` as before; `REPORT` (ruling 51: the largest legal hit and the largest plain hit at level 20 are reported, never failed) and `NOTE` (a reading the lead must rule on: a door whose effort-set cash-out lands outside five digits at 20, ruling I; a cost that is no choice once Syphon is counted). Exit code 1 only on a `FAIL`.
