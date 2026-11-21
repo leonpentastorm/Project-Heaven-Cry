@@ -20,10 +20,10 @@ function volley(agility: number, weapon = 'service_pistol') {
 }
 
 describe('rules 1.61: a character\'s gun shot grows with the gun\'s Attribute', () => {
-  it('every gun names the gun profile; bows, thrown charges and the foci\'s weapons name none', () => {
+  it('every gun names the gun profile, a bow the bow profile, a thrown charge the thrown one (rules 1.95); the foci\'s weapons name none', () => {
     const GUNS = ['pistol', 'revolver', 'smg', 'rifle', 'shotgun', 'heavy'];
-    for (const w of WEAPONS as any[]) if (w.phys?.system === 'ranged') expect(w.phys.profile, w.id).toBe(GUNS.includes(w.category) ? 'gun' : undefined);
-    const g = PROFILES.gun; expect(g.skill).toBe(0); expect(g.k * (1 + g.attr * 6)).toBeCloseTo(PROFILES.weapon.k, 4);
+    for (const w of WEAPONS as any[]) if (w.phys?.system === 'ranged') expect(w.phys.profile, w.id).toBe(GUNS.includes(w.category) ? 'gun' : w.category === 'bow' ? 'bow' : w.category === 'thrown' ? 'thrown' : undefined);
+    const g = PROFILES.gun; expect([g.attr, g.skill]).toEqual([0.1, 0.05]); // rules 1.95: the cards (ruling A4)
   });
   it('played: the same seeded shots deal about x0.77 at Agility 1 and x1.12 at Agility 10 of what Agility 7 deals', () => {
     const g = PROFILES.gun, at = [1, 7, 10].map((a) => volley(a));

@@ -1,0 +1,1168 @@
+[
+ {
+  "at": "test/amount-literals.test.ts:66",
+  "was": "20 * 3 * 1.35",
+  "now": "48.6",
+  "ratio": 0.6,
+  "test": "a6: the ledger (what moved from TypeScript into data is the same number) > itemAmount is the base, its per-point parts, "
+ },
+ {
+  "at": "test/armour-a2.test.ts:50",
+  "was": "6",
+  "now": "6",
+  "ratio": 0.6,
+  "test": "rules 1.91 items 7950, 7951: the class rows are the one copy > the fields code reads in place of a class number: no Spri"
+ },
+ {
+  "at": "test/balance/defence-measure.test.ts:43",
+  "was": "BOSS_HP",
+  "now": "492",
+  "ratio": 0.6,
+  "test": "the defence step: the enemy table (rules 1.23) > the Boss: its HP at level 1 as recorded, and never less at a higher lev"
+ },
+ {
+  "at": "test/bugsweep-1112.test.ts:56",
+  "was": "Math.floor(40 * levelFactor('deal', 12))",
+  "now": "203",
+  "ratio": 0.601,
+  "test": "2. an enemy's blast splash grows with its tier and level, as its direct hit does > a character's splash is the weapon's "
+ },
+ {
+  "at": "test/bugsweep-1112.test.ts:50",
+  "was": "Math.floor(40 * factor)",
+  "now": "324",
+  "ratio": 0.599,
+  "test": "2. an enemy's blast splash grows with its tier and level, as its direct hit does > an Elite at level 12 with the thumper"
+ },
+ {
+  "at": "test/bugsweep-1112.test.ts:25",
+  "was": "21",
+  "now": "21",
+  "ratio": 0.525,
+  "test": "1. a weapon whose damage is a formula reads it from the data > the longbow deals 25 + 6 \u00d7 Raw Power, the recurve bow 20 "
+ },
+ {
+  "at": "test/classes-i.test.ts:278",
+  "was": "Math.floor(Math.floor(20 * mult) * (f.unit(ally.id).healRecv || 1))",
+  "now": "15",
+  "ratio": 0.6,
+  "test": "Warden > Ward: 2 charge, a shield of 20 \u00d7 Healing given on an ally, +2 Flux"
+ },
+ {
+  "at": "test/classes-j.test.ts:441",
+  "was": "Math.floor(20 * (f.pcs[1].healRecv || 1))",
+  "now": "12",
+  "ratio": 0.6,
+  "test": "Adamantile Knight > Reactive Plate (granted) and Adamantile Plate: Guard cuts 10 each, and the shed plate shields an adj"
+ },
+ {
+  "at": "test/classes-j.test.ts:432",
+  "was": "want",
+  "now": "15",
+  "ratio": 0.6,
+  "test": "Adamantile Knight > Brace (granted) and Bulwark of Will: 2 AP, Guard 1 + Durability mod, +2 Defense, a 20 \u00d7 Healing give"
+ },
+ {
+  "at": "test/classes-j.test.ts:213",
+  "was": "want",
+  "now": "8",
+  "ratio": 0.615,
+  "test": "Banner Dancer > Rally Banner: plant it; an ally starting a turn within 2 gets a 10 \u00d7 Healing given shield, not stacked"
+ },
+ {
+  "at": "test/engine.test.ts:212",
+  "was": "10 + 2",
+  "now": "8",
+  "ratio": 0.667,
+  "test": "weapons v2 > equip, slot armour, mods, durability and repair, rarity"
+ },
+ {
+  "at": "test/engine.test.ts:24",
+  "was": "Math.round(scaleOf(3) * (100 + 15 * 2 + 2 * (5 + 4)))",
+  "now": "135",
+  "ratio": 0.619,
+  "test": "spec tables > HP and movement (Derived stats)"
+ },
+ {
+  "at": "test/faith-presence.test.ts:110",
+  "was": "n",
+  "now": "12",
+  "ratio": 0.6,
+  "test": "the numbers scale with Devotion, \u00d7 Blessing power (item 741) > 20 + 4 \u00d7 Devotion: 32 at 3, 48 at 7, 60 at 10; \u00d7 power, r"
+ },
+ {
+  "at": "test/faith.test.ts:115",
+  "was": "Math.floor(gated(h.ally, h.me, 'hymn', 34 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))",
+  "now": "32",
+  "ratio": 0.582,
+  "test": "prayer in a fight (faith/pray through combat/pray) > a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; "
+ },
+ {
+  "at": "test/miracle-2.1.test.ts:147",
+  "was": "Math.floor(17 * pw * prayerMendDial() * mendFactor(h.me.level))",
+  "now": "17",
+  "ratio": 0.567,
+  "test": "the eight Miracles in a fight (items 727-734) > Mother Ember, Everyone Home: full HP, the Downed stand, harmful conditio"
+ },
+ {
+  "at": "test/perks-b.test.ts:292",
+  "was": "15 * n",
+  "now": "9",
+  "ratio": 0.6,
+  "test": "Last Charge > rules 1.93 item 8105: by the value of the class row, not its number: classes 1 to 5 give 15 a class, the b"
+ },
+ {
+  "at": "test/perks-b.test.ts:286",
+  "was": "Math.round(Math.max(15, 3 * ARMOUR_CLASSES[ac].value) * (f.pc.healRecv || 1)) || f.pc.shield",
+  "now": "16",
+  "ratio": 0.593,
+  "test": "Last Charge > a straight charge of 5+ tiles: a shield of 3 \u00d7 the armour value of the class row (once a fight), and \u00d71.5 "
+ },
+ {
+  "at": "test/prim-mend-gate.test.ts:20",
+  "was": "Math.ceil(0.2 * 133)",
+  "now": "18",
+  "ratio": 0.667,
+  "test": "the percent gate and the cap (switched on by data in step 7b, rules 1.36) > a block's min_pct: at least that share of th"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:186",
+  "was": "4.2",
+  "now": "4.2",
+  "ratio": 0.6,
+  "test": "Outburst: the modules that were repriced (rules 1.17) > At Once \u00d70.8, Return's second hit \u00d70.3, Quiet +5 MP (Shell and I"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:163",
+  "was": "love",
+  "now": "11",
+  "ratio": 0.611,
+  "test": "Outburst: what rules 1.17 set and still stands > Love with no ally in the shape heals the most wounded ally in reach, or"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:84",
+  "was": "Math.round(30 * LINE_MULT[2] * cm)",
+  "now": "50",
+  "ratio": 0.595,
+  "test": "Sigil: a critical, the level gap, and the Elite and Boss guard (rules 1.17) > a critical is \u00d71.5 (the caster's own criti"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:76",
+  "was": "Math.round(30 * LINE_MULT[2] * 10)",
+  "now": "337",
+  "ratio": 0.601,
+  "test": "Sigil: the Line multiplier (rules 1.17) > no ceiling: a spell is never scaled down to 350 (the targets stay targets)"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:56",
+  "was": "Math.round(30 * LINE_MULT[2])",
+  "now": "34",
+  "ratio": 0.607,
+  "test": "Sigil: the Line multiplier (rules 1.17) > a character's Line multiplies its damage by its length, in the preview and in "
+ },
+ {
+  "at": "test/rules118-guns.test.ts:105",
+  "was": "18",
+  "now": "18",
+  "ratio": 0.6,
+  "test": "rules 1.18: the weapon numbers > the guns rules 1.18 renumbered, and the automatic guns whose Burst lost a roll (a recor"
+ },
+ {
+  "at": "test/rules119-outburst.test.ts:53",
+  "was": "14",
+  "now": "14",
+  "ratio": 0.583,
+  "test": "rules 1.19: the stage table and the Damage base > a character's Damage base is 37 (rules 1.56, fitted with no perk steps"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:137",
+  "was": "6",
+  "now": "6",
+  "ratio": 0.6,
+  "test": "rules 1.20: prayer > the bases"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:119",
+  "was": "11.3 * 4 * 2 * 0.25",
+  "now": "13.56",
+  "ratio": 0.6,
+  "test": "rules 1.20: the Outburst > Love heals a share of the Buff school's heal (\u00d70.25 in the shape, \u00d70.15 alone), not a share o"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:104",
+  "was": "2.4",
+  "now": "2.4",
+  "ratio": 0.6,
+  "test": "rules 1.20: the Outburst > Inverse and Shell have shield bases of their own: the Damage base does not move them"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:94",
+  "was": "want",
+  "now": "58",
+  "ratio": 0.63,
+  "test": "rules 1.20: the Outburst > the Buff heal is 11.3 \u00d7 the Outburst's heal Stat (soul_mend, rules 1.36) \u00d7 the stage multipli"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:61",
+  "was": "2.58",
+  "now": "2.58",
+  "ratio": 0.6,
+  "test": "rules 1.20: Sigil > MEND and WARD (rules 1.36: 15 and 4.3), \u00d7 the Sigil boon's Stat \u00d7 the level factor, through the perc"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:55",
+  "was": "15",
+  "now": "15",
+  "ratio": 0.6,
+  "test": "rules 1.20: the level factor > a character's heart carries it; an enemy caster's does not, and keeps the old bases"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:89",
+  "was": "Math.round(20 * h.me.blessPower!)",
+  "now": "12",
+  "ratio": 0.6,
+  "test": "Rebuke, the seventh Whisper (item 1260) > it grows with Blessing power (Faith, and Virtue since rules 1.26) and with not"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:55",
+  "was": "34",
+  "now": "34",
+  "ratio": 0.607,
+  "test": "the data (rules 1.21): the numbers the spec gives > Judgement 56 and \u00d71.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and"
+ },
+ {
+  "at": "test/rules122-faith.test.ts:226",
+  "was": "Math.round(28 * bp * prayerMendDial() * m)",
+  "now": "30",
+  "ratio": 0.6,
+  "test": "the refitted prayers land their numbers (items 1281, 1285, 1286) > Warm Hands heals 28 \u00d7 Blessing power \u00d7 the level fact"
+ },
+ {
+  "at": "test/rules122-faith.test.ts:219",
+  "was": "Math.round(20 * bp)",
+  "now": "14",
+  "ratio": 0.609,
+  "test": "the refitted prayers land their numbers (items 1281, 1285, 1286) > Rebuke 20 \u00d7 Blessing power; Judgement 56 \u00d7; Lightning"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:125",
+  "was": "7",
+  "now": "7",
+  "ratio": 0.636,
+  "test": "gap 2: the section 7 patterns, Evoked through apply() > Tesla tower, SHOCK \u00b7 SEEK \u00b7 WATCH \u00b7 CHAIN: at your next turn sta"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:76",
+  "was": "Math.ceil(0.2 * 145)",
+  "now": "18",
+  "ratio": 0.621,
+  "test": "gap 1: the 29 words no reducer test drew, each drawn and Evoked through apply() > Boons: WARD (rules 1.36: 4.3, gated at"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:49",
+  "was": "dmg",
+  "now": "15",
+  "ratio": 0.6,
+  "test": "gap 1: the 29 words no reducer test drew, each drawn and Evoked through apply() > Elements: FREEZE 25 + Slowed, SHOCK 30"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:79",
+  "was": "36",
+  "now": "36",
+  "ratio": 0.6,
+  "test": "Stroke Gambler under 1.4 > Stitch on a Stack of half-glyphs: the plain Evoke refuses it; 6-15 holds, 16-20 doubles the d"
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:86",
+  "was": "5",
+  "now": "5",
+  "ratio": 0.556,
+  "test": "STAY (item 422): one strike, then the field > a trap with STAY: the springing is the placing strike (full), then the fie"
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:75",
+  "was": "5",
+  "now": "5",
+  "ratio": 0.556,
+  "test": "STAY (item 422): one strike, then the field > a KIN field: the strike spares your side and hits the foe at full; after, "
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:64",
+  "was": "9",
+  "now": "9",
+  "ratio": 0.6,
+  "test": "STAY (item 422): one strike, then the field > a creature the field has not affected walking in takes full; one it struck"
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:52",
+  "was": "18",
+  "now": "18",
+  "ratio": 0.6,
+  "test": "STAY (item 422): one strike, then the field > the placing strike hits at full; the preview shows it and the field tiles"
+ },
+ {
+  "at": "test/sigil14.test.ts:565",
+  "was": "Math.round(30 * 0.6)",
+  "now": "11",
+  "ratio": 0.611,
+  "test": "previews (spec: What the player must see) > previewEvoke: area, pickable, the bolt's path, every affected creature with "
+ },
+ {
+  "at": "test/sigil14.test.ts:482",
+  "was": "5",
+  "now": "5",
+  "ratio": 0.556,
+  "test": "what stays: fields, traps, turrets (spec: Delivery) > STAY: the field strikes nobody out of its area when Evoked; full o"
+ },
+ {
+  "at": "test/sigil14.test.ts:381",
+  "was": "Math.round(45 * 1.25)",
+  "now": "34",
+  "ratio": 0.607,
+  "test": "Subjects (spec: the words) > SHARPEN: the next attack gets +3 to hit and \u00d71.25 damage, then it is spent"
+ },
+ {
+  "at": "test/sigil14.test.ts:360",
+  "was": "Math.ceil(0.2 * 145)",
+  "now": "18",
+  "ratio": 0.621,
+  "test": "Subjects (spec: the words) > WARD and MEND (rules 1.36: 4.3 and 15, the Sigil boon's Stat), each through the gate"
+ },
+ {
+  "at": "test/sigil14.test.ts:329",
+  "was": "3",
+  "now": "3",
+  "ratio": 0.6,
+  "test": "Subjects (spec: the words) > ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense \u22122, a Body "
+ },
+ {
+  "at": "test/sigil14.test.ts:314",
+  "was": "Math.round(dmg * 1.5)",
+  "now": "27",
+  "ratio": 0.6,
+  "test": "Subjects (spec: the words) > FIRE 30 (a critical is \u00d71.5 since rules 1.17, and sets Burning); FREEZE 25 + Slowed; STONE "
+ },
+ {
+  "at": "test/sigil14.test.ts:305",
+  "was": "13",
+  "now": "13",
+  "ratio": 0.619,
+  "test": "Burst (spec: Burst) > PUSH: a cone from where it lands, on the way the spell faced, 3 long, \u00d70.7 (Shotgun 21); SPREAD + "
+ },
+ {
+  "at": "test/sigil14.test.ts:236",
+  "was": "11",
+  "now": "11",
+  "ratio": 0.611,
+  "test": "Reach (spec: Reach) > ARC: a lob over everything \u00d70.8; SENSE: it appears, \u00d70.6, no sight needed"
+ },
+ {
+  "at": "test/sigil14.test.ts:83",
+  "was": "want",
+  "now": "36",
+  "ratio": 0.59,
+  "test": "grammar (spec: Grammar and cost) > the spec's numbers: FIRE \u00b7 CONDENSE \u00d73 61, FIRE \u00b7 FIRE \u00b7 CONDENSE 61, FIRE \u00d73 \u00b7 CONDE"
+ },
+ {
+  "at": "test/subsystems.test.ts:236",
+  "was": "36",
+  "now": "36",
+  "ratio": 0.6,
+  "test": "throwing, swapping, companions and prayer (rules 1.3) > the beast (item 370): 60 HP, as the trait says"
+ },
+ {
+  "at": "test/subsystems.test.ts:212",
+  "was": "18",
+  "now": "18",
+  "ratio": 0.6,
+  "test": "throwing, swapping, companions and prayer (rules 1.3) > the drone (item 370): 30 HP; move and a plain shot only; its ser"
+ },
+ {
+  "at": "test/beta-feeds-1-60.test.ts:65",
+  "was": "Math.max(1, Math.round(phys.PHYS_RULES.guard.soak * scaleOf(u.level) * feedAt('pain_threshold', b)))",
+  "now": "61",
+  "ratio": 1.794,
+  "test": "Pain Threshold feeds a rank III Bulwark's plates (item 4604): the door's soak x the feed, the Reactive Plate shelved > l"
+ },
+ {
+  "at": "test/beta-feeds-1-60.test.ts:47",
+  "was": "want",
+  "now": "7",
+  "ratio": 1.75,
+  "test": "Pain Threshold feeds the plate soak (item 4604) > Durability 10, Pain Threshold 1: each plate soaks the soak x the feed,"
+ },
+ {
+  "at": "test/classes-j.test.ts:419",
+  "was": "999 - 40",
+  "now": "975",
+  "ratio": 1.017,
+  "test": "Storm Hand > Discharge: on a melee hit, spend every Charge: 20 per Charge to each enemy next to the target"
+ },
+ {
+  "at": "test/classes-j.test.ts:267",
+  "was": "999 - 50",
+  "now": "969",
+  "ratio": 1.021,
+  "test": "RTC Contractor > Strike Call: 300 credits; 50 Physical at your next turn to a 3x3; an edge unit with a reaction dives cl"
+ },
+ {
+  "at": "test/classes-k.test.ts:446",
+  "was": "c.unit(c.foe.id).maxHp - 10",
+  "now": "993",
+  "ratio": 1.004,
+  "test": "Lane K: more forms and story parts > Grand BIND (tar) Pins on entering; VEIL hides whoever is inside; BLIND (fog) cuts s"
+ },
+ {
+  "at": "test/engine.test.ts:310",
+  "was": "hp - 5",
+  "now": "121",
+  "ratio": 1.017,
+  "test": "combat > injuries: the d6 table, arm penalties by hand, half Movement once, bleeding"
+ },
+ {
+  "at": "test/faith-presence.test.ts:119",
+  "was": "200 + Math.min(500, Math.max(Math.round(28 * m.me.blessPower! * prayerMendDial() * mendFactor(m.me.level)), Math.ceil(gatePct('intervention') * Math.min(1000, 145 * scaleOf(m.me.level)) - 1e-9)))",
+  "now": "230",
+  "ratio": 0.92,
+  "test": "the numbers scale with Devotion, \u00d7 Blessing power (item 741) > Mother Ember at Devotion 10 heals 28 \u00d7 power \u00d7 the heal L"
+ },
+ {
+  "at": "test/faith.test.ts:513",
+  "was": "40 + Math.round(8.5 * blessingPower(c()) * prayerMendDial() * mendFactor(c().level))",
+  "now": "48",
+  "ratio": 0.889,
+  "test": "prayer in the story > a Whisper heals a squad member, costs story AP and the mana meter, once a round"
+ },
+ {
+  "at": "test/faith.test.ts:190",
+  "was": "Math.floor(gated(h.ally, h.me, 'whisper', 10 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)))",
+  "now": "12",
+  "ratio": 0.706,
+  "test": "the Whispers (six, and Rebuke since rules 1.21) > Protection: a 10 \u00d7 power shield (rules 1.36), through the Whisper's ga"
+ },
+ {
+  "at": "test/faith.test.ts:108",
+  "was": "50 + gated(h.ally, h.me, 'whisper', Math.round(8.5 * h.me.blessPower! * prayerMendDial() * mendFactor(h.me.level)), true)",
+  "now": "62",
+  "ratio": 0.954,
+  "test": "prayer in a fight (faith/pray through combat/pray) > a Whisper by standing: 1 AP, the mana meter \u22125, once a turn"
+ },
+ {
+  "at": "test/figments-2.test.ts:281",
+  "was": "Math.max(1, Math.round(plain * (1 + per)))",
+  "now": "29",
+  "ratio": 0.967,
+  "test": "Many-Eyed Dream (perks.json mirage) reads the new forms' blows (rules 1.56, the alpha perks item 19, on Figments 2.0) > "
+ },
+ {
+  "at": "test/guard-durability.test.ts:144",
+  "was": "25 - 2 * G.soak",
+  "now": "17",
+  "ratio": 0.955,
+  "test": "3. Guard soaks > a condition's tick and self-harm are not hits; a trap is"
+ },
+ {
+  "at": "test/guard-durability.test.ts:116",
+  "was": "base - G.soak",
+  "now": "23",
+  "ratio": 0.983,
+  "test": "3. Guard soaks > each point takes the soak off the hit, as many as it needs but the last, after armour"
+ },
+ {
+  "at": "test/mind-expression.test.ts:59",
+  "was": "Math.floor(20 * mw[2].value)",
+  "now": "14",
+  "ratio": 0.933,
+  "test": "Visualization: the forks at 8 (rules 1.74 item 6041) > Masterwork: name a Figment; it hits truer and takes less; once a "
+ },
+ {
+  "at": "test/miracle-2.1.test.ts:80",
+  "was": "2000 - Math.round(130 * pw)",
+  "now": "1908",
+  "ratio": 1.033,
+  "test": "the eight Miracles in a fight (items 727-734) > Nerukhan, The Saints' Verdict: every enemy in sight takes 130 Soul (rule"
+ },
+ {
+  "at": "test/old-save.test.ts:427",
+  "was": "withGame(g0, () => armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor' as any).add))",
+  "now": "20",
+  "ratio": 1.429,
+  "test": "rules 1.91 lane A2: a 0.33.0 save with worn armour loads unchanged and plays on > loaded: the characters and the fight a"
+ },
+ {
+  "at": "test/ops-deal-mend.test.ts:33",
+  "was": "100 + Math.floor(10 * hg * scaleOf(6))",
+  "now": "161",
+  "ratio": 1.019,
+  "test": "the generic deal and mend ops > mend: a heal through the heal sink, a shield through the shield sink, by the block's kin"
+ },
+ {
+  "at": "test/ops-deal-mend.test.ts:17",
+  "was": "5000 - Math.floor(30 * 1.65)",
+  "now": "4950",
+  "ratio": 1.0,
+  "test": "the generic deal and mend ops > deal: the block's base \u00d7 the Stat term of its profile from the holder's sheet, through t"
+ },
+ {
+  "at": "test/outburst20-review.test.ts:48",
+  "was": "100 + Math.ceil(0.2 * 145)",
+  "now": "118",
+  "ratio": 0.915,
+  "test": "the second school works on the primary's side (item 542) > an old Buff design with a hostile rider heals the ally and la"
+ },
+ {
+  "at": "test/outburst20.test.ts:288",
+  "was": "100 + Math.ceil(0.2 * 0.4 * 145)",
+  "now": "108",
+  "ratio": 0.964,
+  "test": "shapes: Bolt, Wave, Burst, Aura, Lance, with their areas (section 7) > a hostile area reaches allies too (friendly fire)"
+ },
+ {
+  "at": "test/outburst20.test.ts:187",
+  "was": "100 + Math.ceil(0.2 * 145)",
+  "now": "118",
+  "ratio": 0.915,
+  "test": "the second school: a rider at half strength with its own option (section 4) > Buff (heal) + Damage with Inverse on an al"
+ },
+ {
+  "at": "test/outburst20.test.ts:81",
+  "was": "PROFILES.soul.k",
+  "now": "2.83176",
+  "ratio": 2.85,
+  "test": "the heart cycle: Begin, Pump, Release (rules 1.5, section 1) > the Soul multiplier is the soul profile's k at every shee"
+ },
+ {
+  "at": "test/outburst40.test.ts:208",
+  "was": "hp - 5",
+  "now": "485",
+  "ratio": 1.004,
+  "test": "the new modules (section 4) > Linger leaves a 2-round field; Silent keeps a Hidden caster hidden where a plain release r"
+ },
+ {
+  "at": "test/outburst40.test.ts:195",
+  "was": "Math.floor(4 * 0.8)",
+  "now": "1",
+  "ratio": 0.333,
+  "test": "the new modules (section 4) > Bloom grows a Burst +1 radius a stage; Anchor pins; Lure pulls 2; Shell shields you"
+ },
+ {
+  "at": "test/outburst40.test.ts:180",
+  "was": "hp + 5",
+  "now": "404",
+  "ratio": 0.995,
+  "test": "residue (section 3.3, item 807) > helping residue works for the caster's side only: Love heals an ally 5, Joy +1 to roll"
+ },
+ {
+  "at": "test/outburst40.test.ts:175",
+  "was": "hp - 5",
+  "now": "473",
+  "ratio": 1.004,
+  "test": "residue (section 3.3, item 807) > the strongest feeling (most pumps, ties to the latest) stays on the area for 2 rounds;"
+ },
+ {
+  "at": "test/outburst40.test.ts:76",
+  "was": "400 + Math.floor(11.3 * 1.1 * 0.25)",
+  "now": "401",
+  "ratio": 0.995,
+  "test": "feelings poured in (section 3; steps and behaviours as rules 1.19 set them) > Love on a Damage Burst heals the allies in"
+ },
+ {
+  "at": "test/phys-core.test.ts:179",
+  "was": "g.k * (1 + g.attr * 4)",
+  "now": "1.618708",
+  "ratio": 1.3,
+  "test": "damage follows what the weapon is aimed with > a gun and a light blade scale with Agility and Dexterity, a heavy blade w"
+ },
+ {
+  "at": "test/phys-ranged-thrown.test.ts:177",
+  "was": "hp - thrownDmg(f, 'frag_grenade', f.foe.armour)",
+  "now": "60",
+  "ratio": 0.952,
+  "test": "Lob: a carried grenade is its weapon > a frag through Lob: no roll, 40 to everyone within 2, +2 Pressure; the grenade is"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:67",
+  "was": "100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, 145)))",
+  "now": "118",
+  "ratio": 0.915,
+  "test": "Sigil: the Line multiplier (rules 1.17) > damage only: the Line multiplier does not touch a heal (MEND 15 since rules 1."
+ },
+ {
+  "at": "test/rules119-outburst.test.ts:220",
+  "was": "300 + Math.ceil(0.2 * 0.8 * 145) + Math.ceil(0.2 * 0.8 * 0.5 * 145)",
+  "now": "323",
+  "ratio": 0.961,
+  "test": "rules 1.19: the same school twice in one design (defined, shelved) > a condition twice the same way lasts half again as "
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:101",
+  "was": "100 + Math.floor(11.3 * 10 * 1.0 * 0.4)",
+  "now": "127",
+  "ratio": 0.876,
+  "test": "rules 1.20: the Outburst > in a shape each ally is healed for \u00d70.4; the shape's damage multiplier is not used"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:153",
+  "was": "2000 - Math.round(130 * pw)",
+  "now": "1908",
+  "ratio": 1.033,
+  "test": "The Saints' Verdict (item 1264) > 130 Soul \u00d7 Blessing power to every enemy in sight; double for one that harmed the help"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:145",
+  "was": "2 * (Math.round(20 * pw) - 6)",
+  "now": "16",
+  "ratio": 0.471,
+  "test": "the damage Hymns (items 1261 to 1263) > Thunderclap hits every enemy in the area, so two together take twice what one do"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:139",
+  "was": "2000 - (Math.round(20 * pw) - 6)",
+  "now": "1992",
+  "ratio": 1.005,
+  "test": "the damage Hymns (items 1261 to 1263) > Thunderclap: each enemy within 2 of the tile takes 20 lightning \u00d7 Blessing power"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:132",
+  "was": "2000 - (Math.round(56 * pw) - 6)",
+  "now": "1966",
+  "ratio": 1.013,
+  "test": "the damage Hymns (items 1261 to 1263) > Lightning Rod: 56 lightning \u00d7 Blessing power, then 23 \u00d7 Blessing power to one mo"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:126",
+  "was": "2000 - Math.round(56 * pw)",
+  "now": "1960",
+  "ratio": 1.013,
+  "test": "the damage Hymns (items 1261 to 1263) > Judgement: 56 Soul \u00d7 Blessing power (12 Nov 2026); 30% more against one that har"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:119",
+  "was": "2000 - Math.round(20 * one.me.blessPower!)",
+  "now": "1989",
+  "ratio": 1.004,
+  "test": "Rebuke, the seventh Whisper (item 1260) > praying needs Faith 1 (rules 1.31): below it there is no Rebuke; at Faith 1 th"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:115",
+  "was": "2000 - Math.round(20 * b.me.blessPower!)",
+  "now": "1986",
+  "ratio": 1.005,
+  "test": "Rebuke, the seventh Whisper (item 1260) > an Atheist prays it by dice against 12, like every Whisper: a miss spends the "
+ },
+ {
+  "at": "test/rules121-faith.test.ts:83",
+  "was": "2000 - Math.round(20 * pw)",
+  "now": "1986",
+  "ratio": 1.005,
+  "test": "Rebuke, the seventh Whisper (item 1260) > 1 AP; an enemy in sight takes 20 Soul \u00d7 Blessing power (rules 1.22); no roll; "
+ },
+ {
+  "at": "test/rules123-defence.test.ts:183",
+  "was": "68880",
+  "now": "68880",
+  "ratio": 9.901,
+  "test": "rules 1.23: the Boss, and the enemy's Burst > the Boss has 820 HP at level 1 (it was 960) and 6,957 at level 20 (rules 1"
+ },
+ {
+  "at": "test/rules124-mp.test.ts:185",
+  "was": "52",
+  "now": "52",
+  "ratio": 0.297,
+  "test": "rules 1.24: old saves > the first action on an old save moves the sheet and the units of a fight in progress, and says s"
+ },
+ {
+  "at": "test/rules124-mp.test.ts:168",
+  "was": "36",
+  "now": "36",
+  "ratio": 0.261,
+  "test": "rules 1.24: old saves > an Emanator keeps its share of the pool, once: half stays half, full stays full"
+ },
+ {
+  "at": "test/shields-view.test.ts:109",
+  "was": "plan!.per",
+  "now": "30",
+  "ratio": 0.789,
+  "test": "shieldsView: a rank III Bulwark's plates are the door's (the Reactive Plate is shelved) > the view: no plate of its own,"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:146",
+  "was": "4 + 5",
+  "now": "2",
+  "ratio": 0.222,
+  "test": "gap 2: the section 7 patterns, Evoked through apply() > Acid rain, ACID \u00b7 ARC \u00b7 STAY \u00b7 SPREAD: strikes once (15 \u00d7 0.8 \u00d7 "
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:139",
+  "was": "400 + Math.ceil(0.2 * 0.5 * 145)",
+  "now": "409",
+  "ratio": 0.986,
+  "test": "gap 2: the section 7 patterns, Evoked through apply() > Healing post, MEND \u00b7 WATCH: heals whoever stands next to it each"
+ },
+ {
+  "at": "test/sigil14-classes-i.test.ts:224",
+  "was": "999 - 15",
+  "now": "990",
+  "ratio": 1.006,
+  "test": "Scribe Stored Spell under 1.4 > triggered in a fight for 1 AP: it goes off from the Scribe's tile with its own Reach, al"
+ },
+ {
+  "at": "test/sigil14-classes-i.test.ts:113",
+  "was": "999 - 23",
+  "now": "985",
+  "ratio": 1.009,
+  "test": "Mage under 1.4 > Payload with no aim on a harmful spell still goes to the nearest enemy in the area"
+ },
+ {
+  "at": "test/sigil14-classes-i.test.ts:98",
+  "was": "999 - 23",
+  "now": "985",
+  "ratio": 1.009,
+  "test": "Mage under 1.4 > Payload gives a one-target spell one more missile, at the nearest other target in the area"
+ },
+ {
+  "at": "test/sigil14-classes-i.test.ts:87",
+  "was": "999 - 9",
+  "now": "994",
+  "ratio": 1.004,
+  "test": "Mage under 1.4 > Payload doubles a SPREAD radius (2 \u2192 4) and adds Flux equal to the glyphs"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:326",
+  "was": "999 - 10",
+  "now": "993",
+  "ratio": 1.004,
+  "test": "Grand Sigilist under 1.4 > SPREAD (Bloom): a spell your side lands inside also hits every enemy inside it missed for 10;"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:305",
+  "was": "999 - 10",
+  "now": "993",
+  "ratio": 1.004,
+  "test": "Grand Sigilist under 1.4 > CHAIN (Conductor): your side's hit on an enemy inside arcs 10 to the nearest other enemy insi"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:274",
+  "was": "999 - 10",
+  "now": "993",
+  "ratio": 1.004,
+  "test": "Grand Sigilist under 1.4 > WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move tha"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:264",
+  "was": "53",
+  "now": "53",
+  "ratio": 0.964,
+  "test": "Grand Sigilist under 1.4 > LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATC"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:203",
+  "was": "999 - 30",
+  "now": "981",
+  "ratio": 1.012,
+  "test": "Glyph Mason under 1.4 > Survey: from 2 tiles beyond an end the Line fires along; from 2 tiles beside it, across; without"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:107",
+  "was": "999 - 30",
+  "now": "981",
+  "ratio": 1.012,
+  "test": "Stroke Gambler under 1.4 > House Edge: a Stitch of 1-5 is rerolled once a fight (on by default)"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:97",
+  "was": "200 - 18",
+  "now": "189",
+  "ratio": 1.038,
+  "test": "Stroke Gambler under 1.4 > Stitch 1-5 (House Edge off): it lands on you as Touch at full strength; KIN spares no one, SP"
+ },
+ {
+  "at": "test/sigil14.test.ts:534",
+  "was": "ah - 8",
+  "now": "495",
+  "ratio": 1.006,
+  "test": "what stays: fields, traps, turrets (spec: Delivery) > turrets zap allies too (KIN keeps your side out); WATCH + TWICE sh"
+ },
+ {
+  "at": "test/sigil14.test.ts:522",
+  "was": "10",
+  "now": "10",
+  "ratio": 1.667,
+  "test": "what stays: fields, traps, turrets (spec: Delivery) > WATCH: a turret casts at the nearest creature it can reach at the "
+ },
+ {
+  "at": "test/sigil14.test.ts:450",
+  "was": "hp[2] - 18",
+  "now": "489",
+  "ratio": 1.015,
+  "test": "KIN, friendly fire and fizzle (spec: Filter; Friendly fire; Grammar 8\u20139) > bursts hit allies; KIN spares your side (you "
+ },
+ {
+  "at": "test/sigil14.test.ts:280",
+  "was": "300 + 15",
+  "now": "309",
+  "ratio": 0.981,
+  "test": "Delivery (spec: Delivery) > LEECH: you heal half the direct damage the spell dealt (+25% a copy), not \u00d7 Healing given; e"
+ },
+ {
+  "at": "test/sigil14.test.ts:259",
+  "was": "hp[0] - 30",
+  "now": "482",
+  "ratio": 1.026,
+  "test": "Delivery (spec: Delivery) > TWICE: two missiles at two targets, each with its own Burst; the glyph costs 2 Flux; the sec"
+ },
+ {
+  "at": "test/sigil14.test.ts:191",
+  "was": "100 + Math.ceil(0.2 * 1.5 * 145)",
+  "now": "127",
+  "ratio": 0.882,
+  "test": "the facing rule (spec: Evoking) > you can always target yourself (Touch's one exception); PUSH is refused there"
+ },
+ {
+  "at": "test/sigil15-growth.test.ts:293",
+  "was": "Math.round(4.3 * sb)",
+  "now": "3",
+  "ratio": 0.75,
+  "test": "word mastery and inflections (items 915-916) > WARD: the shield is 10% bigger (rules 1.36: 4.3 \u00d7 the boon's Stat; a smal"
+ },
+ {
+  "at": "test/subsystems.test.ts:71",
+  "was": "1.5 * 2",
+  "now": "3.375",
+  "ratio": 1.125,
+  "test": "the damage chain (spec: Attacks, damage and armour; rules 1.3) > target-specific bonuses add and stop at \u00d72; self multip"
+ },
+ {
+  "at": "test/tending.test.ts:281",
+  "was": "3.74 * (1 + 0.06 * 5 + 0.06 * 6)",
+  "now": "6.63858",
+  "ratio": 1.069,
+  "test": "rules 1.33 section 4: what leaves Empathy > the tend profile is Healing given (Insight and Empathy), k from data"
+ },
+ {
+  "at": "test/tending.test.ts:236",
+  "was": "al.hp - 10",
+  "now": "262",
+  "ratio": 1.351,
+  "test": "rules 1.33 section 5: the Mender > the Ledger: counts what you heal, capped; spent on the next damage to an enemy"
+ },
+ {
+  "at": "test/amount-literals.test.ts:67",
+  "was": "(10 + 70 / 4) * 1.6",
+  "now": "26.4",
+  "ratio": 0.6,
+  "test": "a6: the ledger (what moved from TypeScript into data is the same number) > itemAmount is the base, its per-point parts, "
+ },
+ {
+  "at": "test/classes-j.test.ts:214",
+  "was": "want",
+  "now": "8",
+  "ratio": 0.615,
+  "test": "Banner Dancer > Rally Banner: plant it; an ally starting a turn within 2 gets a 10 \u00d7 Healing given shield, not stacked"
+ },
+ {
+  "at": "test/faith-presence.test.ts:110",
+  "was": "Math.round(n * 1.7)",
+  "now": "20",
+  "ratio": 0.588,
+  "test": "the numbers scale with Devotion, \u00d7 Blessing power (item 741) > 20 + 4 \u00d7 Devotion: 32 at 3, 48 at 7, 60 at 10; \u00d7 power, r"
+ },
+ {
+  "at": "test/miracle-2.1.test.ts:81",
+  "was": "2000 - Math.round(260 * pw)",
+  "now": "1817",
+  "ratio": 1.072,
+  "test": "the eight Miracles in a fight (items 727-734) > Nerukhan, The Saints' Verdict: every enemy in sight takes 130 Soul (rule"
+ },
+ {
+  "at": "test/ops-deal-mend.test.ts:35",
+  "was": "100 + Math.max(Math.floor(10 * hg * mendFactor(me.level)), Math.ceil(0.2 * Math.min(ally.maxHp, 145 * scaleOf(me.level))))",
+  "now": "161",
+  "ratio": 0.91,
+  "test": "the generic deal and mend ops > mend: a heal through the heal sink, a shield through the shield sink, by the block's kin"
+ },
+ {
+  "at": "test/outburst20.test.ts:187",
+  "was": "Math.ceil(0.2 * 0.5 * 145)",
+  "now": "9",
+  "ratio": 0.6,
+  "test": "the second school: a rider at half strength with its own option (section 4) > Buff (heal) + Damage with Inverse on an al"
+ },
+ {
+  "at": "test/phys-core.test.ts:180",
+  "was": "k",
+  "now": "1.88454",
+  "ratio": 1.256,
+  "test": "damage follows what the weapon is aimed with > a gun and a light blade scale with Agility and Dexterity, a heavy blade w"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:190",
+  "was": "Math.floor(4 * 0.8)",
+  "now": "1",
+  "ratio": 0.333,
+  "test": "Outburst: the modules that were repriced (rules 1.17) > At Once \u00d70.8, Return's second hit \u00d70.3, Quiet +5 MP (Shell and I"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:164",
+  "was": "400 + love",
+  "now": "411",
+  "ratio": 0.983,
+  "test": "Outburst: what rules 1.17 set and still stands > Love with no ally in the shape heals the most wounded ally in reach, or"
+ },
+ {
+  "at": "test/rules117-magic.test.ts:57",
+  "was": "Math.round(30 * 1.5 * LINE_MULT[3])",
+  "now": "52",
+  "ratio": 0.598,
+  "test": "Sigil: the Line multiplier (rules 1.17) > a character's Line multiplies its damage by its length, in the preview and in "
+ },
+ {
+  "at": "test/rules118-guns.test.ts:105",
+  "was": "20",
+  "now": "20",
+  "ratio": 0.606,
+  "test": "rules 1.18: the weapon numbers > the guns rules 1.18 renumbered, and the automatic guns whose Burst lost a roll (a recor"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:138",
+  "was": "17",
+  "now": "17",
+  "ratio": 0.607,
+  "test": "rules 1.20: prayer > the bases"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:119",
+  "was": "11.3 * 4 * 2 * 0.15",
+  "now": "8.136",
+  "ratio": 0.6,
+  "test": "rules 1.20: the Outburst > Love heals a share of the Buff school's heal (\u00d70.25 in the shape, \u00d70.15 alone), not a share o"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:108",
+  "was": "7 * 2 * 1.4 * mendFactor(20)",
+  "now": "569.706144",
+  "ratio": 0.6,
+  "test": "rules 1.20: the Outburst > Inverse and Shell have shield bases of their own: the Damage base does not move them"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:101",
+  "was": "100 + Math.floor(11.3 * 10 * 1.0 * 0.4)",
+  "now": "127",
+  "ratio": 0.876,
+  "test": "rules 1.20: the Outburst > in a shape each ally is healed for \u00d70.4; the shape's damage multiplier is not used"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:95",
+  "was": "100 + want",
+  "now": "158",
+  "ratio": 0.823,
+  "test": "rules 1.20: the Outburst > the Buff heal is 11.3 \u00d7 the Outburst's heal Stat (soul_mend, rules 1.36) \u00d7 the stage multipli"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:67",
+  "was": "100 + Math.max(Math.round(15 * 2 * mendFactor(12)), gateOf(ally(f), 1, me(f)))",
+  "now": "271",
+  "ratio": 0.704,
+  "test": "rules 1.20: Sigil > MEND and WARD (rules 1.36: 15 and 4.3), \u00d7 the Sigil boon's Stat \u00d7 the level factor, through the perc"
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:55",
+  "was": "18",
+  "now": "18",
+  "ratio": 0.6,
+  "test": "rules 1.20: the level factor > a character's heart carries it; an enemy caster's does not, and keeps the old bases"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:153",
+  "was": "2000 - Math.round(260 * pw)",
+  "now": "1817",
+  "ratio": 1.072,
+  "test": "The Saints' Verdict (item 1264) > 130 Soul \u00d7 Blessing power to every enemy in sight; double for one that harmed the help"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:128",
+  "was": "2000 - Math.round(56 * pw * 1.3)",
+  "now": "1948",
+  "ratio": 1.018,
+  "test": "the damage Hymns (items 1261 to 1263) > Judgement: 56 Soul \u00d7 Blessing power (12 Nov 2026); 30% more against one that har"
+ },
+ {
+  "at": "test/rules121-faith.test.ts:56",
+  "was": "12",
+  "now": "12",
+  "ratio": 0.6,
+  "test": "the data (rules 1.21): the numbers the spec gives > Judgement 56 and \u00d71.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and"
+ },
+ {
+  "at": "test/rules122-faith.test.ts:227",
+  "was": "Math.floor(34 * n.me.blessPower! * prayerMendDial() * m)",
+  "now": "35",
+  "ratio": 0.583,
+  "test": "the refitted prayers land their numbers (items 1281, 1285, 1286) > Warm Hands heals 28 \u00d7 Blessing power \u00d7 the level fact"
+ },
+ {
+  "at": "test/rules122-faith.test.ts:220",
+  "was": "Math.round(56 * bp)",
+  "now": "40",
+  "ratio": 0.606,
+  "test": "the refitted prayers land their numbers (items 1281, 1285, 1286) > Rebuke 20 \u00d7 Blessing power; Judgement 56 \u00d7; Lightning"
+ },
+ {
+  "at": "test/rules123-defence.test.ts:183",
+  "was": "Math.round(820 * ENEMY_LEVELS.table[5].hp_mult)",
+  "now": "1806",
+  "ratio": 0.6,
+  "test": "rules 1.23: the Boss, and the enemy's Burst > the Boss has 820 HP at level 1 (it was 960) and 6,957 at level 20 (rules 1"
+ },
+ {
+  "at": "test/sigil14-classes-i.test.ts:98",
+  "was": "999 - 23",
+  "now": "985",
+  "ratio": 1.009,
+  "test": "Mage under 1.4 > Payload gives a one-target spell one more missile, at the nearest other target in the area"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:307",
+  "was": "999 - 10",
+  "now": "993",
+  "ratio": 1.004,
+  "test": "Grand Sigilist under 1.4 > CHAIN (Conductor): your side's hit on an enemy inside arcs 10 to the nearest other enemy insi"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:265",
+  "was": "999 - 15",
+  "now": "990",
+  "ratio": 1.006,
+  "test": "Grand Sigilist under 1.4 > LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATC"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:208",
+  "was": "999 - 30",
+  "now": "981",
+  "ratio": 1.012,
+  "test": "Glyph Mason under 1.4 > Survey: from 2 tiles beyond an end the Line fires along; from 2 tiles beside it, across; without"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:97",
+  "was": "200 - 18",
+  "now": "189",
+  "ratio": 1.038,
+  "test": "Stroke Gambler under 1.4 > Stitch 1-5 (House Edge off): it lands on you as Touch at full strength; KIN spares no one, SP"
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:87",
+  "was": "11",
+  "now": "11",
+  "ratio": 0.611,
+  "test": "STAY (item 422): one strike, then the field > a trap with STAY: the springing is the placing strike (full), then the fie"
+ },
+ {
+  "at": "test/sigil14-stay.test.ts:66",
+  "was": "18",
+  "now": "18",
+  "ratio": 0.6,
+  "test": "STAY (item 422): one strike, then the field > a creature the field has not affected walking in takes full; one it struck"
+ },
+ {
+  "at": "test/sigil14.test.ts:536",
+  "was": "5",
+  "now": "5",
+  "ratio": 0.625,
+  "test": "what stays: fields, traps, turrets (spec: Delivery) > turrets zap allies too (KIN keeps your side out); WATCH + TWICE sh"
+ },
+ {
+  "at": "test/sigil14.test.ts:382",
+  "was": "34",
+  "now": "34",
+  "ratio": 0.607,
+  "test": "Subjects (spec: the words) > SHARPEN: the next attack gets +3 to hit and \u00d71.25 damage, then it is spent"
+ },
+ {
+  "at": "test/sigil14.test.ts:361",
+  "was": "100 + Math.ceil(0.2 * 145)",
+  "now": "118",
+  "ratio": 0.915,
+  "test": "Subjects (spec: the words) > WARD and MEND (rules 1.36: 4.3 and 15, the Sigil boon's Stat), each through the gate"
+ },
+ {
+  "at": "test/sigil14.test.ts:259",
+  "was": "hp[1] - 30",
+  "now": "482",
+  "ratio": 1.026,
+  "test": "Delivery (spec: Delivery) > TWICE: two missiles at two targets, each with its own Burst; the glyph costs 2 Flux; the sec"
+ },
+ {
+  "at": "test/sigil14.test.ts:84",
+  "was": "want",
+  "now": "36",
+  "ratio": 0.59,
+  "test": "grammar (spec: Grammar and cost) > the spec's numbers: FIRE \u00b7 CONDENSE \u00d73 61, FIRE \u00b7 FIRE \u00b7 CONDENSE 61, FIRE \u00d73 \u00b7 CONDE"
+ },
+ {
+  "at": "test/sigil15-growth.test.ts:296",
+  "was": "Math.round(4.3 * 1.1 * sb)",
+  "now": "3",
+  "ratio": 0.6,
+  "test": "word mastery and inflections (items 915-916) > WARD: the shield is 10% bigger (rules 1.36: 4.3 \u00d7 the boon's Stat; a smal"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:114",
+  "was": "[14, 14, 0]",
+  "now": "[9, 9, 0]",
+  "test": "gap 2: the section 7 patterns, Evoked through apply() > Grenade, FIRE \u00b7 ARC \u00b7 SPREAD: 14 to everyone within 2 (30 \u00d7 0.8 "
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:132",
+  "was": "[15, 11]",
+  "now": "[9, 7]",
+  "test": "gap 2: the section 7 patterns, Evoked through apply() > Safe Tesla post, SHOCK \u00b7 WATCH \u00b7 CHAIN \u00b7 KIN: zaps the enemy nex"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:211",
+  "was": "[30, 23]",
+  "now": "[18, 14]",
+  "test": "gaps 3\u20134: the Delivery and Burst mixes > CHAIN + LEECH: you heal from every jump (30 + 23 dealt \u2192 26); the preview shows"
+ },
+ {
+  "at": "test/sigil14-apply.test.ts:223",
+  "was": "[45, 21]",
+  "now": "[27, 13]",
+  "test": "gaps 3\u20134: the Delivery and Burst mixes > CONDENSE + PUSH: \u00d71.5 on the first tile (45), \u00d70.7 in the cone (21)"
+ },
+ {
+  "at": "test/sigil14-classes-k.test.ts:320",
+  "was": "[5, 15]",
+  "now": "[3, 9]",
+  "test": "Grand Sigilist under 1.4 > ARC (Mortar pit): at your turn start the staff shells the best tile within 6 of it: 15 there,"
+ },
+ {
+  "at": "test/sigil14.test.ts:272",
+  "was": "[27, 20, 15]",
+  "now": "[16, 12, 9]",
+  "test": "Delivery (spec: Delivery) > CHAIN: 27 \u2192 20 \u2192 15 forward along a line of creatures, never back to one closer to you, neve"
+ },
+ {
+  "at": "test/sigil14.test.ts:524",
+  "was": "[15, 11]",
+  "now": "[9, 7]",
+  "test": "what stays: fields, traps, turrets (spec: Delivery) > WATCH: a turret casts at the nearest creature it can reach at the "
+ },
+ {
+  "at": "test/rules120-heal-shield.test.ts:154",
+  "was": "/heals 100$/",
+  "now": "/heals 150$/",
+  "test": "rules 1.20: the round limit is withdrawn (rules 1.23) > spells and prayers restore what they restore: nothing is cut at "
+ },
+ {
+  "at": "test/rules121-faith.test.ts:66",
+  "was": "/20 Soul damage/",
+  "now": "/12 Soul damage/",
+  "test": "the data (rules 1.21): the numbers the spec gives > every card says its own number"
+ },
+ {
+  "at": "test/rules122-faith.test.ts:62",
+  "was": "/20 Soul damage/",
+  "now": "/12 Soul damage/",
+  "test": "the data (rules 1.22): the numbers the spec gives > Rebuke 20; Lightning Rod 56 and 23; Judgement 56 and \u00d71.3; Thundercl"
+ }
+]

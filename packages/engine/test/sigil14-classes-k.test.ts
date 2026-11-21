@@ -94,7 +94,7 @@ describe('Stroke Gambler under 1.4', () => {
     glyph(f, f.unit(u.id), 'fire', '5,2', { half: true }); glyph(f, f.unit(u.id), 'spread', '4,2', { half: true }); glyph(f, f.unit(u.id), 'kin', '3,2', { half: true });
     seed(f, 3);
     perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '3,2', choice: '6,2', mods: ['!class:stroke_gambler.house_edge#reroll'] });
-    expect(f.pc.hp).toBe(189 /* rules 1.95 (the scale): was 200 - 18 */); expect(f.unit(f.pcs[1].id).hp).toBe(200 - 18); // 30 × 0.6, no roll, no KIN
+    expect(f.pc.hp).toBe(189 /* rules 1.95 (the scale): was 200 - 18 */); expect(f.unit(f.pcs[1].id).hp).toBe(189 /* rules 1.95 (the scale): was 200 - 18 */); // 30 × 0.6, no roll, no KIN
     expect(f.unit(f.foe.id).hp).toBe(999); expect((f.cb.glyphs || []).length).toBe(0); expect(f.pc.mg!.charge).toBe(7);
   });
   it('House Edge: a Stitch of 1-5 is rerolled once a fight (on by default)', () => {
@@ -205,7 +205,7 @@ describe('Glyph Mason under 1.4', () => {
     const pv = withGame(b.g, () => previewEvoke(b.cb, b.pc, '12,4', '13,9'));
     expect(pv.ok).toBe(true); expect(pv.facing!.mode).toBe('across'); expect(pv.facing!.dir).toEqual([0, 1]);
     act(b, b.pc, { type: 'combat/evoke', tile: '12,4', aim: foe2.pos }); // the plain Evoke reaches it too (evoke_reach)
-    expect(b.unit(foe2.id).hp).toBe(999 - 30);
+    expect(b.unit(foe2.id).hp).toBe(981 /* rules 1.95 (the scale): was 999 - 30 */);
     const c = fightWith([{}], [{}]); const v = c.turn(c.pc); caster(c.unit(v.id), ['fire', 'seek']); glyph(c, c.unit(v.id), 'fire', '12,4'); glyph(c, c.unit(v.id), 'seek', '13,4'); at(c, c.unit(v.id), '10,4');
     expect(withGame(c.g, () => previewEvoke(c.cb, c.pc, '12,4', '15,4')).why).toMatch(/within 1 tile/);
   });
@@ -262,7 +262,7 @@ describe('Grand Sigilist under 1.4', () => {
     const l = grand('leech', '5,2'); const a = l.unit(l.pcs[1].id); a.hp = 50;
     const hit = () => withGame(l.g, () => applyDamage(l.cb, l.unit(l.foe.id), 20, { by: l.unit(a.id), type: 'weapon', shield: true, credit: 'all' }));
     hit(); expect(l.unit(a.id).hp).toBe(53); hit(); expect(l.unit(a.id).hp).toBe(53 /* rules 1.95 (the scale): was 53 */); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
-    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 15); expect(w.unit(w.foes[1].id).hp).toBe(999);
+    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(990 /* rules 1.95 (the scale): was 999 - 15 */); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.
     const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· (?:hit|CRITICAL), (\d+) damage/) || [])[1] || 0);
@@ -304,7 +304,7 @@ describe('Grand Sigilist under 1.4', () => {
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
     expect(f.unit(f.foes[1].id).hp).toBe(993 /* rules 1.95 (the scale): was 999 - 10 */); expect(logHas(f.cb, /Conductor/)).toBe(true);
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(f.foes[1].id).hp).toBe(999 - 10);
+    expect(f.unit(f.foes[1].id).hp).toBe(993 /* rules 1.95 (the scale): was 999 - 10 */);
   });
   it('KIN (sanctum): allies inside take no damage from your side; an enemy\'s blow still lands', () => {
     const f = grand('kin', '9,2'); const ally = f.unit(f.pcs[1].id); const hp = ally.hp;
@@ -317,7 +317,7 @@ describe('Grand Sigilist under 1.4', () => {
     const f = grand('arc', '8,2'); f.unit(f.foe.id).armour = 0; at(f, f.foes[1], '9,2'); f.unit(f.foes[1].id).armour = 0;
     f.turn(f.pc.id);
     const hits = [999 - f.unit(f.foe.id).hp, 999 - f.unit(f.foes[1].id).hp].sort((a, b) => a - b);
-    expect(hits).toEqual([5, 15]); expect(logHas(f.cb, /Mortar pit/)).toBe(true);
+    expect(hits).toEqual([3, 9]); expect(logHas(f.cb, /Mortar pit/)).toBe(true); // rules 1.95 (the scale): was [5, 15]
     const far = grand('arc', '13,2'); at(far, far.foes[1], '14,9'); far.turn(far.pc.id); expect(far.unit(far.foe.id).hp).toBe(999);
   });
   it('SPREAD (Bloom): a spell your side lands inside also hits every enemy inside it missed for 10; TWICE (Echo field): the first spell a round echoes at half', () => {

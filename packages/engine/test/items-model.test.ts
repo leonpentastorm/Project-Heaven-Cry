@@ -102,11 +102,11 @@ describe('rules 1.91 items 7902 to 7904: the families', () => {
 });
 
 describe('rules 1.91 items 7905, 7906: the grade ladder is the rarity rows', () => {
-  it('order, words, sold, and the arm column (1 for every grade)', () => {
+  it('order, words, sold, and the arm column (rules 1.95: the grade ladder, x1 to x1.75)', () => {
     expect(GRADES).toEqual(['standard', 'fine', 'masterwork', 'relic', 'celestial']);
     expect(SOLD_GRADES).toEqual(['standard', 'fine', 'masterwork', 'relic']);
     expect(GRADES.map(gradeWord)).toEqual(['Standard', 'Fine', 'Masterwork', 'Relic', 'Celestial']);
-    expect(GRADES.map((r) => RARITY[r].arm)).toEqual([1, 1, 1, 1, 1]);
+    expect(GRADES.map((r) => RARITY[r].arm)).toEqual([1, 1.15, 1.3, 1.5, 1.75]); expect(GRADES.map((r) => RARITY[r].dmg)).toEqual([1, 1.15, 1.3, 1.5, 1.75]); expect(GRADES.map((r) => RARITY[r].acc)).toEqual([0, 1, 2, 3, 3]);
     expect(isGrade('masterwork')).toBe(true); expect(isGrade('rare')).toBe(false);
   });
 });

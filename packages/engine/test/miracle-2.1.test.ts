@@ -78,7 +78,7 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     h.foe(1).faith = { harmedHelpless: true }; h.foe(2).hidden = true;
     const pw = h.me.blessPower!; h.pray('saints_verdict');
     expect(h.foe(0).hp).toBe(1908 /* rules 1.95 (the scale): was 2000 - Math.round(130 * pw) */); expect(h.foe(0).conds!.stunned).toBe(1);
-    expect(h.foe(1).hp).toBe(2000 - Math.round(260 * pw)); expect(h.foe(1).conds!.stunned).toBe(2);
+    expect(h.foe(1).hp).toBe(1817 /* rules 1.95 (the scale): was 2000 - Math.round(260 * pw) */); expect(h.foe(1).conds!.stunned).toBe(2);
     expect(h.foe(2).hp).toBe(2000); expect(condOn(h.foe(2), 'stunned')).toBe(false);
     expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true);
   });

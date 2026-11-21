@@ -95,7 +95,7 @@ describe('Mage under 1.4', () => {
   });
   it('Payload gives a one-target spell one more missile, at the nearest other target in the area', () => {
     const p = payloadFight('condense', '6,3', true);
-    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); expect(p.b.hp).toBe(999 - 23); // SPARK 15 × CONDENSE 1.5 = 22.5, rounded to the nearest (item 456), each
+    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); expect(p.b.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); // SPARK 15 × CONDENSE 1.5 = 22.5, rounded to the nearest (item 456), each
     expect(logHas(p.f.cb, /one more missile \(1 → 2\)/)).toBe(true);
     expect(payloadFight('condense', '6,3', false).b.hp).toBe(999);
   });

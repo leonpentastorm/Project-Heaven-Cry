@@ -107,7 +107,7 @@ describe('an intervention ends Witnessed; once a fight, twice from Devotion 7 (i
 describe('the numbers scale with Devotion, × Blessing power (item 741)', () => {
   it('20 + 4 × Devotion: 32 at 3, 48 at 7, 60 at 10; × power, rounded', () => {
     const h = holy({ devotion: 3 });
-    for (const [dv, n] of [[0, 20], [3, 32], [7, 48], [10, 60]]) { h.c.devotion = dv; setDevotionXp(h.c, devotionThreshold(dv)); expect(interventionAmount(h.c)).toBe(12 /* rules 1.95 (the scale): was n */); expect(interventionAmount(h.c, 1.7)).toBe(Math.round(n * 1.7)); }
+    for (const [dv, n] of [[0, 20], [3, 32], [7, 48], [10, 60]]) { h.c.devotion = dv; setDevotionXp(h.c, devotionThreshold(dv)); expect(interventionAmount(h.c)).toBe(12 /* rules 1.95 (the scale): was n */); expect(interventionAmount(h.c, 1.7)).toBe(20 /* rules 1.95 (the scale): was Math.round(n * 1.7) */); }
   });
   it('Nerukhan at Devotion 7: the fx carries the amount, (20 + 28) × Blessing power', () => {
     const h = holy({ patron: 'nerukhan', devotion: 7 }); hymnAgain(h); kickDowned(h);

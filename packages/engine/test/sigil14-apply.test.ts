@@ -111,7 +111,7 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
 describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
   it('Grenade, FIRE · ARC · SPREAD: 14 to everyone within 2 (30 × 0.8 × 0.6 = 14.4)', () => {
     const f = rig(['fire', 'arc', 'spread'], ['9,5', '10,6', '12,5']); line(f, ['fire', 'spread', 'arc'], L3);
-    evoke(f, '3,5', '9,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([14, 14, 0]);
+    evoke(f, '3,5', '9,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([9, 9, 0]); // rules 1.95 (the scale): was [14, 14, 0]
   });
   it('Tesla tower, SHOCK · SEEK · WATCH · CHAIN: at your next turn start it zaps the nearest creature (an ally too) 15, then chains forward 11', () => {
     const f = rig(['shock', 'seek', 'watch', 'chain'], ['10,5', '12,5'], ['8,6']); line(f, ['shock', 'seek', 'watch', 'chain'], L4);
@@ -129,7 +129,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const pv = plan(f, '3,5', '7,5'); expect(pv.missiles[0].turret!.range).toBe(1); expect(pv.missiles[0].turret!.next).toEqual([f.foes[0].id]);
     evoke(f, '3,5', '7,5');
     f.turn(f.pc);
-    expect(f.foes.map((e) => 500 - e.hp)).toEqual([15, 11]); expect(f.pcs[1].hp).toBe(500);
+    expect(f.foes.map((e) => 500 - e.hp)).toEqual([9, 7]); expect(f.pcs[1].hp).toBe(500); // rules 1.95 (the scale): was [15, 11]
   });
   it('Healing post, MEND · WATCH: heals whoever stands next to it each round (15 × 0.5, gated at 20% × 0.5 of the bar; rules 1.36)', () => {
     const f = rig(['mend', 'watch'], ['14,9'], ['6,5']); f.pcs[1].hp = 400; line(f, ['mend', 'watch'], L2);
@@ -208,7 +208,7 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
   });
   it('CHAIN + LEECH: you heal from every jump (30 + 23 dealt → 26); the preview shows the heal before you Evoke (gap 6)', () => {
     const f = rig(['fire', 'seek', 'chain', 'leech'], ['8,5', '10,5']); f.pc.hp = 300; line(f, ['fire', 'chain', 'leech', 'seek'], L4);
-    const pv = plan(f, '3,5', '8,5'); expect(pv.affected.map((a) => a.dmg)).toEqual([30, 23]); expect(pv.leech).toMatchObject({ heal: 26, restored: 26 });
+    const pv = plan(f, '3,5', '8,5'); expect(pv.affected.map((a) => a.dmg)).toEqual([18, 14]); expect(pv.leech).toMatchObject({ heal: 26, restored: 26 }); // rules 1.95 (the scale): was [30, 23]
     evoke(f, '3,5', '8,5');
     expect(f.foes.map((e) => 500 - e.hp)).toEqual([30, 23]); expect(f.pc.hp).toBe(326); expect(logHas(f.cb, /drinks 26 HP \(LEECH\)/)).toBe(true);
   });
@@ -220,7 +220,7 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
   it('CONDENSE + PUSH: ×1.5 on the first tile (45), ×0.7 in the cone (21)', () => {
     const f = rig(['fire', 'condense', 'push'], ['6,5', '7,5']); line(f, ['fire', 'condense', 'push'], L3);
     const pv = plan(f, '3,5', '6,5'); expect(pv.missiles[0].burst.mult['6,5']).toBe(1.5); expect(pv.missiles[0].burst.mult['7,5']).toBe(0.7);
-    evoke(f, '3,5', '6,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([45, 21]);
+    evoke(f, '3,5', '6,5'); expect(f.foes.map((e) => 500 - e.hp)).toEqual([27, 13]); // rules 1.95 (the scale): was [45, 21]
   });
 });
 

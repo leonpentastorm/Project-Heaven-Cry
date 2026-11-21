@@ -184,7 +184,7 @@ describe('the second school: a rider at half strength with its own option (secti
     const f = rig(['12,5'], ['4,5']); const ally = f.pcs[1]; ally.hp = 100;
     const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'damage', modules: ['inverse'] });
     begin(f, d); pump(f); release(f, '4,5');
-    expect(f.unit(ally.id).hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */); expect(f.unit(ally.id).shield).toBe(Math.ceil(0.2 * 0.5 * 145)); // the gate: 20% of the bar counted to 145 (× stage 1.0, × the rider's half)
+    expect(f.unit(ally.id).hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */); expect(f.unit(ally.id).shield).toBe(9 /* rules 1.95 (the scale): was Math.ceil(0.2 * 0.5 * 145) */); // the gate: 20% of the bar counted to 145 (× stage 1.0, × the rider's half)
   });
   it('Control (Pinned) + Damage: Pinned, and half damage with no roll', () => {
     const f = rig(); const d = give(f.pc, { school: 'control', option: 'pinned', school2: 'damage' });

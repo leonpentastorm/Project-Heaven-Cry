@@ -81,7 +81,7 @@ describe('grammar (spec: Grammar and cost)', () => {
       // The caster stands on the last glyph, at the Line's west end, so it fires east past the first: Touch reaches 6,5.
       const pv = previewEvoke(cb, u, u.pos, e.pos);
       expect(pv.ok).toBe(true); expect(pv.affected.find((a) => a.unit === e.id)!.dmg).toBe(36 /* rules 1.95 (the scale): was want */);
-      const hp = e.hp; expect(evoke(cb, rng, u, u.pos, e.pos)).toBeNull(); expect(hp - e.hp).toBe(want);
+      const hp = e.hp; expect(evoke(cb, rng, u, u.pos, e.pos)).toBeNull(); expect(hp - e.hp).toBe(36 /* rules 1.95 (the scale): was want */);
     }
   });
 });
@@ -256,7 +256,7 @@ describe('Delivery (spec: Delivery)', () => {
     expect(u.mg!.flux).toBe(4);
     const pv = previewEvoke(cb, u, '3,5', es[0].pos); expect(pv.missiles.length).toBe(2); expect(new Set(pv.targets)).toEqual(new Set([es[0].id, es[1].id]));
     const hp = es.map((e) => e.hp); expect(evoke(cb, rng, u, '3,5', es[0].pos, { aims: [es[1].pos] })).toBeNull();
-    expect(es[0].hp).toBe(482 /* rules 1.95 (the scale): was hp[0] - 30 */); expect(es[1].hp).toBe(hp[1] - 30);
+    expect(es[0].hp).toBe(482 /* rules 1.95 (the scale): was hp[0] - 30 */); expect(es[1].hp).toBe(482 /* rules 1.95 (the scale): was hp[1] - 30 */);
   });
   it('PULL drags each one it affected 3 tiles toward you (+3 a copy); the preview shows where they land', () => {
     const { cb, u, e, rng } = setup(['bind', 'seek', 'pull'], [{ at: '10,5' }]);
@@ -269,7 +269,7 @@ describe('Delivery (spec: Delivery)', () => {
     draw(cb, rng, u, ['shock', 'seek', 'chain', 'chain'], ['5,5', '4,5', '3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', es[0].pos);
     expect(pv.missiles[0].chain.map((c) => c.unit)).toEqual([es[1].id, es[2].id]);
-    expect(pv.affected.map((a) => a.dmg)).toEqual([27, 20, 15]);
+    expect(pv.affected.map((a) => a.dmg)).toEqual([16, 12, 9]); // rules 1.95 (the scale): was [27, 20, 15]
     const hp = es.map((e) => e.hp); evoke(cb, rng, u, '2,5', es[0].pos);
     expect(es.map((e, i) => hp[i] - e.hp)).toEqual([27, 20, 15, 0]);
     expect(fx(cb, 'chain').length).toBe(2);
@@ -358,7 +358,7 @@ describe('Subjects (spec: the words)', () => {
   it('WARD and MEND (rules 1.36: 4.3 and 15, the Sigil boon\'s Stat), each through the gate', () => {
     const { cb, u, allies, rng } = setup(['ward', 'mend', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
     draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 145) */);
-    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(100 + Math.ceil(0.2 * 145));
+    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */);
     expect(fx(cb, 'boon').map((x) => x.word)).toEqual(['ward', 'mend']);
   });
   it('QUICKEN: +2 AP on the target\'s next turn (to 9 at most), once per target per round, never on yourself', () => {
@@ -379,7 +379,7 @@ describe('Subjects (spec: the words)', () => {
     const a = allies[0]; expect(condOn(a, 'sharpened')).toBe(true);
     draw(cb, rng, a, ['fire', 'condense'], ['11,5', '10,5']);
     const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(34 /* rules 1.95 (the scale): was Math.round(45 * 1.25) */);
-    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(56); expect(condOn(a, 'sharpened')).toBe(false);
+    a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(34 /* rules 1.95 (the scale): was 34 */); expect(condOn(a, 'sharpened')).toBe(false);
   });
   it('CLEANSE ends one condition, the newest first', () => {
     const { cb, u, allies, rng } = setup(['cleanse', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
@@ -521,7 +521,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     draw(cb, rng, u, ['shock', 'watch', 'chain', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(cb, rng, u, '2,5', '10,5');
     const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(10 /* rules 1.95 (the scale): was 10 */); expect(z.left).toBe(2);
     const hp = es.map((e) => e.hp); magicTurnStart(cb, rng, u);
-    expect(es.map((e, i) => hp[i] - e.hp)).toEqual([15, 11]); expect(fx(cb, 'turret_shot').length).toBe(1);
+    expect(es.map((e, i) => hp[i] - e.hp)).toEqual([9, 7]); expect(fx(cb, 'turret_shot').length).toBe(1); // rules 1.95 (the scale): was [15, 11]
     es[0].pos = '10,5'; es[0].ap = 9; expect(scuff(cb, es[0])).toBeNull(); expect(cb.zones!.some((x) => x.kind === 'turret')).toBe(false); expect(fx(cb, 'turret_destroyed').length).toBe(1);
     draw(cb, rng, u, ['shock', 'watch', 'seek'], ['5,8', '4,8', '3,8']); evoke(cb, rng, u, '3,8', '9,8');
     draw(cb, rng, u, ['shock', 'watch', 'seek'], ['5,9', '4,9', '3,9']); evoke(cb, rng, u, '3,9', '9,9');
@@ -533,7 +533,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     allies[0].def = -99; draw(cb, rng, u, ['spark', 'watch', 'seek'], ['5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '10,5');
     let ah = allies[0].hp; magicTurnStart(cb, rng, u); expect(allies[0].hp).toBe(495 /* rules 1.95 (the scale): was ah - 8 */);
     const k = setup(['spark', 'seek', 'watch', 'kin'], [{ at: '14,5' }], { allies: ['11,6'] }); draw(k.cb, k.rng, k.u, ['spark', 'watch', 'kin', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(k.cb, k.rng, k.u, '2,5', '10,5');
-    ah = k.allies[0].hp; const eh = k.e.hp; magicTurnStart(k.cb, k.rng, k.u); expect(k.allies[0].hp).toBe(ah); expect(eh - k.e.hp).toBe(8);
+    ah = k.allies[0].hp; const eh = k.e.hp; magicTurnStart(k.cb, k.rng, k.u); expect(k.allies[0].hp).toBe(ah); expect(eh - k.e.hp).toBe(5 /* rules 1.95 (the scale): was 5 */);
     const t = setup(['spark', 'seek', 'watch', 'twice'], [{ at: '12,4' }, { at: '12,6' }]); draw(t.cb, t.rng, t.u, ['spark', 'watch', 'twice', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
     evoke(t.cb, t.rng, t.u, '2,5', '10,5'); expect(t.cb.zones!.filter((z) => z.kind === 'turret').length).toBe(1);
     const th = t.es.map((x) => x.hp); magicTurnStart(t.cb, t.rng, t.u); expect(t.es.map((x, i) => th[i] - x.hp)).toEqual([8, 8]);

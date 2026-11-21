@@ -45,13 +45,13 @@ const held = (f: F) => me(f).mg!.held!;
 const char = (attrs: Record<string, number> = {}, o: Partial<Character> = {}): Character => { const s = storyWith([{ ...SOUL }]); const c = s.chars[0]; Object.assign(c.attrs, { insight: 1, determination: 1, virtue: 1, ...attrs }); Object.assign(c, o); return c; };
 
 describe('rules 1.24: Max MP is Determination\'s and Insight\'s', () => {
-  it('100 + 75 × (Determination − 1) + 25 × (Insight − 1): 100 with neither raised, 1,000 with both at 10', () => {
-    expect([MP_BASE, MP_PER_DETERMINATION, MP_PER_INSIGHT]).toEqual([100, 75, 25]);
-    expect(maxMp(char())).toBe(100);
-    expect(maxMp(char({ determination: 2 }))).toBe(175); expect(maxMp(char({ insight: 2 }))).toBe(125);
-    expect(maxMp(char({ determination: 4, insight: 4 }))).toBe(400);
-    expect(maxMp(char({ determination: 10 }))).toBe(775); expect(maxMp(char({ insight: 10 }))).toBe(325);
-    expect(maxMp(char({ determination: 10, insight: 10 }))).toBe(1000);
+  it('rules 1.95: (40 + 12 × (Determination − 1) + 8 × (Insight − 1)) × the mp column: 40 at level 1 with neither raised, 220 with both at 10', () => {
+    expect([MP_BASE, MP_PER_DETERMINATION, MP_PER_INSIGHT]).toEqual([40, 12, 8]);
+    expect(maxMp(char())).toBe(40);
+    expect(maxMp(char({ determination: 2 }))).toBe(52); expect(maxMp(char({ insight: 2 }))).toBe(48);
+    expect(maxMp(char({ determination: 4, insight: 4 }))).toBe(100);
+    expect(maxMp(char({ determination: 10 }))).toBe(148); expect(maxMp(char({ insight: 10 }))).toBe(112);
+    expect(maxMp(char({ determination: 10, insight: 10 }))).toBe(220);
   });
   it('Virtue gives no MP: a build that only prays has the bare 100, and a caster needs no Virtue', () => {
     expect(maxMp(char({ virtue: 10 }))).toBe(40); expect(maxMpOld(char({ virtue: 10 }))).toBe(1000);
@@ -60,8 +60,8 @@ describe('rules 1.24: Max MP is Determination\'s and Insight\'s', () => {
   it('the data says the same, and says it is provisional', () => {
     const der = (id: string) => (attributesJ as any).items.find((a: any) => a.id === id).derived as any[];
     expect(der('virtue').some((d) => d.stat === 'mp_max')).toBe(false);
-    expect(der('determination').find((d) => d.stat === 'mp_max')).toMatchObject({ per_point_above_1: 75, provisional: true });
-    expect(der('insight').find((d) => d.stat === 'mp_max')).toMatchObject({ per_point_above_1: 25, provisional: true });
+    expect(der('determination').find((d) => d.stat === 'mp_max')).toMatchObject({ base: 40, per_point_above_1: 12, provisional: true });
+    expect(der('insight').find((d) => d.stat === 'mp_max')).toMatchObject({ per_point_above_1: 8, provisional: true });
     expect((rulesJ as any).derived.magic.max_mp).toMatch(/^100 \+ 75\*\(determination-1\) \+ 25\*\(insight-1\)/);
     expect((SOUL_RULES as any).cycle.pump_mp).toMatchObject({ share_per_stage: 0.1, provisional: true }); expect(PUMP_MP_SHARE).toBe(0.1);
   });
@@ -216,7 +216,7 @@ describe('rules 1.24: the archetypes', () => {
       if (need === 1) expect(a.attributes.virtue, a.id).toBe(1); // Virtue with no Virtue skill was there for MP
     }
     const pool = (id: string) => { const a = (ARCHETYPES as any[]).find((x) => x.id === id).attributes; return MP_BASE + MP_PER_DETERMINATION * (a.determination - 1) + MP_PER_INSIGHT * (a.insight - 1); };
-    expect([pool('stormcaller'), pool('witch'), pool('unbroken'), pool('heartreader'), pool('mender')]).toEqual([475, 500, 650, 550, 500]);
-    expect([pool('zealot'), pool('prophet'), pool('crusader')]).toEqual([100, 200, 100]);
+    expect([pool('stormcaller'), pool('witch'), pool('unbroken'), pool('heartreader'), pool('mender')]).toEqual([112, 120, 144, 136, 120]); // rules 1.95: the new pool at level 1
+    expect([pool('zealot'), pool('prophet'), pool('crusader')]).toEqual([40, 72, 40]);
   });
 });

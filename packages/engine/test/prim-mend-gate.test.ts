@@ -12,7 +12,7 @@ describe('the percent gate and the cap (switched on by data in step 7b, rules 1.
   it('the numbers are data: the 2-AP heal profiles\' 20%, the gate\'s 145 HP, the cap at half the bar; a source with no profile has no gate', () => {
     for (const id of ['mend', 'sigil_mend', 'soul_mend', 'tend']) expect(PROFILES[id].min_pct, id).toBe(0.2);
     for (const id of ['weapon', 'sigil', 'soul', 'flat', 'healing']) expect(PROFILES[id].min_pct, id).toBeUndefined();
-    expect(MEND_GATE).toEqual({ hp: 145, cap_pct: 0.5 });
+    expect(MEND_GATE).toEqual({ hp: 90, cap_pct: null }); // rules 1.95: the gate counts to the normal bar at level 1 (90); the half-bar cap is gone (ruling A10)
     const t: any = { maxHp: 200 }; expect(mendGate({ kind: 'heal', base: 5 }, t)).toBe(0);
   });
   it('a block\'s min_pct: at least that share of the target\'s max HP (rounded up), counted up to gate_hp, before the own multipliers', () => {

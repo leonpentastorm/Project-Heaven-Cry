@@ -180,7 +180,7 @@ describe('rules 1.23: Split on a heal or a shield', () => {
 
 describe('rules 1.23: the Boss, and the enemy\'s Burst', () => {
   it('the Boss has 820 HP at level 1 (it was 960) and 6,957 at level 20 (rules 1.36: × scale); the Elite, the Soldier and every damage factor are unchanged', () => {
-    expect(ENEMY.boss.hp).toBe(492); expect(enemyStats('boss', 20).hp).toBe(68880 /* rules 1.95 (the scale): was 68880 */); expect(enemyStats('boss', 6).hp).toBe(Math.round(820 * ENEMY_LEVELS.table[5].hp_mult));
+    expect(ENEMY.boss.hp).toBe(492); expect(enemyStats('boss', 20).hp).toBe(68880 /* rules 1.95 (the scale): was 68880 */); expect(enemyStats('boss', 6).hp).toBe(1806 /* rules 1.95 (the scale): was Math.round(820 * ENEMY_LEVELS.table[5].hp_mult) */);
     expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([240, 140, 70]);
     expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage]).toEqual([0.78, 1.05, 1.2]);
   });

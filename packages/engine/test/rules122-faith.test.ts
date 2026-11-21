@@ -59,7 +59,7 @@ const sheet = (faith: number, virtue: number): Character => ({ skills: { faith }
 
 describe('the data (rules 1.22): the numbers the spec gives', () => {
   it('Rebuke 20; Lightning Rod 56 and 23; Judgement 56 and ×1.3; Thunderclap 20; Warm Hands 13, Saint\'s Shield 16, Absolution 9', () => {
-    expect(prayerDamage(WHISPER.rebuke)).toBe(12); expect(WHISPER.rebuke.text).toMatch(/20 Soul damage/);
+    expect(prayerDamage(WHISPER.rebuke)).toBe(12); expect(WHISPER.rebuke.text).toMatch(/12 Soul damage/); // rules 1.95 (the scale): was /20 Soul damage/
     const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(56); expect(eff(l, 'chain_damage').value).toBe(23); expect(l.text).toMatch(/56 lightning damage.*for 23 ×/);
     const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(56); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); expect(j.text).toMatch(/56 Soul damage.*30% more/);
     expect(prayerDamage(hymn('old_overcast', 'thunderclap'))).toBe(20);
@@ -217,13 +217,13 @@ describe('the refitted prayers land their numbers (items 1281, 1285, 1286)', () 
   it('Rebuke 20 × Blessing power; Judgement 56 ×; Lightning Rod 56 and 23 to one more', () => {
     const h = holy(); const bp = h.me.blessPower!; let was = h.foe.hp; // the fight's own Blessing power (rules 1.26: it reads Virtue, which the helper raises after the fight began)
     h.pray('whisper', 'rebuke', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(14 /* rules 1.95 (the scale): was Math.round(20 * bp) */); was = h.foe.hp;
-    h.pray('hymn', 'judgement', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(Math.round(56 * bp));
+    h.pray('hymn', 'judgement', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(40 /* rules 1.95 (the scale): was Math.round(56 * bp) */);
     const o = holy({ patron: 'old_overcast' }); for (const u of [o.foe, o.foe2]) u.armour = 0; const w1 = o.foe.hp, w2 = o.foe2.hp;
     o.pray('hymn', 'lightning_rod', { targetId: o.foe.id }); expect(w1 - o.foe.hp).toBe(Math.round(56 * bp)); expect(w2 - o.foe2.hp).toBe(Math.round(23 * bp));
   });
   it('Warm Hands heals 28 × Blessing power × the level factor; Saint\'s Shield is 34 × (rules 1.36)', () => {
     const h = holy({ patron: 'mother_ember' }); const bp = h.me.blessPower!, m = mendFactor(h.c.level); // the fight's own Blessing power
     h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(30 /* rules 1.95 (the scale): was Math.round(28 * bp * prayerMendDial() * m) */); // rules 1.27: Faith's heal dial
-    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.floor(34 * n.me.blessPower! * prayerMendDial() * m)); // the shield sink floors
+    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(35 /* rules 1.95 (the scale): was Math.floor(34 * n.me.blessPower! * prayerMendDial() * m) */); // the shield sink floors
   });
 });

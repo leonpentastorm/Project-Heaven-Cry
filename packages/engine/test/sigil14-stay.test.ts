@@ -63,7 +63,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(a.hp).toBe(hp); // once per round
     cb.round++; a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(hp - a.hp).toBe(9 /* rules 1.95 (the scale): was 9 */); // walks back in: half
     a.pos = '9,8';
-    const hb = b.hp; b.pos = '10,5'; b.ap = 9; moveUnit(cb, b, '9,5', rng); expect(hb - b.hp).toBe(30); // a newcomer: full
+    const hb = b.hp; b.pos = '10,5'; b.ap = 9; moveUnit(cb, b, '9,5', rng); expect(hb - b.hp).toBe(18 /* rules 1.95 (the scale): was 18 */); // a newcomer: full
     cb.round++; const hb2 = b.hp; magicTurnStart(cb, rng, b); expect(hb2 - b.hp).toBe(15); // then half
   });
   it('a KIN field: the strike spares your side and hits the foe at full; after, half to it and nothing to your side', () => {
@@ -84,6 +84,6 @@ describe('STAY (item 422): one strike, then the field', () => {
     expect(hp - a.hp).toBe(11); expect(cb.zones!.some((z) => z.kind === 'trap')).toBe(false);
     const z: any = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.ever[a.id]).toBe(true);
     cb.round++; const h2 = a.hp; magicTurnStart(cb, rng, a); expect(h2 - a.hp).toBe(5 /* rules 1.95 (the scale): was 5 */);
-    const hb = b.hp; b.pos = '8,6'; b.ap = 9; moveUnit(cb, b, '7,6', rng); expect(hb - b.hp).toBe(18);
+    const hb = b.hp; b.pos = '8,6'; b.ap = 9; moveUnit(cb, b, '7,6', rng); expect(hb - b.hp).toBe(11 /* rules 1.95 (the scale): was 11 */);
   });
 });

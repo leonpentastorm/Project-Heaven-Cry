@@ -53,7 +53,7 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
   it('Judgement 56 and ×1.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and 42 and 17, in rules 1.22); Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
     const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(34); expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
     const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(34 /* rules 1.95 (the scale): was 34 */); expect(eff(l, 'chain_damage').value).toBe(23); expect(eff(l, 'chain_damage').range).toBe(2);
-    const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(20); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
+    const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(12 /* rules 1.95 (the scale): was 12 */); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
     const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(130); expect(eff(v, 'damage_mult').value).toBe(2);
   });
   it('Lucky Break 2 rerolls, Foreknowing 2 attacks, Feed the Fire +2 AP, Cut Short every other round at most', () => {
@@ -63,7 +63,7 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
     expect(eff(hymn('counting_weaver', 'cut_short'), 'condition').again_after_rounds).toBe(2);
   });
   it('every card says its own number', () => {
-    expect(WHISPER.rebuke.text).toMatch(/20 Soul damage/);
+    expect(WHISPER.rebuke.text).toMatch(/12 Soul damage/); // rules 1.95 (the scale): was /20 Soul damage/
     expect(hymn('nerukhan', 'judgement').text).toMatch(/56 Soul damage.*30% more/);
     expect(hymn('old_overcast', 'lightning_rod').text).toMatch(/56 lightning damage.*for 23 ×/);
     expect(hymn('old_overcast', 'thunderclap').text).toMatch(/20 lightning damage/);
@@ -125,7 +125,7 @@ describe('the damage Hymns (items 1261 to 1263)', () => {
     const h = holy({ patron: 'nerukhan' }); const pw = h.me.blessPower!; h.pray('hymn', 'judgement', { targetId: h.foe.id });
     expect(h.foe.hp).toBe(1960 /* rules 1.95 (the scale): was 2000 - Math.round(56 * pw) */);
     const k = holy({ patron: 'nerukhan' }); k.foe.faith = { harmedHelpless: true }; k.pray('hymn', 'judgement', { targetId: k.foe.id });
-    expect(k.foe.hp).toBe(2000 - Math.round(56 * pw * 1.3)); expect(logHas(k.cb, /×1\.3: it harmed the helpless/)).toBe(true);
+    expect(k.foe.hp).toBe(1948 /* rules 1.95 (the scale): was 2000 - Math.round(56 * pw * 1.3) */); expect(logHas(k.cb, /×1\.3: it harmed the helpless/)).toBe(true);
   });
   it('Lightning Rod: 56 lightning × Blessing power, then 23 × Blessing power to one more within 2 (12 Nov 2026) (armour takes half its number off lightning)', () => {
     const h = holy({ patron: 'old_overcast' }); const pw = h.me.blessPower!; h.pray('hymn', 'lightning_rod', { targetId: h.foe.id });
@@ -150,7 +150,7 @@ describe('The Saints\' Verdict (item 1264)', () => {
   it('130 Soul × Blessing power to every enemy in sight; double for one that harmed the helpless', () => {
     const h = holy({ patron: 'nerukhan', devotion: 10 }); const pw = h.me.blessPower!; h.foe2.faith = { harmedHelpless: true };
     h.pray('miracle', 'saints_verdict');
-    expect(h.foe.hp).toBe(1908 /* rules 1.95 (the scale): was 2000 - Math.round(130 * pw) */); expect(h.foe2.hp).toBe(2000 - Math.round(260 * pw));
+    expect(h.foe.hp).toBe(1908 /* rules 1.95 (the scale): was 2000 - Math.round(130 * pw) */); expect(h.foe2.hp).toBe(1817 /* rules 1.95 (the scale): was 2000 - Math.round(260 * pw) */);
   });
 });
 

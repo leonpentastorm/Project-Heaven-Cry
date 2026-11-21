@@ -64,7 +64,7 @@ describe('a6: the ledger (what moved from TypeScript into data is the same numbe
   });
   it('itemAmount is the base, its per-point parts, then each multiplier in turn; a missing block or multiplier throws', () => {
     expect(itemAmount('class:storm_hand.discharge', 'damage', [term(1.35, 'stat')], { charge: 3 })).toBe(48.6 /* rules 1.95 (the scale): was 20 * 3 * 1.35 */);
-    expect(itemAmount('trait:grenadiers_arm', 'damage', [term(1.6, 'stat')], { kg: 70 })).toBe((10 + 70 / 4) * 1.6);
+    expect(itemAmount('trait:grenadiers_arm', 'damage', [term(1.6, 'stat')], { kg: 70 })).toBe(26.4 /* rules 1.95 (the scale): was (10 + 70 / 4) * 1.6 */);
     expect(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: 145 })).toBe(0.5 * 145);
     expect(amountMult('perk:trick_shot', 'ricochet', 'share')).toBe(0.5);
     expect(() => amountBlock('perk:field_surgeon', 'nothing')).toThrow(/No amount block/);

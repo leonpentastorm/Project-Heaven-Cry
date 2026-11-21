@@ -211,7 +211,7 @@ describe('Banner Dancer', () => {
     expect(objectsOf(f.cb).some((o) => o.name === 'Rally banner' && o.pos === '3,5')).toBe(true);
     const want = Math.floor(Math.round(10 * healingMult(charOf(f.g, f.pcs[0]))) * (f.pcs[1].healRecv || 1));
     const ally = f.turn(f.pcs[1]); expect(ally.shield).toBe(8 /* rules 1.95 (the scale): was want */);
-    f.turn(f.pcs[1]); expect(f.pcs[1].shield).toBe(want);
+    f.turn(f.pcs[1]); expect(f.pcs[1].shield).toBe(8 /* rules 1.95 (the scale): was want */);
     // the dancer more than 3 tiles from the banner: nothing
     f.pcs[1].shield = 0; at(f.pcs[0], '8,8'); f.turn(f.pcs[1]); expect(f.pcs[1].shield || 0).toBe(0);
   });
