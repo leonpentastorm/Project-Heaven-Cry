@@ -1,0 +1,61 @@
+{
+  "head": "80df666de3232c0f390d50e419d2cfd1772f2b58",
+  "job": {
+    "id": "weapon-war_hammer--fine",
+    "standard_id": "weapon-war_hammer",
+    "grade": "fine",
+    "label": "War hammer — Fine",
+    "path": "art/icons/gear/weapon-war_hammer--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_hammer.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_hammer",
+    "family_references": [
+      "art/icons/gear/weapon-war_hammer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 14,
+    "keep_line": "the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single dockside war hammer on the lower-left grip to upper-right head diagonal, heavy squared slightly domed cross-cut striking face on viewer-right with its four recessed face facets and dark crossed channels, short thick curved rear spike toward viewer-left, broad existing two-rivet strap over the central socket, ash haft and original metal bands with round rivets, long brown spiral leather grip, polygonal butt cap with its dark open lanyard hole. Preserve every bevel, cross-cut groove, curved spike, rivet, band, wrap and negative space; no coloured maker accent. Do not enlarge the head or replace it with a maul.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. Add only ONE uncoloured thin engraved contour inside the existing head cheek; no inlay colour, ornament, motif, repair or new metal part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+      "request_id": "1ce25817-1d39-4828-a9cb-f558f3673032"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "f0996e2fce14dca42301e6412fbb019d32240825f6c6612a9be83a365380889c",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+      "response": {
+        "id": "weapon-war_hammer--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1ce25817-1d39-4828-a9cb-f558f3673032. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-war_hammer.png": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:40:34 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055981184,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "1401b82e5c3c4a6b1886a95bec40e83197e287f7"
+}

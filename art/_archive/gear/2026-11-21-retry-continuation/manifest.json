@@ -1717,6 +1717,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_hammer--fine",
+      "path": "art/icons/gear/weapon-war_hammer--fine.png",
+      "sha256": "42f7bb5b4a90b8ce159277a348e15f526f6cf51c37913258ed4060f6d9c81f15",
+      "label": "War hammer — Fine",
+      "family": "weapon-war_hammer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_hammer--fine.png",
+        "sha256": "a3c282f607ec4b67069cfdef122e97e93897938c70f5bc906f38cc86b4520c2f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_hammer--fine.png",
+        "sha256": "42f7bb5b4a90b8ce159277a348e15f526f6cf51c37913258ed4060f6d9c81f15"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_hammer--fine.txt",
+        "sha256": "b9d896cc9c982e86994ceddc8b314d0092b91a298e9f074c8cd4eeeebd819c03"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_hammer.png",
+          "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer--fine.png"
+      },
+      "export_hashes": {
+        "256": "52ee3543cb2378bbbca5c5133b04eceac8a3319fe5ee9446a311e63e2f394cfd",
+        "128": "94243c1e4636b2b2e87cc0e4fc1271df1e39f18cdce58afd4a79e71569f08e53",
+        "64": "da989174b1d38a0157822d032f9d16ce402a365fb2c9aaa7f438bb77279609f5",
+        "32": "8a63acbb6e3113bcf7f02ed4cee895b6751e399a7e0f45271bae214d04e49b44"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-war_hammer",
+      "outline": {
+        "solid_alpha_iou": 0.9699503945134335,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
