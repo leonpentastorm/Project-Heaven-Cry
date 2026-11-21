@@ -281,7 +281,7 @@
     "brief_number": "A3.1",
     "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is bright brass. Keep the wavy tempered edge line distinct from the new thin spine inlay; keep the dark diamond lattice grip arrangement. No sheath or new guard arms.",
     "keep_line": "the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.",
-    "status": "pending",
+    "status": "delivered",
     "production_approved": false,
     "collection": "2026-11-21-retry-continuation",
     "reference_sources": [
@@ -293,7 +293,6 @@
     "original_prompt_sha256": "a1bbe57384524380e9923a876302e17a7a952c0fed55b016a65dde062ac4e1f9",
     "run": "sole-20261121-0109",
     "standard_sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f",
-    "generation_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 3924442a-dbc6-4637-a9a8-e8313b6e54e5. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
     "generation_error_history": [
       {
         "attempt": 1,
@@ -303,6 +302,13 @@
           "current_time": "2026-11-21 01:35:30 UTC"
         },
         "retry_authorized": true
+      }
+    ],
+    "resolved_generation_errors": [
+      {
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 3924442a-dbc6-4637-a9a8-e8313b6e54e5. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+        "resolved_by_successful_native": "attempts/weapon-short_draw--masterwork/002/native.png",
+        "prompt_unchanged": true
       }
     ]
   },

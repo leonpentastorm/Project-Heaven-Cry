@@ -1,7 +1,7 @@
 {
-  "selected": 520,
+  "selected": 521,
   "requested": 871,
-  "remaining": 351,
+  "remaining": 350,
   "counts": {
     "icons_tiles": {
       "selected": 87,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 366,
+      "selected": 367,
       "total": 656
     },
     "uniques": {
@@ -26,14 +26,13 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 290,
+    "grade": 289,
     "unique": 9,
     "held-portrait": 1
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
     "service-blocked-or-preceding-grade-dependent": 85,
-    "new-service-rejection-recorded-retry-authorized": 1,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
     "0.30-HOLD": 1
@@ -562,15 +561,6 @@
       "standard": "weapon-broadback_sabre",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-short_draw--masterwork",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-short_draw--masterwork.png",
-      "standard": "weapon-short_draw",
-      "status": "new-service-rejection-recorded-retry-authorized",
-      "eligible_for_retry": true,
-      "error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/error.json"
     },
     {
       "id": "weapon-short_draw--relic",
@@ -2907,6 +2897,6 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-long_draw--celestial",
+  "last_delivered": "weapon-short_draw--masterwork",
   "current_run": "sole-20261121-0109"
 }

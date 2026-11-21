@@ -531,6 +531,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_draw--masterwork",
+      "path": "art/icons/gear/weapon-short_draw--masterwork.png",
+      "sha256": "d1ca6c1cae0fc8344f5c50709b9d9a1c5be30d5d929790f725f1e12eab3561b6",
+      "label": "Short Draw — Masterwork",
+      "family": "weapon-short_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--masterwork.png",
+        "sha256": "06a0b56f1ece0504a6b8f89b29716ffb6517850e60ade3e1b9a9aeecc33f6ff4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--masterwork.png",
+        "sha256": "d1ca6c1cae0fc8344f5c50709b9d9a1c5be30d5d929790f725f1e12eab3561b6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--masterwork.txt",
+        "sha256": "18c71b4bce195eb8d6a14ec272d3c889f7c35d70461deec9978a6c9e2050e68f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_draw.png",
+          "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f"
+        },
+        {
+          "path": "art/icons/gear/weapon-short_draw--fine.png",
+          "sha256": "3e231bfe46b8e95957e86617cfe83597792a0a9e86db21eb3f9f84de86b624f3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png",
+          "sha256": "251886e2fa6aaee22e844d498239ef610edcec77d15ca25d062a1962eab8e082"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_draw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-short_draw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-short_draw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-short_draw--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a9bb2877952e4e6eb3c0f2c2997b38ab70998966238e0a138b84155ed3329cbd",
+        "128": "349d9c925ae5fd06fe599611e4590b96072bf316a73f60a39ea2a83ff5dd6b75",
+        "64": "22943327e1c78b28c5d0d00ab3cae26bb442b8a00e0d69c5ce0bfe4b33dd3ea4",
+        "32": "57c6b9322bc33aaf732cf178cc8ae8b8772349f681d7a8f286fd1eb0bd6e2e56"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-short_draw",
+      "outline": {
+        "solid_alpha_iou": 0.9594367638389928,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 7
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

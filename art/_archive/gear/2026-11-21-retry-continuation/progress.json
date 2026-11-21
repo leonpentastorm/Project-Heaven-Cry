@@ -8,6 +8,7 @@
     "weapon-legion_spear--celestial",
     "weapon-short_draw--fine",
     "weapon-long_draw--fine",
+    "weapon-short_draw--masterwork",
     "weapon-long_draw--masterwork",
     "weapon-long_draw--relic",
     "weapon-long_draw--celestial"
@@ -15,7 +16,6 @@
   "remaining": [
     "weapon-purifier_flamer--masterwork",
     "weapon-dock_cutter--masterwork",
-    "weapon-short_draw--masterwork",
     "weapon-kemizuchi_side_sword--masterwork",
     "weapon-ork_cleaver_glaive--masterwork",
     "weapon-purifier_flamer--relic",
@@ -45,6 +45,6 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T01:42:44.494870+00:00",
-  "project_distinct_count": 520
+  "updated_utc": "2026-11-21T01:45:33.494720+00:00",
+  "project_distinct_count": 521
 }
