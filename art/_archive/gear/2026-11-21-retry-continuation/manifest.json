@@ -330,6 +330,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-long_draw--masterwork",
+      "path": "art/icons/gear/weapon-long_draw--masterwork.png",
+      "sha256": "22156c7ccf6575de8c2a1ed348a4cc59dadb1fcc193b1e407c149d511cbac853",
+      "label": "Long Draw — Masterwork",
+      "family": "weapon-long_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-long_draw--masterwork.png",
+        "sha256": "dbeed52864a427537ca51048a4931f9b5700b80a0135962cfb79d6b42855e8ee"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-long_draw--masterwork.png",
+        "sha256": "22156c7ccf6575de8c2a1ed348a4cc59dadb1fcc193b1e407c149d511cbac853"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-long_draw--masterwork.txt",
+        "sha256": "f328aa22b645ac9a4030bc961a27e93b367d2fa354c2896627901ea24453f578"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-long_draw.png",
+          "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4"
+        },
+        {
+          "path": "art/icons/gear/weapon-long_draw--fine.png",
+          "sha256": "b75552c237291bdafcc06d704530ca92869359c75a3c3a76c62d46a63f116b79"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png",
+          "sha256": "c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-long_draw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-long_draw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-long_draw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-long_draw--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "9fd7f56e63271a5d626ad8c8e68a528380471a8613ae417928410fbca95ffc1e",
+        "128": "63ca578da131460574cb788cb6260e31b284ff68a0e4f154a393680dd9bdac4d",
+        "64": "b23bab1a528c08b2c01754194a1c97a40078a68307198db7869eadba0816ed75",
+        "32": "5ad0ae655d103931104b1415edfd43482719cc8ffbebd32817940d08e0c4a7e3"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-long_draw",
+      "outline": {
+        "solid_alpha_iou": 0.9607396870554765,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
