@@ -1,0 +1,49 @@
+{
+  "head": "2fd29d6a49e4058831b8fa4c98a990401d9530e4",
+  "job": {
+    "id": "weapon-long_draw--relic",
+    "standard_id": "weapon-long_draw",
+    "grade": "relic",
+    "label": "Long Draw — Relic",
+    "path": "art/icons/gear/weapon-long_draw--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/icons/gear/weapon-long_draw--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-21-retry-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ],
+    "depends_on": "weapon-long_draw--masterwork",
+    "prior_lane": "art/_archive/gear/2026-11-20-reset-continuation",
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "46182d3e7d1621c962c6d7e50e9621c802ec4b8c0dba3d736767b61207ed970f",
+    "run": "sole-20261121-0109",
+    "standard_sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-long_draw.png": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4",
+    "art/icons/gear/weapon-long_draw--masterwork.png": "22156c7ccf6575de8c2a1ed348a4cc59dadb1fcc193b1e407c149d511cbac853",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "clock": {
+    "current_time": "2026-11-21 01:40:11 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055203199,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "6f401b26ccadedbce887e00a911c04d5082b9bd5"
+}

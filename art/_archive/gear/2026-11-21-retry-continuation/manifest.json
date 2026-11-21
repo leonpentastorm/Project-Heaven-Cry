@@ -397,6 +397,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-long_draw--relic",
+      "path": "art/icons/gear/weapon-long_draw--relic.png",
+      "sha256": "9bb04b2f84bfac9e7b77301769cdc1b6f2b0193fdd8773be03259127aee99267",
+      "label": "Long Draw — Relic",
+      "family": "weapon-long_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-long_draw--relic.png",
+        "sha256": "ef1e57b66733eb22ca3ef078e1d3997e6d427c66f31ec0212aba28c9a9133181"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-long_draw--relic.png",
+        "sha256": "9bb04b2f84bfac9e7b77301769cdc1b6f2b0193fdd8773be03259127aee99267"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-long_draw--relic.txt",
+        "sha256": "7badde9916ba1000d95ca354f4f9dabeda058653fb21bcf577410f3d2d099929"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-long_draw.png",
+          "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4"
+        },
+        {
+          "path": "art/icons/gear/weapon-long_draw--masterwork.png",
+          "sha256": "22156c7ccf6575de8c2a1ed348a4cc59dadb1fcc193b1e407c149d511cbac853"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png",
+          "sha256": "c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-long_draw--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-long_draw--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-long_draw--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-long_draw--relic.png"
+      },
+      "export_hashes": {
+        "256": "ff83dd53c234787c1f80fe8e1b99fd7e92ae6c7cbe9c434be26d97eb1b97e8b0",
+        "128": "50603bb72f1f47dc84fe995657a6a4cc2ed8f6dcd376690ad30c413b78aa744c",
+        "64": "09bbed8f839eeda2c9eabd12b87da983322390789538ccdb9668a6fe197c6a5e",
+        "32": "961bdcef4930954e5d733a90c91ef3d0ef02cfdaf300b62acc61639f50b63859"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-long_draw",
+      "outline": {
+        "solid_alpha_iou": 0.947478809894482,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
